@@ -1,0 +1,5 @@
+# ast-grep project config. Rules run as a report-only step in the
+# verify chain: `ast-grep scan`. Findings are feedback for agents,
+# never a failing gate.
+ruleDirs:
+  - rules

@@ -1,0 +1,75 @@
+# .codeindexignore — codebase-index's own ignore file (highest specificity).
+# Keeps the index focused on YOUR application code, not vendored/generated/
+# tooling noise. Comments explain why each block exists so it's easy to
+# trim or extend later.
+
+# ── Dependencies (three independent npm apps) ────────────────────────
+node_modules/
+
+# ── Compiled / bundled output ────────────────────────────────────────
+# Vite and Next.js build output is minified vendor code, not application code.
+dist/
+build/
+.next/
+out/
+storybook-static/
+playwright-report/
+test-results/
+
+# ── Coverage / mutation artifacts ────────────────────────────────────
+coverage/
+.nyc_output/
+.stryker-tmp/
+
+# ── Env & secrets (belt-and-suspenders; codebase-index also excludes
+#    these by filename pattern, but explicit is cheap) ────────────────
+.env
+.env.*
+!.env.example
+
+# ── AI agent / assistant scaffolding ─────────────────────────────────
+# Skills, agent configs, and CLI-specific instruction files aren't
+# application code — indexing them just pollutes retrieval with
+# meta-instructions instead of application code.
+.claude/
+.codex/
+.opencode/
+.agents/
+.agent/
+AGENTS.md
+CLAUDE.md
+skills/
+.claude-plugin/
+.cursor/
+.windsurf/
+.github/copilot-instructions.md
+.tokensave/
+.zcode/
+
+# ── Beads issue store (JSON, not code) ────────────────────────────────
+.beads/
+beads_report_*.md
+
+# ── AFK implementation worktrees (live next to this repo) ─────────────
+*-worktrees/
+
+# ── codebase-index's own cache (never index yourself) ─────────────────
+.claude/cache/codebase-index/
+
+# ── Editor / OS junk ──────────────────────────────────────────────────
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ── VCS ────────────────────────────────────────────────────────────────
+.git/
+.gitattributes
+
+# ── Mock server state (generated data, not code) ──────────────────────
+mocked-db.json
+
+# ── Lockfiles (huge, no retrieval value as "code") ──────────────────────
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
