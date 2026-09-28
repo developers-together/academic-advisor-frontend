@@ -38,3 +38,6 @@ yarn-error.log*
 # local
 mocked-db.json
 
+# opencode session logs
+.opencode/logs/
+

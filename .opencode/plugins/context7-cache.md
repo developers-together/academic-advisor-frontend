@@ -22,7 +22,9 @@ Behavior details:
 
 ## Install
 
-In this repo the plugin lives at `.opencode/plugins/context7-cache.js` next to the other local plugins (`no-comments.ts`, `session-log.ts`). OpenCode loads it automatically on start. Replace the file and restart OpenCode to update.
+In this repo the plugin is a v2 rewrite at `.opencode/plugins/context7-cache.ts` (self-contained, no npm install needed). The original v1 bundle is kept as `context7-cache.js.v1.bak`. OpenCode (v2) loads it automatically on start and hot-reloads on change. The same two files are installed globally in `~/.config/opencode/plugins/` (old copies kept as `*.v1.bak`).
+
+The v1 source in the AE monorepo (`packages/context7-cache`) predates the OpenCode v2 plugin API and does not load on OpenCode 2.x. This rewrite ports its cache logic and the SDK wire format; treat this file as the working source until the AE package is migrated.
 
 To install in another project, copy the single file and restart OpenCode:
 
