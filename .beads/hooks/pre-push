@@ -37,3 +37,18 @@ if command -v bd >/dev/null 2>&1; then
   if [ $_bd_exit -ne 0 ]; then exit $_bd_exit; fi
 fi
 # --- END BEADS INTEGRATION v1.2.2 ---
+
+# --- BEGIN BEADS AUTO-PUSH (project) ---
+# Push beads data (refs/dolt/data) to the sync remote alongside every code
+# push. Best effort: a failed beads sync never blocks the code push.
+# Skips when the push itself carries dolt refs, so the dolt transport's own
+# git push cannot recurse back into this hook.
+_beads_auto_push_dolt=0
+while read -r _blref _blsha _brref _brsha; do
+  case "$_brref" in refs/dolt/*) _beads_auto_push_dolt=1 ;; esac
+done
+if [ "$_beads_auto_push_dolt" -eq 0 ] && command -v bd >/dev/null 2>&1; then
+  bd dolt push >/dev/null 2>&1 || echo >&2 "beads: bd dolt push failed — run 'bd dolt push' to sync issues"
+fi
+unset _beads_auto_push_dolt _blref _blsha _brref _brsha
+# --- END BEADS AUTO-PUSH (project) ---
