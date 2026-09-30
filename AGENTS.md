@@ -1,5 +1,9 @@
 # Agent Instructions
 
+### Design system
+
+`design.md` is the UI/UX source of truth for this product: design tokens, component inventory, screen states, accessibility, and UX writing rules. Read it before any UI work and follow its rule IDs. Precedence: `docs/product` for product truth, then `design.md` for design truth, then vendored skills. The 16 vendored design and UX skills are routed in `design.md` section 10.
+
 ### Beads (`bd`) issue tracker: `docs/agents/issue-tracker.md`
 
 Issues live in beads, a local store under `.beads/`, operated via the `bd` CLI. Run `bd prime` for workflow context. See `docs/agents/issue-tracker.md`.
