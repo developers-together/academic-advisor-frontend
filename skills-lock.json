@@ -1,11 +1,31 @@
 {
   "version": 1,
   "skills": {
+    "agentic-ux-design-relationship-centric-interfaces": {
+      "source": "./.agents/skills/agentic-ux-design-relationship-centric-interfaces",
+      "sourceType": "local",
+      "computedHash": "abfc172573cc91ee0faee6066ae15b0e46598e9029de8400e202d606e45d6d69"
+    },
     "ask-matt": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/ask-matt/SKILL.md",
       "computedHash": "0cd14026efa0330083cbc7adf590976c162b60e02f696a8dcce96f0b4dab8a72"
+    },
+    "bencium-controlled-ux-designer": {
+      "source": "./.agents/skills/bencium-controlled-ux-designer",
+      "sourceType": "local",
+      "computedHash": "4aacbb29e05d9e45600105fbdcb24b38fa7de40d29db025f05a1b121308afc5c"
+    },
+    "bencium-innovative-ux-designer": {
+      "source": "./.agents/skills/bencium-innovative-ux-designer",
+      "sourceType": "local",
+      "computedHash": "e39e56d3960a6caefb28d66e47ad9eb83bd5927ba6e97423a4af150e0f0b82c2"
+    },
+    "brainstorming": {
+      "source": "./.agents/skills/brainstorming",
+      "sourceType": "local",
+      "computedHash": "b58d55b64742ecd37923985ec7bdfbe678ffbcb9895562abd28c0a32dcacd7fb"
     },
     "codebase-design": {
       "source": "mattpocock/skills",
@@ -13,11 +33,41 @@
       "skillPath": "skills/engineering/codebase-design/SKILL.md",
       "computedHash": "5a17552cc1482f1a40124bf4e6c9dbd90ac0dbb47e71c07d47369f9e5f2ae3b5"
     },
+    "competitor-profiling": {
+      "source": "./.agents/skills/competitor-profiling",
+      "sourceType": "local",
+      "computedHash": "52f223dc22ffd7fcb142e4bc04f5c13671db4cbb73975b8ce4f30ae93e885786"
+    },
+    "customer-research": {
+      "source": "./.agents/skills/customer-research",
+      "sourceType": "local",
+      "computedHash": "637f87fab0771b73cffc13e339584f106f1f439992812cd2e025cf3caab3855b"
+    },
+    "design-an-interface": {
+      "source": "./.agents/skills/design-an-interface",
+      "sourceType": "local",
+      "computedHash": "aef348a9af675b771635623b5aa7790da4d40adc1ee88b58b6fd116eda2047d8"
+    },
+    "design-audit": {
+      "source": "./.agents/skills/design-audit",
+      "sourceType": "local",
+      "computedHash": "18044a5dfff442f951c5fcead39da4ebd84096cca39e3cb848e677d84938faef"
+    },
+    "design-taste-frontend": {
+      "source": "./.agents/skills/design-taste-frontend",
+      "sourceType": "local",
+      "computedHash": "6d838b246d0e35d0b53f4f23f98ba7a1dd561937e64f7d0c7553b0928e376c3e"
+    },
     "diagnosing-bugs": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
       "computedHash": "37b5e9c624513551da790b52864dc8c84bff996a6d03a380cc6facdcc0a88354"
+    },
+    "doc": {
+      "source": "./.agents/skills/doc",
+      "sourceType": "local",
+      "computedHash": "7f8bfe9d1cbd6cb9a3617556387f2ac48911058a26d89345673c4565bb11717f"
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
@@ -49,6 +99,16 @@
       "skillPath": "skills/productivity/handoff/SKILL.md",
       "computedHash": "20e5f4afdef502637510bc5c64d27645d3c85c88df9cb006824bbb0980166319"
     },
+    "impeccable": {
+      "source": "./.agents/skills/impeccable",
+      "sourceType": "local",
+      "computedHash": "c79a228607882c3953245e97d388edcdba05848dba4dd4860abcb3920e529d56"
+    },
+    "implement": {
+      "source": "./.agents/skills/implement",
+      "sourceType": "local",
+      "computedHash": "2139cfedf24791adbc839aaab6019cff158af1e28bfead020ec6e0ce01b3e74d"
+    },
     "improve-codebase-architecture": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -79,6 +139,11 @@
       "skillPath": "plugins/show-me/skills/show-me/SKILL.md",
       "computedHash": "de32a72f802801f08a84641b467f2c6306d35a58ce5e59ea607ac3a993a18c91"
     },
+    "superdesign": {
+      "source": "./.agents/skills/superdesign",
+      "sourceType": "local",
+      "computedHash": "e98daea73371b2cdcc333025a993f6b0c2781c692382a9dcf132c7094a014fdf"
+    },
     "to-spec": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -96,6 +161,21 @@
       "sourceType": "github",
       "skillPath": "skills/engineering/triage/SKILL.md",
       "computedHash": "b954d74c219c805bf353d6642251a713c9b2e9cfdb11babfe588bcfe7dfd16d5"
+    },
+    "ui-typography": {
+      "source": "./.agents/skills/ui-typography",
+      "sourceType": "local",
+      "computedHash": "1e2ca6a20a9180dedd9ae9039e743bf2609fb4ad0608ee5cafe739fcef04e7ec"
+    },
+    "ui-ux-pro-max": {
+      "source": "./.agents/skills/ui-ux-pro-max",
+      "sourceType": "local",
+      "computedHash": "e430e766e55122fc8ee1b7a0d92ac91f41073e32ec5fb65bb2c0c69b670922cf"
+    },
+    "using-superpowers": {
+      "source": "./.agents/skills/using-superpowers",
+      "sourceType": "local",
+      "computedHash": "c7abe8bdc2099bbe4f245454d32c7563ccd2bb41dcc218b02b461c2acc3c6ae6"
     },
     "wait-what": {
       "source": "mattpocock/skills",

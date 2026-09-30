@@ -3,7 +3,7 @@
 AI agent skills for this repo, in two groups:
 
 1. **Engineering skills (30)** installed and hash-tracked by the skills tool. `skills-lock.json` is their source of truth; update them through that tool, not by hand.
-2. **Design and UX skills (16)** vendored manually on 2026-09-30 to back the design system in `design.md`. They are not tracked by `skills-lock.json`; refresh by re-copying from the sources below.
+2. **Design and UX skills (16)** vendored manually on 2026-09-30 to back the design system in `design.md`. Each is registered in `skills-lock.json` as a `sourceType: local` entry pointing at its in-repo path (`.agents/skills/<name>`); refresh by re-copying from the sources below, then recomputing the folder hash.
 
 Routing for every situation lives in `design.md` section 10 (routing table, process rules, craft attributions).
 
