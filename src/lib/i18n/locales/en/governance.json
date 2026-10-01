@@ -1,0 +1,75 @@
+{
+  "dean": {
+    "title": "Department Overview",
+    "export": "Export CSV",
+    "exported": "CSV export generated.",
+    "exportFailed": "The export failed. Try again."
+  },
+  "vp": {
+    "title": "University Scorecard",
+    "export": "Export CSV",
+    "exported": "CSV export generated.",
+    "exportFailed": "The export failed. Try again."
+  },
+  "levels": {
+    "university": "University",
+    "faculty": "Faculty",
+    "school": "School",
+    "department": "Department"
+  },
+  "contextLine": "{{level}} . {{term}} . {{students}} students",
+  "scopeLine": "{{level}} . {{name}}",
+  "kpi": {
+    "completion": "Completion rate",
+    "completionLive": "Live during the window",
+    "completionFinal": "Final",
+    "completionNone": "No assigned caseload yet",
+    "median": "Median decision time",
+    "medianContext": "Current term decided plans",
+    "medianNone": "No decisions yet this term",
+    "medianHours": "{{value}}h",
+    "aging": "Aging",
+    "agingContext": "Undecided past the aging threshold",
+    "caseload": "Caseload",
+    "caseloadContext": "Students with an assigned advisor",
+    "approved": "Approved",
+    "approvedContext": "Approved and closed plans this term"
+  },
+  "funnel": {
+    "title": "Plan funnel",
+    "pipeline": "Pipeline",
+    "terminal": "Terminal",
+    "empty": {
+      "title": "No plans yet this term",
+      "body": "Counts appear as students build and submit plans for {{term}}."
+    }
+  },
+  "childGrid": {
+    "title": "Sub-units",
+    "completion": "Completion",
+    "noData": "No data",
+    "empty": {
+      "title": "No sub-units under {{name}}.",
+      "body": "Metrics for this unit appear above."
+    }
+  },
+  "scorecard": {
+    "columns": {
+      "faculty": "Faculty",
+      "students": "Students",
+      "caseload": "Caseload",
+      "approved": "Approved",
+      "completion": "Completion",
+      "median": "Median decision time",
+      "aging": "Aging"
+    }
+  },
+  "drilldown": {
+    "title": "Drill-down",
+    "root": "University"
+  },
+  "noFaculty": {
+    "title": "No faculty assigned",
+    "body": "Your dean account has no faculty assigned. Ask an administrator to finish setup."
+  }
+}

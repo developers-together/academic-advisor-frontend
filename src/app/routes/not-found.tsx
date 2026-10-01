@@ -1,16 +1,34 @@
-import { Link } from '@/components/ui/link';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
+
+import { ContentLayout } from '@/components/layouts';
+import { Head } from '@/components/seo';
 import { paths } from '@/config/paths';
+import { roleHome, useRole } from '@/lib/authorization';
 
-const NotFoundRoute = () => {
+export default function NotFoundRoute() {
+  const { t } = useTranslation();
+  const role = useRole();
+  const backHref = role ? roleHome(role) : paths.auth.login.getHref();
+
   return (
-    <div className="mt-52 flex flex-col items-center font-semibold">
-      <h1>404 - Not Found</h1>
-      <p>Sorry, the page you are looking for does not exist.</p>
-      <Link to={paths.home.getHref()} replace>
-        Go to Home
-      </Link>
-    </div>
+    <>
+      <Head title={t('errors.notFoundTitle')} />
+      <ContentLayout title={t('errors.notFoundTitle')}>
+        <div className="mx-auto max-w-md rounded-lg border bg-card p-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            {t('errors.notFoundBody')}
+          </p>
+          <Link
+            to={backHref}
+            className="mt-4 inline-flex h-11 items-center rounded-md px-4 text-sm font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {role
+              ? t('errors.notFoundAction')
+              : t('registered.backToSignIn', { ns: 'auth' })}
+          </Link>
+        </div>
+      </ContentLayout>
+    </>
   );
-};
-
-export default NotFoundRoute;
+}

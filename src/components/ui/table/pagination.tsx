@@ -58,7 +58,7 @@ const PaginationLink = ({
     aria-current={isActive ? 'page' : undefined}
     className={cn(
       buttonVariants({
-        variant: isActive ? 'outline-solid' : 'ghost',
+        variant: isActive ? 'outline' : 'ghost',
         size,
       }),
       className,
@@ -108,7 +108,7 @@ const PaginationEllipsis = ({
 }: React.ComponentProps<'span'>) => (
   <span
     aria-hidden
-    className={cn('flex h-9 w-9 items-center justify-center', className)}
+    className={cn('flex size-9 items-center justify-center', className)}
     {...props}
   >
     <DotsHorizontalIcon className="size-4" />

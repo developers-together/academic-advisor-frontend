@@ -1,0 +1,64 @@
+{
+  "title": "AI Chat",
+  "context": "Your AI advisor helps you plan.",
+  "newConversation": "New conversation",
+  "goalDialog": {
+    "title": "What do you want from this conversation?",
+    "body": "Pick one goal. Your AI advisor shapes the conversation around it."
+  },
+  "goals": {
+    "maintain": "Maintain my level",
+    "improve": "Improve my standing",
+    "excel": "Aim for excellence"
+  },
+  "list": {
+    "empty": {
+      "title": "No conversations yet.",
+      "body": "Start one and your AI advisor will help you plan."
+    },
+    "goalFallback": "{{goal}} conversation"
+  },
+  "transcript": {
+    "typing": "Your AI advisor is replying.",
+    "jumpToLatest": "Jump to latest",
+    "stopped": "Stopped.",
+    "failedPartial": "The reply stopped before it finished. Your text above is kept.",
+    "constitution": "The AI advisor explains and drafts. Your advisor approves. Only you can submit."
+  },
+  "toolRow": {
+    "applied": "Your AI advisor updated your plan.",
+    "appliedCourse": "Added {{code}} to your plan.",
+    "openBuilder": "Open Plan Builder"
+  },
+  "submitCard": {
+    "title": "Ready to submit?",
+    "body": "Your AI advisor found your plan looks complete. Submitting runs the real checks, the registration window and validation, then sends the plan to your advisor for review. Your AI advisor never submits on its own; you can always submit from the Plan Builder.",
+    "confirm": "Confirm submission",
+    "review": "Review in Plan Builder",
+    "confirmDialog": {
+      "title": "Confirm submission?",
+      "body": "This confirms you want to submit. Your next message lets your AI advisor submit the plan through the normal checks. Your advisor then reviews it.",
+      "confirm": "Confirm submission"
+    },
+    "armed": "Submission confirmed. Send a message and your AI advisor will submit your plan.",
+    "armedSuggestion": "Please submit my plan now.",
+    "resultSubmitted": "Your plan was submitted for review.",
+    "resultOpenPlan": "Open My Plan",
+    "resultBlocked": "Submission is blocked."
+  },
+  "quota": {
+    "banner": "You have used your conversation limit for this term. You can still edit and submit your plan in the Plan Builder.",
+    "openBuilder": "Open Plan Builder"
+  },
+  "composer": {
+    "placeholder": "Message your AI advisor",
+    "send": "Send message",
+    "stop": "Stop reply",
+    "replying": "Your AI advisor is replying.",
+    "counter": "{{count}} characters left"
+  },
+  "errors": {
+    "messageRequired": "Write a message first.",
+    "messageTooLong": "Messages are limited to 10000 characters."
+  }
+}

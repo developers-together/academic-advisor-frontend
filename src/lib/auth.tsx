@@ -1,78 +1,127 @@
+import { useMutation } from '@tanstack/react-query';
 import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router';
 import { z } from 'zod';
 
 import { paths } from '@/config/paths';
-import { AuthResponse, User } from '@/types/api';
+import type { LanguagePreference, User, UserRole } from '@/types/domain';
 
 import { api } from './api-client';
+import { unwrap } from './api-envelope';
+import { ApiError } from './api-error';
+import { tokenStorage } from './token-storage';
 
-// api call definitions for auth (types, schemas, requests):
-// these are not part of features as this is a module shared across features
-
-const getUser = async (): Promise<User> => {
-  const response = await api.get('/auth/me');
-
-  return response.data;
+export const roleLanding: Record<UserRole, string> = {
+  student: paths.app.root.getHref(),
+  advisor: paths.advisor.root.getHref(),
+  dean: paths.dean.root.getHref(),
+  vp: paths.vp.root.getHref(),
+  admin: paths.admin.root.getHref(),
 };
 
-const logout = (): Promise<void> => {
-  return api.post('/auth/logout');
+export const sanitizeRedirectTo = (
+  value: string | null | undefined,
+): string | null => {
+  if (!value) {
+    return null;
+  }
+  if (!value.startsWith('/') || value.startsWith('//')) {
+    return null;
+  }
+  return value;
+};
+
+const getUser = async (): Promise<User> => {
+  try {
+    const user = await unwrap<User>(api.get('/me'));
+    return user;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      return null as unknown as User;
+    }
+    throw error;
+  }
 };
 
 export const loginInputSchema = z.object({
-  email: z.string().min(1, 'Required').email('Invalid email'),
-  password: z.string().min(5, 'Required'),
+  email: z
+    .string()
+    .min(1, 'auth:errors.emailRequired')
+    .email('auth:errors.emailInvalid'),
+  password: z.string().min(1, 'auth:errors.passwordRequired'),
 });
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
-const loginWithEmailAndPassword = (data: LoginInput): Promise<AuthResponse> => {
-  return api.post('/auth/login', data);
+
+const loginWithEmailAndPassword = async (data: LoginInput): Promise<User> => {
+  const response = (await api.post('/login', data)) as { token: string };
+  tokenStorage.set(response.token);
+  try {
+    return await getUser();
+  } catch (error) {
+    tokenStorage.clear();
+    throw error;
+  }
 };
 
 export const registerInputSchema = z
   .object({
-    email: z.string().min(1, 'Required'),
-    firstName: z.string().min(1, 'Required'),
-    lastName: z.string().min(1, 'Required'),
-    password: z.string().min(5, 'Required'),
-  })
-  .and(
-    z
-      .object({
-        teamId: z.string().min(1, 'Required'),
-        teamName: z.null().default(null),
-      })
-      .or(
-        z.object({
-          teamName: z.string().min(1, 'Required'),
-          teamId: z.null().default(null),
-        }),
+    email: z
+      .string()
+      .min(1, 'auth:errors.emailRequired')
+      .email('auth:errors.emailInvalid')
+      .refine(
+        (value) => value.toLowerCase().endsWith('@ejust.edu.eg'),
+        'auth:errors.universityEmail',
       ),
-  );
+    studentId: z.string().min(1, 'auth:errors.studentIdRequired'),
+    password: z.string().min(8, 'auth:errors.passwordMin'),
+    passwordConfirmation: z.string().min(1, 'auth:errors.passwordConfirmation'),
+    language_preference: z.enum(['en', 'ar']),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: 'auth:errors.passwordMismatch',
+    path: ['passwordConfirmation'],
+  });
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 
-const registerWithEmailAndPassword = (
+export type RegisterResult = { kind: 'pending-verification'; email: string };
+
+const registerWithEmailAndPassword = async (
   data: RegisterInput,
-): Promise<AuthResponse> => {
-  return api.post('/auth/register', data);
+): Promise<RegisterResult> => {
+  await api.post('/register', {
+    email: data.email,
+    password: data.password,
+    password_confirmation: data.passwordConfirmation,
+    student_id: data.studentId,
+    language_preference: data.language_preference satisfies LanguagePreference,
+  });
+  return { kind: 'pending-verification', email: data.email };
+};
+
+export const useRegister = () =>
+  useMutation({ mutationFn: registerWithEmailAndPassword });
+
+const logout = async (): Promise<void> => {
+  try {
+    await api.post('/logout');
+  } finally {
+    tokenStorage.clear();
+  }
 };
 
 const authConfig = {
   userFn: getUser,
-  loginFn: async (data: LoginInput) => {
-    const response = await loginWithEmailAndPassword(data);
-    return response.user;
-  },
-  registerFn: async (data: RegisterInput) => {
-    const response = await registerWithEmailAndPassword(data);
-    return response.user;
-  },
+  loginFn: loginWithEmailAndPassword,
   logoutFn: logout,
+  registerFn: registerWithEmailAndPassword as unknown as (
+    data: RegisterInput,
+  ) => Promise<User>,
 };
 
-export const { useUser, useLogin, useLogout, useRegister, AuthLoader } =
+export const { useUser, useLogin, useLogout, AuthLoader } =
   configureAuth(authConfig);
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -81,7 +130,10 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (!user.data) {
     return (
-      <Navigate to={paths.auth.login.getHref(location.pathname)} replace />
+      <Navigate
+        to={paths.auth.login.getHref(`${location.pathname}${location.search}`)}
+        replace
+      />
     );
   }
 

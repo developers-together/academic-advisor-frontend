@@ -1,0 +1,320 @@
+export type UserRole = 'student' | 'advisor' | 'dean' | 'vp' | 'admin';
+
+export type LanguagePreference = 'en' | 'ar';
+
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+  language_preference: LanguagePreference | null;
+  student_id: string | null;
+  advisor_id: number | null;
+  email_verified_at: string | null;
+  pending_admin_at: string | null;
+  suspended_at: string | null;
+  faculty: string | null;
+};
+
+export type UserSummary = { id: number; name: string };
+
+export type StudentSummary = {
+  id: number;
+  name: string;
+  student_id: string | null;
+};
+
+export type PlanStatus =
+  | 'draft'
+  | 'submitted'
+  | 'under_review'
+  | 'returned'
+  | 'approved'
+  | 'expired'
+  | 'closed'
+  | 'withdrawn'
+  | 'discarded';
+
+export type PlannedCourse = {
+  course_code: string;
+  group: string;
+  section: string;
+  reason: string | null;
+};
+
+export type Plan = {
+  id: number;
+  status: PlanStatus;
+  term_code: string;
+  summary: string | null;
+  courses: PlannedCourse[];
+  total_credit_hours: number;
+  warnings: string[];
+  submitted_at: string | null;
+  decided_at: string | null;
+  return_reason: string | null;
+};
+
+export type PlanComment = {
+  id: number;
+  body: string;
+  author: UserSummary;
+  created_at: string;
+};
+
+export type PlanGoal = 'maintain' | 'improve' | 'excel';
+
+export type PlanMessageRole = 'user' | 'assistant';
+
+export type PlanConversationMessage = {
+  id: number;
+  role: PlanMessageRole;
+  content: string;
+  created_at: string;
+};
+
+export type GoalSuggestions = {
+  maintain: string;
+  improve: string;
+  excel: string;
+};
+
+export type PlanConversation = {
+  id: number;
+  goal: PlanGoal;
+  title: string | null;
+  submission_confirmed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  messages?: PlanConversationMessage[];
+  goal_suggestions?: GoalSuggestions;
+};
+
+export type AcademicRecord = {
+  cgpa: number | null;
+  curriculum_year_level: number | null;
+  remaining_requirements: string | null;
+  history: CourseAttempt[];
+  current_enrollments: CurrentEnrollment[];
+  prerequisite_map: PrerequisiteMapEntry[];
+  last_synced_at: string | null;
+  staleness: Staleness;
+};
+
+export type CourseAttempt = {
+  course_code: string;
+  title: string | null;
+  term_code: string;
+  grade: string;
+};
+
+export type CurrentEnrollment = {
+  course_code: string;
+  title: string | null;
+  group: string;
+  section: string;
+};
+
+export type PrerequisiteMapState =
+  'completed' | 'planned' | 'eligible' | 'locked';
+
+export type PrerequisiteMapEntry = {
+  course_code: string;
+  title: string | null;
+  state: PrerequisiteMapState;
+  prerequisites: string[];
+};
+
+export type Staleness = {
+  identity: boolean;
+  academic_record: boolean;
+  course_catalog: boolean;
+};
+
+export type AdvisorProfile = {
+  advisor: UserSummary;
+  availability_window: { rows: AvailabilityWindowRow[] };
+};
+
+export type AvailabilityWindowRow = {
+  day: string;
+  from: string;
+  to: string;
+};
+
+export type AvailabilityWindow = {
+  rows: AvailabilityWindowRow[];
+  is_default: boolean;
+};
+
+export type AdvisorQueueItem = {
+  id: number;
+  student: StudentSummary;
+  status: PlanStatus;
+  term_code: string;
+  submitted_at: string | null;
+  is_aging: boolean;
+};
+
+export type OrgUnit = {
+  code: string;
+  name_en: string | null;
+  name_ar: string | null;
+};
+
+export type AdvisorCaseloadStudent = {
+  id: number;
+  name: string;
+  student_id: string | null;
+  sis_email: string;
+  faculty: OrgUnit | null;
+  school: OrgUnit | null;
+  department: OrgUnit | null;
+  curriculum_year_level: number | null;
+  plan_state: PlanStatus | null;
+  submitted_at: string | null;
+  is_aging: boolean;
+  has_unmet_meeting: boolean;
+  cgpa: number | null;
+};
+
+export type VisitRequestStatus = 'proposed' | 'done';
+
+export type VisitRequestSlot = {
+  id: number;
+  starts_at: string;
+  ends_at: string;
+};
+
+export type VisitRequest = {
+  id: number;
+  status: VisitRequestStatus;
+  term_code: string;
+  initiator_id: number;
+  student?: StudentSummary;
+  slots: VisitRequestSlot[];
+  created_at: string;
+};
+
+export type GovernanceLevel =
+  'university' | 'faculty' | 'school' | 'department';
+
+export type GovernanceFunnel = {
+  draft: number;
+  submitted: number;
+  under_review: number;
+  returned: number;
+  approved: number;
+  expired: number;
+  closed: number;
+  withdrawn: number;
+  discarded: number;
+};
+
+export type GovernanceMetrics = {
+  students: number;
+  caseload: number;
+  approved: number;
+  completion_rate: number | null;
+  completion_is_final: boolean;
+  median_decision_hours: number | null;
+  aging_count: number;
+  funnel: GovernanceFunnel;
+};
+
+export type GovernanceNode = {
+  level: GovernanceLevel;
+  code: string | null;
+  name_en: string | null;
+  name_ar: string | null;
+  term_code: string | null;
+  metrics: GovernanceMetrics;
+  children: GovernanceNode[];
+};
+
+export type UniversityRule = {
+  id: number;
+  title_en: string;
+  title_ar: string;
+  body_en: string;
+  body_ar: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NotificationSlug =
+  | 'plan_returned'
+  | 'plan_approved'
+  | 'advisor_changed'
+  | 'caseload_student_removed'
+  | 'caseload_student_added'
+  | 'window_opened'
+  | 'window_deadline_nearing'
+  | 'visit_requested'
+  | 'visit_slots_provided';
+
+export type DeepLinkScreen = 'plan' | 'student' | 'advisor' | 'visit';
+
+export type DeepLink = {
+  screen: DeepLinkScreen;
+  plan_id?: number;
+  visit_request_id?: number;
+  student_id?: number;
+  term_code?: string;
+};
+
+export type AppNotification = {
+  id: string;
+  slug: NotificationSlug | null;
+  title: string | null;
+  body: string | null;
+  deep_link: DeepLink | string | null;
+  read_at: string | null;
+  created_at: string;
+};
+
+export type TurnFrame =
+  | { event: 'token'; turnId: string; seq: number; token: string }
+  | {
+      event: 'tool.applied';
+      turnId: string;
+      seq: number;
+      tool: string;
+      payload: unknown;
+    }
+  | { event: 'submit.suggested'; turnId: string; seq: number }
+  | {
+      event: 'submit.result';
+      turnId: string;
+      seq: number;
+      status: 'submitted' | 'blocked';
+      plan_id?: number;
+      errors?: Record<string, string[]>;
+    }
+  | {
+      event: 'turn.completed';
+      turnId: string;
+      seq: number;
+      title: string | null;
+    }
+  | {
+      event: 'error';
+      turnId: string;
+      seq: number;
+      code: 'turn_failed' | 'turn_timeout';
+      retryable: boolean;
+      key: string;
+      message: string;
+    };
+
+export type SubmitArmedFrame = {
+  conversation_id: number;
+  submission_confirmed_at: string | null;
+};
+
+export type ImportSummary = {
+  assigned: number;
+  unchanged: number;
+};
+
+export type QueueAgingThreshold = { days: number };

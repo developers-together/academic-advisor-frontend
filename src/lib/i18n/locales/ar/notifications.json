@@ -1,0 +1,20 @@
+{
+  "title": "الإشعارات",
+  "markAllRead": "تعليم الكل كمقروء",
+  "unread": "غير مقروء",
+  "empty": {
+    "title": "لا إشعارات بعد.",
+    "body": "ستظهر هنا تحديثات الخطة والزيارات."
+  },
+  "slugs": {
+    "plan_returned": "أُرجعت الخطة",
+    "plan_approved": "اعتُمدت الخطة",
+    "advisor_changed": "تغيّر المرشد الأكاديمي",
+    "caseload_student_removed": "أُخرج طالب من القائمة",
+    "caseload_student_added": "أُضيف طالب إلى القائمة",
+    "window_opened": "فُتحت نافذة التسجيل",
+    "window_deadline_nearing": "نافذة التسجيل تاقت للإغلاق",
+    "visit_requested": "طُلب اجتماع",
+    "visit_slots_provided": "اقُترحت أوقات للزيارة"
+  }
+}

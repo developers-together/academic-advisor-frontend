@@ -1,38 +1,55 @@
 import { factory, primaryKey } from '@mswjs/data';
-import { nanoid } from 'nanoid';
+
+const nextId = (() => {
+  let current = 100;
+  return () => ++current;
+})();
+
+const nullableString = () => null as unknown as string;
 
 const models = {
   user: {
-    id: primaryKey(nanoid),
-    firstName: String,
-    lastName: String,
+    id: primaryKey(() => nextId()),
+    name: String,
     email: String,
     password: String,
-    teamId: String,
     role: String,
-    bio: String,
+    language_preference: nullableString,
+    student_id: nullableString,
+    advisor_id: Number,
+    email_verified_at: nullableString,
+    pending_admin_at: nullableString,
+    suspended_at: nullableString,
+    faculty: nullableString,
     createdAt: Date.now,
   },
-  team: {
-    id: primaryKey(nanoid),
-    name: String,
-    description: String,
+  plan: {
+    id: primaryKey(() => nextId()),
+    userId: Number,
+    status: String,
+    term_code: String,
+    summary: nullableString,
+
+    courses: String,
+    warnings: String,
+    total_credit_hours: Number,
+    submitted_at: nullableString,
+    decided_at: nullableString,
+    return_reason: nullableString,
     createdAt: Date.now,
   },
-  discussion: {
-    id: primaryKey(nanoid),
-    title: String,
-    body: String,
-    authorId: String,
-    teamId: String,
-    createdAt: Date.now,
-  },
-  comment: {
-    id: primaryKey(nanoid),
-    body: String,
-    authorId: String,
-    discussionId: String,
-    createdAt: Date.now,
+  academicRecord: {
+    userId: primaryKey(() => nextId()),
+    cgpa: Number,
+    curriculum_year_level: Number,
+    remaining_requirements: nullableString,
+
+    history: String,
+    current_enrollments: String,
+    prerequisite_map: String,
+    last_synced_at: nullableString,
+
+    staleness: String,
   },
 };
 
@@ -43,7 +60,6 @@ export type Model = keyof typeof models;
 const dbFilePath = 'mocked-db.json';
 
 export const loadDb = async () => {
-  // If we are running in a Node.js environment
   if (typeof window === 'undefined') {
     const { readFile, writeFile } = await import('fs/promises');
     try {
@@ -60,19 +76,16 @@ export const loadDb = async () => {
       }
     }
   }
-  // If we are running in a browser environment
   return Object.assign(
     JSON.parse(window.localStorage.getItem('msw-db') || '{}'),
   );
 };
 
 export const storeDb = async (data: string) => {
-  // If we are running in a Node.js environment
   if (typeof window === 'undefined') {
     const { writeFile } = await import('fs/promises');
     await writeFile(dbFilePath, data);
   } else {
-    // If we are running in a browser environment
     window.localStorage.setItem('msw-db', data);
   }
 };
@@ -87,9 +100,9 @@ export const persistDb = async (model: Model) => {
 export const initializeDb = async () => {
   const database = await loadDb();
   Object.entries(db).forEach(([key, model]) => {
-    const dataEntres = database[key];
-    if (dataEntres) {
-      dataEntres?.forEach((entry: Record<string, any>) => {
+    const dataEntries = database[key];
+    if (dataEntries) {
+      dataEntries?.forEach((entry: Record<string, any>) => {
         model.create(entry);
       });
     }

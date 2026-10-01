@@ -4,34 +4,55 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Cookies from 'js-cookie';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 
 import { AppProvider } from '@/app/provider';
 
-import {
-  createDiscussion as generateDiscussion,
-  createUser as generateUser,
-} from './data-generators';
 import { db } from './mocks/db';
-import { AUTH_COOKIE, authenticate, hash } from './mocks/utils';
+import { tokenFor } from './mocks/mock-auth';
+import { hash } from './mocks/utils';
 
-export const createUser = async (userProperties?: any) => {
-  const user = generateUser(userProperties) as any;
-  await db.user.create({ ...user, password: hash(user.password) });
+export type MockUser = {
+  id?: number;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  student_id?: string | null;
+  advisor_id?: number | null;
+  email_verified_at?: string | null;
+  faculty?: string | null;
+};
+
+export const createUser = async (
+  userProperties?: Partial<MockUser>,
+): Promise<MockUser> => {
+  const user: MockUser = {
+    name: 'Sara Student',
+    email: `sara-${Math.random().toString(36).slice(2)}@ejust.edu.eg`,
+    password: 'password123',
+    role: 'student',
+    email_verified_at: '2026-09-01T09:00:00.000Z',
+    ...userProperties,
+  };
+  const created = db.user.create({
+    ...(user.id !== undefined ? { id: user.id } : {}),
+    name: user.name,
+    email: user.email.toLowerCase(),
+    password: hash(user.password),
+    role: user.role,
+    language_preference: 'en',
+    student_id: user.student_id ?? `302${Math.floor(Math.random() * 1000000)}`,
+    advisor_id: user.advisor_id ?? undefined,
+    email_verified_at: user.email_verified_at ?? undefined,
+    faculty: user.faculty ?? undefined,
+  });
+  return { ...user, id: created.id as number };
+};
+
+export const loginAsUser = async (user: MockUser) => {
+  window.localStorage.setItem('advaisor.token', tokenFor(user.id as number));
   return user;
-};
-
-export const createDiscussion = async (discussionProperties?: any) => {
-  const discussion = generateDiscussion(discussionProperties);
-  const res = await db.discussion.create(discussion);
-  return res;
-};
-
-export const loginAsUser = async (user: any) => {
-  const authUser = await authenticate(user);
-  Cookies.set(AUTH_COOKIE, authUser.jwt);
-  return authUser;
 };
 
 export const waitForLoadingToFinish = () =>
@@ -43,22 +64,26 @@ export const waitForLoadingToFinish = () =>
     { timeout: 4000 },
   );
 
-const initializeUser = async (user: any) => {
+const initializeUser = async (user: MockUser | null | undefined) => {
   if (typeof user === 'undefined') {
     const newUser = await createUser();
     return loginAsUser(newUser);
-  } else if (user) {
-    return loginAsUser(user);
-  } else {
-    return null;
   }
+  if (user) {
+    return loginAsUser(user);
+  }
+  return null;
 };
 
 export const renderApp = async (
-  ui: any,
-  { user, url = '/', path = '/', ...renderOptions }: Record<string, any> = {},
+  ui: React.ReactElement,
+  {
+    user,
+    url = '/',
+    path = '/',
+    ...renderOptions
+  }: { user?: MockUser | null; url?: string; path?: string } = {},
 ) => {
-  // if you want to render the app unauthenticated then pass "null" as the user
   const initializedUser = await initializeUser(user);
 
   const router = createMemoryRouter(

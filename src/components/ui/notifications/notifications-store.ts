@@ -8,6 +8,8 @@ export type Notification = {
   message?: string;
 };
 
+const MAX_STACK = 3;
+
 type NotificationsStore = {
   notifications: Notification[];
   addNotification: (notification: Omit<Notification, 'id'>) => void;
@@ -19,7 +21,9 @@ export const useNotifications = create<NotificationsStore>((set) => ({
   addNotification: (notification) =>
     set((state) => ({
       notifications: [
-        ...state.notifications,
+        ...state.notifications.slice(
+          Math.max(0, state.notifications.length - (MAX_STACK - 1)),
+        ),
         { id: nanoid(), ...notification },
       ],
     })),

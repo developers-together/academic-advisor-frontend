@@ -1,0 +1,153 @@
+{
+  "termContext": "Term {{term}}",
+  "noAdvisor": {
+    "banner": "You have no assigned advisor yet. The administration office assigns advisors.",
+    "builderEntry": "Plan building opens once an advisor is assigned to you."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "cta": {
+      "draft": "Resume in builder",
+      "submitted": "View plan",
+      "under_review": "View plan",
+      "returned": "Review feedback",
+      "discarded": "Start a new plan"
+    },
+    "context": {
+      "draft": "Not submitted yet.",
+      "submitted": "Waiting for {{advisor}}.",
+      "submittedFallback": "Waiting for your advisor.",
+      "under_review": "Your advisor is reviewing.",
+      "returned": "Your advisor returned your plan with comments.",
+      "approved": "Approved. Register your courses in the SIS.",
+      "expired": "The registration window closed before your plan was approved.",
+      "closed": "This term's plan cycle is closed.",
+      "withdrawn": "Your plan was withdrawn for this term.",
+      "discarded": "Your previous plan was discarded."
+    },
+    "empty": {
+      "title": "No plan for this term yet.",
+      "body": "Start in the Plan Builder.",
+      "action": "Start your plan"
+    },
+    "courseCount_one": "{{count}} course planned",
+    "courseCount_other": "{{count}} courses planned"
+  },
+  "myPlan": {
+    "title": "My Plan",
+    "returnBannerTitle": "Your advisor returned your plan",
+    "withdraw": "Withdraw plan",
+    "discard": "Discard plan",
+    "withdrawConfirm": {
+      "title": "Withdraw plan?",
+      "body": "This plan is withdrawn for {{term}}. You cannot submit another plan this term.",
+      "confirm": "Withdraw plan"
+    },
+    "discardConfirm": {
+      "title": "Discard plan?",
+      "body": "This plan is discarded. You can start a new plan for {{term}}.",
+      "confirm": "Discard plan"
+    },
+    "seen": "Seen",
+    "seenConfirm": {
+      "title": "Mark feedback as seen?",
+      "body": "This marks the feedback as read and unlocks editing for this plan.",
+      "confirm": "Seen"
+    },
+    "empty": {
+      "title": "No plan for this term yet.",
+      "body": "Start in the Plan Builder.",
+      "action": "Start your plan"
+    },
+    "comments": {
+      "title": "Advisor comments",
+      "empty": "No comments yet."
+    },
+    "submitFailed": {
+      "title": "Your plan was not submitted",
+      "body": "The checks below block submission. Edit in the Plan Builder to fix these.",
+      "editAction": "Edit in the Plan Builder"
+    }
+  },
+  "builder": {
+    "title": "Plan Builder",
+    "addPlaceholder": "Add a course",
+    "addSearchEmpty": "No courses in your course map match \"{{query}}\".",
+    "mapState": {
+      "completed": "Completed",
+      "planned": "Planned",
+      "eligible": "Eligible",
+      "locked": "Locked"
+    },
+    "line": {
+      "group": "Group",
+      "section": "Section",
+      "remove": "Remove {{code}}",
+      "prerequisites": "Prerequisites",
+      "prereqCaption": "The check result shows after submit.",
+      "aiNote": "AI note"
+    },
+    "emptyPlan": {
+      "title": "Your plan is empty.",
+      "body": "Add your first course."
+    },
+    "notDraft": "Only a draft can be edited. This plan is {{state}}.",
+    "returnedGate": "Review your feedback first.",
+    "validation": {
+      "helper": "Your plan is checked when you submit.",
+      "title": "Validation",
+      "issuesCount": "{{count}} issue to resolve",
+      "issuesCountOther": "{{count}} issues to resolve",
+      "submitBlocked": "Resolve {{count}} issues to submit.",
+      "jumpToLine": "Jump to line",
+      "advisoryTitle": "Advisory notes"
+    },
+    "submit": "Submit plan",
+    "submitPending": "Submitting",
+    "discard": "Discard plan",
+    "startPlan": "Start your plan",
+    "startPending": "Creating"
+  },
+  "profile": {
+    "title": "Profile",
+    "identity": {
+      "studentId": "Student ID",
+      "email": "Email",
+      "faculty": "Faculty",
+      "year": "Year"
+    },
+    "cgpa": {
+      "label": "CGPA",
+      "context": "On a 4.0 scale, from the SIS"
+    },
+    "remaining": {
+      "label": "Remaining requirements",
+      "context": "As reported by the SIS"
+    },
+    "advisor": {
+      "title": "Your advisor",
+      "none": "You have no assigned advisor yet. The administration office assigns advisors.",
+      "hours": "Office hours"
+    },
+    "prereqMap": {
+      "title": "Course map",
+      "empty": "Your course map is not available yet.",
+      "listTitle": "Course map, list view",
+      "state": {
+        "completed": "Completed",
+        "planned": "Planned",
+        "eligible": "Eligible",
+        "locked": "Locked"
+      }
+    },
+    "enrollments": {
+      "title": "Current enrollments",
+      "empty": "No current enrollments."
+    },
+    "history": {
+      "title": "Course history",
+      "empty": "No finished courses yet.",
+      "grade": "Grade"
+    }
+  }
+}

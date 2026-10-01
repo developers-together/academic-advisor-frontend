@@ -1,0 +1,122 @@
+{
+  "app": {
+    "name": "أدفَايزور",
+    "tagline": "التخطيط الأكاديمي بمستشار ذكي"
+  },
+  "roles": {
+    "student": "طالب",
+    "advisor": "مرشد أكاديمي",
+    "dean": "عميد",
+    "vp": "نائب الرئيس",
+    "admin": "مسؤول النظام"
+  },
+  "nav": {
+    "dashboard": "لوحتي",
+    "myPlan": "خطتي",
+    "builder": "منشئ الخطة",
+    "profile": "ملفي",
+    "chat": "المحادثة الذكية",
+    "notifications": "الإشعارات",
+    "queue": "قائمة المراجعة",
+    "students": "مستكشف الطلاب",
+    "meetings": "الاجتماعات",
+    "hours": "الساعات المكتبية",
+    "overview": "نظرة عامة",
+    "scorecard": "لوحة النتائج",
+    "drilldown": "التنقل للأسفل",
+    "accounts": "الحسابات",
+    "assignments": "الإشراف الأكاديمي",
+    "rules": "القواعد",
+    "settings": "الإعدادات"
+  },
+  "topbar": {
+    "language": "تغيير اللغة",
+    "theme": {
+      "label": "تغيير المظهر",
+      "light": "التبديل إلى المظهر الفاتح",
+      "dark": "التبديل إلى المظهر الداكن",
+      "system": "المظهر يتبع إعدادات جهازك"
+    },
+    "bell": "الإشعارات",
+    "unreadCount": "{{count}} إشعارات غير مقروءة",
+    "account": "قائمة الحساب",
+    "signOut": "تسجيل الخروج",
+    "signingOut": "جارٍ تسجيل الخروج"
+  },
+  "actions": {
+    "retry": "إعادة المحاولة",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "clear": "مسح",
+    "clearSearch": "مسح البحث",
+    "back": "رجوع",
+    "search": "بحث",
+    "moreActions": "إجراءات أخرى",
+    "loading": "جارٍ التحميل"
+  },
+  "permissionDenied": {
+    "title": "هذه المنطقة مخصصة لـ{{audience}}.",
+    "back": "انتقل إلى لوحتك"
+  },
+  "errors": {
+    "loadFailed": "تعذر تحميل هذا المحتوى.",
+    "loadFailedBody": "فشل الطلب أو انقطع الاتصال. أعد المحاولة بعد قليل.",
+    "forbidden": "لا تملك صلاحية الوصول إلى هذا المحتوى.",
+    "notFoundTitle": "لم نعثر على هذه الصفحة.",
+    "notFoundBody": "قد يكون العنوان خاطئًا أو انتقلت الصفحة.",
+    "notFoundAction": "انتقل إلى لوحتك",
+    "conflict": "هذا الإجراء لم يعد متاحًا. تم تحديث العرض لديك.",
+    "tooManyAttempts": "محاولات كثيرة جدًا. أعد المحاولة بعد دقيقة.",
+    "sessionEnded": "انتهت جلستك. سجّل الدخول مرة أخرى للمتابعة.",
+    "requestRef": "مرجع الطلب: {{id}}",
+    "sisUnavailable": "خدمة بيانات الجامعة غير متاحة.",
+    "sisUnavailableBody": "قد تكون بياناتك قديمة. أعد المحاولة بعد قليل."
+  },
+  "planStates": {
+    "srLabel": "حالة الخطة: {{state}}",
+    "draft": "مسودة",
+    "submitted": "مقدَّمة",
+    "under_review": "تحت المراجعة",
+    "returned": "مُرتجَعة",
+    "approved": "معتمَدة",
+    "expired": "منتهية",
+    "closed": "مغلقة",
+    "withdrawn": "مسحوبة",
+    "discarded": "ملغاة"
+  },
+  "badges": {
+    "aging": "متأخرة",
+    "meetingNotMet": "اجتماع غير محقق",
+    "assigned": "مسند",
+    "unassigned": "غير مسند",
+    "new": "جديد",
+    "advisory": "استشاري",
+    "active": "نشط",
+    "suspended": "موقوف",
+    "bound": "مرتبط",
+    "bindingPending": "الربط قيد الانتظار",
+    "bindingFailed": "فشل التحقق من المعرّف",
+    "proposed": "مقترح",
+    "done": "منتهٍ",
+    "sis": "نظام معلومات الطلاب",
+    "platform": "المنصة",
+    "default": "افتراضي"
+  },
+  "table": {
+    "pageSize": "عدد الصفوف",
+    "all": "الكل",
+    "previous": "الصفحة السابقة",
+    "next": "الصفحة التالية",
+    "empty": "لا توجد صفوف للعرض."
+  },
+  "emptyStates": {
+    "title": "لا يوجد شيء هنا بعد",
+    "generic": "سيظهر المحتوى هنا عندما يتوفر."
+  },
+  "confirm": {
+    "cancel": "إلغاء"
+  },
+  "skipToContent": "تجاوز إلى المحتوى"
+}

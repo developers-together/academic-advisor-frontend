@@ -5,15 +5,22 @@ export const paths = {
   },
 
   auth: {
-    register: {
-      path: '/auth/register',
-      getHref: (redirectTo?: string | null | undefined) =>
-        `/auth/register${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`,
-    },
     login: {
-      path: '/auth/login',
+      path: '/login',
       getHref: (redirectTo?: string | null | undefined) =>
-        `/auth/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`,
+        `/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`,
+    },
+    signup: {
+      path: '/signup',
+      getHref: () => '/signup',
+    },
+    forgotPassword: {
+      path: '/forgot-password',
+      getHref: () => '/forgot-password',
+    },
+    verifyEmail: {
+      path: '/verify-email/:id/:hash',
+      getHref: (id: string, hash: string) => `/verify-email/${id}/${hash}`,
     },
   },
 
@@ -22,25 +29,97 @@ export const paths = {
       path: '/app',
       getHref: () => '/app',
     },
-    dashboard: {
-      path: '',
-      getHref: () => '/app',
+    plan: {
+      path: 'plan',
+      getHref: () => '/app/plan',
     },
-    discussions: {
-      path: 'discussions',
-      getHref: () => '/app/discussions',
-    },
-    discussion: {
-      path: 'discussions/:discussionId',
-      getHref: (id: string) => `/app/discussions/${id}`,
-    },
-    users: {
-      path: 'users',
-      getHref: () => '/app/users',
+    builder: {
+      path: 'builder',
+      getHref: () => '/app/builder',
     },
     profile: {
       path: 'profile',
       getHref: () => '/app/profile',
+    },
+    chat: {
+      path: 'chat',
+      getHref: () => '/app/chat',
+    },
+    conversation: {
+      path: 'chat/:conversationId',
+      getHref: (id: string | number) => `/app/chat/${id}`,
+    },
+    notifications: {
+      path: 'notifications',
+      getHref: () => '/app/notifications',
+    },
+  },
+
+  advisor: {
+    root: {
+      path: '/advisor',
+      getHref: () => '/advisor',
+    },
+    students: {
+      path: 'students',
+      getHref: () => '/advisor/students',
+    },
+    meetings: {
+      path: 'meetings',
+      getHref: () => '/advisor/meetings',
+    },
+    hours: {
+      path: 'hours',
+      getHref: () => '/advisor/hours',
+    },
+    notifications: {
+      path: 'notifications',
+      getHref: () => '/advisor/notifications',
+    },
+  },
+
+  dean: {
+    root: {
+      path: '/dean',
+      getHref: () => '/dean',
+    },
+    notifications: {
+      path: 'notifications',
+      getHref: () => '/dean/notifications',
+    },
+  },
+
+  vp: {
+    root: {
+      path: '/vp',
+      getHref: () => '/vp',
+    },
+    drilldown: {
+      path: 'drilldown',
+      getHref: (node?: string) => `/vp/drilldown${node ? `?node=${node}` : ''}`,
+    },
+  },
+
+  admin: {
+    root: {
+      path: '/admin',
+      getHref: () => '/admin/students',
+    },
+    students: {
+      path: 'students',
+      getHref: () => '/admin/students',
+    },
+    assignments: {
+      path: 'assignments',
+      getHref: () => '/admin/assignments',
+    },
+    rules: {
+      path: 'rules',
+      getHref: () => '/admin/rules',
+    },
+    settings: {
+      path: 'settings',
+      getHref: () => '/admin/settings',
     },
   },
 } as const;

@@ -1,6 +1,6 @@
 # Advaisor design system
 
-> **Status:** v1.0, 2026-09-30. This document is the UI/UX source of truth for the Advaisor frontend.
+> **Status:** v1.1, 2026-10-01. This document is the UI/UX source of truth for the Advaisor frontend.
 > **Basis:** docs/product/01-PRODUCT-FOUNDATION.md (decisions Q1–Q68), 03-DESIGN-PLAN.md (D0 scope), a design-skill audit of 19 vendored skills, and the bulletproof-react scaffold this repo ships with.
 > **Audience:** AI agents and engineers building this frontend. Read sections 0, 1, and 3 before writing any UI code.
 > **Maintenance:** rules in this file have IDs (`DS-*`, `PR-*`, `DP-*`). Change tokens or components only through the governance process in section 11.
@@ -66,7 +66,7 @@ A screen, component, or flow is done when all of the following hold:
 
 ### 1.1 What Advaisor is
 
-Advaisor is the university's academic plan platform with an AI advisor inside it (foundation §0). A student builds one official course-registration plan per semester, by hand or from an AI draft. The platform validates the plan against deterministic academic rules. The assigned advisor approves it or returns it with a mandatory written reason. The student registers the approved plan manually in the SIS, and the platform verifies the registration against SIS. Deans and the VP see read-only dashboards. AI helps students exclusively; humans own every decision.
+Advaisor is the university's academic plan platform with an AI advisor inside it (foundation §0). A student builds one official course-registration plan per semester, by hand or with the AI advisor editing that same plan in place; the AI produces no separate draft. The server validates the plan at the submit gate and again at approval. The assigned advisor approves it or returns it with a mandatory written reason. The student registers the approved plan manually in the SIS; the platform never registers anyone. Deans and the VP see read-only dashboards. AI helps students exclusively; humans own every decision.
 
 Customer: E-JUST, one university, ~7 faculties, 6–8K students.
 
@@ -75,7 +75,7 @@ Customer: E-JUST, one university, ~7 faculties, 6–8K students.
 | Role | Job | Authority | Design consequence |
 |---|---|---|---|
 | Student | Build one official plan, respond to feedback, register in SIS | Owns their plan; nothing is sent without their approval | Phone-first, spacious, AI chat in rail |
-| Advisor | Turn the queue into decisions; be available when needed | Approve, Return (mandatory reason), Request visit. Never edits a plan (Q33) | Desktop-first, dense queue |
+| Advisor | Turn the queue into decisions; be available when needed | Approve, Return (mandatory reason), Request meeting. Never edits a plan (Q33) | Desktop-first, dense queue |
 | Dean | Know whether their department's advising pipeline is healthy | Read-only, own department only; no messaging (Q39, Q54) | Aggregate screens only, no student PII surface |
 | VP | Compare faculties and departments at a glance | Read-only, university-wide, aggregates only, never individual students (Q63) | Scorecard + drill-down only |
 | Admin | Keep the machine running | Accounts, roles, caseloads, org structure, rules fallback. Sees no analytics (Q55) | Forms and tables, zero charts |
@@ -84,7 +84,7 @@ Customer: E-JUST, one university, ~7 faculties, 6–8K students.
 
 ### 1.3 Plan lifecycle
 
-Draft → Submitted → Under Review → Returned (locked until the student presses Seen) → Approved (locked) → Registration Confirmed → Closed. Terminal side states: Expired, Verification Failed, Withdrawn. Twelve transitions total (foundation §7.1). Section 4.2 defines the visual system for these states.
+Draft → Submitted → Under Review → Returned (locked until the student presses Seen) → Approved (locked) → Closed. Terminal side states: Expired, Withdrawn. Eight settled states in all; the contract adds one more terminal value, discarded, an operation on a draft or returned plan rather than a stage a student waits in. Transitions live in foundation §7.1. Section 4.2 defines the visual system for these states.
 
 ### 1.4 Product rules
 
@@ -104,12 +104,12 @@ These rules come from grilling decisions Q1–Q68. They override any design pref
 | PR-10 | No staff-facing AI and no predictions. | Q44, Q64 |
 | PR-11 | No career-path recommender. | Q64 |
 | PR-12 | Hard block: plans violating validation rules V1–V6 cannot be submitted. | Q65 |
-| PR-13 | Dean scoreboard metrics are locked: completion %, median decision time, aging (3+ days undecided). | Q40 |
+| PR-13 | Dean scoreboard metrics are locked: completion %, median decision time, aging (undecided past the Admin-configured threshold; the UI reads the server's `is_aging` flag and never shows the threshold value). | Q40 |
 | PR-14 | Student record is minimal: CGPA, remaining credits, prereq map, history. No transcript, no grade pages. | Q31, Q58 |
 
 ### 1.5 Validation rules behind V1–V6
 
-The rule engine IDs the UI must surface through validation (never as labels, see PR-01): `REG-001` credit load 12–18, `PROB-001` standing limit (CGPA below 2.00 caps load at 12), `REG-002` attempted-final prerequisites, `REPEAT-001`/`REPEAT-002` repeat rules, `SUMM-001` summer cap 6 credits, `PROG-001` program rules. `GRAD-001` is display-only.
+The backend rule engine owns these checks; the UI renders their results as server messages (4.4), never as rule IDs and never computed client-side (never as labels, see PR-01): `REG-001` credit load 12–18, `PROB-001` standing limit (CGPA below 2.00 caps load at 12), `REG-002` attempted-final prerequisites, `REPEAT-001`/`REPEAT-002` repeat rules, `SUMM-001` summer cap 6 credits, `PROG-001` program rules. `GRAD-001` is display-only.
 
 ---
 
@@ -196,13 +196,11 @@ The plan lifecycle has reserved colors (03-DESIGN-PLAN). These are the most repe
 | Under Review | `#FFFBEB` / `#92400E` / `#FDE68A` | `#451A03` / `#FCD34D` / `#92400E` | amber-500 |
 | Returned | `#FFF7ED` / `#9A3412` / `#FED7AA` | `#431407` / `#FDBA74` / `#9A3412` | orange-500 |
 | Approved | `#ECFDF5` / `#047857` / `#A7F3D0` | `#022C22` / `#6EE7B7` / `#047857` | emerald-500 |
-| Registration Confirmed | `#F0FDFA` / `#115E59` / `#99F6E4` | `#042F2E` / `#5EEAD4` / `#0F766E` | teal-500 |
-| Verification Failed | `#FEF2F2` / `#B91C1C` / `#FECACA` | `#450A0A` / `#FCA5A5` / `#B91C1C` | red-500 |
-| Expired | same as Failed, dashed border | same, dashed border | red-400 |
+| Expired | `state-failed` pair, dashed border | `state-failed` pair, dashed border | red-400 |
 | Closed | `#F8FAFC` / `#64748B` / `#E2E8F0` | `#1E293B` / `#94A3B8` / `#334155` | slate-400 |
 | Withdrawn | same as Closed | same as Closed | slate-400 |
 
-Tokens are named `state-<kebab-state>` with `-foreground` and `-border` variants (Appendix B). Expired renders with a dashed border to separate it from Verification Failed inside the red family.
+Tokens are named `state-<kebab-state>` with `-foreground` and `-border` variants (Appendix B). Expired renders with the `state-failed` pair plus a dashed border. Withdrawn renders with the `state-closed` pair. The contract's ninth value, discarded, is a terminal record state, not a lifecycle stage: it renders on the `state-closed` pair with its own label and a slate dot.
 
 **DS-C-09 (MUST):** plan-state colors appear only on `PlanStateChip`, banners about plan state, and the plan progress visuals. No other component may use them.
 
@@ -353,11 +351,13 @@ The state machine (foundation §7.1) and its visual contract:
 
 ```
 Draft → Submitted → Under Review → Returned ──(Seen)──→ (student edits) → Submitted
-                                  → Approved (locked) → Registration Confirmed → Closed
-any: → Expired, Verification Failed, Withdrawn
+                                  → Approved (locked) → Closed
+any: → Expired, Withdrawn
 ```
 
 Visual rules:
+
+- The contract's ninth value, discarded, is a terminal record state, not a stage: `PlanStateChip` renders it on the `state-closed` tokens with its own label and a slate dot. Withdrawn also renders `state-closed`; Expired renders `state-failed` with a dashed border.
 
 - **DS-ST-04 (MUST):** every plan surface (card, line, drawer, queue row) shows state via `PlanStateChip` (section 5.4) using the 3.4 tokens. Same state = same chip everywhere.
 - **DS-ST-05 (MUST):** locked states (Returned, Approved) render a lock icon inside the chip and disable their mutation affordances. Returned unlocks only through `SeenButton` (student presses Seen, comments become visible, editing reopens).
@@ -375,18 +375,18 @@ Visual rules:
 | error | Form errors inline under the field; page errors as `Banner` (destructive) with Retry; transient as toast. Never alert() | What happened + what to do: "Could not load your plan. Check your connection and retry." |
 | permission denied | Role-scoped navigation prevents most cases. Direct URL hits: calm panel with role reminder and a way back. Not an error aesthetic | "This area is for advisors. Go to your dashboard." |
 | stale SIS | `StaleDataBanner` above affected content: "Data as of {date, time}. Retry." Content stays visible, never blocks | Always timestamp the data |
-| window closed | `WindowClosedBanner` replaces the submit CTA area: registration window dates, SIS-only. Builder stays readable | "Registration is closed. Your approved plan waits for the next window." |
+| window closed | `WindowClosedBanner` replaces the submit CTA area: no dates exist in the contract, so copy stays date-free; it triggers only on the submit window 422, the window 503, or a window deep link. SIS-only. Builder stays readable | "Registration is closed. Your approved plan waits for the next window." |
 
 Edge states with dedicated designs (foundation §15): zero remaining credits, final-semester underload, no advisor assigned, SIS unreachable, empty AI chat, empty queue, empty caseload.
 
 ### 4.4 Validation and the hard block
 
-The builder validates live against V1–V6 (section 1.5). The validation UI reveals constraints; it never labels the student (PR-01).
+The client computes no validation rule. The server runs the checks (at submission and again at approval) and the UI renders their results: the four 422 keys (`allowance`, `map_membership`, `prerequisite_chain`, `window`) after a failed submit or approve, plus advisory plan warnings before it. The validation UI reveals constraints; it never labels the student (PR-01).
 
-**DS-ST-09 (MUST):** invalid plan lines show an icon + one-line message under the line (DS-W pattern), and the `ValidationPanel` lists all violations grouped by line.
-**DS-ST-10 (MUST):** the submit action is disabled while violations exist (hard block, PR-12), with helper text naming the count: "Resolve 2 issues to submit." The reason is always visible; never a silently disabled button.
+**DS-ST-09 (MUST):** server-returned violations show a message under their line (DS-W pattern), and the `ValidationPanel` lists the returned entries grouped by line.
+**DS-ST-10 (MUST):** the hard block sits at the submit gate (PR-12): the server rejects and the UI renders its results, with the count in the helper text: "Resolve 2 issues to submit." The client disables submit only while the plan is empty, a mutation is in flight, or returned errors stand; never for violations it cannot know. The reason is always visible; never a silently disabled button.
 **DS-ST-11 (MUST):** rule copy pattern: constraint + reason + path forward, in this order. The message must survive the no-label test: it may state limits ("Your current academic standing limits you to 12 credits"), never categories ("You are on probation").
-**DS-ST-12:** the panel is `aria-live="polite"`; adding an invalid line moves focus to its message on desktop.
+**DS-ST-12:** the panel is `aria-live="polite"`; a returned error moves focus to its message on desktop.
 
 ---
 
@@ -414,7 +414,7 @@ The builder validates live against V1–V6 (section 1.5). The validation UI reve
 | tabs, tooltip, banner, skeleton, empty-state, avatar, confirm-dialog | build | Candidate deps (@radix-ui/react-tabs, react-tooltip, react-switch) need approval per repo rules |
 | theme-toggle, language-toggle | build | Topbar controls; theme via Zustand store + `document.documentElement` class |
 | plan-state-chip, plan-card, plan-line, validation-panel | build | 5.4 |
-| comment-thread, seen-button, draft-plan-card | build | 5.4 |
+| comment-thread, seen-button, submit-suggestion-card | build | 5.4 |
 | prereq-map, slot-editor, slot-viewer, visit-request-card | build | 5.4 |
 | queue-table, review-drawer | build | 5.4 |
 | scoreboard-table, funnel-chart, faculty-scorecard, drilldown-table | build | 5.4 |
@@ -451,37 +451,37 @@ The builder validates live against V1–V6 (section 1.5). The validation UI reve
 
 Every domain component cites its foundation source. Copy is bilingual; states per section 4.
 
-**PlanStateChip** (foundation §14: "the single most repeated element") — dot + state label + lock icon when locked. Tokens from 3.4. Variants: chip (default), dot-only (dense tables), banner-size (page headers). SR text: "Plan status: {state}". All 10 states from 4.2.
+**PlanStateChip** (foundation §14: "the single most repeated element") — dot + state label + lock icon when locked. Tokens from 3.4. Variants: chip (default), dot-only (dense tables), banner-size (page headers). SR text: "Plan status: {state}". The 8 settled states plus the discarded terminal from 4.2.
 
-**PlanCard** (student dashboard, S1) — plan identity (term, program), PlanStateChip, progress line (X of Y credits planned), one primary CTA that depends on state (Draft: Resume; Returned: Review feedback; Approved: Register in SIS; none otherwise). States 4.3 all apply.
+**PlanCard** (student dashboard, S1) — plan identity (term, program), PlanStateChip, one course count line ("4 courses planned"; the contract supplies no credit totals, so no credit line), one primary CTA that depends on state (Draft: Resume in builder; Returned: Review feedback; none on terminal states). States 4.3 all apply.
 
-**PlanLine** (S2, S3) — course code (bidi-isolated), title, credits (tabular-nums), validity: check icon, or warning/error icon + one-line message (4.4). Dense variant for the builder.
+**PlanLine** (S2, S3) — course code (bidi-isolated), title joined from the academic-record prerequisite_map, group, section. No credits anywhere: the contract carries none. Server 422 results render the only validity marks (4.4); nothing is computed client-side. Dense variant for the builder.
 
-**ValidationPanel** (S3) — live results grouped by line, each entry: rule id (mono, e.g. `REG-001`), message (8 pattern), jump-to-line action. Header shows count + status. Submit gate lives next to it (DS-ST-10). aria-live polite.
+**ValidationPanel** (S3) — server validation results grouped by line, each entry: message (8 pattern), jump-to-line action. Header shows count + status. Pre-submit it shows one helper line: "Your plan is checked when you submit." Submit gate lives next to it (DS-ST-10). aria-live polite.
 
 **CommentThread** (S2) — advisor comments with timestamps, ordered. Student sees reply state only (no free text, PR-06). Unread state: crimson-100 left border. Pairs with SeenButton on Returned plans.
 
 **SeenButton** (S2) — the unlock affordance on Returned plans. Confirm dialog explains the consequence ("This marks the feedback as read and unlocks editing"). After press: state returns to Draft for edits, chip animates.
 
-**DraftPlanCard** (S1, S5) — AI-drafted plan proposal. Anatomy: source badge "AI draft", term, summary stats, two actions: "Review in Plan Builder" (primary) and "Discard" (ghost + confirm). Never auto-sends (PR-07); no send-to-advisor action exists on AI output.
+**SubmitSuggestionCard** (S5) — the chat's submit handoff, replacing the removed DraftPlanCard: the AI edits the one plan in place and produces no draft artifact. Banner anatomy, info tint, rendered when the stream sends `submit.suggested`: title "Ready to submit?", body states what the AI found, what submitting runs, and that the AI never submits on its own (PR-07). Actions: "Confirm submission" (opens a confirm dialog, then arms the flag) and a "Review in Plan Builder" link. Stream-only: the card does not survive a reload. Plan changes the AI made render as tool event rows in the transcript, each with an "Open Plan Builder" link.
 
-**PrereqMap** (S4) — SVG roadmap, level columns, four node states from the prototype: passed (emerald), in progress (blue), eligible (amber), locked (slate). Nodes: code + credits. Pan/zoom optional; must work at 390px (horizontal scroll with snap). A11y: the SVG has a visually-hidden list alternative with the same data. One implementation only (the prototype's two divergent copies are the cautionary tale).
+**PrereqMap** (S4) — SVG roadmap, level columns, four node states from the prototype: passed (emerald), in progress (blue), eligible (amber), locked (slate). Nodes: code + title (no credits: the prerequisite_map carries none). Pan/zoom optional; must work at 390px (horizontal scroll with snap). A11y: the SVG has a visually-hidden list alternative with the same data. One implementation only (the prototype's two divergent copies are the cautionary tale).
 
 **SlotEditor / SlotViewer** (A3, A4) — meeting availability: day + from/to rows, max 5 (foundation §13). Editor: add/remove rows, validation on overlap. Viewer: read-only list. Requests from students appear as visit requests, not messages (PR-05).
 
-**VisitRequestCard** (A1) — student visit request: student identity, requested slots, course context, actions: Accept slot (opens slot picker) / Decline. Badge-only surface; changing nothing about plan state (Q61).
+**VisitRequestCard** (A3) — a visit request in the Proposed-to-Done model: student identity, direction line, requested slots as information (no approval, denial, slot picking, or booking), status badge Proposed or Done. Advisor actions on Proposed: "Mark done"; the initiator can delete while Proposed. Changing nothing about plan state (Q61).
 
-**QueueTable** (A1) — the advisor's landing table. Columns: student, plan summary, state chip, waiting age (aging >= 3 days gets the amber aging badge, PR-13), visit-request flag. Row click opens ReviewDrawer. Sortable (aria-sort), paginated 10/20/50/All, dense mode, sticky header.
+**QueueTable** (A1) — the advisor's landing table. Columns: student (avatar, name, student ID), state chip (dot-only), term, waiting days with the amber Aging badge driven by the server's `is_aging` flag beside it (PR-13). No plan summary and no visit-request flag column: no endpoint carries either; visit work lives on A3. The server orders oldest first and the client builds no sort control; the endpoint returns one page, so filters (All, Submitted, Under review) are client-side tabs. Dense mode, sticky header. Row click opens ReviewDrawer.
 
-**ReviewDrawer** (A1) — side drawer (not modal) for reviewing one submission: plan lines with validation state, student context (CGPA, remaining credits from SIS), CommentThread, actions: Approve (primary, confirm), Return (requires a written reason, textarea validated non-empty, PR-06), Request visit. Keyboard: ESC closes, focus returns to the triggering row.
+**ReviewDrawer** (A1, A2) — side panel at the inline end, visually a drawer and behaviorally modal (focus trap, ESC to close, focus returns to the triggering row). Contents: student identity and context line (CGPA from the caseload row; remaining credits are cut, no advisor endpoint carries them), the plan's course lines (one term, flat), CommentThread, actions: Approve (primary, confirm), Return (requires a written reason, textarea validated non-empty, PR-06), Request meeting. Server verdicts render at the moment they happen; no live validation panel.
 
-**ScoreboardTable** (D1) — the dean's primary screen data (PR-13): completion %, median decision time, aging counts per advisor. Tabular-nums, sparkline cells optional. Export action allowed (CSV).
+**ScoreboardTable** (D1) — the dean's per-advisor table (PR-13): completion %, median decision time, aging counts per advisor. Tabular-nums, no sparklines (the contract carries no series). Export action allowed (CSV). Contract-blocked in v1: the governance payload carries no advisor rows; the design is recorded and builds when the contract adds the advisor read.
 
-**FunnelChart** (D1) — pipeline stages (Submitted → Under Review → Returned → Approved → Confirmed). Horizontal bars with stage labels + counts (color is redundant, labels are required, DS-C-10).
+**FunnelChart** (D1) — the plan funnel over the contract's nine counts: the pipeline group (Draft, Submitted, Under Review, Returned, Approved), then the terminal group (Expired, Closed, Withdrawn) with Discarded as its own terminal row. Eight lifecycle states, labeled. Horizontal bars with stage labels + counts (color is redundant, labels are required, DS-C-10).
 
 **FacultyScorecard / DrilldownTable** (V1, V2) — VP read-only: faculties compared on the same three metrics; drill to departments, never to students (PR: Q63). Same table anatomy as ScoreboardTable with scope labels.
 
-**NotificationCenter / NotificationItem** (S6, A5, D4, M-side) — in-app only (PR-05). Item: icon by trigger type, title, body, time, unread dot. Mark-read on open; unread count badge in the topbar bell. The 9 triggers come from foundation §11; the center renders them, it never invents channels.
+**NotificationCenter / NotificationItem** (S6, A5, D4, M-side) — in-app only (PR-05). Item: icon by trigger type, title, body, time, unread dot. Mark-read on open; unread count badge in the topbar bell. The 9 triggers come from foundation §11; the center renders them, it never invents channels. Deep links route through one screen-to-route map keyed by the `deep_link` object's screen and resolved by the recipient's role: plan to /app/plan, student to /advisor/students, advisor to /app, visit to /advisor/meetings for advisor recipients and /app for students; unknown screens fall back to the role landing.
 
 **StaleDataBanner / WindowClosedBanner** — Banner variants (5.3) wired to their data/window sources. Both are non-dismissible while active.
 
@@ -503,38 +503,36 @@ Persistent left rail (role-scoped) + topbar (foundation §13):
 |---|---|---|
 | Student | S1 Dashboard | Dashboard, My Plan, Plan Builder, Profile, AI Chat, Notifications |
 | Advisor | A1 Queue | Queue, Student Explorer, Meetings, Office Hours, Notifications |
-| Dean | D1 Department Overview | Overview, Advisors, Student Explorer, Notifications |
+| Dean | D1 Department Overview | Overview, Notifications |
 | VP | V1 University Scorecard | Scorecard, Drill-down |
-| Admin | M1 Accounts | Accounts, Caseloads, Structure, Rules, System Log |
+| Admin | M1 Accounts | Accounts, Caseloads, Rules, Settings |
 
 **DS-L-01 (MUST):** navigation is role-scoped at the route level; unauthorized routes render the permission-denied state (4.3).
 **DS-L-02 (MUST):** one primary action per screen (DP-03). Page headers: title + context line + single primary action, right-aligned in LTR.
 
 ### 6.2 Page inventory
 
-23 surfaces + ~12 modals/drawers (foundation §14). Component mapping shows the 5.4 inventory in use.
+20 surfaces + ~12 modals/drawers (foundation §14 as amended by the settled resolutions). Component mapping shows the 5.4 inventory in use.
 
 | ID | Page | Route | Key components |
 |---|---|---|---|
-| X1 | Auth: login + sign-up with student-ID binding | `/login`, `/signup` | form, button, banner |
-| S1 | Student dashboard | `/app` | plan-card, draft-plan-card, banner, kpi-card |
+| X1 | Auth: login, sign-up with student-ID binding, forgot password, email verification | `/login`, `/signup`, `/forgot-password`, `/verify-email/:id/:hash` | form, button, banner, link |
+| S1 | Student dashboard | `/app` | plan-card, banner |
 | S2 | My Plan | `/app/plan` | plan-state-chip, plan-line, comment-thread, seen-button |
-| S3 | Plan Builder | `/app/builder` | plan-line, validation-panel, course picker (dialog), submit gate |
+| S3 | Plan Builder | `/app/builder` | plan-line, validation-panel, combobox add bar, submit gate |
 | S4 | Profile | `/app/profile` | prereq-map, kpi-card, table (history) |
-| S5 | AI Chat | `/app/chat` | chat shell (crimson identity allowed), draft-plan-card, typing indicator |
+| S5 | AI Chat | `/app/chat`, `/app/chat/:conversationId` | chat shell (crimson identity allowed), submit-suggestion-card, tool event rows, typing indicator |
 | S6 | Notifications | `/app/notifications` | notification-center |
-| A1 | Advisor queue | `/advisor` | queue-table, review-drawer, visit-request-card |
-| A2 | Student explorer | `/advisor/students` | table, drawer (student context) |
+| A1 | Advisor queue | `/advisor` | queue-table, review-drawer |
+| A2 | Student explorer | `/advisor/students` | table, review-drawer |
 | A3 | Meetings | `/advisor/meetings` | slot-viewer, visit-request-card |
 | A4 | Office hours | `/advisor/hours` | slot-editor |
 | A5 | Notifications | `/advisor/notifications` | notification-center |
-| D1 | Department overview | `/dean` | scoreboard-table, funnel-chart, heatmap (3.5) |
-| D2 | Advisor detail | `/dean/advisors/:id` | scoreboard-table, table |
-| D3 | Student explorer | `/dean/students` | table, drawer (read-only) |
-| D4 | Notifications | `/dean/notifications` | notification-center |
+| D1 | Department overview | `/dean` | funnel-chart, kpi-card, heatmap drill grid (3.5); scoreboard-table contract-blocked |
+| D4 | Notifications | `/dean/notifications` | notification-center (role-scoped, empty-capable) |
 | V1 | University scorecard | `/vp` | faculty-scorecard |
 | V2 | Drill-down | `/vp/drilldown` | drilldown-table |
-| M1–M5 | Admin: accounts, caseloads, structure, rules, system log | `/admin/*` | table, form, confirm-dialog, badges (rule source badges) |
+| M1–M4 | Admin: accounts, caseloads, rules, staff and settings | `/admin/students`, `/admin/assignments`, `/admin/rules`, `/admin/settings` | table, form, confirm-dialog, badge |
 
 Rules that travel with the inventory: every frame cites its foundation §; no screen without 4.3 states; all copy EN+AR final; no risk labels, no simulator UIs, no student free-text inputs beyond plan fields and AI chat.
 
@@ -756,9 +754,6 @@ Add to `src/index.css`. Semantic channels follow the existing shadcn pattern; pl
   --color-state-approved: var(--state-approved);
   --color-state-approved-foreground: var(--state-approved-foreground);
   --color-state-approved-border: var(--state-approved-border);
-  --color-state-confirmed: var(--state-confirmed);
-  --color-state-confirmed-foreground: var(--state-confirmed-foreground);
-  --color-state-confirmed-border: var(--state-confirmed-border);
   --color-state-failed: var(--state-failed);
   --color-state-failed-foreground: var(--state-failed-foreground);
   --color-state-failed-border: var(--state-failed-border);
@@ -818,7 +813,6 @@ Add to `src/index.css`. Semantic channels follow the existing shadcn pattern; pl
     --state-under-review: #fffbeb;    --state-under-review-foreground: #92400e;    --state-under-review-border: #fde68a;
     --state-returned: #fff7ed;        --state-returned-foreground: #9a3412;        --state-returned-border: #fed7aa;
     --state-approved: #ecfdf5;        --state-approved-foreground: #047857;        --state-approved-border: #a7f3d0;
-    --state-confirmed: #f0fdfa;       --state-confirmed-foreground: #115e59;       --state-confirmed-border: #99f6e4;
     --state-failed: #fef2f2;          --state-failed-foreground: #b91c1c;          --state-failed-border: #fecaca;
     --state-closed: #f8fafc;          --state-closed-foreground: #64748b;          --state-closed-border: #e2e8f0;
   }
@@ -842,7 +836,6 @@ Add to `src/index.css`. Semantic channels follow the existing shadcn pattern; pl
     --state-under-review: #451a03;    --state-under-review-foreground: #fcd34d;    --state-under-review-border: #92400e;
     --state-returned: #431407;        --state-returned-foreground: #fdba74;        --state-returned-border: #9a3412;
     --state-approved: #022c22;        --state-approved-foreground: #6ee7b7;        --state-approved-border: #047857;
-    --state-confirmed: #042f2e;       --state-confirmed-foreground: #5eead4;       --state-confirmed-border: #0f766e;
     --state-failed: #450a0a;          --state-failed-foreground: #fca5a5;          --state-failed-border: #b91c1c;
     --state-closed: #1e293b;          --state-closed-foreground: #94a3b8;          --state-closed-border: #334155;
   }
@@ -853,7 +846,7 @@ Add to `src/index.css`. Semantic channels follow the existing shadcn pattern; pl
 }
 ```
 
-Expired renders with `state-failed` tokens plus `border-dashed`. Withdrawn renders with `state-closed` tokens. Heatmap quartiles and chart series (3.5) are applied as data attributes or explicit props; add them to `@theme` with the same `--color-data-*` pattern when the charts land.
+Expired renders with `state-failed` tokens plus `border-dashed`. Withdrawn and discarded render with `state-closed` tokens; discarded carries its own label and a slate dot. Heatmap quartiles and chart series (3.5) are applied as data attributes or explicit props; add them to `@theme` with the same `--color-data-*` pattern when the charts land.
 
 ## Appendix C: sources
 
@@ -867,4 +860,5 @@ Expired renders with `state-failed` tokens plus `border-dashed`. Withdrawn rende
 ## Changelog
 
 - v1.0 (2026-09-30): initial version. Tokens, states, components, rules, and the skill system, derived from docs/product plus a 19-skill audit.
+- v1.1 (2026-10-01): correction pass from wayfinder ticket flags (acad-abl.21). Lifecycle reset to the 8 settled states plus the contract's discarded terminal (Registration Confirmed and Verification Failed dropped; state-confirmed tokens removed; withdrawn and discarded render state-closed, expired renders state-failed). DraftPlanCard removed; SubmitSuggestionCard and tool event rows replace it. X1 gains /forgot-password and /verify-email/:id/:hash. Dean advisor-detail and student-explorer surfaces removed; dean rail is Overview and Notifications. Admin rail and routes aligned (accounts, assignments, rules, settings; no structure, no system log). Queue aging reads the server's is_aging flag with no threshold value in copy. Validation renders server results only; the hard block sits at the submit gate. Visits follow the Proposed-to-Done model and notifications route by the deep_link screen map.
 

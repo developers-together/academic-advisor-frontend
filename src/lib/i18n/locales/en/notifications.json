@@ -1,0 +1,20 @@
+{
+  "title": "Notifications",
+  "markAllRead": "Mark all as read",
+  "unread": "Unread",
+  "empty": {
+    "title": "No notifications yet.",
+    "body": "Plan and visit updates will appear here."
+  },
+  "slugs": {
+    "plan_returned": "Plan returned",
+    "plan_approved": "Plan approved",
+    "advisor_changed": "Advisor changed",
+    "caseload_student_removed": "Caseload student removed",
+    "caseload_student_added": "Caseload student added",
+    "window_opened": "Registration window opened",
+    "window_deadline_nearing": "Registration window closing soon",
+    "visit_requested": "Visit requested",
+    "visit_slots_provided": "Visit times proposed"
+  }
+}

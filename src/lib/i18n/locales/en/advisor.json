@@ -1,0 +1,156 @@
+{
+  "queue": {
+    "title": "Queue",
+    "context": "Submitted plans waiting for your review, oldest first.",
+    "tabs": {
+      "all": "All",
+      "submitted": "Submitted",
+      "under_review": "Under review"
+    },
+    "columns": {
+      "student": "Student",
+      "state": "State",
+      "term": "Term",
+      "waiting": "Waiting"
+    },
+    "waitingDays": "{{count}} day",
+    "waitingDaysOther": "{{count}} days",
+    "empty": {
+      "title": "No plans are waiting for review.",
+      "body": "New submissions appear here."
+    }
+  },
+  "review": {
+    "context": "CGPA {{cgpa}}",
+    "contextNone": "No CGPA on record",
+    "courses": "Courses, {{term}}",
+    "warnings": "Advisory notes",
+    "comments": {
+      "title": "Comments",
+      "empty": "No comments on this plan yet.",
+      "placeholder": "Write a comment for the student",
+      "submit": "Add comment",
+      "maxLength": "Comments are limited to 2000 characters.",
+      "required": "Write the comment before adding it."
+    },
+    "approve": {
+      "action": "Approve",
+      "dialogTitle": "Approve plan?",
+      "dialogBody": "Approval locks this plan. {{name}} registers the courses in the SIS.",
+      "confirm": "Approve plan"
+    },
+    "return": {
+      "action": "Return",
+      "helper": "The reason goes to {{name}}. They press Seen before they can edit and resubmit.",
+      "placeholder": "Write the return reason",
+      "submit": "Return plan",
+      "required": "Write the reason so {{name}} knows what to change.",
+      "maxLength": "The reason is limited to 2000 characters.",
+      "dialogTitle": "Return plan?",
+      "dialogBody": "The plan returns to the student and editing reopens.",
+      "confirm": "Return plan",
+      "discardTitle": "Discard the return reason?",
+      "discardBody": "The text you wrote is lost.",
+      "discardConfirm": "Discard reason"
+    },
+    "approveFailed": {
+      "title": "Approval is blocked",
+      "body": "The checks below failed. You can still return the plan to the student."
+    },
+    "requestMeeting": "Request meeting"
+  },
+  "students": {
+    "title": "Student Explorer",
+    "context": "Your caseload for this term.",
+    "searchLabel": "Search students",
+    "searchPlaceholder": "Search by name or student ID",
+    "tabs": {
+      "all": "All",
+      "unmet": "Unmet meeting",
+      "aging": "Aging"
+    },
+    "columns": {
+      "student": "Student",
+      "email": "Email",
+      "unit": "Faculty, school, department",
+      "level": "Level",
+      "state": "Plan state",
+      "submitted": "Submitted",
+      "waiting": "Waiting",
+      "cgpa": "CGPA"
+    },
+    "emptyCaseload": {
+      "title": "No students are assigned to you yet.",
+      "body": "The Admin assigns caseloads."
+    },
+    "emptySearch": {
+      "title": "No students match \"{{search}}\".",
+      "body": "Check the spelling or clear the search."
+    },
+    "noPlan": "{{name}} has not created a plan this term."
+  },
+  "meetings": {
+    "title": "Meetings",
+    "context": "Visit requests between you and your caseload.",
+    "tabs": {
+      "open": "Open",
+      "done": "Done"
+    },
+    "requestedBy": "Requested by {{name}}",
+    "requestedByYou": "Requested by you",
+    "slots": "Proposed times",
+    "markDone": "Mark done",
+    "proposeSlots": "Propose slots",
+    "raiseRequest": "Request meeting",
+    "emptyOpen": {
+      "title": "No open meeting requests.",
+      "body": "Requests from your students appear here."
+    },
+    "emptyDone": {
+      "title": "No meetings marked done this term."
+    },
+    "slotDialog": {
+      "title": "Propose slots for {{name}}",
+      "timezone": "Times are Africa/Cairo time.",
+      "addRow": "Add a time",
+      "maxRows": "Up to 10 times.",
+      "save": "Send slots",
+      "success": "Slots sent. {{name}} is notified in the app.",
+      "errors": {
+        "rowIncomplete": "Fill the date, start, and end times.",
+        "endBeforeStart": "End time must be after the start time."
+      }
+    },
+    "requestDialog": {
+      "title": "Request a meeting with {{name}}",
+      "body": "Optionally propose times. The student sees them in the app.",
+      "timezone": "Times are Africa/Cairo time.",
+      "save": "Send request",
+      "success": "Request sent. {{name}} is notified in the app."
+    }
+  },
+  "hours": {
+    "title": "Office Hours",
+    "context": "The weekly hours your students see.",
+    "defaultNotice": "These are the default hours. Publish to make them yours.",
+    "timezone": "Times are Africa/Cairo time.",
+    "maxRows": "Up to 5 rows.",
+    "addRow": "Add a row",
+    "publish": "Publish hours",
+    "clear": "Clear hours",
+    "clearConfirm": {
+      "title": "Clear your published hours?",
+      "body": "This removes your published hours. Students will no longer see your office hours.",
+      "confirm": "Clear hours"
+    },
+    "day": "Day",
+    "from": "From",
+    "to": "To",
+    "removeRow": "Remove row",
+    "errors": {
+      "endBeforeStart": "End time must be after the start time.",
+      "overlap": "Two rows overlap on {{day}}. Adjust the times so each row stands alone.",
+      "rowIncomplete": "Fill the day and both times."
+    }
+  }
+}

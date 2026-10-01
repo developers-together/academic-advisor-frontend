@@ -1,82 +1,125 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, Navigate, useLocation } from 'react-router';
 
-import { Comment, User } from '@/types/api';
+import { paths } from '@/config/paths';
+import type { UserRole } from '@/types/domain';
+import { cn } from '@/utils/cn';
 
 import { useUser } from './auth';
 
-export enum ROLES {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
-
-type RoleTypes = keyof typeof ROLES;
-
-export const POLICIES = {
-  'comment:delete': (user: User, comment: Comment) => {
-    if (user.role === 'ADMIN') {
-      return true;
-    }
-
-    if (user.role === 'USER' && comment.author?.id === user.id) {
-      return true;
-    }
-
-    return false;
-  },
+export const ROLES: Record<UserRole, UserRole> = {
+  student: 'student',
+  advisor: 'advisor',
+  dean: 'dean',
+  vp: 'vp',
+  admin: 'admin',
 };
 
-export const useAuthorization = () => {
+export const useRole = (): UserRole | null => {
   const user = useUser();
-
-  if (!user.data) {
-    throw Error('User does not exist!');
-  }
-
-  const checkAccess = React.useCallback(
-    ({ allowedRoles }: { allowedRoles: RoleTypes[] }) => {
-      if (allowedRoles && allowedRoles.length > 0 && user.data) {
-        return allowedRoles?.includes(user.data.role);
-      }
-
-      return true;
-    },
-    [user.data],
-  );
-
-  return { checkAccess, role: user.data.role };
+  return user.data?.role ?? null;
 };
 
-type AuthorizationProps = {
-  forbiddenFallback?: React.ReactNode;
-  children: React.ReactNode;
-} & (
-  | {
-      allowedRoles: RoleTypes[];
-      policyCheck?: never;
-    }
-  | {
-      allowedRoles?: never;
-      policyCheck: boolean;
-    }
-);
+export const roleHome = (role: UserRole): string => {
+  switch (role) {
+    case 'student':
+      return paths.app.root.getHref();
+    case 'advisor':
+      return paths.advisor.root.getHref();
+    case 'dean':
+      return paths.dean.root.getHref();
+    case 'vp':
+      return paths.vp.root.getHref();
+    case 'admin':
+      return paths.admin.root.getHref();
+  }
+};
 
-export const Authorization = ({
-  policyCheck,
-  allowedRoles,
-  forbiddenFallback = null,
+export type PermissionDeniedProps = {
+  audience: UserRole;
+  message?: string;
+  backTo?: { label: string; href: string };
+  className?: string;
+};
+
+export const PermissionDenied = ({
+  audience,
+  backTo,
+  className,
+}: PermissionDeniedProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      className={cn(
+        'mx-auto my-16 max-w-md rounded-lg border bg-card p-6 text-center',
+        className,
+      )}
+    >
+      <p className="text-sm text-muted-foreground">
+        {t('permissionDenied.title', { audience: t(`roles.${audience}`) })}
+      </p>
+      {backTo && (
+        <Link
+          to={backTo.href}
+          className="mt-4 inline-flex h-11 items-center rounded-md px-4 text-sm font-medium text-primary underline-offset-4 hover:underline"
+        >
+          {t(backTo.label)}
+        </Link>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Wraps a role section. Renders PermissionDenied on direct URL hits by
+ * another role (design.md DS-L-01).
+ */
+export const RoleRoute = ({
+  allow,
   children,
-}: AuthorizationProps) => {
-  const { checkAccess } = useAuthorization();
+}: {
+  allow: UserRole;
+  children: React.ReactNode;
+}) => {
+  const current = useRole();
 
-  let canAccess = false;
-
-  if (allowedRoles) {
-    canAccess = checkAccess({ allowedRoles });
+  if (current === null) {
+    return null;
   }
 
-  if (typeof policyCheck !== 'undefined') {
-    canAccess = policyCheck;
+  if (current !== allow) {
+    return (
+      <PermissionDenied
+        audience={allow}
+        backTo={{
+          label: 'permissionDenied.back',
+          href: roleHome(current),
+        }}
+      />
+    );
   }
 
-  return <>{canAccess ? children : forbiddenFallback}</>;
+  return <>{children}</>;
+};
+
+/**
+ * The / entry point: unauthenticated visitors go to login, everyone else
+ * to their role landing (App skeleton, Decision 4).
+ */
+export const RoleRedirect = () => {
+  const current = useRole();
+  const location = useLocation();
+
+  if (current === null) {
+    return (
+      <Navigate
+        to={paths.auth.login.getHref(`${location.pathname}${location.search}`)}
+        replace
+      />
+    );
+  }
+
+  return <Navigate to={roleHome(current)} replace />;
 };

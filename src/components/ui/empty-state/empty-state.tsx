@@ -1,0 +1,64 @@
+import type { LucideIcon } from 'lucide-react';
+import { Inbox } from 'lucide-react';
+import * as React from 'react';
+
+import { Button } from '@/components/ui/button';
+import { cn } from '@/utils/cn';
+
+export type EmptyStateProps = {
+  icon?: LucideIcon;
+  title: string;
+  description?: string;
+  action?: { label: string; onClick: () => void; loading?: boolean };
+  compact?: boolean;
+  className?: string;
+};
+
+export const EmptyState = ({
+  icon: Icon = Inbox,
+  title,
+  description,
+  action,
+  compact = false,
+  className,
+}: EmptyStateProps) => {
+  return (
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center rounded-lg border border-dashed bg-card text-center',
+        compact ? 'gap-2 p-6' : 'gap-3 p-10',
+        className,
+      )}
+    >
+      <Icon
+        className={cn('text-muted-foreground', compact ? 'size-5' : 'size-6')}
+        aria-hidden
+      />
+      <p
+        className={cn(
+          'font-medium',
+          compact ? 'text-sm' : 'text-lg font-medium',
+        )}
+      >
+        {title}
+      </p>
+      {description && (
+        <p className="max-w-prose text-sm text-muted-foreground">
+          {description}
+        </p>
+      )}
+      {action && (
+        <Button
+          className="mt-2 h-11"
+          variant={compact ? 'outline' : 'default'}
+          onClick={action.onClick}
+          isLoading={action.loading}
+          disabled={action.loading}
+          aria-busy={action.loading}
+        >
+          {action.label}
+        </Button>
+      )}
+    </div>
+  );
+};

@@ -1,0 +1,169 @@
+{
+  "accounts": {
+    "title": "Accounts",
+    "context": "Student accounts, binding state, and caseload assignment.",
+    "searchLabel": "Search students",
+    "searchPlaceholder": "Search by name, email, or student ID",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "studentId": "Student ID",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "panel": {
+      "identity": "Identity",
+      "binding": "Student ID binding",
+      "bindingBound": "Bound to student ID {{id}}.",
+      "bindingPending": "The student ID binding has not completed yet. Retry the check.",
+      "bindingFailed": "The student information system has no record for this account's derived ID. Correct the student ID or retry the check.",
+      "assignment": "Caseload assignment",
+      "dangerZone": "Danger zone"
+    },
+    "actions": {
+      "suspend": "Suspend",
+      "reactivate": "Reactivate",
+      "retrySis": "Retry SIS check",
+      "correctId": "Correct student ID",
+      "delete": "Delete account",
+      "reassign": "Reassign",
+      "reassignPlaceholder": "advisor@ejust.edu.eg",
+      "reassignLabel": "Advisor email",
+      "reassignSubmit": "Reassign"
+    },
+    "confirms": {
+      "suspendTitle": "Suspend {{name}}?",
+      "suspendBody": "Suspension blocks login immediately and signs the student out. The account and its data stay.",
+      "suspendConfirm": "Suspend",
+      "correctTitle": "Set the student ID?",
+      "correctBody": "This sets the student ID for this account. The ID cannot be edited again.",
+      "correctConfirm": "Save student ID",
+      "deleteTitle": "Delete {{name}}?",
+      "deleteBody": "This deletes the student account and removes the student from their advisor's caseload. This cannot be undone.",
+      "deleteConfirm": "Delete account"
+    },
+    "correctIdForm": {
+      "label": "New student ID",
+      "helper": "1 to 20 digits.",
+      "required": "Enter the student ID.",
+      "pattern": "Use 1 to 20 digits."
+    },
+    "empty": {
+      "title": "No students match this search.",
+      "body": "Clear it or try another name or ID.",
+      "noRows": "No student accounts yet.",
+      "noRowsBody": "Accounts appear when students sign up."
+    },
+    "reassignSuccess": "{{name}} moved to the new advisor.",
+    "retryQueued": "SIS check queued."
+  },
+  "assignments": {
+    "title": "Caseloads",
+    "context": "Which advisor carries which student.",
+    "import": "Import CSV",
+    "columns": {
+      "name": "Name",
+      "studentId": "Student ID",
+      "advisor": "Advisor",
+      "faculty": "Faculty"
+    },
+    "importDialog": {
+      "title": "Import assignments",
+      "helper": "CSV with student_id and advisor_email columns. One row per student.",
+      "fileLabel": "CSV or TXT file",
+      "pickFile": "Choose file",
+      "confirmTitle": "Import assignments?",
+      "confirmBody": "Applied rows move students to the named advisors immediately. Rows that already carry the advisor stay unchanged.",
+      "confirm": "Import assignments",
+      "errors": {
+        "fileRequired": "Choose a CSV or TXT file first.",
+        "fileType": "Use a .csv or .txt file.",
+        "fileSize": "Files are limited to 2048 KB."
+      }
+    },
+    "importSummary": {
+      "title": "Import applied.",
+      "assigned": "{{count}} student moved.",
+      "assignedOther": "{{count}} students moved.",
+      "unchanged": "{{count}} already carried their advisor.",
+      "unchangedOther": "{{count}} already carried their advisor."
+    },
+    "importReport": {
+      "title": "Nothing was applied. Fix the rows and import again.",
+      "row": "Row {{n}}",
+      "moreRows": "and {{count}} more rows"
+    },
+    "empty": {
+      "title": "No students match this search.",
+      "body": "Clear it or try another name or ID."
+    }
+  },
+  "rules": {
+    "title": "University Rules",
+    "context": "Texts the AI advisor quotes when it explains rules.",
+    "new": "New rule",
+    "columns": {
+      "titleEn": "Title (English)",
+      "titleAr": "Title (Arabic)",
+      "updated": "Updated"
+    },
+    "editor": {
+      "createTitle": "New rule",
+      "editTitle": "Edit rule",
+      "titleEn": "Title (English)",
+      "titleAr": "Title (Arabic)",
+      "bodyEn": "Body (English)",
+      "bodyAr": "Body (Arabic)",
+      "save": "Save rule",
+      "required": "This field is required.",
+      "maxLength": "Titles are limited to 255 characters."
+    },
+    "delete": {
+      "dialogTitle": "Delete this rule?",
+      "dialogBody": "This deletes the rule. The AI advisor stops quoting it immediately. This cannot be undone.",
+      "confirm": "Delete rule"
+    },
+    "empty": {
+      "title": "No university rules yet.",
+      "body": "Add the first rule the AI advisor quotes."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "staff": {
+      "title": "Staff accounts",
+      "context": "Create a staff account and share the initial password.",
+      "name": "Name",
+      "email": "Email",
+      "password": "Initial password",
+      "passwordHelper": "At least 8 characters.",
+      "role": "Role",
+      "faculty": "Faculty",
+      "facultyHelper": "Required for deans.",
+      "submit": "Create staff account",
+      "created": "Staff account created. Share the initial password with {{name}} through a safe channel.",
+      "resetLink": "Send reset link",
+      "resetConfirmTitle": "Send a password reset?",
+      "resetConfirmBody": "This emails a password reset link to {{email}}.",
+      "resetConfirm": "Send reset link",
+      "resetSent": "Password reset link sent."
+    },
+    "threshold": {
+      "title": "Queue aging",
+      "context": "How many days a plan waits before it counts as aging.",
+      "days": "Days",
+      "save": "Save threshold",
+      "effect": "Advisor queue rows and caseload rows flag aging past this threshold. Dean and VP aging metrics use the same value."
+    },
+    "roles": {
+      "advisor": "Advisor",
+      "dean": "Dean",
+      "vp": "Vice President",
+      "admin": "Administrator"
+    },
+    "thresholdErrors": {
+      "required": "Enter the number of days.",
+      "min": "Use at least 1 day."
+    }
+  }
+}

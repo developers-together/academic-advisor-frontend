@@ -4,12 +4,6 @@ import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 
 import { paths } from '@/config/paths';
-import { ProtectedRoute } from '@/lib/auth';
-
-import {
-  default as AppRoot,
-  ErrorBoundary as AppRootErrorBoundary,
-} from './routes/app/root';
 
 const convert = (queryClient: QueryClient) => (m: any) => {
   const { clientLoader, clientAction, default: Component, ...rest } = m;
@@ -25,54 +19,48 @@ export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
     {
       path: paths.home.path,
-      lazy: () => import('./routes/landing').then(convert(queryClient)),
+      lazy: () => import('./routes/role-redirect').then(convert(queryClient)),
     },
-    {
-      path: paths.auth.register.path,
-      lazy: () => import('./routes/auth/register').then(convert(queryClient)),
-    },
+
     {
       path: paths.auth.login.path,
       lazy: () => import('./routes/auth/login').then(convert(queryClient)),
     },
     {
+      path: paths.auth.signup.path,
+      lazy: () => import('./routes/auth/signup').then(convert(queryClient)),
+    },
+    {
+      path: paths.auth.forgotPassword.path,
+      lazy: () =>
+        import('./routes/auth/forgot-password').then(convert(queryClient)),
+    },
+    {
+      path: paths.auth.verifyEmail.path,
+      lazy: () =>
+        import('./routes/auth/verify-email').then(convert(queryClient)),
+    },
+
+    {
       path: paths.app.root.path,
-      element: (
-        <ProtectedRoute>
-          <AppRoot />
-        </ProtectedRoute>
-      ),
-      ErrorBoundary: AppRootErrorBoundary,
+      lazy: () => import('./routes/app/shell').then(convert(queryClient)),
       children: [
         {
-          path: paths.app.discussions.path,
-          lazy: () =>
-            import('./routes/app/discussions/discussions').then(
-              convert(queryClient),
-            ),
-        },
-        {
-          path: paths.app.discussion.path,
-          lazy: () =>
-            import('./routes/app/discussions/discussion').then(
-              convert(queryClient),
-            ),
-        },
-        {
-          path: paths.app.users.path,
-          lazy: () => import('./routes/app/users').then(convert(queryClient)),
-        },
-        {
-          path: paths.app.profile.path,
-          lazy: () => import('./routes/app/profile').then(convert(queryClient)),
-        },
-        {
-          path: paths.app.dashboard.path,
+          index: true,
           lazy: () =>
             import('./routes/app/dashboard').then(convert(queryClient)),
         },
+        {
+          path: paths.app.plan.path,
+          lazy: () => import('./routes/app/plan').then(convert(queryClient)),
+        },
+        {
+          path: paths.app.builder.path,
+          lazy: () => import('./routes/app/builder').then(convert(queryClient)),
+        },
       ],
     },
+
     {
       path: '*',
       lazy: () => import('./routes/not-found').then(convert(queryClient)),

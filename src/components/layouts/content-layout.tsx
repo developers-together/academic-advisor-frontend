@@ -1,24 +1,40 @@
 import * as React from 'react';
 
-import { Head } from '../seo';
+import { Head } from '@/components/seo';
+import { cn } from '@/utils/cn';
 
-type ContentLayoutProps = {
-  children: React.ReactNode;
+export type ContentLayoutProps = {
   title: string;
+  context?: React.ReactNode;
+  actions?: React.ReactNode;
+  head?: boolean;
+  className?: string;
+  children: React.ReactNode;
 };
 
-export const ContentLayout = ({ children, title }: ContentLayoutProps) => {
+export const ContentLayout = ({
+  title,
+  context,
+  actions,
+  head = true,
+  className,
+  children,
+}: ContentLayoutProps) => {
   return (
-    <>
-      <Head title={title} />
-      <div className="py-6">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-          <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>
+    <div className={cn('mx-auto w-full max-w-6xl', className)}>
+      {head && <Head title={title} />}
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl leading-tight font-semibold">{title}</h1>
+          {context && (
+            <p className="mt-1 text-sm text-muted-foreground">{context}</p>
+          )}
         </div>
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:px-8">
-          {children}
-        </div>
+        {actions && (
+          <div className="flex shrink-0 items-center gap-2">{actions}</div>
+        )}
       </div>
-    </>
+      {children}
+    </div>
   );
 };

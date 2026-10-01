@@ -16,8 +16,63 @@
 
 @theme {
   --font-sans:
-    Inter var, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Inter Variable', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-arabic: 'Cairo Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand ramp (primitive; design.md 3.2) */
+  --color-crimson-50: #fcf4f4;
+  --color-crimson-100: #f8e5e6;
+  --color-crimson-200: #f0c9cd;
+  --color-crimson-300: #e3a2aa;
+  --color-crimson-400: #d0727d;
+  --color-crimson-500: #b24a53;
+  --color-crimson-600: #9b2731;
+  --color-crimson-700: #8b0000;
+  --color-crimson-800: #6b0000;
+  --color-crimson-900: #520000;
+  --color-crimson-950: #380000;
+
+  /* Plan states (semantic; values flip in .dark below) */
+  --color-state-draft: var(--state-draft);
+  --color-state-draft-foreground: var(--state-draft-foreground);
+  --color-state-draft-border: var(--state-draft-border);
+  --color-state-submitted: var(--state-submitted);
+  --color-state-submitted-foreground: var(--state-submitted-foreground);
+  --color-state-submitted-border: var(--state-submitted-border);
+  --color-state-under-review: var(--state-under-review);
+  --color-state-under-review-foreground: var(--state-under-review-foreground);
+  --color-state-under-review-border: var(--state-under-review-border);
+  --color-state-returned: var(--state-returned);
+  --color-state-returned-foreground: var(--state-returned-foreground);
+  --color-state-returned-border: var(--state-returned-border);
+  --color-state-approved: var(--state-approved);
+  --color-state-approved-foreground: var(--state-approved-foreground);
+  --color-state-approved-border: var(--state-approved-border);
+  --color-state-failed: var(--state-failed);
+  --color-state-failed-foreground: var(--state-failed-foreground);
+  --color-state-failed-border: var(--state-failed-border);
+  --color-state-closed: var(--state-closed);
+  --color-state-closed-foreground: var(--state-closed-foreground);
+  --color-state-closed-border: var(--state-closed-border);
+
+  /* Semantic status (design.md 3.3) */
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+
+  /* Heatmap quartiles (design.md 3.5) */
+  --color-data-1: var(--data-1);
+  --color-data-1-foreground: var(--data-1-foreground);
+  --color-data-2: var(--data-2);
+  --color-data-2-foreground: var(--data-2-foreground);
+  --color-data-3: var(--data-3);
+  --color-data-3-foreground: var(--data-3-foreground);
+  --color-data-4: var(--data-4);
+  --color-data-4-foreground: var(--data-4-foreground);
 
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
@@ -50,42 +105,45 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
+  /* Typography (design.md 3.6) */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1.45;
 
-  @keyframes accordion-down {
+  /* Motion (design.md 3.10) */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-fade-in: fade-in 150ms var(--ease-out-expo);
+  --animate-chip-in: chip-in 150ms var(--ease-out-expo);
+  --animate-typing: typing 1.2s ease-in-out infinite;
+
+  @keyframes fade-in {
     from {
-      height: 0;
+      opacity: 0;
     }
     to {
-      height: var(--radix-accordion-content-height);
+      opacity: 1;
     }
   }
-  @keyframes accordion-up {
+  @keyframes chip-in {
     from {
-      height: var(--radix-accordion-content-height);
+      opacity: 0;
+      transform: scale(0.96);
     }
     to {
-      height: 0;
+      opacity: 1;
+      transform: scale(1);
     }
   }
-}
-
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+  @keyframes typing {
+    0%,
+    60%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.4;
+    }
+    30% {
+      transform: translateY(-2px);
+      opacity: 1;
+    }
   }
 }
 
@@ -100,8 +158,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 100% 27%; /* crimson-700, 10.0:1 with white */
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -112,12 +170,52 @@
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%; /* red-600, 4.8:1 with white */
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 158 94% 27%; /* emerald-700, 5.5:1 with white */
+    --success-foreground: 0 0% 100%;
+    --warning: 32 95% 44%; /* amber-600, dark foreground */
+    --warning-foreground: 0 0% 9%;
+    --info: 201 96% 32%; /* sky-700, 5.9:1 with white */
+    --info-foreground: 0 0% 100%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 355 41% 49%; /* crimson-500 */
+
+    /* Plan states, light (bg / foreground / border) */
+    --state-draft: #f1f5f9;
+    --state-draft-foreground: #334155;
+    --state-draft-border: #cbd5e1;
+    --state-submitted: #eff6ff;
+    --state-submitted-foreground: #1d4ed8;
+    --state-submitted-border: #bfdbfe;
+    --state-under-review: #fffbeb;
+    --state-under-review-foreground: #92400e;
+    --state-under-review-border: #fde68a;
+    --state-returned: #fff7ed;
+    --state-returned-foreground: #9a3412;
+    --state-returned-border: #fed7aa;
+    --state-approved: #ecfdf5;
+    --state-approved-foreground: #047857;
+    --state-approved-border: #a7f3d0;
+    --state-failed: #fef2f2;
+    --state-failed-foreground: #b91c1c;
+    --state-failed-border: #fecaca;
+    --state-closed: #f8fafc;
+    --state-closed-foreground: #64748b;
+    --state-closed-border: #e2e8f0;
+
+    /* Heatmap quartiles, light (bg / fg) */
+    --data-1: #d1fae5;
+    --data-1-foreground: #065f46;
+    --data-2: #ecfccb;
+    --data-2-foreground: #3f6212;
+    --data-3: #fef3c7;
+    --data-3-foreground: #92400e;
+    --data-4: #fecaca;
+    --data-4-foreground: #7f1d1d;
 
     --radius: 0.5rem;
   }
@@ -132,8 +230,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 355 60% 38%; /* crimson-600, 7.2:1 with white */
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -144,12 +242,52 @@
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%; /* red-500 */
+    --destructive-foreground: 0 0% 9%;
+
+    --success: 160 84% 39%; /* emerald-500 */
+    --success-foreground: 0 0% 9%;
+    --warning: 38 92% 50%; /* amber-500 */
+    --warning-foreground: 0 0% 9%;
+    --info: 199 89% 48%; /* sky-500 */
+    --info-foreground: 0 0% 9%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 353 50% 63%; /* crimson-400 */
+
+    /* Plan states, dark */
+    --state-draft: #1e293b;
+    --state-draft-foreground: #cbd5e1;
+    --state-draft-border: #475569;
+    --state-submitted: #172554;
+    --state-submitted-foreground: #93c5fd;
+    --state-submitted-border: #1e40af;
+    --state-under-review: #451a03;
+    --state-under-review-foreground: #fcd34d;
+    --state-under-review-border: #92400e;
+    --state-returned: #431407;
+    --state-returned-foreground: #fdba74;
+    --state-returned-border: #9a3412;
+    --state-approved: #022c22;
+    --state-approved-foreground: #6ee7b7;
+    --state-approved-border: #047857;
+    --state-failed: #450a0a;
+    --state-failed-foreground: #fca5a5;
+    --state-failed-border: #b91c1c;
+    --state-closed: #1e293b;
+    --state-closed-foreground: #94a3b8;
+    --state-closed-border: #334155;
+
+    /* Heatmap quartiles, dark */
+    --data-1: #064e3b;
+    --data-1-foreground: #a7f3d0;
+    --data-2: #365314;
+    --data-2-foreground: #d9f99d;
+    --data-3: #78350f;
+    --data-3-foreground: #fde68a;
+    --data-4: #7f1d1d;
+    --data-4-foreground: #fecaca;
   }
 }
 
@@ -158,20 +296,31 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  code {
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas,
+      'Liberation Mono', 'Courier New', monospace;
+  }
+  [dir='rtl'] body {
+    font-family: var(--font-arabic);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-body {
-  margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+/* Bidi isolation for Latin tokens (course codes) inside Arabic sentences
+   (design.md DS-L-05). */
+.bidi-code {
+  unicode-bidi: isolate;
 }

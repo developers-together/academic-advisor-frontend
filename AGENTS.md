@@ -46,20 +46,9 @@ These rules govern all prose an agent produces: replies, tickets, PRDs, review c
 
 ## Project Overview
 
-Bulletproof React is a scalable React application architecture that provides opinionated guidelines and best practices for building production-ready React applications. The project includes three different implementations:
+This repo is the Advaisor React client: a single Vite app built with React 19, TanStack Query, and Tailwind v4. It is the frontend for the university academic plan platform with an AI advisor.
 
-- **React Vite**: Modern Vite-based React application
-- **Next.js App Router**: Next.js 16 with App Router
-- **Next.js Pages**: Traditional Next.js with Pages Router
-
-### Application Domain
-The demo application is a team collaboration platform where users can:
-- Create and join teams
-- Start discussions within teams
-- Comment on discussions
-- Manage user roles (ADMIN/USER permissions)
-
-**Live Demo**: [https://bulletproof-react-app.netlify.app](https://bulletproof-react-app.netlify.app)
+Product truth lives in `docs/product/`. Design truth lives in `design.md`. Implementation has not started; the code is a demo scaffold from bulletproof-react.
 
 ## Setup Commands
 

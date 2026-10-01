@@ -1,0 +1,75 @@
+{
+  "dean": {
+    "title": "نظرة عامة على الكلية",
+    "export": "تصدير CSV",
+    "exported": "تم إنشاء ملف CSV.",
+    "exportFailed": "فشل التصدير. أعد المحاولة."
+  },
+  "vp": {
+    "title": "لوحة نتائج الجامعة",
+    "export": "تصدير CSV",
+    "exported": "تم إنشاء ملف CSV.",
+    "exportFailed": "فشل التصدير. أعد المحاولة."
+  },
+  "levels": {
+    "university": "الجامعة",
+    "faculty": "الكلية",
+    "school": "المدرسة",
+    "department": "القسم"
+  },
+  "contextLine": "{{level}} . {{term}} . {{students}} طالب",
+  "scopeLine": "{{level}} . {{name}}",
+  "kpi": {
+    "completion": "نسبة الإكمال",
+    "completionLive": "مباشرة خلال النافذة",
+    "completionFinal": "نهائية",
+    "completionNone": "لا طلاب مسندون بعد",
+    "median": "وسيط زمن القرار",
+    "medianContext": "الخطط المحسومة هذا الترم",
+    "medianNone": "لا قرارات هذا الترم",
+    "medianHours": "{{value}} ساعة",
+    "aging": "المتأخرة",
+    "agingContext": "غير محسومة بعد عتبة التأخر",
+    "caseload": "المكلف بها",
+    "caseloadContext": "الطلاب المسند لهم مرشد",
+    "approved": "المعتمدة",
+    "approvedContext": "خطط معتمدة ومغلقة هذا الترم"
+  },
+  "funnel": {
+    "title": "مسار الخطط",
+    "pipeline": "خط الأنابيب",
+    "terminal": "نهائية",
+    "empty": {
+      "title": "لا خطط هذا الترم بعد",
+      "body": "تظهر الأعداد كلما بنى الطلاب خططهم وقدّموها لترم {{term}}."
+    }
+  },
+  "childGrid": {
+    "title": "الوحدات الفرعية",
+    "completion": "الإكمال",
+    "noData": "لا بيانات",
+    "empty": {
+      "title": "لا وحدات فرعية تحت {{name}}.",
+      "body": "مؤشرات هذه الوحدة تظهر أعلاه."
+    }
+  },
+  "scorecard": {
+    "columns": {
+      "faculty": "الكلية",
+      "students": "الطلاب",
+      "caseload": "المكلف بها",
+      "approved": "المعتمدة",
+      "completion": "الإكمال",
+      "median": "وسيط زمن القرار",
+      "aging": "المتأخرة"
+    }
+  },
+  "drilldown": {
+    "title": "التنقل للأسفل",
+    "root": "الجامعة"
+  },
+  "noFaculty": {
+    "title": "لا كلية مسندة",
+    "body": "حساب العميد الخاص بك بلا كلية مسندة. اطلب من مسؤول النظام إكمال الإعداد."
+  }
+}

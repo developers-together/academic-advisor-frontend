@@ -36,7 +36,7 @@ empty-state illustration set (bilingual).
 
 | Component | Foundation ref | Notes |
 |---|---|---|
-| `PlanStateChip` | §7 | 9 states; color + icon + label; the single most repeated element in the product |
+| `PlanStateChip` | §7 | 8 settled states plus the contract's discarded terminal (rendered on the Closed tokens with its own label); color + icon + label; the single most repeated element in the product |
 | `PlanCard` (dashboard) | S1 | State, next action CTA, window countdown |
 | `PlanLine` | §7.1 | course + group + section dropdowns + per-line validation |
 | `ValidationPanel` | §7.3 | Hard-block messaging; **reveals constraints, never labels** (Q57) |
@@ -57,7 +57,8 @@ empty-state illustration set (bilingual).
 
 - **Identity**: E-JUST crimson as the brand anchor (prototype heritage) on a neutral, high-contrast
   scaffold; state colors reserved for plan semantics (Draft gray · Submitted blue · Under Review amber ·
-  Returned orange · Approved green · Confirmed teal · Failed/Expired red · Closed neutral).
+  Returned orange · Approved green · Expired red · Closed neutral; Withdrawn and Discarded share the
+  Closed neutral).
 - **Typography**: Inter (EN) + an Arabic companion (Cairo or IBM Plex Sans Arabic) — decide in D0 with
   rendering tests in both themes; Latin numerals for academic figures in both locales.
 - **Density**: students get breathing room (phone-first); advisor/dean/VP get data-dense tables

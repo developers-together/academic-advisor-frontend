@@ -1,0 +1,122 @@
+{
+  "app": {
+    "name": "Advaisor",
+    "tagline": "Academic planning with an AI advisor"
+  },
+  "roles": {
+    "student": "Student",
+    "advisor": "Advisor",
+    "dean": "Dean",
+    "vp": "Vice President",
+    "admin": "Administrator"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "myPlan": "My Plan",
+    "builder": "Plan Builder",
+    "profile": "Profile",
+    "chat": "AI Chat",
+    "notifications": "Notifications",
+    "queue": "Queue",
+    "students": "Student Explorer",
+    "meetings": "Meetings",
+    "hours": "Office Hours",
+    "overview": "Overview",
+    "scorecard": "Scorecard",
+    "drilldown": "Drill-down",
+    "accounts": "Accounts",
+    "assignments": "Caseloads",
+    "rules": "Rules",
+    "settings": "Settings"
+  },
+  "topbar": {
+    "language": "Change language",
+    "theme": {
+      "label": "Change theme",
+      "light": "Switch to light theme",
+      "dark": "Switch to dark theme",
+      "system": "Theme follows your system"
+    },
+    "bell": "Notifications",
+    "unreadCount": "{{count}} unread notifications",
+    "account": "Account menu",
+    "signOut": "Sign out",
+    "signingOut": "Signing out"
+  },
+  "actions": {
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "save": "Save",
+    "clear": "Clear",
+    "clearSearch": "Clear search",
+    "back": "Back",
+    "search": "Search",
+    "moreActions": "More actions",
+    "loading": "Loading"
+  },
+  "permissionDenied": {
+    "title": "This area is for {{audience}}s.",
+    "back": "Go to your dashboard"
+  },
+  "errors": {
+    "loadFailed": "Could not load this content.",
+    "loadFailedBody": "The request failed or the connection dropped. Retry in a moment.",
+    "forbidden": "You do not have access to this content.",
+    "notFoundTitle": "We could not find that page.",
+    "notFoundBody": "The address may be wrong or the page moved.",
+    "notFoundAction": "Go to your dashboard",
+    "conflict": "That action is no longer available. Your view is up to date.",
+    "tooManyAttempts": "Too many attempts. Try again in a minute.",
+    "sessionEnded": "Your session ended. Sign in again to continue.",
+    "requestRef": "Request reference: {{id}}",
+    "sisUnavailable": "The university data service is unavailable.",
+    "sisUnavailableBody": "Your data may be out of date. Retry in a moment."
+  },
+  "planStates": {
+    "srLabel": "Plan status: {{state}}",
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "under_review": "Under review",
+    "returned": "Returned",
+    "approved": "Approved",
+    "expired": "Expired",
+    "closed": "Closed",
+    "withdrawn": "Withdrawn",
+    "discarded": "Discarded"
+  },
+  "badges": {
+    "aging": "Aging",
+    "meetingNotMet": "Meeting not met",
+    "assigned": "Assigned",
+    "unassigned": "Unassigned",
+    "new": "New",
+    "advisory": "Advisory",
+    "active": "Active",
+    "suspended": "Suspended",
+    "bound": "Bound",
+    "bindingPending": "Binding pending",
+    "bindingFailed": "ID check failed",
+    "proposed": "Proposed",
+    "done": "Done",
+    "sis": "SIS",
+    "platform": "Platform",
+    "default": "Default"
+  },
+  "table": {
+    "pageSize": "Rows per page",
+    "all": "All",
+    "previous": "Previous page",
+    "next": "Next page",
+    "empty": "No rows to show."
+  },
+  "emptyStates": {
+    "title": "Nothing here yet",
+    "generic": "Content appears here once it is available."
+  },
+  "confirm": {
+    "cancel": "Cancel"
+  },
+  "skipToContent": "Skip to content"
+}

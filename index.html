@@ -4,11 +4,28 @@
     <meta charset="utf-8" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Bulletproof React Application" />
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Bulletproof React</title>
+    <meta name="description" content="Advaisor: academic planning with an AI advisor" />
+    <title>Advaisor</title>
+    <script>
+      // Applies the stored or system-seeded theme before first paint so the
+      // app never flashes the wrong theme (design.md D6.1).
+      (function () {
+        try {
+          var stored = JSON.parse(
+            localStorage.getItem('advaisor.theme') || 'null',
+          );
+          var theme =
+            stored && stored.state && stored.state.theme
+              ? stored.state.theme
+              : 'system';
+          var dark =
+            theme === 'dark' ||
+            (theme === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

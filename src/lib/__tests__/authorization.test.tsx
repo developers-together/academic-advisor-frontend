@@ -1,83 +1,36 @@
-import { createUser, renderApp, screen } from '@/testing/test-utils';
+import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 
-import { Authorization, ROLES } from '../authorization';
+import { screen } from '@/testing/test-utils';
+import type { UserRole } from '@/types/domain';
 
-test('should view protected resource if user role is matching', async () => {
-  const user = await createUser({
-    role: ROLES.ADMIN,
-  });
+import { PermissionDenied, roleHome } from '../authorization';
 
-  const protectedResource = 'This is very confidential data';
+const roleHomeExpectations: Array<[UserRole, string]> = [
+  ['student', '/app'],
+  ['advisor', '/advisor'],
+  ['dean', '/dean'],
+  ['vp', '/vp'],
+  ['admin', '/admin/students'],
+];
 
-  await renderApp(
-    <Authorization allowedRoles={[ROLES.ADMIN]}>
-      {protectedResource}
-    </Authorization>,
-    {
-      user,
-    },
-  );
-
-  expect(screen.getByText(protectedResource)).toBeInTheDocument();
+test.each(roleHomeExpectations)('lands %s on %s', (role, href) => {
+  expect(roleHome(role)).toBe(href);
 });
 
-test('should not view protected resource if user role does not match and show fallback message instead', async () => {
-  const user = await createUser({
-    role: ROLES.USER,
-  });
-
-  const protectedResource = 'This is very confidential data';
-
-  const forbiddenMessage = 'You are unauthorized to view this resource';
-  await renderApp(
-    <Authorization
-      forbiddenFallback={<div>{forbiddenMessage}</div>}
-      allowedRoles={[ROLES.ADMIN]}
-    >
-      {protectedResource}
-    </Authorization>,
-    { user },
+test('the permission panel names the audience and offers a way back', () => {
+  render(
+    <MemoryRouter>
+      <PermissionDenied
+        audience="advisor"
+        backTo={{ label: 'Back', href: '/app' }}
+      />
+    </MemoryRouter>,
   );
 
-  expect(screen.queryByText(protectedResource)).not.toBeInTheDocument();
-
-  expect(screen.getByText(forbiddenMessage)).toBeInTheDocument();
-});
-
-test('should view protected resource if policy check passes', async () => {
-  const user = await createUser({
-    role: ROLES.ADMIN,
-  });
-
-  const protectedResource = 'This is very confidential data';
-
-  await renderApp(
-    <Authorization policyCheck={true}>{protectedResource}</Authorization>,
-    { user },
+  expect(screen.getByText(/this area is for/i)).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
+    'href',
+    '/app',
   );
-
-  expect(screen.getByText(protectedResource)).toBeInTheDocument();
-});
-
-test('should not view protected resource if policy check fails and show fallback message instead', async () => {
-  const user = await createUser({
-    role: ROLES.USER,
-  });
-
-  const protectedResource = 'This is very confidential data';
-
-  const forbiddenMessage = 'You are unauthorized to view this resource';
-  await renderApp(
-    <Authorization
-      forbiddenFallback={<div>{forbiddenMessage}</div>}
-      policyCheck={false}
-    >
-      {protectedResource}
-    </Authorization>,
-    { user },
-  );
-
-  expect(screen.queryByText(protectedResource)).not.toBeInTheDocument();
-
-  expect(screen.getByText(forbiddenMessage)).toBeInTheDocument();
 });

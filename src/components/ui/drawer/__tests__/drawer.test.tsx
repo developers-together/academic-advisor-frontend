@@ -22,7 +22,7 @@ const TestDrawer = () => {
       <DrawerTrigger asChild>
         <Button variant="outline">{openButtonText}</Button>
       </DrawerTrigger>
-      <DrawerContent className="flex max-w-[800px] flex-col justify-between sm:max-w-[540px]">
+      <DrawerContent className="flex max-w-200 flex-col justify-between sm:max-w-135">
         <div className="flex flex-col">
           <DrawerHeader>
             <DrawerTitle>{titleText}</DrawerTitle>

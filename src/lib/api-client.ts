@@ -1,15 +1,29 @@
 import Axios, { InternalAxiosRequestConfig } from 'axios';
 
-import { useNotifications } from '@/components/ui/notifications';
 import { env } from '@/config/env';
-import { paths } from '@/config/paths';
+
+import { toApiError } from './api-error';
+import { tokenStorage } from './token-storage';
+
+let suppressAuthRedirect = false;
+
+export const withSuppressedAuthRedirect = async <T>(fn: () => Promise<T>) => {
+  suppressAuthRedirect = true;
+  try {
+    return await fn();
+  } finally {
+    suppressAuthRedirect = false;
+  }
+};
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = 'application/json';
+    const token = tokenStorage.get();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
-
-  config.withCredentials = true;
   return config;
 }
 
@@ -18,25 +32,22 @@ export const api = Axios.create({
 });
 
 api.interceptors.request.use(authRequestInterceptor);
-api.interceptors.response.use(
-  (response) => {
-    return response.data;
-  },
-  (error) => {
-    const message = error.response?.data?.message || error.message;
-    useNotifications.getState().addNotification({
-      type: 'error',
-      title: 'Error',
-      message,
-    });
 
-    if (error.response?.status === 401) {
-      const searchParams = new URLSearchParams();
-      const redirectTo =
-        searchParams.get('redirectTo') || window.location.pathname;
-      window.location.href = paths.auth.login.getHref(redirectTo);
+api.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    const apiError = toApiError(error);
+
+    if (apiError.status === 401 && !suppressAuthRedirect) {
+      tokenStorage.clear();
+      const redirectTo = `${window.location.pathname}${window.location.search}`;
+      const params = new URLSearchParams({ reason: 'expired' });
+      if (redirectTo && redirectTo !== '/') {
+        params.set('redirectTo', redirectTo);
+      }
+      window.location.href = `/login?${params.toString()}`;
     }
 
-    return Promise.reject(error);
+    return Promise.reject(apiError);
   },
 );
