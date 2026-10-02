@@ -34,7 +34,7 @@ export const ConfirmationDialog = ({
   isDone = false,
 }: ConfirmationDialogProps) => {
   const { close, open, isOpen } = useDisclosure();
-  const cancelButtonRef = React.useRef(null);
+  const cancelButtonRef = React.useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (isDone) {
@@ -54,7 +54,13 @@ export const ConfirmationDialog = ({
       }}
     >
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          cancelButtonRef.current?.focus();
+        }}
+      >
         <DialogHeader className="flex">
           <DialogTitle className="flex items-center gap-2">
             {' '}

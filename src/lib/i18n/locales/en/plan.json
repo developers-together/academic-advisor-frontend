@@ -82,6 +82,8 @@
     "line": {
       "group": "Group",
       "section": "Section",
+      "groupAria": "Group for {{code}}",
+      "sectionAria": "Section for {{code}}",
       "remove": "Remove {{code}}",
       "prerequisites": "Prerequisites",
       "prereqCaption": "The check result shows after submit.",
@@ -96,14 +98,19 @@
     "validation": {
       "helper": "Your plan is checked when you submit.",
       "title": "Validation",
-      "issuesCount": "{{count}} issue to resolve",
-      "issuesCountOther": "{{count}} issues to resolve",
-      "submitBlocked": "Resolve {{count}} issues to submit.",
+      "issuesCount_one": "{{count}} issue to resolve",
+      "issuesCount_other": "{{count}} issues to resolve",
+      "submitBlocked_one": "Resolve {{count}} issue to submit.",
+      "submitBlocked_other": "Resolve {{count}} issues to submit.",
       "jumpToLine": "Jump to line",
       "advisoryTitle": "Advisory notes"
     },
     "submit": "Submit plan",
     "submitPending": "Submitting",
+    "windowClosedTitle": "Registration is closed",
+    "windowClosed": "Your approved plan waits for the next window.",
+    "submitUnavailableTitle": "Your plan was not submitted",
+    "submitUnavailableBody": "The registration service is unavailable. Retry in a moment.",
     "discard": "Discard plan",
     "startPlan": "Start your plan",
     "startPending": "Creating"

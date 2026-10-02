@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContentLayout } from '@/components/layouts';
 import { Banner, ErrorState } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SkeletonCard } from '@/components/ui/skeleton';
+import { useCreatePlan } from '@/features/plan/api/create-plan';
 import { usePlan } from '@/features/plan/api/get-plan';
 import { PlanDocument } from '@/features/plan/components/plan-document';
+import { BuilderDocument } from '@/features/plan-builder/components/builder-document';
 import { ApiError } from '@/lib/api-error';
 import { useUser } from '@/lib/auth';
 
@@ -13,8 +16,23 @@ export default function BuilderRoute() {
   const { t } = useTranslation('plan');
   const user = useUser();
   const planQuery = usePlan();
+  const createPlan = useCreatePlan();
+  const [startConflict, setStartConflict] = useState(false);
 
-  const notDraft = planQuery.data && planQuery.data.status !== 'draft';
+  const plan = planQuery.data;
+  const notDraft = plan && plan.status !== 'draft';
+
+  const startPlan = () => {
+    createPlan.mutate(undefined, {
+      onSuccess: () => setStartConflict(false),
+      onError: (error) => {
+        if (error instanceof ApiError && error.status === 409) {
+          void planQuery.refetch();
+          setStartConflict(true);
+        }
+      },
+    });
+  };
 
   return (
     <ContentLayout title={t('builder.title')}>
@@ -34,7 +52,7 @@ export default function BuilderRoute() {
           planQuery.error instanceof ApiError &&
           planQuery.error.status === 404 && (
             <>
-              {!user.data?.advisor_id && (
+              {(startConflict || !user.data?.advisor_id) && (
                 <Banner variant="warning" className="max-w-2xl">
                   {t('noAdvisor.banner')}
                 </Banner>
@@ -47,21 +65,33 @@ export default function BuilderRoute() {
                     ? t('dashboard.empty.body')
                     : t('noAdvisor.builderEntry')
                 }
+                action={
+                  user.data?.advisor_id
+                    ? {
+                        label: t('builder.startPlan'),
+                        onClick: startPlan,
+                        loading: createPlan.isPending,
+                      }
+                    : undefined
+                }
               />
             </>
           )}
 
-        {planQuery.data && (
+        {plan && (
           <>
-            <Banner variant="info">{t('builder.validation.helper')}</Banner>
             {notDraft && (
-              <Banner variant="warning">
+              <Banner variant="warning" className="max-w-2xl">
                 {t('builder.notDraft', {
-                  state: t(`common:planStates.${planQuery.data.status}`),
+                  state: t(`common:planStates.${plan.status}`),
                 })}
               </Banner>
             )}
-            <PlanDocument plan={planQuery.data} />
+            {notDraft ? (
+              <PlanDocument plan={plan} />
+            ) : (
+              <BuilderDocument plan={plan} />
+            )}
           </>
         )}
       </div>

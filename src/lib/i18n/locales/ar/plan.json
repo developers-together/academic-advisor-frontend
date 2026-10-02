@@ -82,6 +82,8 @@
     "line": {
       "group": "المجموعة",
       "section": "الشعبة",
+      "groupAria": "مجموعة {{code}}",
+      "sectionAria": "شعبة {{code}}",
       "remove": "إزالة {{code}}",
       "prerequisites": "المتطلبات السابقة",
       "prereqCaption": "تظهر نتيجة التحقق بعد التقديم.",
@@ -96,14 +98,19 @@
     "validation": {
       "helper": "تُفحص خطتك عند التقديم.",
       "title": "التحقق",
-      "issuesCount": "مشكلة واحدة يجب حلها",
-      "issuesCountOther": "{{count}} مشاكل يجب حلها",
-      "submitBlocked": "حل {{count}} مشاكل لتتمكن من التقديم.",
+      "issuesCount_one": "مشكلة واحدة يجب حلها",
+      "issuesCount_other": "{{count}} مشاكل يجب حلها",
+      "submitBlocked_one": "حل مشكلة واحدة لتتمكن من التقديم.",
+      "submitBlocked_other": "حل {{count}} مشاكل لتتمكن من التقديم.",
       "jumpToLine": "انتقل إلى السطر",
       "advisoryTitle": "ملاحظات استشارية"
     },
     "submit": "تقديم الخطة",
     "submitPending": "جارٍ التقديم",
+    "windowClosedTitle": "التسجيل مغلق",
+    "windowClosed": "خطتك المعتمدة تنتظر النافذة التالية.",
+    "submitUnavailableTitle": "لم تُقدَّم خطتك",
+    "submitUnavailableBody": "خدمة التسجيل غير متاحة. أعد المحاولة بعد قليل.",
     "discard": "إلغاء الخطة",
     "startPlan": "ابدأ خطتك",
     "startPending": "جارٍ الإنشاء"
