@@ -7,7 +7,12 @@ import {
   isOfferedGroup,
   isOfferedSection,
 } from '@/config/plan-offerings';
-import type { PlannedCourse, Plan, PrerequisiteMapEntry } from '@/types/domain';
+import type {
+  Plan,
+  PlanComment,
+  PlannedCourse,
+  PrerequisiteMapEntry,
+} from '@/types/domain';
 
 import { db } from '../db';
 import { CURRENT_TERM, requireAuth } from '../mock-auth';
@@ -39,7 +44,7 @@ const parsePlan = (row: {
   warnings: JSON.parse(row.warnings) as string[],
   submitted_at: row.submitted_at,
   decided_at: row.decided_at,
-  return_reason: row.return_reason,
+  return_reason: row.return_reason || null,
 });
 
 const planOf = (userId: number) =>
@@ -276,6 +281,79 @@ export const planHandlers = [
       return HttpResponse.json({ data: parsePlan(updated) });
     },
   ),
+
+  http.get(`${env.API_URL}/plan/comments`, async ({ request }) => {
+    await networkDelay();
+    const user = requireAuth(request);
+    const row = planOf(user.id as number);
+    if (!row) {
+      return HttpResponse.json({ message: 'No plan found.' }, { status: 404 });
+    }
+    const comments: PlanComment[] = db.planComment
+      .findMany({ where: { planId: { equals: row.id as number } } })
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      .flatMap((comment) => {
+        const author = db.user.findFirst({
+          where: { id: { equals: comment.authorId as number } },
+        });
+        if (!author) return [];
+        return [
+          {
+            id: comment.id as number,
+            body: comment.body,
+            author: { id: author.id as number, name: author.name },
+            created_at: comment.createdAt,
+          },
+        ];
+      });
+    return HttpResponse.json({ data: comments });
+  }),
+
+  http.post(`${env.API_URL}/plan/seen`, async ({ request }) => {
+    await networkDelay();
+    const user = requireAuth(request);
+    const row = planOf(user.id as number);
+    if (!row) {
+      return HttpResponse.json({ message: 'No plan found.' }, { status: 404 });
+    }
+    if (row.status !== 'returned') {
+      return HttpResponse.json(
+        { message: 'Only a returned plan can be marked seen.' },
+        { status: 422 },
+      );
+    }
+    const updated = db.plan.update({
+      where: { id: { equals: row.id as number } },
+      data: { status: 'draft', return_reason: '' },
+    });
+    if (!updated) {
+      return HttpResponse.json({ message: 'No plan found.' }, { status: 404 });
+    }
+    return HttpResponse.json({ data: parsePlan(updated) });
+  }),
+
+  http.post(`${env.API_URL}/plan/withdraw`, async ({ request }) => {
+    await networkDelay();
+    const user = requireAuth(request);
+    const row = planOf(user.id as number);
+    if (!row) {
+      return HttpResponse.json({ message: 'No plan found.' }, { status: 404 });
+    }
+    if (row.status !== 'draft') {
+      return HttpResponse.json(
+        { message: 'Only a draft plan can be withdrawn.' },
+        { status: 422 },
+      );
+    }
+    const updated = db.plan.update({
+      where: { id: { equals: row.id as number } },
+      data: { status: 'withdrawn' },
+    });
+    if (!updated) {
+      return HttpResponse.json({ message: 'No plan found.' }, { status: 404 });
+    }
+    return HttpResponse.json({ data: parsePlan(updated) });
+  }),
 
   http.post(`${env.API_URL}/plan/submit`, async ({ request }) => {
     await networkDelay();

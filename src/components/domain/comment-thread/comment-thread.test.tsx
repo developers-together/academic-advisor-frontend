@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@/testing/test-utils';
+import { render, screen, userEvent, within } from '@/testing/test-utils';
 import type { PlanComment } from '@/types/domain';
 
 import { CommentThread } from './comment-thread';
@@ -81,4 +81,50 @@ test('submits a valid comment and clears the composer', async () => {
   expect(onSubmit).toHaveBeenCalledWith('The plan looks balanced.');
   await screen.findByRole('textbox');
   expect(screen.getByRole('textbox')).toHaveValue('');
+});
+
+test('renders no composer when the thread is read-only', () => {
+  render(
+    <CommentThread
+      comments={[comment({})]}
+      title="Advisor comments"
+      emptyText="No comments yet."
+    />,
+  );
+
+  expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Add comment' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('region', { name: 'Advisor comments' }),
+  ).toBeInTheDocument();
+});
+
+test('tints comments newer than the cutoff and pairs the tint with a New badge', () => {
+  render(
+    <CommentThread
+      comments={[
+        comment({}),
+        comment({
+          id: 2,
+          body: 'The group choice is fine now.',
+          created_at: '2026-10-02T12:00:00.000Z',
+        }),
+      ]}
+      onSubmit={() => {}}
+      unreadAfter="2026-10-02T08:00:00.000Z"
+    />,
+  );
+
+  const read = screen
+    .getByText('Please explain the repeated course.')
+    .closest('li') as HTMLElement;
+  const unread = screen
+    .getByText('The group choice is fine now.')
+    .closest('li') as HTMLElement;
+  expect(read).not.toHaveClass('bg-crimson-100');
+  expect(within(read).queryByText('New')).not.toBeInTheDocument();
+  expect(unread).toHaveClass('bg-crimson-100');
+  expect(within(unread).getByText('New')).toBeInTheDocument();
 });

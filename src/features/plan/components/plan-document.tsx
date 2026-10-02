@@ -10,11 +10,15 @@ import type { Plan } from '@/types/domain';
 
 import { PlanLine } from './plan-line';
 
+const lineId = (courseCode: string) =>
+  `plan-line-${encodeURIComponent(courseCode)}`;
+
 export type PlanDocumentProps = {
   plan: Plan;
+  lineErrors?: Record<string, string[]>;
 };
 
-export const PlanDocument = ({ plan }: PlanDocumentProps) => {
+export const PlanDocument = ({ plan, lineErrors }: PlanDocumentProps) => {
   const { t } = useTranslation();
   const academicRecord = useAcademicRecord();
   const titles = buildCourseTitleIndex(academicRecord.data);
@@ -25,7 +29,11 @@ export const PlanDocument = ({ plan }: PlanDocumentProps) => {
         <h2 className="text-base font-semibold">
           {t('termContext', { ns: 'plan', term: plan.term_code })}
         </h2>
-        <PlanStateChip status={plan.status} variant="banner" />
+        <PlanStateChip
+          key={plan.status}
+          status={plan.status}
+          variant="banner"
+        />
       </CardHeader>
       <CardBody className="pt-0">
         {plan.return_reason && (
@@ -38,10 +46,16 @@ export const PlanDocument = ({ plan }: PlanDocumentProps) => {
         )}
         <ul className="divide-y">
           {plan.courses.map((course) => (
-            <li key={course.course_code} className="list-none">
+            <li
+              key={course.course_code}
+              id={lineId(course.course_code)}
+              tabIndex={-1}
+              className="list-none focus-visible:outline-none"
+            >
               <PlanLine
                 course={course}
                 title={titles.get(course.course_code) ?? null}
+                errors={lineErrors?.[course.course_code] ?? []}
               />
             </li>
           ))}

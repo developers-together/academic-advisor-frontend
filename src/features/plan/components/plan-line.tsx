@@ -6,10 +6,16 @@ import { cn } from '@/utils/cn';
 export type PlanLineProps = {
   course: PlannedCourse;
   title: string | null;
+  errors?: string[];
   className?: string;
 };
 
-export const PlanLine = ({ course, title, className }: PlanLineProps) => {
+export const PlanLine = ({
+  course,
+  title,
+  errors = [],
+  className,
+}: PlanLineProps) => {
   const { t } = useTranslation();
 
   return (
@@ -36,6 +42,15 @@ export const PlanLine = ({ course, title, className }: PlanLineProps) => {
           {t('builder.line.aiNote')}: {course.reason}
         </span>
       )}
+      {errors.map((message) => (
+        <p
+          key={message}
+          className="w-full text-sm text-destructive"
+          role="status"
+        >
+          {message}
+        </p>
+      ))}
     </div>
   );
 };
