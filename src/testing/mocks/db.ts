@@ -7,6 +7,8 @@ const nextId = (() => {
 
 const nullableString = () => null as unknown as string;
 
+const nullableNumber = () => null as unknown as number;
+
 const models = {
   user: {
     id: primaryKey(() => nextId()),
@@ -40,7 +42,7 @@ const models = {
   },
   academicRecord: {
     userId: primaryKey(() => nextId()),
-    cgpa: Number,
+    cgpa: nullableNumber,
     curriculum_year_level: Number,
     remaining_requirements: nullableString,
 
@@ -54,6 +56,13 @@ const models = {
   advisorProfile: {
     advisorId: primaryKey(() => nextId()),
     rows: String,
+  },
+  planComment: {
+    id: primaryKey(() => nextId()),
+    planId: Number,
+    authorId: Number,
+    body: String,
+    createdAt: () => new Date().toISOString(),
   },
 };
 

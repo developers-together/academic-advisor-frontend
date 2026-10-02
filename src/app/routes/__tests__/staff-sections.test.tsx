@@ -68,7 +68,7 @@ describe('advisor section', () => {
       ['Notifications', '/advisor/notifications'],
     ]);
     expect(
-      screen.getByText('No plans are waiting for review.'),
+      await screen.findByText('No plans are waiting for review.'),
     ).toBeInTheDocument();
   });
 

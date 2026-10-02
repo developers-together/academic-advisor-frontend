@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { PlanStateChip } from '@/components/domain/plan-state-chip';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,8 +12,6 @@ import {
 } from '@/components/ui/card';
 import { paths } from '@/config/paths';
 import type { Plan, PlanStatus } from '@/types/domain';
-
-import { PlanStateChip } from './plan-state-chip';
 
 type CtaConfig =
   { kind: 'link'; labelKey: string; href: string } | { kind: 'none' };

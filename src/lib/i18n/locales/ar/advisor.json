@@ -13,6 +13,7 @@
       "term": "الترم",
       "waiting": "الانتظار"
     },
+    "openReview": "مراجعة خطة {{name}}",
     "waitingDays": "يوم واحد",
     "waitingDaysOther": "{{count}} أيام",
     "empty": {

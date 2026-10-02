@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
+import { PlanStateChip } from '@/components/domain/plan-state-chip';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import {
   useAcademicRecord,
@@ -8,7 +9,6 @@ import {
 import type { Plan } from '@/types/domain';
 
 import { PlanLine } from './plan-line';
-import { PlanStateChip } from './plan-state-chip';
 
 export type PlanDocumentProps = {
   plan: Plan;

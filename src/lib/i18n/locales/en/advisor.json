@@ -13,6 +13,7 @@
       "term": "Term",
       "waiting": "Waiting"
     },
+    "openReview": "Review {{name}}'s plan",
     "waitingDays": "{{count}} day",
     "waitingDaysOther": "{{count}} days",
     "empty": {
