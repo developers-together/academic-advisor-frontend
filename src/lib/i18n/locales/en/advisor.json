@@ -58,6 +58,7 @@
       "title": "Approval is blocked",
       "body": "The checks below failed. You can still return the plan to the student."
     },
+    "notReviewable": "This plan is not waiting for review. Plans you can act on appear in the queue.",
     "requestMeeting": "Request meeting"
   },
   "students": {
@@ -65,6 +66,7 @@
     "context": "Your caseload for this term.",
     "searchLabel": "Search students",
     "searchPlaceholder": "Search by name or student ID",
+    "openReview": "Open {{name}}'s plan",
     "tabs": {
       "all": "All",
       "unmet": "Unmet meeting",
@@ -120,7 +122,11 @@
       "errors": {
         "rowIncomplete": "Fill the date, start, and end times.",
         "endBeforeStart": "End time must be after the start time."
-      }
+      },
+      "date": "Date",
+      "start": "Start",
+      "end": "End",
+      "removeRow": "Remove time"
     },
     "requestDialog": {
       "title": "Request a meeting with {{name}}",
@@ -156,6 +162,15 @@
       "endBeforeStart": "End time must be after the start time.",
       "overlap": "Two rows overlap on {{day}}. Adjust the times so each row stands alone.",
       "rowIncomplete": "Fill the day and both times."
+    },
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
     }
   }
 }

@@ -171,6 +171,7 @@ export type AdvisorCaseloadStudent = {
   school: OrgUnit | null;
   department: OrgUnit | null;
   curriculum_year_level: number | null;
+  plan_id: number | null;
   plan_state: PlanStatus | null;
   submitted_at: string | null;
   is_aging: boolean;

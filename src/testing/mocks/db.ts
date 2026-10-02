@@ -64,6 +64,15 @@ const models = {
     body: String,
     createdAt: () => new Date().toISOString(),
   },
+  visitRequest: {
+    id: primaryKey(() => nextId()),
+    studentId: Number,
+    initiatorId: Number,
+    status: String,
+    term_code: String,
+    slots: String,
+    createdAt: () => new Date().toISOString(),
+  },
 };
 
 export const db = factory(models);

@@ -79,10 +79,14 @@ describe('advisor section', () => {
       'No students are assigned to you yet.',
     ],
     ['/advisor/meetings', 'Meetings', 'No open meeting requests.'],
-    ['/advisor/hours', 'Office Hours', 'No office hours published yet.'],
+    [
+      '/advisor/hours',
+      'Office Hours',
+      'These are the default hours. Publish to make them yours.',
+    ],
     ['/advisor/notifications', 'Notifications', 'No notifications yet.'],
   ])(
-    'renders the %s slot with its honest empty state',
+    'renders the %s slot with its honest settled state',
     async (url, title, empty) => {
       await loginAsUser(await staffUser('advisor'));
 
@@ -91,7 +95,7 @@ describe('advisor section', () => {
       expect(
         await screen.findByRole('heading', { name: title }),
       ).toBeInTheDocument();
-      expect(screen.getByText(empty)).toBeInTheDocument();
+      expect(await screen.findByText(empty)).toBeInTheDocument();
     },
   );
 });
@@ -180,7 +184,7 @@ describe('admin section', () => {
     ['/admin/rules', 'University Rules', 'No university rules yet.'],
     ['/admin/settings', 'Settings', 'No staff accounts yet.'],
   ])(
-    'renders the %s slot with its honest empty state',
+    'renders the %s slot with its honest settled state',
     async (url, title, empty) => {
       await loginAsUser(await staffUser('admin'));
 
@@ -189,7 +193,7 @@ describe('admin section', () => {
       expect(
         await screen.findByRole('heading', { name: title }),
       ).toBeInTheDocument();
-      expect(screen.getByText(empty)).toBeInTheDocument();
+      expect(await screen.findByText(empty)).toBeInTheDocument();
     },
   );
 });

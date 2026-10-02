@@ -1,19 +1,14 @@
 import { useTranslation } from 'react-i18next';
 
 import { ContentLayout } from '@/components/layouts';
-import { EmptyState } from '@/components/ui/empty-state';
+import { MeetingsDocument } from '@/features/advisor-meetings/components/meetings-document';
 
 export default function AdvisorMeetingsRoute() {
   const { t } = useTranslation('advisor');
 
   return (
     <ContentLayout title={t('meetings.title')} context={t('meetings.context')}>
-      <EmptyState
-        compact
-        title={t('meetings.emptyOpen.title')}
-        description={t('meetings.emptyOpen.body')}
-        className="max-w-xl"
-      />
+      <MeetingsDocument />
     </ContentLayout>
   );
 }

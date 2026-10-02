@@ -39,10 +39,13 @@ type Setup = {
   onReturn?: (reason: string) => void;
   onOpenChange?: (open: boolean) => void;
   onAddComment?: (body: string) => void;
+  onRequestMeeting?: () => void;
   approveGate?: string[] | null;
   approveUnavailable?: { requestId: string | null } | null;
   returnError?: string | null;
-  planOverrides?: Partial<Plan>;
+  planOverrides?: Partial<Plan> | null;
+  planUnavailable?: string | null;
+  planReviewable?: boolean;
   cgpa?: number | null;
 };
 
@@ -51,10 +54,13 @@ const renderDrawer = ({
   onReturn = () => {},
   onOpenChange = () => {},
   onAddComment = () => {},
+  onRequestMeeting,
   approveGate = null,
   approveUnavailable = null,
   returnError = null,
   planOverrides,
+  planUnavailable = null,
+  planReviewable = true,
   cgpa = 2.8,
 }: Setup = {}) => {
   return render(
@@ -65,6 +71,9 @@ const renderDrawer = ({
       cgpa={cgpa}
       plan={planOverrides === null ? null : { ...plan, ...planOverrides }}
       planPending={false}
+      planUnavailable={planUnavailable}
+      planReviewable={planReviewable}
+      onRequestMeeting={onRequestMeeting}
       comments={comments}
       onAddComment={onAddComment}
       approveGate={approveGate}
@@ -311,4 +320,60 @@ test('the footer actions stay reachable while the plan renders', async () => {
   await waitFor(() =>
     expect(screen.getByRole('button', { name: 'Return plan' })).toBeEnabled(),
   );
+});
+
+test('the request meeting entry fires its callback when wired and stays absent otherwise', async () => {
+  const onRequestMeeting = vi.fn();
+  renderDrawer({ onRequestMeeting });
+
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Request meeting' }),
+  );
+  expect(onRequestMeeting).toHaveBeenCalledOnce();
+});
+
+test('a student without a plan renders the no-plan message with the request meeting entry only', () => {
+  const onRequestMeeting = vi.fn();
+  renderDrawer({
+    planOverrides: null,
+    planUnavailable: 'Lina Majors has not created a plan this term.',
+    onRequestMeeting,
+  });
+
+  expect(
+    screen.getByText('Lina Majors has not created a plan this term.'),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Approve' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Return plan' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Request meeting' }),
+  ).toBeInTheDocument();
+});
+
+test('a plan outside the review states hides the decision actions and names the queue', () => {
+  renderDrawer({
+    planOverrides: { status: 'approved' },
+    planReviewable: false,
+    onRequestMeeting: () => {},
+  });
+
+  expect(
+    screen.getByText(
+      'This plan is not waiting for review. Plans you can act on appear in the queue.',
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Approve' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Return plan' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Request meeting' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText('CS 201')).toBeInTheDocument();
 });

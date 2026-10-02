@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
+import { dayjsInCairo } from './cairo';
+
 export const formatNumber = (
   value: number,
   options?: Intl.NumberFormatOptions,
@@ -19,4 +21,10 @@ export const formatTime = (value: string | Date) => {
 
 export const formatDateTime = (value: string | Date) => {
   return `${dayjs(value).format('DD MMM YYYY')} ${dayjs(value).format('HH:mm')}`;
+};
+
+export const formatCairoSlotRange = (startsAt: string, endsAt: string) => {
+  const start = dayjsInCairo(startsAt);
+  const end = dayjsInCairo(endsAt);
+  return `${start.format('DD MMM YYYY')}, ${start.format('HH:mm')}-${end.format('HH:mm')}`;
 };

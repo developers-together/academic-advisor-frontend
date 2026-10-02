@@ -8,7 +8,7 @@ import { FieldWrapper, FieldWrapperPassThroughProps } from './field-wrapper';
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
   FieldWrapperPassThroughProps & {
     className?: string;
-    registration: Partial<UseFormRegisterReturn>;
+    registration?: Partial<UseFormRegisterReturn>;
   };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

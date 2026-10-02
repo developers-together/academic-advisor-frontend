@@ -2,11 +2,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { QueueTable } from '@/components/domain/queue-table';
 import { ReviewDrawer } from '@/components/domain/review-drawer';
 import { ErrorState } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import {
   useAddPlanComment,
   useApproveReviewPlan,
@@ -16,19 +16,27 @@ import {
 } from '@/lib/api/advisor-plan-review';
 import { ApiError } from '@/lib/api-error';
 import { PermissionDenied } from '@/lib/authorization';
-import type { AdvisorCaseloadStudent } from '@/types/domain';
+import type { StudentSummary } from '@/types/domain';
 
-import { useAdvisorQueue } from '../api/get-advisor-queue';
+import { useCaseload } from '../api/get-caseload';
 
-export type QueueDocumentProps = {
-  caseload: AdvisorCaseloadStudent[];
+import { CaseloadTable } from './caseload-table';
+
+const SEARCH_DEBOUNCE_MS = 300;
+
+export type ExplorerDocumentProps = {
+  onRequestMeeting?: (student: StudentSummary) => void;
 };
 
-export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
+export const ExplorerDocument = ({
+  onRequestMeeting,
+}: ExplorerDocumentProps) => {
   const { t } = useTranslation('advisor');
   const queryClient = useQueryClient();
 
-  const queueQuery = useAdvisorQueue();
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
+  const caseloadQuery = useCaseload(debouncedSearch);
 
   const [activeId, setActiveId] = useState<number | null>(null);
   const [approveGate, setApproveGate] = useState<string[] | null>(null);
@@ -37,20 +45,24 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
   } | null>(null);
   const [returnError, setReturnError] = useState<string | null>(null);
 
-  const planQuery = useReviewPlan(activeId);
-  const commentsQuery = usePlanComments(activeId);
-  const addComment = useAddPlanComment(activeId ?? 0);
-  const approveMutation = useApproveReviewPlan(activeId);
+  const activeStudent =
+    caseloadQuery.data?.find((student) => student.id === activeId) ?? null;
+  const planQuery = useReviewPlan(activeStudent?.plan_id ?? null);
+  const commentsQuery = usePlanComments(activeStudent?.plan_id ?? null);
+  const addComment = useAddPlanComment(activeStudent?.plan_id ?? 0);
+  const approveMutation = useApproveReviewPlan(activeStudent?.plan_id ?? null);
   const returnMutation = useReturnReviewPlan();
 
   useEffect(() => {
     if (planQuery.data) {
-      void queryClient.invalidateQueries({ queryKey: ['advisor', 'queue'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['advisor', 'caseload'],
+      });
     }
   }, [planQuery.data, queryClient]);
 
   const closeDrawer = () => {
-    const rowId = activeId !== null ? `queue-row-${activeId}` : null;
+    const rowId = activeId !== null ? `explorer-row-${activeId}` : null;
     setActiveId(null);
     if (rowId) {
       window.setTimeout(() => {
@@ -79,11 +91,11 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
 
   const handleReturn = (reason: string) => {
     setReturnError(null);
-    if (activeId === null) {
+    if (activeStudent?.plan_id === null || activeStudent === null) {
       return;
     }
     returnMutation.mutate(
-      { planId: activeId, reason },
+      { planId: activeStudent.plan_id, reason },
       {
         onSuccess: () => closeDrawer(),
         onError: (error) => {
@@ -95,7 +107,7 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
     );
   };
 
-  if (queueQuery.isPending) {
+  if (caseloadQuery.isPending) {
     return (
       <div aria-busy="true" className="space-y-3">
         <Skeleton className="h-10 w-72" />
@@ -107,56 +119,72 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
     );
   }
 
-  if (queueQuery.isError) {
+  if (caseloadQuery.isError) {
     if (
-      queueQuery.error instanceof ApiError &&
-      queueQuery.error.status === 403
+      caseloadQuery.error instanceof ApiError &&
+      caseloadQuery.error.status === 403
     ) {
       return <PermissionDenied audience="advisor" />;
     }
     return (
       <ErrorState
-        onRetry={() => void queueQuery.refetch()}
+        onRetry={() => void caseloadQuery.refetch()}
         requestId={
-          queueQuery.error instanceof ApiError
-            ? queueQuery.error.requestId
+          caseloadQuery.error instanceof ApiError
+            ? caseloadQuery.error.requestId
             : null
         }
       />
     );
   }
 
-  const items = queueQuery.data;
-  if (!items || items.length === 0) {
+  const students = caseloadQuery.data ?? [];
+
+  if (students.length === 0) {
+    if (debouncedSearch) {
+      return (
+        <EmptyState
+          compact
+          title={t('students.emptySearch.title', { search: debouncedSearch })}
+          description={t('students.emptySearch.body')}
+          action={{
+            label: t('actions.clearSearch', { ns: 'common' }),
+            onClick: () => setSearch(''),
+          }}
+          className="max-w-xl"
+        />
+      );
+    }
     return (
       <EmptyState
         compact
-        title={t('queue.empty.title')}
-        description={t('queue.empty.body')}
+        title={t('students.emptyCaseload.title')}
+        description={t('students.emptyCaseload.body')}
         className="max-w-xl"
       />
     );
   }
 
-  const activeItem = items.find((item) => item.id === activeId) ?? null;
-  const cgpaForActive = activeItem
-    ? (caseload.find((student) => student.id === activeItem.student.id)?.cgpa ??
-      null)
-    : null;
+  const plan = planQuery.data ?? null;
+  const planReviewable =
+    plan !== null &&
+    (plan.status === 'submitted' || plan.status === 'under_review');
 
   return (
     <>
-      <QueueTable
-        items={items}
+      <CaseloadTable
+        students={students}
+        search={search}
+        onSearchChange={setSearch}
         activeId={activeId}
-        onActivate={(item) => {
+        onActivate={(student) => {
           setApproveGate(null);
           setApproveUnavailable(null);
           setReturnError(null);
-          setActiveId(item.id);
+          setActiveId(student.id);
         }}
       />
-      {activeItem && (
+      {activeStudent && (
         <ReviewDrawer
           open
           onOpenChange={(next) => {
@@ -164,12 +192,28 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
               closeDrawer();
             }
           }}
-          student={activeItem.student}
-          cgpa={cgpaForActive}
-          plan={planQuery.data ?? null}
-          planPending={planQuery.isPending}
+          student={activeStudent}
+          cgpa={activeStudent.cgpa}
+          plan={activeStudent.plan_id === null ? null : plan}
+          planPending={activeStudent.plan_id !== null && planQuery.isPending}
           planFailed={planQuery.isError}
           onRetryPlan={() => void planQuery.refetch()}
+          planUnavailable={
+            activeStudent.plan_id === null
+              ? t('students.noPlan', { name: activeStudent.name })
+              : null
+          }
+          planReviewable={planReviewable}
+          onRequestMeeting={
+            onRequestMeeting
+              ? () =>
+                  onRequestMeeting({
+                    id: activeStudent.id,
+                    name: activeStudent.name,
+                    student_id: activeStudent.student_id,
+                  })
+              : undefined
+          }
           comments={commentsQuery.data ?? []}
           commentPending={addComment.isPending}
           onAddComment={(body) => addComment.mutate(body)}

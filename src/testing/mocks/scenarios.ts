@@ -30,6 +30,7 @@ export const setScenario = (scenario: Scenario) => {
   db.plan.deleteMany({ where: {} });
   db.academicRecord.deleteMany({ where: {} });
   db.planComment.deleteMany({ where: {} });
+  db.visitRequest.deleteMany({ where: {} });
   seeds[scenario]();
 };
 
@@ -40,10 +41,12 @@ export const quotaExhausted = () => current === 'quota-exhausted';
 
 const PASSWORD = 'password123';
 
-const officeHours = [
+export const DEFAULT_OFFICE_HOURS = [
   { day: 'Sunday', from: '10:00', to: '12:00' },
   { day: 'Tuesday', from: '13:00', to: '15:00' },
 ];
+
+const officeHours = DEFAULT_OFFICE_HOURS;
 
 const seedUsers = () => {
   db.advisorProfile.create({

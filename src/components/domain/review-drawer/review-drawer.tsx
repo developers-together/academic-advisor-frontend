@@ -24,6 +24,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Textarea } from '@/components/ui/form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatNumber } from '@/lib/i18n/format';
@@ -38,6 +39,9 @@ export type ReviewDrawerProps = {
   planPending: boolean;
   planFailed?: boolean;
   onRetryPlan?: () => void;
+  planUnavailable?: string | null;
+  planReviewable?: boolean;
+  onRequestMeeting?: () => void;
   comments: PlanComment[];
   commentPending?: boolean;
   onAddComment: (body: string) => void;
@@ -59,6 +63,9 @@ export const ReviewDrawer = ({
   planPending,
   planFailed = false,
   onRetryPlan,
+  planUnavailable = null,
+  planReviewable = true,
+  onRequestMeeting,
   comments,
   commentPending = false,
   onAddComment,
@@ -160,7 +167,11 @@ export const ReviewDrawer = ({
             </DrawerHeader>
 
             <div className="flex-1 space-y-5 overflow-y-auto p-4">
-              {planPending && (
+              {planUnavailable && (
+                <EmptyState compact title={planUnavailable} />
+              )}
+
+              {!planUnavailable && planPending && (
                 <div aria-hidden className="space-y-3">
                   <Skeleton className="h-5 w-40" />
                   <Skeleton className="h-4 w-full" />
@@ -169,7 +180,9 @@ export const ReviewDrawer = ({
                 </div>
               )}
 
-              {planFailed && <ErrorState compact onRetry={onRetryPlan} />}
+              {!planUnavailable && planFailed && (
+                <ErrorState compact onRetry={onRetryPlan} />
+              )}
 
               {plan && (
                 <>
@@ -221,79 +234,128 @@ export const ReviewDrawer = ({
                     onSubmit={onAddComment}
                   />
 
-                  <section aria-label={t('review.return.action')}>
-                    <form
-                      noValidate
-                      onSubmit={(event) => event.preventDefault()}
-                    >
-                      <Textarea
-                        label={t('review.return.placeholder')}
-                        error={mergedReasonError}
-                        registration={form.register('reason')}
-                        placeholder={t('review.return.placeholder')}
-                        className="min-h-24 text-sm"
-                      />
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {t('review.return.helper', { name: student.name })}
-                      </p>
-                    </form>
-                  </section>
+                  {planReviewable && (
+                    <section aria-label={t('review.return.action')}>
+                      <form
+                        noValidate
+                        onSubmit={(event) => event.preventDefault()}
+                      >
+                        <Textarea
+                          label={t('review.return.placeholder')}
+                          error={mergedReasonError}
+                          registration={form.register('reason')}
+                          placeholder={t('review.return.placeholder')}
+                          className="min-h-24 text-sm"
+                        />
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {t('review.return.helper', { name: student.name })}
+                        </p>
+                      </form>
+                    </section>
+                  )}
                 </>
               )}
             </div>
 
             <div className="space-y-3 border-t p-4">
-              {approveGate && approveGate.length > 0 && (
-                <Banner
-                  variant="destructive"
-                  title={t('review.approveFailed.title')}
-                >
-                  <p>{t('review.approveFailed.body')}</p>
-                  <ul className="mt-2 space-y-1">
-                    {approveGate.map((message) => (
-                      <li key={message} className="flex items-start gap-1.5">
-                        <CircleX
-                          className="mt-0.5 size-4 shrink-0 text-destructive"
-                          aria-hidden
-                        />
-                        <span>{message}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Banner>
-              )}
+              {planUnavailable ? (
+                onRequestMeeting && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={onRequestMeeting}
+                      className="h-11 flex-1 sm:flex-none"
+                    >
+                      {t('review.requestMeeting')}
+                    </Button>
+                  </div>
+                )
+              ) : (
+                <>
+                  {!planReviewable && (
+                    <Banner variant="info">{t('review.notReviewable')}</Banner>
+                  )}
 
-              {approveUnavailable && (
-                <ErrorState
-                  compact
-                  title={t('common:errors.sisUnavailable')}
-                  message={t('common:errors.sisUnavailableBody')}
-                  onRetry={onApprove}
-                  requestId={approveUnavailable.requestId}
-                />
-              )}
+                  {planReviewable && approveGate && approveGate.length > 0 && (
+                    <Banner
+                      variant="destructive"
+                      title={t('review.approveFailed.title')}
+                    >
+                      <p>{t('review.approveFailed.body')}</p>
+                      <ul className="mt-2 space-y-1">
+                        {approveGate.map((message) => (
+                          <li
+                            key={message}
+                            className="flex items-start gap-1.5"
+                          >
+                            <CircleX
+                              className="mt-0.5 size-4 shrink-0 text-destructive"
+                              aria-hidden
+                            />
+                            <span>{message}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </Banner>
+                  )}
 
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => setApproveConfirmOpen(true)}
-                  isLoading={approvePending}
-                  disabled={pending}
-                  aria-busy={approvePending}
-                  className="h-11 flex-1 sm:flex-none"
-                >
-                  {t('review.approve.action')}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => void requestReturn()}
-                  isLoading={returnPending}
-                  disabled={pending}
-                  aria-busy={returnPending}
-                  className="h-11 flex-1 sm:flex-none"
-                >
-                  {t('review.return.submit')}
-                </Button>
-              </div>
+                  {planReviewable && approveUnavailable && (
+                    <ErrorState
+                      compact
+                      title={t('common:errors.sisUnavailable')}
+                      message={t('common:errors.sisUnavailableBody')}
+                      onRetry={onApprove}
+                      requestId={approveUnavailable.requestId}
+                    />
+                  )}
+
+                  {planReviewable ? (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => setApproveConfirmOpen(true)}
+                        isLoading={approvePending}
+                        disabled={pending}
+                        aria-busy={approvePending}
+                        className="h-11 flex-1 sm:flex-none"
+                      >
+                        {t('review.approve.action')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => void requestReturn()}
+                        isLoading={returnPending}
+                        disabled={pending}
+                        aria-busy={returnPending}
+                        className="h-11 flex-1 sm:flex-none"
+                      >
+                        {t('review.return.submit')}
+                      </Button>
+                      {onRequestMeeting && (
+                        <Button
+                          variant="outline"
+                          onClick={onRequestMeeting}
+                          disabled={pending}
+                          className="h-11 flex-1 sm:flex-none"
+                        >
+                          {t('review.requestMeeting')}
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    onRequestMeeting && (
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={onRequestMeeting}
+                          className="h-11 flex-1 sm:flex-none"
+                        >
+                          {t('review.requestMeeting')}
+                        </Button>
+                      </div>
+                    )
+                  )}
+                </>
+              )}
             </div>
           </div>
         </DrawerContent>
