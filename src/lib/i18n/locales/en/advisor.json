@@ -132,6 +132,10 @@
   "hours": {
     "title": "Office Hours",
     "context": "The weekly hours your students see.",
+    "empty": {
+      "title": "No office hours published yet.",
+      "body": "Add your weekly rows and publish the hours students see."
+    },
     "defaultNotice": "These are the default hours. Publish to make them yours.",
     "timezone": "Times are Africa/Cairo time.",
     "maxRows": "Up to 5 rows.",

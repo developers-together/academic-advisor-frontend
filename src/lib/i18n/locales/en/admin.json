@@ -95,7 +95,9 @@
     },
     "empty": {
       "title": "No students match this search.",
-      "body": "Clear it or try another name or ID."
+      "body": "Clear it or try another name or ID.",
+      "noRows": "No caseload assignments yet.",
+      "noRowsBody": "Import a CSV to assign students to advisors."
     }
   },
   "rules": {
@@ -130,6 +132,11 @@
   },
   "settings": {
     "title": "Settings",
+    "context": "Staff accounts and the queue-aging threshold.",
+    "empty": {
+      "title": "No staff accounts yet.",
+      "body": "Create the first staff account and set the queue-aging threshold here."
+    },
     "staff": {
       "title": "Staff accounts",
       "context": "Create a staff account and share the initial password.",

@@ -1,15 +1,25 @@
 {
   "dean": {
     "title": "Department Overview",
+    "context": "Plan pipeline for your faculty this term.",
     "export": "Export CSV",
     "exported": "CSV export generated.",
-    "exportFailed": "The export failed. Try again."
+    "exportFailed": "The export failed. Try again.",
+    "empty": {
+      "title": "No overview data yet.",
+      "body": "Plan and decision counts for your faculty appear here."
+    }
   },
   "vp": {
     "title": "University Scorecard",
+    "context": "All faculties compared on this term's outcomes.",
     "export": "Export CSV",
     "exported": "CSV export generated.",
-    "exportFailed": "The export failed. Try again."
+    "exportFailed": "The export failed. Try again.",
+    "empty": {
+      "title": "No scorecard data yet.",
+      "body": "Per-faculty metrics appear here."
+    }
   },
   "levels": {
     "university": "University",
@@ -66,7 +76,12 @@
   },
   "drilldown": {
     "title": "Drill-down",
-    "root": "University"
+    "context": "Walk from the university down to a department.",
+    "root": "University",
+    "empty": {
+      "title": "No drill-down data yet.",
+      "body": "University, faculty, school, and department metrics appear here."
+    }
   },
   "noFaculty": {
     "title": "No faculty assigned",

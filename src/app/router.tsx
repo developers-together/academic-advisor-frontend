@@ -62,6 +62,100 @@ export const createAppRouter = (queryClient: QueryClient) =>
     },
 
     {
+      path: paths.advisor.root.path,
+      lazy: () => import('./routes/advisor/shell').then(convert(queryClient)),
+      children: [
+        {
+          index: true,
+          lazy: () =>
+            import('./routes/advisor/index').then(convert(queryClient)),
+        },
+        {
+          path: paths.advisor.students.path,
+          lazy: () =>
+            import('./routes/advisor/students').then(convert(queryClient)),
+        },
+        {
+          path: paths.advisor.meetings.path,
+          lazy: () =>
+            import('./routes/advisor/meetings').then(convert(queryClient)),
+        },
+        {
+          path: paths.advisor.hours.path,
+          lazy: () =>
+            import('./routes/advisor/hours').then(convert(queryClient)),
+        },
+        {
+          path: paths.advisor.notifications.path,
+          lazy: () =>
+            import('./routes/advisor/notifications').then(convert(queryClient)),
+        },
+      ],
+    },
+
+    {
+      path: paths.dean.root.path,
+      lazy: () => import('./routes/dean/shell').then(convert(queryClient)),
+      children: [
+        {
+          index: true,
+          lazy: () => import('./routes/dean/index').then(convert(queryClient)),
+        },
+        {
+          path: paths.dean.notifications.path,
+          lazy: () =>
+            import('./routes/dean/notifications').then(convert(queryClient)),
+        },
+      ],
+    },
+
+    {
+      path: paths.vp.root.path,
+      lazy: () => import('./routes/vp/shell').then(convert(queryClient)),
+      children: [
+        {
+          index: true,
+          lazy: () => import('./routes/vp/index').then(convert(queryClient)),
+        },
+        {
+          path: paths.vp.drilldown.path,
+          lazy: () =>
+            import('./routes/vp/drilldown').then(convert(queryClient)),
+        },
+      ],
+    },
+
+    {
+      path: paths.admin.root.path,
+      lazy: () => import('./routes/admin/shell').then(convert(queryClient)),
+      children: [
+        {
+          index: true,
+          lazy: () => import('./routes/admin/index').then(convert(queryClient)),
+        },
+        {
+          path: paths.admin.students.path,
+          lazy: () =>
+            import('./routes/admin/students').then(convert(queryClient)),
+        },
+        {
+          path: paths.admin.assignments.path,
+          lazy: () =>
+            import('./routes/admin/assignments').then(convert(queryClient)),
+        },
+        {
+          path: paths.admin.rules.path,
+          lazy: () => import('./routes/admin/rules').then(convert(queryClient)),
+        },
+        {
+          path: paths.admin.settings.path,
+          lazy: () =>
+            import('./routes/admin/settings').then(convert(queryClient)),
+        },
+      ],
+    },
+
+    {
       path: '*',
       lazy: () => import('./routes/not-found').then(convert(queryClient)),
     },
