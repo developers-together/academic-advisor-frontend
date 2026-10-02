@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CircleX, TriangleAlert } from 'lucide-react';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -9,14 +9,7 @@ import { CommentThread } from '@/components/domain/comment-thread';
 import { PlanStateChip } from '@/components/domain/plan-state-chip';
 import { Banner, ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerContent,
@@ -395,55 +388,5 @@ export const ReviewDrawer = ({
         onConfirm={closeDialogsAndDrawer}
       />
     </>
-  );
-};
-
-type ConfirmDialogProps = {
-  open: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-  title: string;
-  body: string;
-  confirmLabel: string;
-  destructive?: boolean;
-};
-
-const ConfirmDialog = ({
-  open,
-  onCancel,
-  onConfirm,
-  title,
-  body,
-  confirmLabel,
-  destructive = false,
-}: ConfirmDialogProps) => {
-  const { t } = useTranslation();
-  const cancelRef = useRef<HTMLButtonElement>(null);
-
-  return (
-    <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
-      <DialogContent
-        onOpenAutoFocus={(event) => {
-          event.preventDefault();
-          cancelRef.current?.focus();
-        }}
-      >
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{body}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button ref={cancelRef} variant="outline" onClick={onCancel}>
-            {t('actions.cancel')}
-          </Button>
-          <Button
-            variant={destructive ? 'destructive' : 'default'}
-            onClick={onConfirm}
-          >
-            {confirmLabel}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 };

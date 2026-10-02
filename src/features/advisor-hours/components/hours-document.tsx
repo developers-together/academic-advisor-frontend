@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Banner, ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
-import { ConfirmationDialog } from '@/components/ui/dialog/confirmation-dialog';
+import { ConfirmDialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ApiError } from '@/lib/api-error';
@@ -19,7 +19,7 @@ export const HoursDocument = () => {
   const { t } = useTranslation('advisor');
   const availabilityQuery = useAvailability();
   const updateAvailability = useUpdateAvailability();
-  const [clearDone, setClearDone] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
   const [addingFirstRow, setAddingFirstRow] = useState(false);
 
   const publish = (rows: AvailabilityWindowRow[]) => {
@@ -27,7 +27,7 @@ export const HoursDocument = () => {
   };
 
   const clearHours = () => {
-    updateAvailability.mutate([], { onSuccess: () => setClearDone(true) });
+    updateAvailability.mutate([], { onSuccess: () => setClearOpen(false) });
   };
 
   if (availabilityQuery.isPending) {
@@ -101,27 +101,25 @@ export const HoursDocument = () => {
       />
 
       {!availability.is_default && (
-        <ConfirmationDialog
-          triggerButton={
-            <Button variant="outline" disabled={updateAvailability.isPending}>
-              {t('hours.clear')}
-            </Button>
-          }
-          confirmButton={
-            <Button
-              variant="destructive"
-              onClick={clearHours}
-              isLoading={updateAvailability.isPending}
-              disabled={updateAvailability.isPending}
-            >
-              {t('hours.clearConfirm.confirm')}
-            </Button>
-          }
-          title={t('hours.clearConfirm.title')}
-          body={t('hours.clearConfirm.body')}
-          cancelButtonText={t('actions.cancel', { ns: 'common' })}
-          isDone={clearDone}
-        />
+        <>
+          <Button
+            variant="outline"
+            disabled={updateAvailability.isPending}
+            onClick={() => setClearOpen(true)}
+          >
+            {t('hours.clear')}
+          </Button>
+          <ConfirmDialog
+            open={clearOpen}
+            onCancel={() => setClearOpen(false)}
+            onConfirm={clearHours}
+            title={t('hours.clearConfirm.title')}
+            body={t('hours.clearConfirm.body')}
+            confirmLabel={t('hours.clearConfirm.confirm')}
+            destructive
+            pending={updateAvailability.isPending}
+          />
+        </>
       )}
     </div>
   );

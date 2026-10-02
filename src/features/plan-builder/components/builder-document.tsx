@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
-import { ConfirmationDialog } from '@/components/ui/dialog/confirmation-dialog';
+import { ConfirmDialog } from '@/components/ui/dialog';
 import {
   buildCourseTitleIndex,
   useAcademicRecord,
@@ -42,6 +42,7 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
 
   const [failure, setFailure] = useState<SubmitFailure | null>(null);
   const [windowClosed, setWindowClosed] = useState(false);
+  const [discardOpen, setDiscardOpen] = useState(false);
   const [serviceUnavailable, setServiceUnavailable] = useState<{
     requestId: string | null;
   } | null>(null);
@@ -176,28 +177,29 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
         serviceUnavailable={serviceUnavailable}
         onSubmit={handleSubmit}
         discard={
-          <ConfirmationDialog
-            triggerButton={
-              <Button variant="outline" className="h-11">
-                {t('builder.discard')}
-              </Button>
-            }
-            confirmButton={
-              <Button
-                variant="destructive"
-                onClick={() => discardPlanMutation.mutate()}
-                isLoading={discardPlanMutation.isPending}
-                disabled={discardPlanMutation.isPending}
-              >
-                {t('myPlan.discardConfirm.confirm')}
-              </Button>
-            }
-            title={t('myPlan.discardConfirm.title')}
-            body={t('myPlan.discardConfirm.body', { term: plan.term_code })}
-            cancelButtonText={t('common:actions.cancel')}
-            icon="danger"
-            isDone={discardPlanMutation.isSuccess}
-          />
+          <>
+            <Button
+              variant="outline"
+              className="h-11"
+              onClick={() => setDiscardOpen(true)}
+            >
+              {t('builder.discard')}
+            </Button>
+            <ConfirmDialog
+              open={discardOpen}
+              onCancel={() => setDiscardOpen(false)}
+              onConfirm={() =>
+                discardPlanMutation.mutate(undefined, {
+                  onSuccess: () => setDiscardOpen(false),
+                })
+              }
+              title={t('myPlan.discardConfirm.title')}
+              body={t('myPlan.discardConfirm.body', { term: plan.term_code })}
+              confirmLabel={t('myPlan.discardConfirm.confirm')}
+              destructive
+              pending={discardPlanMutation.isPending}
+            />
+          </>
         }
       />
     </div>
