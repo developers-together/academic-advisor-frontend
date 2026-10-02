@@ -7,6 +7,7 @@ import { scenarios, setScenario } from '../scenarios';
 import { networkDelay } from '../utils';
 
 import { academicRecordHandlers } from './academic-record';
+import { advisorHandlers } from './advisor';
 import { authHandlers } from './auth';
 import { planHandlers } from './plan';
 
@@ -14,6 +15,7 @@ export const handlers = [
   ...authHandlers,
   ...planHandlers,
   ...academicRecordHandlers,
+  ...advisorHandlers,
   http.get(`${env.API_URL}/healthcheck`, async () => {
     await networkDelay();
     return HttpResponse.json({ ok: true });

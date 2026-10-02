@@ -117,6 +117,7 @@
   },
   "profile": {
     "title": "Profile",
+    "unavailable": "Not reported by the SIS yet.",
     "identity": {
       "studentId": "Student ID",
       "email": "Email",
@@ -134,12 +135,14 @@
     "advisor": {
       "title": "Your advisor",
       "none": "You have no assigned advisor yet. The administration office assigns advisors.",
-      "hours": "Office hours"
+      "hours": "Office hours",
+      "hoursEmpty": "No office hours published yet."
     },
     "prereqMap": {
       "title": "Course map",
       "empty": "Your course map is not available yet.",
       "listTitle": "Course map, list view",
+      "level": "Level {{level}}",
       "state": {
         "completed": "Completed",
         "planned": "Planned",
@@ -149,11 +152,15 @@
     },
     "enrollments": {
       "title": "Current enrollments",
-      "empty": "No current enrollments."
+      "empty": "No current enrollments.",
+      "group": "Group",
+      "section": "Section"
     },
     "history": {
       "title": "Course history",
       "empty": "No finished courses yet.",
+      "course": "Course",
+      "term": "Term",
       "grade": "Grade"
     }
   }

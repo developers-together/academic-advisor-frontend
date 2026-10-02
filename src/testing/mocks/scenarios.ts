@@ -37,7 +37,16 @@ export const quotaExhausted = () => current === 'quota-exhausted';
 
 const PASSWORD = 'password123';
 
+const officeHours = [
+  { day: 'Sunday', from: '10:00', to: '12:00' },
+  { day: 'Tuesday', from: '13:00', to: '15:00' },
+];
+
 const seedUsers = () => {
+  db.advisorProfile.create({
+    advisorId: 2,
+    rows: JSON.stringify(officeHours),
+  });
   db.user.create({
     id: 1,
     name: 'Sara Student',

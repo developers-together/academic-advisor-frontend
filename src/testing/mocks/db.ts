@@ -51,6 +51,10 @@ const models = {
 
     staleness: String,
   },
+  advisorProfile: {
+    advisorId: primaryKey(() => nextId()),
+    rows: String,
+  },
 };
 
 export const db = factory(models);

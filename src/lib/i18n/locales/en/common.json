@@ -74,6 +74,15 @@
     "sisUnavailable": "The university data service is unavailable.",
     "sisUnavailableBody": "Your data may be out of date. Retry in a moment."
   },
+  "staleSis": {
+    "dataAsOf": "Data as of {{datetime}}",
+    "body": "These datasets are not current: {{datasets}}.",
+    "datasets": {
+      "identity": "identity",
+      "academic_record": "academic record",
+      "course_catalog": "course catalog"
+    }
+  },
   "planStates": {
     "srLabel": "Plan status: {{state}}",
     "draft": "Draft",

@@ -74,6 +74,15 @@
     "sisUnavailable": "خدمة بيانات الجامعة غير متاحة.",
     "sisUnavailableBody": "قد تكون بياناتك قديمة. أعد المحاولة بعد قليل."
   },
+  "staleSis": {
+    "dataAsOf": "البيانات كما في {{datetime}}",
+    "body": "هذه البيانات غير محدّثة: {{datasets}}.",
+    "datasets": {
+      "identity": "الهوية",
+      "academic_record": "السجل الأكاديمي",
+      "course_catalog": "دليل المقررات"
+    }
+  },
   "planStates": {
     "srLabel": "حالة الخطة: {{state}}",
     "draft": "مسودة",
