@@ -1,5 +1,11 @@
 import dayjs from 'dayjs';
 
+import type {
+  GovernanceFunnel,
+  GovernanceLevel,
+  GovernanceNode,
+} from '@/types/domain';
+
 import { db } from './db';
 import { CURRENT_TERM, FRESH_STALENESS, STALE_STALENESS } from './mock-auth';
 import { hash } from './utils';
@@ -33,6 +39,7 @@ export const setScenario = (scenario: Scenario) => {
   db.visitRequest.deleteMany({ where: {} });
   db.notification.deleteMany({ where: {} });
   db.planConversation.deleteMany({ where: {} });
+  db.governanceTree.deleteMany({ where: {} });
   seeds[scenario]();
 };
 
@@ -402,6 +409,174 @@ const seedConversations = () => {
   });
 };
 
+const seedGovernance = () => {
+  const metricsOf = (
+    students: number,
+    caseload: number,
+    approved: number,
+    completionRate: number | null,
+    medianHours: number | null,
+    aging: number,
+    funnel: GovernanceFunnel,
+  ) => ({
+    students,
+    caseload,
+    approved,
+    completion_rate: completionRate,
+    completion_is_final: false,
+    median_decision_hours: medianHours,
+    aging_count: aging,
+    funnel,
+  });
+
+  const spread = (total: number, parts: number): number[] => {
+    const base = Math.floor(total / parts);
+    return Array.from({ length: parts }, (_, index) =>
+      index === parts - 1 ? total - base * (parts - 1) : base,
+    );
+  };
+
+  const funnelOf = (approved: number, submitted: number): GovernanceFunnel => ({
+    draft: Math.max(0, Math.round(submitted * 0.4)),
+    submitted,
+    under_review: Math.max(1, Math.round(submitted * 0.3)),
+    returned: Math.max(1, Math.round(submitted * 0.5)),
+    approved,
+    expired: Math.max(0, Math.round(submitted * 0.2)),
+    closed: approved,
+    withdrawn: Math.max(0, Math.round(submitted * 0.1)),
+    discarded: Math.max(0, Math.round(submitted * 0.15)),
+  });
+
+  const nodeOf = (
+    level: GovernanceLevel,
+    code: string | null,
+    nameEn: string | null,
+    metrics: ReturnType<typeof metricsOf>,
+    children: GovernanceNode[] = [],
+  ): GovernanceNode => ({
+    level,
+    code,
+    name_en: nameEn,
+    name_ar: null,
+    term_code: CURRENT_TERM,
+    metrics,
+    children,
+  });
+
+  const facultyNode = (
+    code: string,
+    nameEn: string,
+    students: number,
+    caseload: number,
+    approved: number,
+    medianHours: number | null,
+  ): GovernanceNode => {
+    const completionRate =
+      caseload === 0 ? null : Math.round((approved / caseload) * 100);
+    const schools = ['Applied', 'Core'];
+    const schoolCaseloads = spread(caseload, schools.length);
+    const schoolApprovals = spread(approved, schools.length);
+    return nodeOf(
+      'faculty',
+      code,
+      nameEn,
+      metricsOf(
+        students,
+        caseload,
+        approved,
+        completionRate,
+        medianHours,
+        Math.max(1, Math.round(caseload * 0.03)),
+        funnelOf(approved, Math.round(caseload * 0.4)),
+      ),
+      schools.map((school, schoolIndex) => {
+        const departments = ['A', 'B'];
+        const departmentCaseloads = spread(
+          schoolCaseloads[schoolIndex],
+          departments.length,
+        );
+        const departmentApprovals = spread(
+          schoolApprovals[schoolIndex],
+          departments.length,
+        );
+        return nodeOf(
+          'school',
+          `${code}-S${schoolIndex + 1}`,
+          `${nameEn} ${school} School`,
+          metricsOf(
+            Math.round(students / schools.length),
+            schoolCaseloads[schoolIndex],
+            schoolApprovals[schoolIndex],
+            schoolCaseloads[schoolIndex] === 0
+              ? null
+              : Math.round(
+                  (schoolApprovals[schoolIndex] /
+                    schoolCaseloads[schoolIndex]) *
+                    100,
+                ),
+            medianHours,
+            Math.max(0, Math.round(schoolCaseloads[schoolIndex] * 0.03)),
+            funnelOf(
+              schoolApprovals[schoolIndex],
+              Math.round(schoolCaseloads[schoolIndex] * 0.4),
+            ),
+          ),
+          departments.map((department, departmentIndex) =>
+            nodeOf(
+              'department',
+              `${code}-S${schoolIndex + 1}-D${departmentIndex + 1}`,
+              `${nameEn} ${school} ${department}`,
+              metricsOf(
+                Math.round(students / schools.length / departments.length),
+                departmentCaseloads[departmentIndex],
+                departmentApprovals[departmentIndex],
+                departmentCaseloads[departmentIndex] === 0
+                  ? null
+                  : Math.round(
+                      (departmentApprovals[departmentIndex] /
+                        departmentCaseloads[departmentIndex]) *
+                        100,
+                    ),
+                medianHours,
+                Math.max(
+                  0,
+                  Math.round(departmentCaseloads[departmentIndex] * 0.03),
+                ),
+                funnelOf(
+                  departmentApprovals[departmentIndex],
+                  Math.round(departmentCaseloads[departmentIndex] * 0.4),
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  };
+
+  const university = nodeOf(
+    'university',
+    null,
+    'E-JUST',
+    metricsOf(7600, 3100, 1780, 57, 30, 96, funnelOf(1780, 1240)),
+    [
+      facultyNode('F-ENG', 'Engineering', 2400, 980, 610, 26),
+      facultyNode('F-SCI', 'Science', 1500, 610, 400, 34),
+      facultyNode('F-AGR', 'Agriculture', 900, 380, 210, 41),
+      facultyNode('F-MED', 'Medicine', 1300, 560, 290, 52),
+      facultyNode('F-BUS', 'Business', 800, 300, 150, 22),
+      facultyNode('F-ART', 'Arts', 400, 160, 70, 38),
+      facultyNode('F-EDU', 'Education', 300, 110, 50, null),
+    ],
+  );
+
+  db.governanceTree.create({
+    id: 'university',
+    payload: JSON.stringify(university),
+  });
+};
+
 const seeds: Record<Scenario, () => void> = {
   happy: () => {
     seedUsers();
@@ -420,6 +595,7 @@ const seeds: Record<Scenario, () => void> = {
     seedQueue();
     seedNotifications();
     seedConversations();
+    seedGovernance();
   },
 
   empty: () => {

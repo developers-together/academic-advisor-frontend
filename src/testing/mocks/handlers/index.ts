@@ -9,6 +9,7 @@ import { networkDelay } from '../utils';
 import { academicRecordHandlers } from './academic-record';
 import { advisorHandlers } from './advisor';
 import { authHandlers } from './auth';
+import { governanceHandlers } from './governance';
 import { notificationsHandlers } from './notifications';
 import { planConversationHandlers } from './plan-conversations';
 import { planHandlers } from './plan';
@@ -20,6 +21,7 @@ export const handlers = [
   ...academicRecordHandlers,
   ...advisorHandlers,
   ...notificationsHandlers,
+  ...governanceHandlers,
   http.get(`${env.API_URL}/healthcheck`, async () => {
     await networkDelay();
     return HttpResponse.json({ ok: true });

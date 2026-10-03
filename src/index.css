@@ -74,6 +74,10 @@
   --color-data-4: var(--data-4);
   --color-data-4-foreground: var(--data-4-foreground);
 
+  /* Chart categorical series (design.md 3.5) */
+  --color-data-pipeline: #2563eb; /* blue-600 */
+  --color-data-terminal: #64748b; /* slate-500 */
+
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));

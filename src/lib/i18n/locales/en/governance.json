@@ -49,6 +49,10 @@
     "title": "Plan funnel",
     "pipeline": "Pipeline",
     "terminal": "Terminal",
+    "table": {
+      "state": "State",
+      "plans": "Plans"
+    },
     "empty": {
       "title": "No plans yet this term",
       "body": "Counts appear as students build and submit plans for {{term}}."

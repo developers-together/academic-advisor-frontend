@@ -93,6 +93,10 @@ const models = {
     createdAt: () => new Date().toISOString(),
     updatedAt: () => new Date().toISOString(),
   },
+  governanceTree: {
+    id: primaryKey(() => 'university'),
+    payload: String,
+  },
 };
 
 export const db = factory(models);

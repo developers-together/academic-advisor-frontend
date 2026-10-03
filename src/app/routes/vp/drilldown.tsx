@@ -1,22 +1,18 @@
 import { useTranslation } from 'react-i18next';
 
-import { ContentLayout } from '@/components/layouts';
-import { EmptyState } from '@/components/ui/empty-state';
+import { GovernancePage } from '@/features/governance/components/governance-page';
+import { VpDrilldown } from '@/features/governance/components/vp-drilldown';
 
 export default function VpDrilldownRoute() {
   const { t } = useTranslation('governance');
 
   return (
-    <ContentLayout
+    <GovernancePage
+      audience="vp"
       title={t('drilldown.title')}
       context={t('drilldown.context')}
     >
-      <EmptyState
-        compact
-        title={t('drilldown.empty.title')}
-        description={t('drilldown.empty.body')}
-        className="max-w-xl"
-      />
-    </ContentLayout>
+      <VpDrilldown />
+    </GovernancePage>
   );
 }

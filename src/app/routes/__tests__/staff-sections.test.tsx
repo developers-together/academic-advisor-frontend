@@ -111,7 +111,9 @@ describe('dean section', () => {
       ['Overview', '/dean'],
       ['Notifications', '/dean/notifications'],
     ]);
-    expect(screen.getByText('No overview data yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No overview data yet.'),
+    ).toBeInTheDocument();
   });
 
   test('renders the notifications slot with its honest empty state', async () => {
@@ -139,7 +141,9 @@ describe('vp section', () => {
       ['Scorecard', '/vp'],
       ['Drill-down', '/vp/drilldown'],
     ]);
-    expect(screen.getByText('No scorecard data yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No scorecard data yet.'),
+    ).toBeInTheDocument();
   });
 
   test('renders the drilldown slot with its honest empty state', async () => {
@@ -150,7 +154,9 @@ describe('vp section', () => {
     expect(
       await screen.findByRole('heading', { name: 'Drill-down' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('No drill-down data yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No drill-down data yet.'),
+    ).toBeInTheDocument();
   });
 });
 
