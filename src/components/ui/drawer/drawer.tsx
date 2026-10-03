@@ -2,6 +2,7 @@ import * as DrawerPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/utils/cn';
 
@@ -55,22 +56,26 @@ type DrawerContentProps = React.ComponentPropsWithoutRef<
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   DrawerContentProps
->(({ side = 'right', className, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
-    <DrawerPrimitive.Content
-      ref={ref}
-      className={cn(drawerVariants({ side }), className)}
-      {...props}
-    >
-      {children}
-      <DrawerPrimitive.Close className="absolute top-4 right-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <Cross2Icon className="size-4" />
-        <span className="sr-only">Close</span>
-      </DrawerPrimitive.Close>
-    </DrawerPrimitive.Content>
-  </DrawerPortal>
-));
+>(({ side = 'right', className, children, ...props }, ref) => {
+  const { t } = useTranslation();
+
+  return (
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        ref={ref}
+        className={cn(drawerVariants({ side }), className)}
+        {...props}
+      >
+        {children}
+        <DrawerPrimitive.Close className="absolute top-4 right-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary">
+          <Cross2Icon className="size-4" />
+          <span className="sr-only">{t('actions.close')}</span>
+        </DrawerPrimitive.Close>
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  );
+});
 DrawerContent.displayName = DrawerPrimitive.Content.displayName;
 
 const DrawerHeader = ({

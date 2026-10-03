@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { i18n } from '@/lib/i18n/i18n-instance';
 import { rtlRender, screen, userEvent, waitFor } from '@/testing/test-utils';
 
 import {
@@ -63,4 +64,26 @@ test('should handle basic drawer flow', async () => {
   await waitFor(() =>
     expect(screen.queryByText(titleText)).not.toBeInTheDocument(),
   );
+});
+
+test('built-in close label follows the active language', async () => {
+  await i18n.changeLanguage('en');
+  const { unmount: unmountEn } = rtlRender(<TestDrawer />);
+
+  await userEvent.click(screen.getByRole('button', { name: openButtonText }));
+  expect(
+    await screen.findByRole('button', { name: 'Close' }),
+  ).toBeInTheDocument();
+  unmountEn();
+
+  await i18n.changeLanguage('ar');
+  const { unmount: unmountAr } = rtlRender(<TestDrawer />);
+
+  await userEvent.click(screen.getByRole('button', { name: openButtonText }));
+  expect(
+    await screen.findByRole('button', { name: 'إغلاق' }),
+  ).toBeInTheDocument();
+  unmountAr();
+
+  await i18n.changeLanguage('en');
 });

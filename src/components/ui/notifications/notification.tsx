@@ -1,5 +1,6 @@
 import { CircleAlert, CircleCheck, CircleX, Info, X } from 'lucide-react';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/utils/cn';
 
@@ -31,6 +32,8 @@ export const Notification = ({
   notification: { id, type, title, message },
   onDismiss,
 }: NotificationProps) => {
+  const { t } = useTranslation();
+
   React.useEffect(() => {
     const timer = window.setTimeout(() => onDismiss(id), 5000);
     return () => window.clearTimeout(timer);
@@ -55,13 +58,13 @@ export const Notification = ({
         <div className="ms-4 flex shrink-0">
           <button
             type="button"
-            aria-label="Close"
+            aria-label={t('actions.close')}
             className="inline-flex rounded-md text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
             onClick={() => {
               onDismiss(id);
             }}
           >
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{t('actions.close')}</span>
             <X className="size-5" aria-hidden="true" />
           </button>
         </div>
