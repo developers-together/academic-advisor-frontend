@@ -1,7 +1,7 @@
 import { env } from '@/config/env';
 
 export const enableMocking = async () => {
-  if (env.ENABLE_API_MOCKING) {
+  if (import.meta.env.DEV && env.ENABLE_API_MOCKING) {
     const { worker } = await import('./browser');
     const { initializeDb } = await import('./db');
     const { setScenario, scenarios } = await import('./scenarios');
