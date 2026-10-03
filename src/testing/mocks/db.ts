@@ -73,6 +73,16 @@ const models = {
     slots: String,
     createdAt: () => new Date().toISOString(),
   },
+  notification: {
+    id: primaryKey(String),
+    userId: Number,
+    slug: nullableString,
+    title: nullableString,
+    body: nullableString,
+    deep_link: String,
+    read_at: nullableString,
+    created_at: () => new Date().toISOString(),
+  },
 };
 
 export const db = factory(models);

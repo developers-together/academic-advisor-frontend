@@ -98,6 +98,10 @@ export const paths = {
       path: 'drilldown',
       getHref: (node?: string) => `/vp/drilldown${node ? `?node=${node}` : ''}`,
     },
+    notifications: {
+      path: 'notifications',
+      getHref: () => '/vp/notifications',
+    },
   },
 
   admin: {
@@ -120,6 +124,10 @@ export const paths = {
     settings: {
       path: 'settings',
       getHref: () => '/admin/settings',
+    },
+    notifications: {
+      path: 'notifications',
+      getHref: () => '/admin/notifications',
     },
   },
 } as const;

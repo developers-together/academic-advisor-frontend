@@ -62,6 +62,11 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: paths.app.profile.path,
           lazy: () => import('./routes/app/profile').then(convert(queryClient)),
         },
+        {
+          path: paths.app.notifications.path,
+          lazy: () =>
+            import('./routes/app/notifications').then(convert(queryClient)),
+        },
       ],
     },
 
@@ -126,6 +131,11 @@ export const createAppRouter = (queryClient: QueryClient) =>
           lazy: () =>
             import('./routes/vp/drilldown').then(convert(queryClient)),
         },
+        {
+          path: paths.vp.notifications.path,
+          lazy: () =>
+            import('./routes/vp/notifications').then(convert(queryClient)),
+        },
       ],
     },
 
@@ -155,6 +165,11 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: paths.admin.settings.path,
           lazy: () =>
             import('./routes/admin/settings').then(convert(queryClient)),
+        },
+        {
+          path: paths.admin.notifications.path,
+          lazy: () =>
+            import('./routes/admin/notifications').then(convert(queryClient)),
         },
       ],
     },

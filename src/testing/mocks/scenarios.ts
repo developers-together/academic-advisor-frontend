@@ -31,6 +31,7 @@ export const setScenario = (scenario: Scenario) => {
   db.academicRecord.deleteMany({ where: {} });
   db.planComment.deleteMany({ where: {} });
   db.visitRequest.deleteMany({ where: {} });
+  db.notification.deleteMany({ where: {} });
   seeds[scenario]();
 };
 
@@ -280,6 +281,99 @@ const seedQueue = () => {
   });
 };
 
+const seedNotifications = () => {
+  const notification = (
+    userId: number,
+    values: {
+      slug: string;
+      title: string;
+      body: string;
+      deep_link: Record<string, unknown>;
+      read_at?: string;
+      hoursAgo: number;
+    },
+  ) =>
+    db.notification.create({
+      id: `seeded-${values.slug}-${userId}`,
+      userId,
+      slug: values.slug,
+      title: values.title,
+      body: values.body,
+      deep_link: JSON.stringify(values.deep_link),
+      read_at: values.read_at,
+      created_at: dayjs().subtract(values.hoursAgo, 'hour').toISOString(),
+    });
+
+  notification(1, {
+    slug: 'plan_returned',
+    title: 'Plan returned',
+    body: 'Amr Advisor returned your plan with feedback. Review it to unlock editing.',
+    deep_link: { screen: 'plan', plan_id: 11 },
+    hoursAgo: 2,
+  });
+  notification(1, {
+    slug: 'window_opened',
+    title: 'Registration window opened',
+    body: `Registration for ${CURRENT_TERM} is open. Submit or review your plan.`,
+    deep_link: { screen: 'plan', term_code: CURRENT_TERM },
+    hoursAgo: 6,
+  });
+  notification(1, {
+    slug: 'advisor_changed',
+    title: 'Advisor changed',
+    body: 'Amr Advisor is now your academic advisor.',
+    deep_link: { screen: 'advisor', advisor_id: 2 },
+    read_at: '2026-09-28T10:00:00.000Z',
+    hoursAgo: 26,
+  });
+  notification(1, {
+    slug: 'visit_slots_provided',
+    title: 'Visit times proposed',
+    body: 'Amr Advisor proposed times for your visit request.',
+    deep_link: { screen: 'visit', visit_request_id: 100 },
+    read_at: '2026-09-28T10:00:00.000Z',
+    hoursAgo: 30,
+  });
+  notification(1, {
+    slug: 'plan_approved',
+    title: 'Plan approved',
+    body: `Your plan for ${CURRENT_TERM} is approved. Follow the checklist to register in SIS.`,
+    deep_link: { screen: 'plan', plan_id: 11 },
+    read_at: '2026-09-28T10:00:00.000Z',
+    hoursAgo: 48,
+  });
+  notification(1, {
+    slug: 'window_deadline_nearing',
+    title: 'Registration window closing soon',
+    body: `Registration for ${CURRENT_TERM} closes in 3 days and your plan is not approved yet.`,
+    deep_link: { screen: 'plan', term_code: CURRENT_TERM },
+    read_at: '2026-09-28T10:00:00.000Z',
+    hoursAgo: 60,
+  });
+  notification(2, {
+    slug: 'visit_requested',
+    title: 'Visit requested',
+    body: 'Lina Majors requested a visit.',
+    deep_link: { screen: 'visit', visit_request_id: 100, student_id: 11 },
+    hoursAgo: 4,
+  });
+  notification(2, {
+    slug: 'caseload_student_added',
+    title: 'Caseload student added',
+    body: 'Nour Adel joined your caseload.',
+    deep_link: { screen: 'student', student_id: 13 },
+    hoursAgo: 12,
+  });
+  notification(2, {
+    slug: 'caseload_student_removed',
+    title: 'Caseload student removed',
+    body: 'Omar Fathi left your caseload.',
+    deep_link: { screen: 'student', student_id: 12 },
+    read_at: '2026-09-28T10:00:00.000Z',
+    hoursAgo: 72,
+  });
+};
+
 const seeds: Record<Scenario, () => void> = {
   happy: () => {
     seedUsers();
@@ -296,6 +390,7 @@ const seeds: Record<Scenario, () => void> = {
     });
     seedAcademicRecord();
     seedQueue();
+    seedNotifications();
   },
 
   empty: () => {

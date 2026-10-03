@@ -261,6 +261,7 @@ export type DeepLink = {
   plan_id?: number;
   visit_request_id?: number;
   student_id?: number;
+  advisor_id?: number;
   term_code?: string;
 };
 

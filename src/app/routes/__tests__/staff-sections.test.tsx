@@ -122,7 +122,9 @@ describe('dean section', () => {
     expect(
       await screen.findByRole('heading', { name: 'Notifications' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('No notifications yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No notifications yet.'),
+    ).toBeInTheDocument();
   });
 });
 

@@ -1,7 +1,9 @@
 {
   "title": "Notifications",
   "markAllRead": "Mark all as read",
+  "markAllReadPending": "Marking all as read",
   "unread": "Unread",
+  "unreadContext": "{{count}} unread",
   "empty": {
     "title": "No notifications yet.",
     "body": "Plan and visit updates will appear here."
