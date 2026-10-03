@@ -41,6 +41,7 @@ beforeEach(() => {
   }
 
   vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+  Element.prototype.scrollTo = () => {};
 
   window.matchMedia = (query: string) => ({
     matches: false,

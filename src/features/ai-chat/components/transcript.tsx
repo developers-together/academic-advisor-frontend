@@ -23,6 +23,7 @@ import {
 } from '@/features/ai-chat/components/submit-suggestion-card';
 import { ToolEventRow } from '@/features/ai-chat/components/tool-event-row';
 import { TypingIndicator } from '@/features/ai-chat/components/typing-indicator';
+import { useTranscriptFollow } from '@/features/ai-chat/hooks/use-transcript-follow';
 import { useTurnStreamStore } from '@/features/ai-chat/stores/turn-stream-store';
 import { ApiError } from '@/lib/api-error';
 
@@ -51,8 +52,22 @@ export const Transcript = ({ conversationId }: TranscriptProps) => {
   );
   const quotaExhausted = useTurnStreamStore((state) => state.quotaExhausted);
   const [draft, setDraft] = useState('');
+  const {
+    containerRef,
+    pinned,
+    follow,
+    scrollToLatest,
+    jumpToLatest,
+    handleScroll,
+  } = useTranscriptFollow();
 
   const error = conversationQuery.error;
+
+  useEffect(() => {
+    if (pinned) {
+      follow();
+    }
+  }, [pinned, follow, turn, conversationQuery.data]);
 
   useEffect(() => {
     if (
@@ -105,107 +120,125 @@ export const Transcript = ({ conversationId }: TranscriptProps) => {
     -1,
   );
 
-  const send = (message: string, onError: () => void) =>
+  const send = (message: string, onError: () => void) => {
+    scrollToLatest();
     sendTurn.mutate(message, { onError });
+  };
 
   return (
     <div className="flex min-h-0 flex-col gap-4">
       <Link to="/app/chat" className="md:hidden">
         {t('list.back')}
       </Link>
-      <div>
-        <ul aria-label={t('transcript.label')} className="space-y-4">
-          {messages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              messageRole={message.role}
-              content={message.content}
-              createdAt={message.created_at}
-            />
-          ))}
-          {turn && !turn.userMessageReconciled && (
-            <MessageBubble
-              messageRole="user"
-              content={turn.userMessage}
-              createdAt={turn.startedAt}
-            />
-          )}
-          {turn &&
-            blocks.map((block, index) => {
-              if (block.kind === 'text') {
+      <div className="relative">
+        <div
+          ref={containerRef}
+          onScroll={handleScroll}
+          data-testid="transcript-scroll"
+          className="max-h-[70dvh] overflow-y-auto"
+        >
+          <ul aria-label={t('transcript.label')} className="space-y-4">
+            {messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                messageRole={message.role}
+                content={message.content}
+                createdAt={message.created_at}
+              />
+            ))}
+            {turn && !turn.userMessageReconciled && (
+              <MessageBubble
+                messageRole="user"
+                content={turn.userMessage}
+                createdAt={turn.startedAt}
+              />
+            )}
+            {turn &&
+              blocks.map((block, index) => {
+                if (block.kind === 'text') {
+                  return (
+                    <MessageBubble
+                      key={`turn-text-${index}`}
+                      messageRole="assistant"
+                      content={block.text}
+                      createdAt={turn.startedAt}
+                      streaming={index === lastTextIndex && replying}
+                    />
+                  );
+                }
+                if (block.kind === 'tool') {
+                  return (
+                    <ToolEventRow
+                      key={`turn-tool-${index}`}
+                      toolEvent={block.toolEvent}
+                    />
+                  );
+                }
                 return (
-                  <MessageBubble
-                    key={`turn-text-${index}`}
-                    messageRole="assistant"
-                    content={block.text}
-                    createdAt={turn.startedAt}
-                    streaming={index === lastTextIndex && replying}
+                  <SubmitResultRow
+                    key={`turn-result-${index}`}
+                    result={block.result}
                   />
                 );
-              }
-              if (block.kind === 'tool') {
-                return (
-                  <ToolEventRow
-                    key={`turn-tool-${index}`}
-                    toolEvent={block.toolEvent}
-                  />
-                );
-              }
-              return (
-                <SubmitResultRow
-                  key={`turn-result-${index}`}
-                  result={block.result}
-                />
-              );
-            })}
-          {turn?.status === 'typing' && <TypingIndicator />}
-          {turn?.status === 'stopped' && (
-            <li className="text-xs text-muted-foreground">
-              {t('transcript.stopped')}
-            </li>
-          )}
-          {turn?.status === 'failed' && turn.error && (
-            <>
-              <li className="text-2xs text-muted-foreground">
-                {t('transcript.failedPartial')}
+              })}
+            {turn?.status === 'typing' && <TypingIndicator />}
+            {turn?.status === 'stopped' && (
+              <li className="text-xs text-muted-foreground">
+                {t('transcript.stopped')}
               </li>
-              <li>
-                <Banner
-                  variant="destructive"
-                  action={
-                    turn.error.retryable ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-11"
-                        onClick={() =>
-                          send(turn.userMessage, () =>
-                            setDraft(turn.userMessage),
-                          )
-                        }
-                      >
-                        {tCommon('actions.retry')}
-                      </Button>
-                    ) : undefined
-                  }
-                >
-                  {turn.error.message || t('transcript.failedFallback')}
-                </Banner>
-              </li>
-            </>
-          )}
-          {!turn &&
-            (sessionToolEvents ?? []).map((toolEvent, index) => (
-              <ToolEventRow key={`tool-${index}`} toolEvent={toolEvent} />
-            ))}
-          {!turn &&
-            (sessionSubmitResults ?? []).map((result, index) => (
-              <SubmitResultRow key={`result-${index}`} result={result} />
-            ))}
-        </ul>
-        <p className="mt-6 text-xs text-muted-foreground">
-          {t('transcript.constitution')}
-        </p>
+            )}
+            {turn?.status === 'failed' && turn.error && (
+              <>
+                <li className="text-2xs text-muted-foreground">
+                  {t('transcript.failedPartial')}
+                </li>
+                <li>
+                  <Banner
+                    variant="destructive"
+                    action={
+                      turn.error.retryable ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-11"
+                          onClick={() =>
+                            send(turn.userMessage, () =>
+                              setDraft(turn.userMessage),
+                            )
+                          }
+                        >
+                          {tCommon('actions.retry')}
+                        </Button>
+                      ) : undefined
+                    }
+                  >
+                    {turn.error.message || t('transcript.failedFallback')}
+                  </Banner>
+                </li>
+              </>
+            )}
+            {!turn &&
+              (sessionToolEvents ?? []).map((toolEvent, index) => (
+                <ToolEventRow key={`tool-${index}`} toolEvent={toolEvent} />
+              ))}
+            {!turn &&
+              (sessionSubmitResults ?? []).map((result, index) => (
+                <SubmitResultRow key={`result-${index}`} result={result} />
+              ))}
+          </ul>
+          <p className="mt-6 text-xs text-muted-foreground">
+            {t('transcript.constitution')}
+          </p>
+        </div>
+        {!pinned && (
+          <Button
+            variant="outline"
+            className="absolute inset-x-0 bottom-4 mx-auto h-11 w-fit rounded-full bg-card"
+            onClick={jumpToLatest}
+          >
+            {t('transcript.jumpToLatest')}
+          </Button>
+        )}
       </div>
       {conversation.submission_confirmed_at ? (
         <ArmedCard
