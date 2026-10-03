@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "test-e2e": "pm2 start \"npm run run-mock-server\" --name server && npx playwright test",
+    "test-e2e": "bash scripts/test-e2e.sh",
     "prepare": "husky",
     "lint": "eslint src",
     "check-types": "tsc --project tsconfig.json --pretty --noEmit",

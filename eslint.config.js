@@ -66,7 +66,10 @@ export default tseslint.config(
   {
     files: ['e2e/**/*.{ts,tsx}'],
     plugins: { playwright },
-    rules: { ...playwright.configs['flat/recommended'].rules },
+    rules: {
+      ...playwright.configs['flat/recommended'].rules,
+      'testing-library/prefer-screen-queries': 'off',
+    },
   },
   {
     files: ['**/*.ts', '**/*.tsx'],

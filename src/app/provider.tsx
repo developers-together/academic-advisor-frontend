@@ -52,6 +52,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                     <Spinner size="xl" />
                   </div>
                 )}
+                renderError={() => <MainErrorFallback />}
               >
                 {children}
               </AuthLoader>

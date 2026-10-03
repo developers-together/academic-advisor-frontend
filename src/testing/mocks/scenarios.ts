@@ -42,6 +42,7 @@ export const setScenario = (scenario: Scenario) => {
   db.governanceTree.deleteMany({ where: {} });
   db.adminSettings.deleteMany({ where: {} });
   db.rule.deleteMany({ where: {} });
+  db.advisorProfile.deleteMany({ where: {} });
   seeds[scenario]();
 };
 

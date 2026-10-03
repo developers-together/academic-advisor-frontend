@@ -20,7 +20,7 @@ const variantClasses: Record<BannerVariant, string> = {
   destructive: 'border-destructive/30 bg-destructive/5',
   success: 'border-success/30 bg-success/5',
   stale: 'border-warning/30 bg-warning/5',
-  'window-closed': 'border-border bg-muted',
+  'window-closed': 'border-border bg-card',
 };
 
 const icons: Record<BannerVariant, React.ReactNode> = {

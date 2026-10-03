@@ -1,13 +1,19 @@
-import { test as setup } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
-const authFile = 'e2e/.auth/user.json';
+import { ADVISOR_AUTH_FILE, STUDENT_AUTH_FILE, login } from './helpers';
 
-setup('authenticate', async ({ page }) => {
-  await page.goto('/login');
-  await page.getByLabel('University email').fill('student@ejust.edu.eg');
-  await page.getByLabel('Password', { exact: true }).fill('password123');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL('/app');
+test('authenticate as the seeded student', async ({ page }) => {
+  await login(page, 'student@ejust.edu.eg', '/app');
+  const state = await page.context().storageState({ path: STUDENT_AUTH_FILE });
+  expect(state.origins[0]?.localStorage).toEqual([
+    { name: 'advaisor.token', value: 'advaisor-mock-1' },
+  ]);
+});
 
-  await page.context().storageState({ path: authFile });
+test('authenticate as the seeded advisor', async ({ page }) => {
+  await login(page, 'advisor@ejust.edu.eg', '/advisor');
+  const state = await page.context().storageState({ path: ADVISOR_AUTH_FILE });
+  expect(state.origins[0]?.localStorage).toEqual([
+    { name: 'advaisor.token', value: 'advaisor-mock-2' },
+  ]);
 });

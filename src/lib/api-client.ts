@@ -27,7 +27,7 @@ api.interceptors.response.use(
   (error) => {
     const apiError = toApiError(error);
 
-    if (apiError.status === 401) {
+    if (apiError.status === 401 && tokenStorage.get()) {
       tokenStorage.clear();
       const redirectTo = `${window.location.pathname}${window.location.search}`;
       const params = new URLSearchParams({ reason: 'expired' });
