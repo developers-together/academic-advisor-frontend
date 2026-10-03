@@ -4,7 +4,8 @@
   "newConversation": "New conversation",
   "goalDialog": {
     "title": "What do you want from this conversation?",
-    "body": "Pick one goal. Your AI advisor shapes the conversation around it."
+    "body": "Pick one goal. Your AI advisor shapes the conversation around it.",
+    "start": "Start"
   },
   "goals": {
     "maintain": "Maintain my level",
@@ -16,18 +17,30 @@
       "title": "No conversations yet.",
       "body": "Start one and your AI advisor will help you plan."
     },
-    "goalFallback": "{{goal}} conversation"
+    "back": "All conversations",
+    "missing": {
+      "title": "This conversation is gone.",
+      "body": "It may have been removed. Pick another conversation or start a new one."
+    }
   },
   "transcript": {
+    "none": {
+      "title": "No conversation open.",
+      "body": "Pick a conversation from the list or start a new one."
+    },
     "typing": "Your AI advisor is replying.",
     "jumpToLatest": "Jump to latest",
     "stopped": "Stopped.",
     "failedPartial": "The reply stopped before it finished. Your text above is kept.",
-    "constitution": "The AI advisor explains and drafts. Your advisor approves. Only you can submit."
+    "constitution": "The AI advisor explains and drafts. Your advisor approves. Only you can submit.",
+    "assistantMark": "Your AI advisor",
+    "userMark": "You",
+    "label": "Conversation",
+    "failedFallback": "The AI advisor could not finish this reply."
   },
   "toolRow": {
     "applied": "Your AI advisor updated your plan.",
-    "appliedCourse": "Added {{code}} to your plan.",
+    "appliedCourse": "Added <0>{{code}}</0> to your plan.",
     "openBuilder": "Open Plan Builder"
   },
   "submitCard": {
@@ -55,7 +68,8 @@
     "send": "Send message",
     "stop": "Stop reply",
     "replying": "Your AI advisor is replying.",
-    "counter": "{{count}} characters left"
+    "counter": "{{count}} characters left",
+    "sendFailed": "Your message was not sent. Check your connection and try again."
   },
   "errors": {
     "messageRequired": "Write a message first.",

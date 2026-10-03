@@ -32,6 +32,7 @@ export const setScenario = (scenario: Scenario) => {
   db.planComment.deleteMany({ where: {} });
   db.visitRequest.deleteMany({ where: {} });
   db.notification.deleteMany({ where: {} });
+  db.planConversation.deleteMany({ where: {} });
   seeds[scenario]();
 };
 
@@ -374,6 +375,33 @@ const seedNotifications = () => {
   });
 };
 
+const seedConversations = () => {
+  db.planConversation.create({
+    id: 1,
+    userId: 1,
+    goal: 'maintain',
+    title: 'Keeping my schedule steady',
+    messages: JSON.stringify([
+      {
+        id: 1,
+        role: 'user',
+        content:
+          'I want to keep my current level steady this term. What load works for me?',
+        created_at: '2026-10-01T10:00:00.000Z',
+      },
+      {
+        id: 2,
+        role: 'assistant',
+        content:
+          'Your record shows a steady pass across CS 101 and MATH 101. A load of 12 to 15 credits keeps you comfortably inside the REG-001 range while you repeat nothing. What did you have in mind for electives?',
+        created_at: '2026-10-01T10:00:05.000Z',
+      },
+    ]),
+    createdAt: '2026-10-01T10:00:00.000Z',
+    updatedAt: '2026-10-02T14:30:00.000Z',
+  });
+};
+
 const seeds: Record<Scenario, () => void> = {
   happy: () => {
     seedUsers();
@@ -391,6 +419,7 @@ const seeds: Record<Scenario, () => void> = {
     seedAcademicRecord();
     seedQueue();
     seedNotifications();
+    seedConversations();
   },
 
   empty: () => {

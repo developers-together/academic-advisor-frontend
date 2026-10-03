@@ -10,11 +10,13 @@ import { academicRecordHandlers } from './academic-record';
 import { advisorHandlers } from './advisor';
 import { authHandlers } from './auth';
 import { notificationsHandlers } from './notifications';
+import { planConversationHandlers } from './plan-conversations';
 import { planHandlers } from './plan';
 
 export const handlers = [
   ...authHandlers,
   ...planHandlers,
+  ...planConversationHandlers,
   ...academicRecordHandlers,
   ...advisorHandlers,
   ...notificationsHandlers,

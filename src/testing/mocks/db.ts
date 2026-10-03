@@ -83,6 +83,16 @@ const models = {
     read_at: nullableString,
     created_at: () => new Date().toISOString(),
   },
+  planConversation: {
+    id: primaryKey(() => nextId()),
+    userId: Number,
+    goal: String,
+    title: nullableString,
+    submission_confirmed_at: nullableString,
+    messages: String,
+    createdAt: () => new Date().toISOString(),
+    updatedAt: () => new Date().toISOString(),
+  },
 };
 
 export const db = factory(models);
