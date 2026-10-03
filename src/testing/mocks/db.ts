@@ -1,13 +1,13 @@
-import { factory, primaryKey } from '@mswjs/data';
+import { factory, nullable, primaryKey } from '@mswjs/data';
 
 const nextId = (() => {
   let current = 100;
   return () => ++current;
 })();
 
-const nullableString = () => null as unknown as string;
+const nullableString = nullable(() => null as unknown as string);
 
-const nullableNumber = () => null as unknown as number;
+const nullableNumber = nullable(() => null as unknown as number);
 
 const models = {
   user: {
@@ -18,7 +18,7 @@ const models = {
     role: String,
     language_preference: nullableString,
     student_id: nullableString,
-    advisor_id: Number,
+    advisor_id: nullableNumber,
     email_verified_at: nullableString,
     pending_admin_at: nullableString,
     suspended_at: nullableString,
@@ -96,6 +96,19 @@ const models = {
   governanceTree: {
     id: primaryKey(() => 'university'),
     payload: String,
+  },
+  adminSettings: {
+    id: primaryKey(() => 'admin'),
+    aging_threshold_days: Number,
+  },
+  rule: {
+    id: primaryKey(() => nextId()),
+    title_en: String,
+    title_ar: String,
+    body_en: String,
+    body_ar: String,
+    created_at: () => new Date().toISOString(),
+    updated_at: () => new Date().toISOString(),
   },
 };
 

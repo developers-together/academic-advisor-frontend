@@ -21,6 +21,7 @@
       "dangerZone": "Danger zone"
     },
     "actions": {
+      "manage": "Manage {{name}}",
       "suspend": "Suspend",
       "reactivate": "Reactivate",
       "retrySis": "Retry SIS check",
@@ -128,6 +129,9 @@
     "empty": {
       "title": "No university rules yet.",
       "body": "Add the first rule the AI advisor quotes."
+    },
+    "actions": {
+      "edit": "Edit {{title}}"
     }
   },
   "settings": {

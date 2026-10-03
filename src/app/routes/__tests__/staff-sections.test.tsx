@@ -173,7 +173,9 @@ describe('admin section', () => {
       ['Rules', '/admin/rules'],
       ['Settings', '/admin/settings'],
     ]);
-    expect(screen.getByText('No student accounts yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No student accounts yet.'),
+    ).toBeInTheDocument();
   });
 
   test('the /admin index redirects to the accounts', async () => {
@@ -190,7 +192,6 @@ describe('admin section', () => {
   test.each([
     ['/admin/assignments', 'Caseloads', 'No caseload assignments yet.'],
     ['/admin/rules', 'University Rules', 'No university rules yet.'],
-    ['/admin/settings', 'Settings', 'No staff accounts yet.'],
   ])(
     'renders the %s slot with its honest settled state',
     async (url, title, empty) => {
@@ -204,6 +205,22 @@ describe('admin section', () => {
       expect(await screen.findByText(empty)).toBeInTheDocument();
     },
   );
+
+  test('renders the /admin/settings slot with the staff and aging cards', async () => {
+    await loginAsUser(await staffUser('admin'));
+
+    renderRealRouter('/admin/settings');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Settings' }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Staff accounts' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Queue aging' }),
+    ).toBeInTheDocument();
+  });
 });
 
 describe('cross-role hits', () => {

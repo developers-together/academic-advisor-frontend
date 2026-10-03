@@ -40,6 +40,8 @@ export const setScenario = (scenario: Scenario) => {
   db.notification.deleteMany({ where: {} });
   db.planConversation.deleteMany({ where: {} });
   db.governanceTree.deleteMany({ where: {} });
+  db.adminSettings.deleteMany({ where: {} });
+  db.rule.deleteMany({ where: {} });
   seeds[scenario]();
 };
 
@@ -58,6 +60,7 @@ export const DEFAULT_OFFICE_HOURS = [
 const officeHours = DEFAULT_OFFICE_HOURS;
 
 const seedUsers = () => {
+  db.adminSettings.create({ id: 'admin', aging_threshold_days: 3 });
   db.advisorProfile.create({
     advisorId: 2,
     rows: JSON.stringify(officeHours),
@@ -659,6 +662,29 @@ const seeds: Record<Scenario, () => void> = {
   'import-errors': () => {
     seedUsers();
     seedAcademicRecord();
+    db.user.create({
+      id: 21,
+      name: 'Rana Sameh',
+      email: 'rana.sameh@ejust.edu.eg',
+      password: hash(PASSWORD),
+      role: 'student',
+      language_preference: 'en',
+      student_id: '3020721',
+      advisor_id: 2,
+      email_verified_at: '2026-09-01T09:00:00.000Z',
+      faculty: 'Engineering',
+    });
+    db.user.create({
+      id: 22,
+      name: 'Karim Adel',
+      email: 'karim.adel@ejust.edu.eg',
+      password: hash(PASSWORD),
+      role: 'student',
+      language_preference: 'en',
+      student_id: '3020722',
+      email_verified_at: '2026-09-01T09:00:00.000Z',
+      faculty: 'Science',
+    });
   },
 
   'binding-incomplete': () => {
@@ -666,8 +692,31 @@ const seeds: Record<Scenario, () => void> = {
     db.user.update({
       where: { id: { equals: 1 } },
       data: {
+        student_id: null as unknown as string,
         pending_admin_at: '2026-09-15T10:00:00.000Z',
       },
+    });
+    db.user.create({
+      id: 31,
+      name: 'Hana Held',
+      email: 'hana.held@ejust.edu.eg',
+      password: hash(PASSWORD),
+      role: 'student',
+      language_preference: 'en',
+      advisor_id: 2,
+      pending_admin_at: '2026-09-16T10:00:00.000Z',
+      email_verified_at: '2026-09-01T09:00:00.000Z',
+      faculty: 'Engineering',
+    });
+    db.user.create({
+      id: 32,
+      name: 'Faris Pending',
+      email: 'faris.pending@ejust.edu.eg',
+      password: hash(PASSWORD),
+      role: 'student',
+      language_preference: 'en',
+      email_verified_at: '2026-09-01T09:00:00.000Z',
+      faculty: 'Science',
     });
     seedAcademicRecord();
   },

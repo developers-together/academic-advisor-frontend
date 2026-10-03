@@ -243,6 +243,13 @@ export type UniversityRule = {
   updated_at: string;
 };
 
+export type UniversityRuleInput = {
+  title_en: string;
+  title_ar: string;
+  body_en: string;
+  body_ar: string;
+};
+
 export type NotificationSlug =
   | 'plan_returned'
   | 'plan_approved'

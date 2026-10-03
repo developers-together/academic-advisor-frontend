@@ -274,7 +274,7 @@ export const planConversationHandlers = [
       if (row.submission_confirmed_at) {
         db.planConversation.update({
           where: { id: { equals: row.id } },
-          data: { submission_confirmed_at: () => null as unknown as string },
+          data: { submission_confirmed_at: null as unknown as string },
         });
         const outcome = submitOutcome(user.id as number);
         const prose =

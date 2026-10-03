@@ -1,6 +1,6 @@
+import { fireEvent } from '@testing-library/react';
 import dayjs from 'dayjs';
 import { HttpResponse, http } from 'msw';
-import { fireEvent } from '@testing-library/react';
 
 import AdvisorStudentsRoute from '@/app/routes/advisor/students';
 import { env } from '@/config/env';

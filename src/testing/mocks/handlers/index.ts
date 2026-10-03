@@ -7,12 +7,13 @@ import { scenarios, setScenario } from '../scenarios';
 import { networkDelay } from '../utils';
 
 import { academicRecordHandlers } from './academic-record';
+import { adminHandlers } from './admin';
 import { advisorHandlers } from './advisor';
 import { authHandlers } from './auth';
 import { governanceHandlers } from './governance';
 import { notificationsHandlers } from './notifications';
-import { planConversationHandlers } from './plan-conversations';
 import { planHandlers } from './plan';
+import { planConversationHandlers } from './plan-conversations';
 
 export const handlers = [
   ...authHandlers,
@@ -22,6 +23,7 @@ export const handlers = [
   ...advisorHandlers,
   ...notificationsHandlers,
   ...governanceHandlers,
+  ...adminHandlers,
   http.get(`${env.API_URL}/healthcheck`, async () => {
     await networkDelay();
     return HttpResponse.json({ ok: true });

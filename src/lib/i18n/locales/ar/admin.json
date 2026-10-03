@@ -21,6 +21,7 @@
       "dangerZone": "منطقة الخطر"
     },
     "actions": {
+      "manage": "إدارة {{name}}",
       "suspend": "إيقاف",
       "reactivate": "إعادة تنشيط",
       "retrySis": "إعادة تحقق النظام",
@@ -128,6 +129,9 @@
     "empty": {
       "title": "لا قواعد جامعية بعد.",
       "body": "أضف أول قاعدة يقتبسها المساعد الذكي."
+    },
+    "actions": {
+      "edit": "تعديل {{title}}"
     }
   },
   "settings": {

@@ -1,19 +1,14 @@
 import { useTranslation } from 'react-i18next';
 
 import { ContentLayout } from '@/components/layouts';
-import { EmptyState } from '@/components/ui/empty-state';
+import { StudentsDocument } from '@/features/admin/components/students-document';
 
-export default function AdminAccountsRoute() {
+export default function AdminStudentsRoute() {
   const { t } = useTranslation('admin');
 
   return (
     <ContentLayout title={t('accounts.title')} context={t('accounts.context')}>
-      <EmptyState
-        compact
-        title={t('accounts.empty.noRows')}
-        description={t('accounts.empty.noRowsBody')}
-        className="max-w-xl"
-      />
+      <StudentsDocument />
     </ContentLayout>
   );
 }
