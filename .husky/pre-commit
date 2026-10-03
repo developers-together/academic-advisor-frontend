@@ -1,1 +1,1 @@
-(cd apps/nextjs-app && npx lint-staged) && (cd apps/nextjs-pages && npx lint-staged) && (cd apps/react-vite && npx lint-staged)
+npx lint-staged

@@ -183,6 +183,26 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/components/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "JSXAttribute[name.name='className'] Literal[value=/(^|[\\s'\"`:])(pl|pr|ml|mr|left|right)-/]",
+          message:
+            'Physical Tailwind classes (pl-, pr-, ml-, mr-, left-, right-) are banned in components; use the logical ps-, pe-, ms-, me-, start-, end- (design.md DS-L-03).',
+        },
+        {
+          selector:
+            "JSXAttribute[name.name='className'] TemplateElement[value.raw=/(^|[\\s'\"`:])(pl|pr|ml|mr|left|right)-/]",
+          message:
+            'Physical Tailwind classes (pl-, pr-, ml-, mr-, left-, right-) are banned in components; use the logical ps-, pe-, ms-, me-, start-, end- (design.md DS-L-03).',
+        },
+      ],
+    },
+  },
+  {
     plugins: { prettier: prettierPlugin },
     rules: { 'prettier/prettier': ['error', {}, { usePrettierrc: true }] },
   },

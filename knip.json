@@ -1,6 +1,15 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": ["src/app/index.tsx"],
+  "entry": [
+    "src/app/index.tsx",
+    "src/**/*.stories.tsx",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/components/ui/**/index.ts",
+    "src/components/domain/**/index.ts",
+    "src/types/domain.ts"
+  ],
   "project": ["src/**/*.{ts,tsx}"],
-  "ignoreDependencies": ["type-coverage", "lint-staged"]
+  "ignoreExportsUsedInFile": true,
+  "ignoreDependencies": ["tailwindcss-animate", "@tailwindcss/typography"]
 }

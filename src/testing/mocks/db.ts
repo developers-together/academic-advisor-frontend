@@ -114,8 +114,6 @@ const models = {
 
 export const db = factory(models);
 
-export type Model = keyof typeof models;
-
 const dbFilePath = 'mocked-db.json';
 
 export const loadDb = async () => {
@@ -138,22 +136,6 @@ export const loadDb = async () => {
   return Object.assign(
     JSON.parse(window.localStorage.getItem('msw-db') || '{}'),
   );
-};
-
-export const storeDb = async (data: string) => {
-  if (typeof window === 'undefined') {
-    const { writeFile } = await import('fs/promises');
-    await writeFile(dbFilePath, data);
-  } else {
-    window.localStorage.setItem('msw-db', data);
-  }
-};
-
-export const persistDb = async (model: Model) => {
-  if (process.env.NODE_ENV === 'test') return;
-  const data = await loadDb();
-  data[model] = db[model].getAll();
-  await storeDb(JSON.stringify(data));
 };
 
 export const initializeDb = async () => {

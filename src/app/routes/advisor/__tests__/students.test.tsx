@@ -195,8 +195,10 @@ test('search hits the server once per settled query and filters client-side with
   ).not.toBeInTheDocument();
 
   const lina = screen
-    .getByRole('button', { name: "Open Lina Majors's plan" })
-    .closest('tr') as HTMLElement;
+    .getAllByRole('row')
+    .find((row) =>
+      within(row).queryByRole('button', { name: "Open Lina Majors's plan" }),
+    ) as HTMLElement;
   expect(within(lina).getByText('Aging')).toBeInTheDocument();
   expect(within(lina).getByText('Meeting not met')).toBeInTheDocument();
   expect(within(lina).getByText('Engineering')).toBeInTheDocument();

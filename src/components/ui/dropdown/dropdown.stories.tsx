@@ -1,4 +1,4 @@
-import type { Meta } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -18,27 +18,31 @@ import {
   DropdownMenuRadioGroup,
 } from './dropdown';
 
-const meta: Meta = {
+const meta: Meta<typeof DropdownMenu> = {
   component: DropdownMenu,
 };
 
 export default meta;
 
-export const Default = () => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button>Open Menu</Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent>
-      <DropdownMenuItem>Item One</DropdownMenuItem>
-      <DropdownMenuItem>Item Two</DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem>Item Three</DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
+type Story = StoryObj<typeof DropdownMenu>;
 
-export const WithCheckboxItems = () => {
+export const Default: Story = {
+  render: () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button>Open Menu</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>Item One</DropdownMenuItem>
+        <DropdownMenuItem>Item Two</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Item Three</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+};
+
+const CheckboxMenu = () => {
   const [checked, setChecked] = React.useState(true);
   const [checked2, setChecked2] = React.useState(false);
 
@@ -65,7 +69,11 @@ export const WithCheckboxItems = () => {
   );
 };
 
-export const WithRadioItems = () => {
+export const WithCheckboxItems: Story = {
+  render: () => <CheckboxMenu />,
+};
+
+const RadioMenu = () => {
   const [value, setValue] = React.useState('one');
 
   return (
@@ -88,21 +96,27 @@ export const WithRadioItems = () => {
   );
 };
 
-export const WithSubmenus = () => (
-  <DropdownMenu>
-    <DropdownMenuTrigger>
-      <Button>Open Menu</Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent>
-      <DropdownMenuItem>Item One</DropdownMenuItem>
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger>More Options</DropdownMenuSubTrigger>
-        <DropdownMenuSubContent>
-          <DropdownMenuItem>Sub Item One</DropdownMenuItem>
-          <DropdownMenuItem>Sub Item Two</DropdownMenuItem>
-        </DropdownMenuSubContent>
-      </DropdownMenuSub>
-      <DropdownMenuItem>Item Three</DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
+export const WithRadioItems: Story = {
+  render: () => <RadioMenu />,
+};
+
+export const WithSubmenus: Story = {
+  render: () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button>Open Menu</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>Item One</DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>More Options</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuItem>Sub Item One</DropdownMenuItem>
+            <DropdownMenuItem>Sub Item Two</DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuItem>Item Three</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+};

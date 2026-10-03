@@ -23,7 +23,8 @@ export const getCaseloadQueryOptions = (search = '') =>
       ? ['advisor', 'caseload', search]
       : ['advisor', 'caseload'],
     queryFn: () => getCaseload(search || undefined),
-    staleTime: 60 * 1000,
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
   });
 

@@ -1,4 +1,5 @@
-const componentGenerator = require('./generators/component/index');
+const componentGenerator = require('./generators/component/index.cjs');
+const featureGenerator = require('./generators/feature/index.cjs');
 
 /**
  *
@@ -6,4 +7,5 @@ const componentGenerator = require('./generators/component/index');
  */
 module.exports = function (plop) {
   plop.setGenerator('component', componentGenerator);
+  plop.setGenerator('feature', featureGenerator);
 };

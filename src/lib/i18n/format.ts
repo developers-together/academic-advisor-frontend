@@ -15,10 +15,6 @@ export const formatDate = (value: string | Date) => {
   return dayjs(value).format('DD MMM YYYY');
 };
 
-export const formatTime = (value: string | Date) => {
-  return dayjs(value).format('HH:mm');
-};
-
 export const formatDateTime = (value: string | Date) => {
   return `${dayjs(value).format('DD MMM YYYY')} ${dayjs(value).format('HH:mm')}`;
 };

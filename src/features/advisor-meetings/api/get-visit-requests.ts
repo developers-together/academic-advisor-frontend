@@ -12,6 +12,7 @@ export const getVisitRequestsQueryOptions = () =>
     queryKey: ['advisor', 'visit-requests'],
     queryFn: getVisitRequests,
     staleTime: 30 * 1000,
+    refetchOnWindowFocus: true,
   });
 
 export const useVisitRequests = () => useQuery(getVisitRequestsQueryOptions());

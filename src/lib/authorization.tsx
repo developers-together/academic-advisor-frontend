@@ -8,14 +8,6 @@ import { cn } from '@/utils/cn';
 
 import { useUser } from './auth';
 
-export const ROLES: Record<UserRole, UserRole> = {
-  student: 'student',
-  advisor: 'advisor',
-  dean: 'dean',
-  vp: 'vp',
-  admin: 'admin',
-};
-
 export const useRole = (): UserRole | null => {
   const user = useUser();
   return user.data?.role ?? null;

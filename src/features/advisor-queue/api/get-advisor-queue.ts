@@ -11,7 +11,8 @@ export const getAdvisorQueueQueryOptions = () =>
   queryOptions({
     queryKey: ['advisor', 'queue'],
     queryFn: getAdvisorQueue,
-    staleTime: 0,
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: true,
   });
 
 export const useAdvisorQueue = () => useQuery(getAdvisorQueueQueryOptions());

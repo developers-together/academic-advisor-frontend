@@ -13,16 +13,39 @@ export default meta;
 
 type Story = StoryObj<typeof Tabs>;
 
-export const FilterRow: Story = {
-  render: () => (
-    <Tabs defaultValue="all">
+const statuses = [
+  { value: 'all', label: 'All', rows: ['Queue item one', 'Queue item two'] },
+  { value: 'submitted', label: 'Submitted', rows: ['Queue item two'] },
+  { value: 'under_review', label: 'Under review', rows: ['Queue item one'] },
+] as const;
+
+const FilterTabs = () => {
+  const [value, setValue] = useState<string>('all');
+
+  return (
+    <Tabs value={value} onValueChange={setValue}>
       <TabsList aria-label="Queue filters">
-        <TabsTrigger value="all">All</TabsTrigger>
-        <TabsTrigger value="submitted">Submitted</TabsTrigger>
-        <TabsTrigger value="under_review">Under review</TabsTrigger>
+        {statuses.map((status) => (
+          <TabsTrigger key={status.value} value={status.value}>
+            {status.label}
+          </TabsTrigger>
+        ))}
       </TabsList>
+      {statuses.map((status) => (
+        <TabsContent key={status.value} value={status.value}>
+          <ul className="space-y-1 text-sm text-muted-foreground">
+            {status.rows.map((row) => (
+              <li key={row}>{row}</li>
+            ))}
+          </ul>
+        </TabsContent>
+      ))}
     </Tabs>
-  ),
+  );
+};
+
+export const FilterRow: Story = {
+  render: () => <FilterTabs />,
 };
 
 export const WithCounts: Story = {
@@ -33,6 +56,13 @@ export const WithCounts: Story = {
         <TabsTrigger value="submitted">Submitted (2)</TabsTrigger>
         <TabsTrigger value="under_review">Under review (1)</TabsTrigger>
       </TabsList>
+      <TabsContent value="all">3 plans match the queue filters.</TabsContent>
+      <TabsContent value="submitted">
+        2 plans match the queue filters.
+      </TabsContent>
+      <TabsContent value="under_review">
+        1 plan matches the queue filters.
+      </TabsContent>
     </Tabs>
   ),
 };

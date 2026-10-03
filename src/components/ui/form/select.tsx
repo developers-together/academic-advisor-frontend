@@ -18,17 +18,25 @@ type SelectFieldProps = FieldWrapperPassThroughProps & {
 };
 
 export const Select = (props: SelectFieldProps) => {
-  const { label, options, error, className, defaultValue, registration } =
-    props;
+  const {
+    label,
+    options,
+    error,
+    className,
+    defaultValue,
+    registration,
+    ...rest
+  } = props;
   return (
     <FieldWrapper label={label} error={error}>
       <select
         className={cn(
-          'mt-1 block w-full rounded-md border-gray-600 py-2 pr-10 pl-3 text-base focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden sm:text-sm',
+          'mt-1 block w-full rounded-md border-input bg-background py-2 pe-10 ps-3 text-base text-foreground focus:border-ring focus:ring-ring focus:outline-hidden sm:text-sm',
           className,
         )}
         defaultValue={defaultValue}
         {...registration}
+        {...rest}
       >
         {options.map(({ label, value }) => (
           <option key={label?.toString()} value={value}>

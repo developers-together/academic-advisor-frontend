@@ -29,8 +29,6 @@ export const namespaces = [
   'notifications',
 ] as const;
 
-export type Namespace = (typeof namespaces)[number];
-
 export const supportedLanguages = ['en', 'ar'] as const;
 export type Language = (typeof supportedLanguages)[number];
 

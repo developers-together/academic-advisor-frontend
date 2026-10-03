@@ -1,11 +1,9 @@
-import * as React from "react"; 
+import * as React from 'react';
 
-export type {{properCase name}}Props = {};
+export type {{ properCase name }}Props = {
+  children?: React.ReactNode;
+};
 
-export const {{properCase name}} = (props: {{properCase name}}Props) => { 
-  return (
-    <div>
-      {{properCase name}}
-    </div>
-  ); 
+export const {{ properCase name }} = ({ children }: {{ properCase name }}Props) => {
+  return <div>{children}</div>;
 };

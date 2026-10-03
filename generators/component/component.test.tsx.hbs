@@ -1,0 +1,8 @@
+import { render, screen } from '@/testing/test-utils';
+
+import { {{ properCase name }} } from '../{{ kebabCase name }}';
+
+test('renders {{ properCase name }}', () => {
+  render(<{{ properCase name }}>Content</{{ properCase name }}>);
+  expect(screen.getByText('Content')).toBeInTheDocument();
+});

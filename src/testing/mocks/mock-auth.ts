@@ -1,21 +1,6 @@
 import { db } from './db';
 import { hash } from './utils';
 
-export type AdvaisorUser = {
-  id: number;
-  name: string;
-  email: string;
-  password?: string;
-  role: string;
-  language_preference: 'en' | 'ar' | null;
-  student_id: string | null;
-  advisor_id: number | null;
-  email_verified_at: string | null;
-  pending_admin_at: string | null;
-  suspended_at: string | null;
-  faculty: string | null;
-};
-
 export const sanitizeUser = <O extends object>(user: O) => {
   const result = { ...user } as Record<string, unknown>;
   delete result.password;

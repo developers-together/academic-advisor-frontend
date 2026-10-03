@@ -9,6 +9,7 @@ import type { LanguagePreference, User, UserRole } from '@/types/domain';
 import { api } from './api-client';
 import { unwrap } from './api-envelope';
 import { ApiError } from './api-error';
+import { seedLanguageFromProfile } from './language';
 import { tokenStorage } from './token-storage';
 
 export const roleLanding: Record<UserRole, string> = {
@@ -34,6 +35,7 @@ export const sanitizeRedirectTo = (
 const getUser = async (): Promise<User> => {
   try {
     const user = await unwrap<User>(api.get('/me'));
+    seedLanguageFromProfile(user.language_preference);
     return user;
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {

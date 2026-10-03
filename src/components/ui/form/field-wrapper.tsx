@@ -16,15 +16,39 @@ export type FieldWrapperPassThroughProps = Omit<
   'className' | 'children'
 >;
 
+type FieldElementProps = {
+  id?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: boolean;
+};
+
 export const FieldWrapper = (props: FieldWrapperProps) => {
   const { label, error, children } = props;
+  const generatedId = React.useId();
+  const errorId = React.useId();
+
+  const isFieldElement = React.isValidElement<FieldElementProps>(children);
+  const fieldId = isFieldElement
+    ? (children.props.id ?? generatedId)
+    : generatedId;
+  const describedBy = isFieldElement
+    ? [children.props['aria-describedby'], error ? errorId : undefined]
+        .filter(Boolean)
+        .join(' ') || undefined
+    : undefined;
+  const field = isFieldElement
+    ? React.cloneElement(children, {
+        id: fieldId,
+        'aria-describedby': describedBy,
+        'aria-invalid': error ? true : undefined,
+      })
+    : children;
+
   return (
     <div>
-      <Label>
-        {label}
-        <div className="mt-1">{children}</div>
-      </Label>
-      <Error errorMessage={error?.message} />
+      {label ? <Label htmlFor={fieldId}>{label}</Label> : null}
+      <div className="mt-1">{field}</div>
+      <Error errorMessage={error?.message} id={errorId} />
     </div>
   );
 };

@@ -73,7 +73,11 @@ const TabsContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
-    className={cn('mt-3 focus-visible:outline-hidden', className)}
+    forceMount
+    className={cn(
+      'mt-3 focus-visible:outline-hidden data-[state=inactive]:hidden',
+      className,
+    )}
     {...props}
   />
 ));

@@ -9,7 +9,7 @@ export const getPlanComments = (): Promise<PlanComment[]> =>
 
 export const getPlanCommentsQueryOptions = () =>
   queryOptions({
-    queryKey: ['plan-comments'],
+    queryKey: ['plan', 'comments'],
     queryFn: getPlanComments,
     staleTime: 0,
   });

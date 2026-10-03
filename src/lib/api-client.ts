@@ -5,17 +5,6 @@ import { env } from '@/config/env';
 import { toApiError } from './api-error';
 import { tokenStorage } from './token-storage';
 
-let suppressAuthRedirect = false;
-
-export const withSuppressedAuthRedirect = async <T>(fn: () => Promise<T>) => {
-  suppressAuthRedirect = true;
-  try {
-    return await fn();
-  } finally {
-    suppressAuthRedirect = false;
-  }
-};
-
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = 'application/json';
@@ -38,7 +27,7 @@ api.interceptors.response.use(
   (error) => {
     const apiError = toApiError(error);
 
-    if (apiError.status === 401 && !suppressAuthRedirect) {
+    if (apiError.status === 401) {
       tokenStorage.clear();
       const redirectTo = `${window.location.pathname}${window.location.search}`;
       const params = new URLSearchParams({ reason: 'expired' });
