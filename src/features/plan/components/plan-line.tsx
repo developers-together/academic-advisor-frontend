@@ -16,7 +16,7 @@ export const PlanLine = ({
   errors = [],
   className,
 }: PlanLineProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('plan');
 
   return (
     <div
