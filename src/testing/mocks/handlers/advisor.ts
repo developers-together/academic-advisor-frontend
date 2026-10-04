@@ -11,12 +11,10 @@ import type {
   PlanStatus,
   PlannedCourse,
   PrerequisiteMapEntry,
-  VisitRequest,
-  VisitRequestSlot,
 } from '@/types/domain';
 
 import { db } from '../db';
-import { CURRENT_TERM, requireAuth } from '../mock-auth';
+import { requireAuth } from '../mock-auth';
 import {
   DEFAULT_OFFICE_HOURS,
   deniesPermission,
@@ -25,75 +23,6 @@ import {
 import { networkDelay } from '../utils';
 
 const MOCK_AGING_THRESHOLD_DAYS = 3;
-
-type SlotInput = { starts_at: string; ends_at: string };
-
-const normalizeSlotInputs = (value: unknown): SlotInput[] =>
-  Array.isArray(value)
-    ? value
-        .filter(
-          (slot): slot is SlotInput =>
-            typeof slot === 'object' &&
-            slot !== null &&
-            typeof (slot as SlotInput).starts_at === 'string' &&
-            typeof (slot as SlotInput).ends_at === 'string',
-        )
-        .slice(0, 10)
-    : [];
-
-const parseVisitSlots = (slots: string) =>
-  JSON.parse(slots) as Array<Omit<VisitRequestSlot, 'id'>>;
-
-const visitRequestOf = (row: {
-  id: unknown;
-  status: string;
-  term_code: string;
-  initiatorId: unknown;
-  studentId: unknown;
-  slots: string;
-  createdAt: string;
-  studentName?: string;
-  studentStudentId?: string | null;
-}): VisitRequest => ({
-  id: row.id as number,
-  status: row.status as VisitRequest['status'],
-  term_code: row.term_code,
-  initiator_id: row.initiatorId as number,
-  slots: parseVisitSlots(row.slots).map((slot, index) => ({
-    id: (row.id as number) * 100 + index,
-    ...slot,
-  })),
-  created_at: row.createdAt,
-  ...(row.studentName
-    ? {
-        student: {
-          id: row.studentId as number,
-          name: row.studentName,
-          student_id: row.studentStudentId ?? null,
-        },
-      }
-    : {}),
-});
-
-const visitRequestResponse = (rowId: number) => {
-  const row = db.visitRequest.findFirst({
-    where: { id: { equals: rowId } },
-  });
-  const student = row
-    ? db.user.findFirst({ where: { id: { equals: row.studentId as number } } })
-    : null;
-  return visitRequestOf({
-    id: row?.id,
-    status: row?.status ?? 'proposed',
-    term_code: row?.term_code ?? CURRENT_TERM,
-    initiatorId: row?.initiatorId,
-    studentId: row?.studentId,
-    slots: row?.slots ?? '[]',
-    createdAt: row?.createdAt ?? new Date().toISOString(),
-    studentName: student?.name,
-    studentStudentId: student?.student_id,
-  });
-};
 
 const waitingDays = (submittedAt: string | null) =>
   submittedAt ? dayjs().diff(dayjs(submittedAt), 'day') : 0;
@@ -270,10 +199,10 @@ export const advisorHandlers = [
         const record = db.academicRecord.findFirst({
           where: { userId: { equals: student.id as number } },
         });
-        const openRequest = db.visitRequest.findFirst({
+        const openRequest = db.meetingRequest.findFirst({
           where: {
             studentId: { equals: student.id as number },
-            status: { equals: 'proposed' },
+            status: { in: ['requested', 'awaiting_response'] },
           },
         });
         return {
@@ -512,162 +441,6 @@ export const advisorHandlers = [
         },
         { status: 201 },
       );
-    },
-  ),
-
-  http.get(`${env.API_URL}/advisor/visit-requests`, async ({ request }) => {
-    await networkDelay();
-    if (injectsErrors()) {
-      return HttpResponse.json(
-        { message: 'The server encountered an error.' },
-        { status: 500 },
-      );
-    }
-    if (deniesPermission()) {
-      return HttpResponse.json(
-        { message: 'This action is unauthorized.' },
-        { status: 403 },
-      );
-    }
-    const advisor = requireAuth(request);
-    const studentIds = db.user
-      .findMany({
-        where: { advisor_id: { equals: advisor.id as number } },
-      })
-      .map((student) => student.id as number);
-    const requests: VisitRequest[] = db.visitRequest
-      .findMany({ where: { studentId: { in: studentIds } } })
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-      .map((row) => visitRequestResponse(row.id as number));
-    return HttpResponse.json({ data: requests });
-  }),
-
-  http.post(`${env.API_URL}/advisor/visit-requests`, async ({ request }) => {
-    await networkDelay();
-    if (deniesPermission()) {
-      return HttpResponse.json(
-        { message: 'This action is unauthorized.' },
-        { status: 403 },
-      );
-    }
-    const advisor = requireAuth(request);
-    const body = (await request.json()) as {
-      student_id?: unknown;
-      slots?: unknown;
-    };
-    const student = db.user.findFirst({
-      where: { id: { equals: Number(body.student_id) } },
-    });
-    if (!student) {
-      return HttpResponse.json(
-        { message: 'No student found.' },
-        { status: 404 },
-      );
-    }
-    const existing = db.visitRequest.findFirst({
-      where: {
-        studentId: { equals: student.id as number },
-        status: { equals: 'proposed' },
-      },
-    });
-    if (existing) {
-      return HttpResponse.json(
-        {
-          message: 'A proposed visit request already stands for this term.',
-          key: 'visit.request_exists',
-        },
-        { status: 409 },
-      );
-    }
-    const created = db.visitRequest.create({
-      studentId: student.id as number,
-      initiatorId: advisor.id as number,
-      status: 'proposed',
-      term_code: CURRENT_TERM,
-      slots: JSON.stringify(normalizeSlotInputs(body.slots)),
-    });
-    return HttpResponse.json(
-      { data: visitRequestResponse(created.id as number) },
-      { status: 201 },
-    );
-  }),
-
-  http.post(
-    `${env.API_URL}/advisor/visit-requests/:visitRequestId/slots`,
-    async ({ request, params }) => {
-      await networkDelay();
-      if (deniesPermission()) {
-        return HttpResponse.json(
-          { message: 'This action is unauthorized.' },
-          { status: 403 },
-        );
-      }
-      requireAuth(request);
-      const row = db.visitRequest.findFirst({
-        where: { id: { equals: Number(params.visitRequestId) } },
-      });
-      if (!row) {
-        return HttpResponse.json(
-          { message: 'Visit request not found.' },
-          { status: 404 },
-        );
-      }
-      if (row.status !== 'proposed') {
-        return HttpResponse.json(
-          {
-            message: 'Only a proposed visit request accepts proposed times.',
-            key: 'visit.not_slotable',
-          },
-          { status: 409 },
-        );
-      }
-      const body = (await request.json()) as { slots?: unknown };
-      db.visitRequest.update({
-        where: { id: { equals: row.id as number } },
-        data: { slots: JSON.stringify(normalizeSlotInputs(body.slots)) },
-      });
-      return HttpResponse.json({
-        data: visitRequestResponse(row.id as number),
-      });
-    },
-  ),
-
-  http.post(
-    `${env.API_URL}/advisor/visit-requests/:visitRequestId/done`,
-    async ({ request, params }) => {
-      await networkDelay();
-      if (deniesPermission()) {
-        return HttpResponse.json(
-          { message: 'This action is unauthorized.' },
-          { status: 403 },
-        );
-      }
-      requireAuth(request);
-      const row = db.visitRequest.findFirst({
-        where: { id: { equals: Number(params.visitRequestId) } },
-      });
-      if (!row) {
-        return HttpResponse.json(
-          { message: 'Visit request not found.' },
-          { status: 404 },
-        );
-      }
-      if (row.status !== 'proposed') {
-        return HttpResponse.json(
-          {
-            message: 'Only a proposed visit request can be marked done.',
-            key: 'visit.not_completable',
-          },
-          { status: 409 },
-        );
-      }
-      db.visitRequest.update({
-        where: { id: { equals: row.id as number } },
-        data: { status: 'done' },
-      });
-      return HttpResponse.json({
-        data: visitRequestResponse(row.id as number),
-      });
     },
   ),
 
