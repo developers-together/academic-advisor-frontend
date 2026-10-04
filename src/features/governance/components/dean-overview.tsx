@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router';
 
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiCard } from '@/components/ui/kpi-card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUser } from '@/lib/auth';
-import type { GovernanceMetrics } from '@/types/domain';
+import type { GovernanceGrouping, GovernanceMetrics } from '@/types/domain';
 
 import { useGovernanceDashboard } from '../api/get-governance-dashboard';
 import { scopedNodeOf } from '../utils/governance-tree';
@@ -84,9 +86,13 @@ export const DeanOverview = () => {
   const user = useUser();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const [grouping, setGrouping] = useState<GovernanceGrouping>('units');
   const faculty = user.data?.faculty ?? null;
   const hasFaculty = faculty !== null;
-  const dashboard = useGovernanceDashboard(hasFaculty);
+  const dashboard = useGovernanceDashboard(
+    hasFaculty,
+    grouping === 'advisor' ? 'advisor' : undefined,
+  );
 
   if (!hasFaculty) {
     return (
@@ -100,30 +106,41 @@ export const DeanOverview = () => {
   }
 
   return (
-    <GovernanceQueryStates
-      query={dashboard}
-      audience="dean"
-      emptyTitle={t('dean.empty.title')}
-      emptyBody={t('dean.empty.body')}
-    >
-      {(root) => {
-        const scoped = scopedNodeOf(root, searchParams.get('node'));
-        return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-              {kpiCardsOf(scoped.metrics, t)}
+    <div className="space-y-6">
+      <Tabs
+        value={grouping}
+        onValueChange={(value) => setGrouping(value as GovernanceGrouping)}
+      >
+        <TabsList aria-label={t('view.label')}>
+          <TabsTrigger value="units">{t('view.units')}</TabsTrigger>
+          <TabsTrigger value="advisor">{t('view.advisor')}</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      <GovernanceQueryStates
+        query={dashboard}
+        audience="dean"
+        emptyTitle={t('dean.empty.title')}
+        emptyBody={t('dean.empty.body')}
+      >
+        {(root) => {
+          const scoped = scopedNodeOf(root, searchParams.get('node'));
+          return (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+                {kpiCardsOf(scoped.metrics, t)}
+              </div>
+              <FunnelChart
+                funnel={scoped.metrics.funnel}
+                term={scoped.term_code}
+              />
+              <GovernanceChildGrid
+                node={scoped}
+                buildHref={(code) => `${location.pathname}?node=${code}`}
+              />
             </div>
-            <FunnelChart
-              funnel={scoped.metrics.funnel}
-              term={scoped.term_code}
-            />
-            <GovernanceChildGrid
-              node={scoped}
-              buildHref={(code) => `${location.pathname}?node=${code}`}
-            />
-          </div>
-        );
-      }}
-    </GovernanceQueryStates>
+          );
+        }}
+      </GovernanceQueryStates>
+    </div>
   );
 };

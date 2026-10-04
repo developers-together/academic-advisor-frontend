@@ -40,6 +40,7 @@ export const setScenario = (scenario: Scenario) => {
   db.notification.deleteMany({ where: {} });
   db.planConversation.deleteMany({ where: {} });
   db.governanceTree.deleteMany({ where: {} });
+  db.governanceAdvisor.deleteMany({ where: {} });
   db.adminSettings.deleteMany({ where: {} });
   db.rule.deleteMany({ where: {} });
   db.advisorProfile.deleteMany({ where: {} });
@@ -580,6 +581,33 @@ const seedGovernance = () => {
     id: 'university',
     payload: JSON.stringify(university),
   });
+
+  const advisorsOf = (faculty: GovernanceNode) => {
+    const caseloads = spread(faculty.metrics.caseload, 3);
+    const approvals = spread(faculty.metrics.approved, 3);
+    return ['Mona Said', 'Karim Adel', 'Hana Mostafa'].map((name, index) => {
+      const caseload = caseloads[index];
+      const approved = approvals[index];
+      return nodeOf(
+        'advisor',
+        `${faculty.code}-AD${index + 1}`,
+        name,
+        metricsOf(
+          Math.round(faculty.metrics.students / 3),
+          caseload,
+          approved,
+          caseload === 0 ? null : Math.round((approved / caseload) * 100),
+          faculty.metrics.median_decision_hours,
+          Math.max(0, Math.round(caseload * 0.03)),
+          funnelOf(approved, Math.round(caseload * 0.4)),
+        ),
+      );
+    });
+  };
+
+  for (const advisor of advisorsOf(university.children[0])) {
+    db.governanceAdvisor.create({ payload: JSON.stringify(advisor) });
+  }
 };
 
 const seeds: Record<Scenario, () => void> = {

@@ -34,6 +34,7 @@ type GovernanceNodeInput = {
   level: GovernanceLevel;
   code?: string | null;
   nameEn?: string | null;
+  nameAr?: string | null;
   metrics?: Partial<GovernanceMetrics>;
   children?: GovernanceNode[];
 };
@@ -42,19 +43,27 @@ export const governanceNode = ({
   level,
   code = null,
   nameEn = null,
+  nameAr = null,
   metrics,
   children = [],
 }: GovernanceNodeInput): GovernanceNode => ({
   level,
   code,
   name_en: nameEn,
-  name_ar: null,
+  name_ar: nameAr,
   term_code: '2026F',
   metrics: governanceMetrics(metrics),
   children,
 });
 
-export const seedGovernanceTree = (root: GovernanceNode) => {
+export const seedGovernanceTree = (
+  root: GovernanceNode,
+  advisors: GovernanceNode[] = [],
+) => {
   db.governanceTree.deleteMany({ where: {} });
   db.governanceTree.create({ payload: JSON.stringify(root) });
+  db.governanceAdvisor.deleteMany({ where: {} });
+  for (const advisor of advisors) {
+    db.governanceAdvisor.create({ payload: JSON.stringify(advisor) });
+  }
 };
