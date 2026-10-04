@@ -1,19 +1,25 @@
 import {
   Bell,
+  BookOpen,
   CalendarCheck,
   CalendarClock,
+  CircleUser,
   ClipboardList,
   FileText,
   GraduationCap,
+  House,
   LayoutDashboard,
   LogOut,
   MapPin,
   MessagesSquare,
   Moon,
+  MoreHorizontal,
   ScrollText,
-  Settings,
-  ShieldCheck,
+  Search,
+  Sparkles,
   Sun,
+  TrendingUp,
+  UserCheck,
   UserCog,
   Users,
 } from 'lucide-react';
@@ -21,6 +27,11 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useNavigate } from 'react-router';
 
+import {
+  CommandPalette,
+  type CommandGroup,
+} from '@/components/ui/command-palette';
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import {
   DropdownMenu as Dropdown,
   DropdownMenuContent as DropdownContent,
@@ -37,31 +48,56 @@ import { cn } from '@/utils/cn';
 
 import { TableDensityProvider, type TableDensity } from './table-density';
 
+type IconComponent = React.ComponentType<{
+  className?: string;
+  'aria-hidden'?: boolean;
+}>;
+
 export type NavItem = {
   labelKey: string;
   to: string;
-  icon: React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+  icon: IconComponent;
   end?: boolean;
 };
 
-export const roleNav: Record<UserRole, NavItem[]> = {
+export type NavGroup = {
+  labelKey: string;
+  icon?: IconComponent;
+  items: NavItem[];
+};
+
+export type NavEntry = NavItem | NavGroup;
+
+export const isNavGroup = (entry: NavEntry): entry is NavGroup =>
+  'items' in entry;
+
+const entry = (labelKey: string): NavItem => {
+  for (const items of Object.values(roleNav)) {
+    for (const item of items) {
+      if (isNavGroup(item)) {
+        const hit = item.items.find((child) => child.labelKey === labelKey);
+        if (hit) return hit;
+      } else if (item.labelKey === labelKey) {
+        return item;
+      }
+    }
+  }
+  throw new Error(`Unknown nav entry: ${labelKey}`);
+};
+
+export const roleNav: Record<UserRole, NavEntry[]> = {
   student: [
     {
-      labelKey: 'nav.dashboard',
+      labelKey: 'nav.home',
       to: paths.app.root.getHref(),
-      icon: LayoutDashboard,
+      icon: House,
       end: true,
     },
     { labelKey: 'nav.myPlan', to: paths.app.plan.getHref(), icon: FileText },
     {
-      labelKey: 'nav.builder',
-      to: paths.app.builder.getHref(),
-      icon: ClipboardList,
-    },
-    {
-      labelKey: 'nav.profile',
-      to: paths.app.profile.getHref(),
-      icon: GraduationCap,
+      labelKey: 'nav.academicRecord',
+      to: paths.app.record.getHref(),
+      icon: BookOpen,
     },
     {
       labelKey: 'nav.rules',
@@ -69,14 +105,24 @@ export const roleNav: Record<UserRole, NavItem[]> = {
       icon: ScrollText,
     },
     {
-      labelKey: 'nav.chat',
+      labelKey: 'nav.aiAdvisor',
       to: paths.app.chat.getHref(),
       icon: MessagesSquare,
+    },
+    {
+      labelKey: 'nav.myAdvisor',
+      to: paths.app.advisor.getHref(),
+      icon: UserCheck,
     },
     {
       labelKey: 'nav.notifications',
       to: paths.app.notifications.getHref(),
       icon: Bell,
+    },
+    {
+      labelKey: 'nav.account',
+      to: paths.app.account.getHref(),
+      icon: CircleUser,
     },
   ],
   advisor: [
@@ -97,19 +143,24 @@ export const roleNav: Record<UserRole, NavItem[]> = {
       icon: CalendarCheck,
     },
     {
-      labelKey: 'nav.hours',
-      to: paths.advisor.hours.getHref(),
-      icon: CalendarClock,
-    },
-    {
-      labelKey: 'nav.profile',
-      to: paths.advisor.profile.getHref(),
-      icon: MapPin,
-    },
-    {
-      labelKey: 'nav.notifications',
-      to: paths.advisor.notifications.getHref(),
-      icon: Bell,
+      labelKey: 'nav.more',
+      items: [
+        {
+          labelKey: 'nav.hours',
+          to: paths.advisor.hours.getHref(),
+          icon: CalendarClock,
+        },
+        {
+          labelKey: 'nav.profile',
+          to: paths.advisor.profile.getHref(),
+          icon: MapPin,
+        },
+        {
+          labelKey: 'nav.notifications',
+          to: paths.advisor.notifications.getHref(),
+          icon: Bell,
+        },
+      ],
     },
   ],
   dean: [
@@ -120,53 +171,238 @@ export const roleNav: Record<UserRole, NavItem[]> = {
       end: true,
     },
     {
-      labelKey: 'nav.notifications',
-      to: paths.dean.notifications.getHref(),
-      icon: Bell,
+      labelKey: 'nav.advisors',
+      to: paths.dean.advisors.getHref(),
+      icon: Users,
+    },
+    {
+      labelKey: 'nav.analytics',
+      to: paths.dean.analytics.getHref(),
+      icon: TrendingUp,
+    },
+    {
+      labelKey: 'nav.more',
+      items: [
+        {
+          labelKey: 'nav.notifications',
+          to: paths.dean.notifications.getHref(),
+          icon: Bell,
+        },
+      ],
     },
   ],
   vp: [
     {
-      labelKey: 'nav.scorecard',
+      labelKey: 'nav.overview',
       to: paths.vp.root.getHref(),
       icon: LayoutDashboard,
       end: true,
     },
     {
-      labelKey: 'nav.drilldown',
-      to: paths.vp.drilldown.getHref(),
-      icon: ShieldCheck,
+      labelKey: 'nav.faculties',
+      to: paths.vp.faculties.getHref(),
+      icon: GraduationCap,
+    },
+    {
+      labelKey: 'nav.trends',
+      to: paths.vp.trends.getHref(),
+      icon: TrendingUp,
+    },
+    {
+      labelKey: 'nav.more',
+      items: [
+        {
+          labelKey: 'nav.notifications',
+          to: paths.vp.notifications.getHref(),
+          icon: Bell,
+        },
+      ],
     },
   ],
   admin: [
     {
-      labelKey: 'nav.accounts',
-      to: paths.admin.students.getHref(),
-      icon: Users,
+      labelKey: 'nav.overview',
+      to: paths.admin.root.getHref(),
+      icon: LayoutDashboard,
       end: true,
     },
     {
-      labelKey: 'nav.assignments',
-      to: paths.admin.assignments.getHref(),
-      icon: GraduationCap,
-    },
-    { labelKey: 'nav.rules', to: paths.admin.rules.getHref(), icon: FileText },
-    {
-      labelKey: 'nav.staff',
-      to: paths.admin.staff.getHref(),
-      icon: UserCog,
+      labelKey: 'nav.users',
+      to: paths.admin.users.getHref(),
+      icon: Users,
     },
     {
-      labelKey: 'nav.settings',
-      to: paths.admin.settings.getHref(),
-      icon: Settings,
+      labelKey: 'nav.operations',
+      icon: ClipboardList,
+      items: [
+        {
+          labelKey: 'nav.assignments',
+          to: paths.admin.assignments.getHref(),
+          icon: GraduationCap,
+        },
+        {
+          labelKey: 'nav.courses',
+          to: paths.admin.courses.getHref(),
+          icon: FileText,
+        },
+        {
+          labelKey: 'nav.programs',
+          to: paths.admin.programs.getHref(),
+          icon: BookOpen,
+        },
+        {
+          labelKey: 'nav.rules',
+          to: paths.admin.rules.getHref(),
+          icon: FileText,
+        },
+        {
+          labelKey: 'nav.registrationWindows',
+          to: paths.admin.registrationWindows.getHref(),
+          icon: CalendarClock,
+        },
+        {
+          labelKey: 'nav.staff',
+          to: paths.admin.staff.getHref(),
+          icon: UserCog,
+        },
+        {
+          labelKey: 'nav.aiConfiguration',
+          to: paths.admin.aiConfiguration.getHref(),
+          icon: Sparkles,
+        },
+      ],
+    },
+    {
+      labelKey: 'nav.more',
+      items: [
+        {
+          labelKey: 'nav.notifications',
+          to: paths.admin.notifications.getHref(),
+          icon: Bell,
+        },
+      ],
     },
   ],
 };
 
+/**
+ * Mobile bottom-nav slots per role (design.md section 5.3). `more` opens the
+ * sheet holding every area that is not in the bar.
+ */
+const mobileBar: Record<UserRole, Array<NavItem | NavGroup | 'more'>> = {
+  student: [
+    entry('nav.home'),
+    entry('nav.myPlan'),
+    entry('nav.aiAdvisor'),
+    entry('nav.myAdvisor'),
+    'more',
+  ],
+  advisor: [
+    entry('nav.queue'),
+    entry('nav.students'),
+    entry('nav.meetings'),
+    'more',
+  ],
+  dean: [
+    entry('nav.overview'),
+    entry('nav.advisors'),
+    entry('nav.analytics'),
+    'more',
+  ],
+  vp: [
+    entry('nav.overview'),
+    entry('nav.faculties'),
+    entry('nav.trends'),
+    'more',
+  ],
+  admin: [
+    entry('nav.overview'),
+    entry('nav.users'),
+    roleNav.admin.find(
+      (item): item is NavGroup =>
+        'items' in item && item.labelKey === 'nav.operations',
+    ) ?? 'more',
+    'more',
+  ],
+};
+
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = React.useState(
+    () => window.matchMedia('(max-width: 767px)').matches,
+  );
+
+  React.useEffect(() => {
+    const query = window.matchMedia('(max-width: 767px)');
+    const onChange = (event: MediaQueryListEvent) => setIsMobile(event.matches);
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+
+  return isMobile;
+};
+
+const useCommandHotkey = (onOpen: () => void) => {
+  React.useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        onOpen();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [onOpen]);
+};
+
+const useCommandGroups = (forRole: UserRole): CommandGroup[] => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  return React.useMemo(() => {
+    const flatten = (entries: NavEntry[]): NavItem[] =>
+      entries.flatMap((item) => (isNavGroup(item) ? item.items : [item]));
+
+    const pageEntries = flatten(roleNav[forRole]).map((item, index) => ({
+      id: `page-${index}`,
+      label: t(item.labelKey),
+      icon: item.icon,
+      onSelect: () => navigate(item.to),
+    }));
+
+    const groups: CommandGroup[] = [
+      { headingKey: 'commandPalette.sections.pages', entries: pageEntries },
+    ];
+
+    const actions: CommandGroup['entries'] = [];
+    if (forRole === 'student') {
+      actions.push({
+        id: 'ask-ai',
+        label: t('commandPalette.actions.askAi'),
+        icon: Sparkles,
+        onSelect: () => navigate(paths.app.chat.getHref()),
+      });
+    }
+    if (forRole === 'advisor') {
+      actions.push({
+        id: 'set-availability',
+        label: t('commandPalette.actions.setAvailability'),
+        icon: CalendarClock,
+        onSelect: () => navigate(paths.advisor.hours.getHref()),
+      });
+    }
+    if (actions.length > 0) {
+      groups.push({
+        headingKey: 'commandPalette.sections.actions',
+        entries: actions,
+      });
+    }
+    return groups;
+  }, [forRole, navigate, t]);
+};
+
 const densityPadding: Record<TableDensity, string> = {
-  spacious: 'p-4 lg:p-6',
-  compact: 'p-3 lg:p-4',
+  spacious: 'p-4 pb-24 lg:p-6 md:pb-6',
+  compact: 'p-3 pb-24 lg:p-4 md:pb-4',
 };
 
 export type AppShellProps = {
@@ -181,6 +417,10 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
   const resolvedDensity: TableDensity =
     density ?? (forRole === 'student' ? 'spacious' : 'compact');
   const items = roleNav[forRole];
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
+  const commandGroups = useCommandGroups(forRole);
+  const isMobile = useIsMobile();
+  useCommandHotkey(() => setPaletteOpen(true));
 
   return (
     <TableDensityProvider density={resolvedDensity}>
@@ -194,7 +434,7 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
 
         <nav
           aria-label={t(`roles.${forRole}`)}
-          className="sticky top-0 flex h-dvh w-14 shrink-0 flex-col gap-1 border-e bg-card p-2 lg:w-56 lg:p-3"
+          className="sticky top-0 hidden h-dvh w-14 shrink-0 flex-col gap-1 border-e bg-card p-2 md:flex lg:w-56 lg:p-3"
         >
           <div className="mb-4 flex items-center gap-2 px-1 lg:px-2">
             <span
@@ -207,27 +447,28 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
               {t('app.name')}
             </span>
           </div>
-          {items.map(({ labelKey, to, icon: Icon, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              aria-label={t(labelKey)}
-              className={({ isActive }) =>
-                cn(
-                  'flex h-11 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden',
-                  isActive && 'bg-accent text-accent-foreground',
-                )
-              }
-            >
-              <Icon className="size-5 shrink-0" aria-hidden />
-              <span className="hidden truncate lg:inline">{t(labelKey)}</span>
-            </NavLink>
-          ))}
+          {items.map((item) =>
+            isNavGroup(item) ? (
+              <div key={item.labelKey} className="mt-2">
+                <p className="hidden px-3 py-1 text-2xs font-medium tracking-wide text-muted-foreground uppercase lg:inline">
+                  {t(item.labelKey)}
+                </p>
+                {item.items.map((child) => (
+                  <SidebarLink key={child.to} item={child} />
+                ))}
+              </div>
+            ) : (
+              <SidebarLink key={item.to} item={item} />
+            ),
+          )}
         </nav>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <Topbar bell={bell} name={user.data?.name ?? ''} />
+          <Topbar
+            bell={bell}
+            name={user.data?.name ?? ''}
+            onOpenPalette={() => setPaletteOpen(true)}
+          />
           <main
             id="main"
             className={cn('flex-1', densityPadding[resolvedDensity])}
@@ -236,20 +477,175 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
           </main>
         </div>
       </div>
+
+      {isMobile && <BottomNav forRole={forRole} />}
+      <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        groups={commandGroups}
+      />
     </TableDensityProvider>
   );
 };
 
-const Topbar = ({ bell, name }: { bell?: React.ReactNode; name: string }) => {
+const SidebarLink = ({ item }: { item: NavItem }) => {
+  const { t } = useTranslation();
+
+  return (
+    <NavLink
+      to={item.to}
+      end={item.end}
+      aria-label={t(item.labelKey)}
+      className={({ isActive }) =>
+        cn(
+          'flex h-11 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden',
+          isActive && 'bg-accent text-accent-foreground',
+        )
+      }
+    >
+      <item.icon className="size-5 shrink-0" aria-hidden />
+      <span className="hidden truncate lg:inline">{t(item.labelKey)}</span>
+    </NavLink>
+  );
+};
+
+const BottomNav = ({ forRole }: { forRole: UserRole }) => {
+  const { t } = useTranslation();
+  const [moreOpen, setMoreOpen] = React.useState(false);
+  const slots = mobileBar[forRole];
+
+  const sheetItems = roleNav[forRole].flatMap((entryItem) =>
+    isNavGroup(entryItem) ? entryItem.items : [entryItem],
+  );
+  const barItems = slots.filter(
+    (slot): slot is NavItem | NavGroup => slot !== 'more',
+  );
+  const barToSet = new Set(
+    barItems.flatMap((slot) => (isNavGroup(slot) ? slot.items : [slot])),
+  );
+  const remaining = sheetItems.filter((item) => !barToSet.has(item));
+
+  return (
+    <>
+      <nav
+        aria-label={t(`roles.${forRole}`)}
+        className="fixed inset-x-0 bottom-0 z-10 border-t bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
+      >
+        <ul className="flex items-stretch">
+          {slots.map((slot) =>
+            slot === 'more' ? (
+              <li key="more" className="flex-1">
+                <button
+                  type="button"
+                  onClick={() => setMoreOpen(true)}
+                  aria-haspopup="dialog"
+                  aria-expanded={moreOpen}
+                  className="flex h-16 w-full flex-col items-center justify-center gap-1 text-2xs font-medium text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
+                >
+                  <MoreHorizontal className="size-5" aria-hidden />
+                  {t('nav.more')}
+                </button>
+              </li>
+            ) : isNavGroup(slot) ? (
+              <li key={slot.labelKey} className="flex-1">
+                <button
+                  type="button"
+                  onClick={() => setMoreOpen(true)}
+                  aria-haspopup="dialog"
+                  className="flex h-16 w-full flex-col items-center justify-center gap-1 text-2xs font-medium text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
+                >
+                  {slot.icon ? (
+                    <slot.icon className="size-5" aria-hidden />
+                  ) : (
+                    <MoreHorizontal className="size-5" aria-hidden />
+                  )}
+                  {t(slot.labelKey)}
+                </button>
+              </li>
+            ) : (
+              <li key={slot.to} className="flex-1">
+                <NavLink
+                  to={slot.to}
+                  end={slot.end}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex h-16 w-full flex-col items-center justify-center gap-1 text-2xs font-medium text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset',
+                      isActive && 'text-primary',
+                    )
+                  }
+                >
+                  <slot.icon className="size-5" aria-hidden />
+                  <span>{t(slot.labelKey)}</span>
+                </NavLink>
+              </li>
+            ),
+          )}
+        </ul>
+      </nav>
+
+      <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
+        <DrawerContent side="bottom" className="rounded-t-lg p-4 pb-8">
+          <DrawerTitle className="mb-2 text-start text-base font-semibold">
+            {t('nav.more')}
+          </DrawerTitle>
+          <ul className="flex flex-col">
+            {remaining.map((item) => (
+              <li key={item.to}>
+                <NavLink
+                  to={item.to}
+                  end={item.end}
+                  onClick={() => setMoreOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex h-12 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden',
+                      isActive && 'bg-accent text-accent-foreground',
+                    )
+                  }
+                >
+                  <item.icon className="size-5 shrink-0" aria-hidden />
+                  {t(item.labelKey)}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </DrawerContent>
+      </Drawer>
+    </>
+  );
+};
+
+type TopbarProps = {
+  bell?: React.ReactNode;
+  name: string;
+  onOpenPalette: () => void;
+};
+
+const Topbar = ({ bell, name, onOpenPalette }: TopbarProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const logout = useLogout();
 
   return (
     <header className="sticky top-0 z-10 flex h-14 items-center justify-end gap-1 border-b bg-card px-3 lg:px-4">
-      <div className="me-auto hidden text-sm font-semibold lg:inline">
-        {t('app.name')}
+      <div className="me-auto flex items-center gap-2">
+        <span className="truncate text-sm font-semibold lg:hidden">
+          {t('app.name')}
+        </span>
+        <span className="hidden truncate text-sm font-semibold lg:inline">
+          {t('app.name')}
+        </span>
       </div>
+      <button
+        type="button"
+        onClick={onOpenPalette}
+        aria-label={t('commandPalette.open')}
+        className="flex h-11 items-center gap-2 rounded-md px-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+      >
+        <Search className="size-5" aria-hidden />
+        <kbd className="hidden rounded border bg-background px-1.5 py-0.5 text-2xs font-medium lg:inline">
+          ⌘K
+        </kbd>
+      </button>
       <LanguageToggle />
       <ThemeToggle />
       {bell}
