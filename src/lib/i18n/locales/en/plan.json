@@ -5,7 +5,7 @@
     "builderEntry": "Plan building opens once an advisor is assigned to you."
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Home",
     "cta": {
       "draft": "Resume in builder",
       "submitted": "View plan",
@@ -165,5 +165,33 @@
       "term": "Term",
       "grade": "Grade"
     }
+  },
+  "record": {
+    "title": "Academic Record",
+    "context": "Your grades, credits, and course history as reported by the SIS."
+  },
+  "myAdvisor": {
+    "title": "My Advisor",
+    "context": "Your assigned advisor, their office hours, and your meetings.",
+    "meetingsTitle": "Meetings",
+    "meetingsEmptyTitle": "No meetings yet",
+    "meetingsEmptyBody": "Meetings with your advisor appear here once they are scheduled."
+  },
+  "account": {
+    "title": "Account",
+    "context": "Your identity details and sign-in."
+  },
+  "home": {
+    "progressTitle": "Where you stand",
+    "meetingTitle": "Next meeting",
+    "meetingNone": "No meetings scheduled. You can request one from My Advisor.",
+    "meetingRespond": "Your advisor proposed a time. Respond from My Advisor.",
+    "meetingRespondCta": "Respond",
+    "aiTitle": "Ask the AI advisor",
+    "aiBody": "Plan next semester, check a prerequisite, or make sense of your record.",
+    "aiCta": "Open AI Advisor",
+    "notificationsTitle": "Notifications",
+    "notificationsViewAll": "View all",
+    "notificationsEmpty": "You are all caught up."
   }
 }
