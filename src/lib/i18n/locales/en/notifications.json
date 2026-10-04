@@ -16,7 +16,11 @@
     "caseload_student_added": "Caseload student added",
     "window_opened": "Registration window opened",
     "window_deadline_nearing": "Registration window closing soon",
-    "visit_requested": "Visit requested",
-    "visit_slots_provided": "Visit times proposed"
+    "meeting_requested": "Meeting requested",
+    "meeting_proposed": "Meeting times proposed",
+    "meeting_confirmed": "Meeting confirmed",
+    "meeting_declined": "Meeting declined",
+    "meeting_cancelled": "Meeting cancelled",
+    "meeting_completed": "Meeting completed"
   }
 }
