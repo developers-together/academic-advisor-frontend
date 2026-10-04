@@ -135,6 +135,8 @@
     "advisor": {
       "title": "Your advisor",
       "none": "You have no assigned advisor yet. The administration office assigns advisors.",
+      "location": "Office location",
+      "locationEmpty": "No office location set yet.",
       "hours": "Office hours",
       "hoursEmpty": "No office hours published yet."
     },

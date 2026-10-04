@@ -56,6 +56,7 @@ const models = {
   advisorProfile: {
     advisorId: primaryKey(() => nextId()),
     rows: String,
+    office_location: nullableString,
   },
   planComment: {
     id: primaryKey(() => nextId()),

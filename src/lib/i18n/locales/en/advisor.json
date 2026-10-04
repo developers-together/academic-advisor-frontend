@@ -136,6 +136,16 @@
       "success": "Request sent. {{name}} is notified in the app."
     }
   },
+  "profile": {
+    "title": "Profile",
+    "context": "How your students find you.",
+    "locationLabel": "Office location",
+    "save": "Save location",
+    "success": "Office location saved.",
+    "errors": {
+      "maxLength": "The office location is limited to 255 characters."
+    }
+  },
   "hours": {
     "title": "Office Hours",
     "context": "The weekly hours your students see.",

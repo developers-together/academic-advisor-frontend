@@ -47,6 +47,20 @@ export const AdvisorCard = () => {
             <p className="text-sm font-medium">
               {advisorQuery.data.advisor.name}
             </p>
+            {advisorQuery.data.office_location === null ? (
+              <p className="text-sm text-muted-foreground">
+                {t('profile.advisor.locationEmpty')}
+              </p>
+            ) : (
+              <div>
+                <p className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+                  {t('profile.advisor.location')}
+                </p>
+                <p className="mt-1 text-sm">
+                  {advisorQuery.data.office_location}
+                </p>
+              </div>
+            )}
             {advisorQuery.data.availability_window.rows.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 {t('profile.advisor.hoursEmpty')}

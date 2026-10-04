@@ -7,6 +7,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LogOut,
+  MapPin,
   MessagesSquare,
   Moon,
   ScrollText,
@@ -99,6 +100,11 @@ export const roleNav: Record<UserRole, NavItem[]> = {
       labelKey: 'nav.hours',
       to: paths.advisor.hours.getHref(),
       icon: CalendarClock,
+    },
+    {
+      labelKey: 'nav.profile',
+      to: paths.advisor.profile.getHref(),
+      icon: MapPin,
     },
     {
       labelKey: 'nav.notifications',

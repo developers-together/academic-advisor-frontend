@@ -191,6 +191,7 @@ export const advisorHandlers = [
         availability_window: {
           rows: profile ? JSON.parse(profile.rows) : [],
         },
+        office_location: profile?.office_location ?? null,
       },
     });
   }),
@@ -723,6 +724,75 @@ export const advisorHandlers = [
           ? { rows: stored, is_default: false }
           : { rows: DEFAULT_OFFICE_HOURS, is_default: true },
     });
+  }),
+
+  http.get(`${env.API_URL}/advisor/office-location`, async ({ request }) => {
+    await networkDelay();
+    if (injectsErrors()) {
+      return HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      );
+    }
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    const advisor = requireAuth(request);
+    const profile = db.advisorProfile.findFirst({
+      where: { advisorId: { equals: advisor.id as number } },
+    });
+    return HttpResponse.json({
+      data: { office_location: profile?.office_location ?? null },
+    });
+  }),
+
+  http.put(`${env.API_URL}/advisor/office-location`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    const advisor = requireAuth(request);
+    const body = (await request.json()) as { office_location?: unknown };
+    const value =
+      typeof body.office_location === 'string'
+        ? body.office_location.trim()
+        : null;
+    if (value !== null && value.length > 255) {
+      return HttpResponse.json(
+        {
+          message: 'The given data was invalid.',
+          errors: {
+            office_location: [
+              'The office location is limited to 255 characters.',
+            ],
+          },
+        },
+        { status: 422 },
+      );
+    }
+    const stored = value === null || value === '' ? null : value;
+    const profile = db.advisorProfile.findFirst({
+      where: { advisorId: { equals: advisor.id as number } },
+    });
+    if (profile) {
+      db.advisorProfile.update({
+        where: { advisorId: { equals: advisor.id as number } },
+        data: { office_location: stored },
+      });
+    } else {
+      db.advisorProfile.create({
+        advisorId: advisor.id as number,
+        rows: JSON.stringify([]),
+        office_location: stored,
+      });
+    }
+    return HttpResponse.json({ data: { office_location: stored } });
   }),
 ];
 

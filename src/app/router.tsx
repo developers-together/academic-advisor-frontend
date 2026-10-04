@@ -108,6 +108,11 @@ export const createAppRouter = (queryClient: QueryClient) =>
             import('./routes/advisor/hours').then(convert(queryClient)),
         },
         {
+          path: paths.advisor.profile.path,
+          lazy: () =>
+            import('./routes/advisor/profile').then(convert(queryClient)),
+        },
+        {
           path: paths.advisor.notifications.path,
           lazy: () =>
             import('./routes/advisor/notifications').then(convert(queryClient)),
