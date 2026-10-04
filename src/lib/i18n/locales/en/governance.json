@@ -89,6 +89,10 @@
       "aging": "Aging"
     }
   },
+  "faculty": {
+    "deans": "Deans",
+    "noDean": "No dean assigned yet."
+  },
   "drilldown": {
     "title": "Drill-down",
     "context": "Walk from the university down to a department.",

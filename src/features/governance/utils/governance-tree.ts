@@ -9,6 +9,13 @@ export const rateBand = (rate: number): RateBand => {
   return 4;
 };
 
+export const rateBandClasses: Record<RateBand, string> = {
+  1: 'bg-data-1 text-data-1-foreground',
+  2: 'bg-data-2 text-data-2-foreground',
+  3: 'bg-data-3 text-data-3-foreground',
+  4: 'bg-data-4 text-data-4-foreground',
+};
+
 export const sortByCompletionDesc = (
   nodes: GovernanceNode[],
 ): GovernanceNode[] =>

@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 
 import type {
+  GovernanceDean,
   GovernanceFunnel,
   GovernanceLevel,
   GovernanceNode,
@@ -460,6 +461,7 @@ const seedGovernance = () => {
     nameEn: string | null,
     metrics: ReturnType<typeof metricsOf>,
     children: GovernanceNode[] = [],
+    deans: GovernanceDean[] = [],
   ): GovernanceNode => ({
     level,
     code,
@@ -467,8 +469,13 @@ const seedGovernance = () => {
     name_ar: null,
     term_code: CURRENT_TERM,
     metrics,
+    deans,
     children,
   });
+
+  let nextDeanId = 1;
+  const deansOf = (names: string[]): GovernanceDean[] =>
+    names.map((name) => ({ id: nextDeanId++, name }));
 
   const facultyNode = (
     code: string,
@@ -477,6 +484,7 @@ const seedGovernance = () => {
     caseload: number,
     approved: number,
     medianHours: number | null,
+    deanNames: string[] = [],
   ): GovernanceNode => {
     const completionRate =
       caseload === 0 ? null : Math.round((approved / caseload) * 100);
@@ -558,6 +566,7 @@ const seedGovernance = () => {
           ),
         );
       }),
+      deansOf(deanNames),
     );
   };
 
@@ -567,13 +576,13 @@ const seedGovernance = () => {
     'E-JUST',
     metricsOf(7600, 3100, 1780, 57, 30, 96, funnelOf(1780, 1240)),
     [
-      facultyNode('F-ENG', 'Engineering', 2400, 980, 610, 26),
-      facultyNode('F-SCI', 'Science', 1500, 610, 400, 34),
-      facultyNode('F-AGR', 'Agriculture', 900, 380, 210, 41),
-      facultyNode('F-MED', 'Medicine', 1300, 560, 290, 52),
-      facultyNode('F-BUS', 'Business', 800, 300, 150, 22),
-      facultyNode('F-ART', 'Arts', 400, 160, 70, 38),
-      facultyNode('F-EDU', 'Education', 300, 110, 50, null),
+      facultyNode('F-ENG', 'Engineering', 2400, 980, 610, 26, ['Omar Khaled']),
+      facultyNode('F-SCI', 'Science', 1500, 610, 400, 34, ['Salma Ibrahim']),
+      facultyNode('F-AGR', 'Agriculture', 900, 380, 210, 41, ['Youssef Adel']),
+      facultyNode('F-MED', 'Medicine', 1300, 560, 290, 52, ['Hana Mostafa']),
+      facultyNode('F-BUS', 'Business', 800, 300, 150, 22, ['Karim Nabil']),
+      facultyNode('F-ART', 'Arts', 400, 160, 70, 38, ['Nour Elsayed']),
+      facultyNode('F-EDU', 'Education', 300, 110, 50, null, ['Mona Hassan']),
     ],
   );
 

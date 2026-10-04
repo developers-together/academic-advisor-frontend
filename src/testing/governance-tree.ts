@@ -1,4 +1,5 @@
 import type {
+  GovernanceDean,
   GovernanceLevel,
   GovernanceMetrics,
   GovernanceNode,
@@ -35,6 +36,7 @@ type GovernanceNodeInput = {
   code?: string | null;
   nameEn?: string | null;
   nameAr?: string | null;
+  deans?: GovernanceDean[];
   metrics?: Partial<GovernanceMetrics>;
   children?: GovernanceNode[];
 };
@@ -44,6 +46,7 @@ export const governanceNode = ({
   code = null,
   nameEn = null,
   nameAr = null,
+  deans = [],
   metrics,
   children = [],
 }: GovernanceNodeInput): GovernanceNode => ({
@@ -53,6 +56,7 @@ export const governanceNode = ({
   name_ar: nameAr,
   term_code: '2026F',
   metrics: governanceMetrics(metrics),
+  deans,
   children,
 });
 

@@ -232,6 +232,8 @@ export type GovernanceMetrics = {
   funnel: GovernanceFunnel;
 };
 
+export type GovernanceDean = { id: number; name: string };
+
 export type GovernanceNode = {
   level: GovernanceLevel;
   code: string | null;
@@ -239,6 +241,7 @@ export type GovernanceNode = {
   name_ar: string | null;
   term_code: string | null;
   metrics: GovernanceMetrics;
+  deans?: GovernanceDean[];
   children: GovernanceNode[];
 };
 
