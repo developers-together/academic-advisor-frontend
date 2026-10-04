@@ -7,6 +7,8 @@ import { ReviewDrawer } from '@/components/domain/review-drawer';
 import { ErrorState } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useMeetingRequests } from '@/features/advisor-meetings/api/get-meeting-requests';
+import { InviteStudentDialog } from '@/features/advisor-meetings/components/invite-student-dialog';
 import {
   useAddPlanComment,
   useApproveReviewPlan,
@@ -29,8 +31,10 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
   const queryClient = useQueryClient();
 
   const queueQuery = useAdvisorQueue();
+  const meetingsQuery = useMeetingRequests();
 
   const [activeId, setActiveId] = useState<number | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [approveGate, setApproveGate] = useState<string[] | null>(null);
   const [approveUnavailable, setApproveUnavailable] = useState<{
     requestId: string | null;
@@ -170,6 +174,12 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
           planPending={planQuery.isPending}
           planFailed={planQuery.isError}
           onRetryPlan={() => void planQuery.refetch()}
+          meeting={
+            meetingsQuery.data?.find(
+              (meeting) => meeting.student.id === activeItem.student.id,
+            ) ?? null
+          }
+          onRequestMeeting={() => setInviteOpen(true)}
           comments={commentsQuery.data ?? []}
           commentPending={addComment.isPending}
           onAddComment={(body) => addComment.mutate(body)}
@@ -180,6 +190,13 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
           returnPending={returnMutation.isPending}
           returnError={returnError}
           onReturn={handleReturn}
+        />
+      )}
+      {activeItem && inviteOpen && (
+        <InviteStudentDialog
+          caseload={caseload}
+          student={activeItem.student}
+          onClose={() => setInviteOpen(false)}
         />
       )}
     </>
