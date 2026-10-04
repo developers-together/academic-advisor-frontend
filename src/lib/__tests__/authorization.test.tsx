@@ -11,7 +11,7 @@ const roleHomeExpectations: Array<[UserRole, string]> = [
   ['advisor', '/advisor'],
   ['dean', '/dean'],
   ['vp', '/vp'],
-  ['admin', '/admin/students'],
+  ['admin', '/admin'],
 ];
 
 test.each(roleHomeExpectations)('lands %s on %s', (role, href) => {
