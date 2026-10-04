@@ -1,4 +1,4 @@
-import type { GovernanceNode } from '@/types/domain';
+import type { GovernanceAdvisorRow, GovernanceNode } from '@/types/domain';
 
 export type RateBand = 1 | 2 | 3 | 4;
 
@@ -76,3 +76,10 @@ export const axisPropsFor = (direction: 'ltr' | 'rtl'): ChartAxisProps =>
   direction === 'rtl'
     ? { reversed: true, orientation: 'right' }
     : { reversed: false, orientation: 'left' };
+
+export const collectAdvisors = (
+  node: GovernanceNode,
+): GovernanceAdvisorRow[] => {
+  const own = node.advisors ?? [];
+  return own.concat(...node.children.map((child) => collectAdvisors(child)));
+};
