@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "أدفايزر",
+    "name": "المستشار الأكاديمي",
     "tagline": "التخطيط الأكاديمي بمستشار ذكي"
   },
   "roles": {
@@ -11,24 +11,36 @@
     "admin": "مسؤول النظام"
   },
   "nav": {
-    "dashboard": "لوحتي",
+    "home": "الرئيسية",
     "myPlan": "خطتي",
-    "builder": "منشئ الخطة",
-    "profile": "ملفي",
-    "chat": "المحادثة الذكية",
+    "academicRecord": "سجلي الأكاديمي",
+    "aiAdvisor": "المستشار الذكي",
+    "myAdvisor": "مرشدي",
     "notifications": "الإشعارات",
+    "account": "حسابي",
     "queue": "قائمة المراجعة",
-    "students": "مستكشف الطلاب",
+    "students": "الطلاب",
     "meetings": "الاجتماعات",
     "hours": "الساعات المكتبية",
+    "profile": "ملفي",
     "overview": "نظرة عامة",
-    "scorecard": "لوحة النتائج",
-    "drilldown": "التنقل للأسفل",
+    "advisors": "المرشدون",
+    "analytics": "التحليلات",
+    "faculties": "الكليات",
+    "trends": "الاتجاهات",
+    "users": "المستخدمون",
     "accounts": "الحسابات",
-    "assignments": "الإشراف الأكاديمي",
+    "operations": "العمليات",
+    "assignments": "الإسنادات",
+    "courses": "المقررات",
+    "programs": "البرامج",
     "rules": "القواعد",
+    "registrationWindows": "نوافذ التسجيل",
+    "aiConfiguration": "إعدادات الذكاء الاصطناعي",
     "staff": "العاملون",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "more": "المزيد"
+
   },
   "topbar": {
     "language": "تغيير اللغة",
@@ -128,5 +140,73 @@
   "confirm": {
     "cancel": "إلغاء"
   },
-  "skipToContent": "تجاوز إلى المحتوى"
+  "commandPalette": {
+    "open": "بحث",
+    "label": "لوحة الأوامر",
+    "placeholder": "ابحث في الصفحات والأشخاص والإجراءات",
+    "noResults": "لا توجد نتائج لـ \"{{query}}\"",
+    "sections": {
+      "pages": "الصفحات",
+      "actions": "الإجراءات",
+      "students": "طلابك",
+      "users": "المستخدمون"
+    },
+    "hints": {
+      "navigate": "تنقل",
+      "select": "فتح",
+      "dismiss": "إغلاق"
+    },
+    "actions": {
+      "askAi": "اسأل المستشار الذكي",
+      "setAvailability": "حدد الساعات المكتبية",
+      "requestMeeting": "اطلب اجتماعًا",
+      "openQueue": "افتح قائمة المراجعة"
+    }
+  },
+  "statusChip": {
+    "srLabel": "{{domain}}: {{status}}",
+    "domains": {
+      "meeting": "حالة الاجتماع",
+      "account": "حالة الحساب",
+      "data": "الحالة"
+    },
+    "meeting": {
+      "requested": "مطلوب",
+      "awaiting_response": "بانتظار الرد",
+      "confirmed": "مؤكد",
+      "completed": "منعقد",
+      "declined": "مرفوض",
+      "cancelled": "ملغي",
+      "expired": "منتهي",
+      "conflict": "تعارض"
+    },
+    "account": {
+      "active": "نشط",
+      "suspended": "موقوف"
+    },
+    "data": {
+      "saving": "جارٍ الحفظ",
+      "saved": "تم الحفظ",
+      "updating": "جارٍ التحديث",
+      "stale": "غير محدث",
+      "offline": "غير متصل",
+      "error": "خطأ"
+    }
+  },
+  "breadcrumb": {
+    "label": "مسار التنقل",
+    "expand": "إظهار المستويات المخفية"
+  },
+  "skipToContent": "تجاوز إلى المحتوى",
+  "meetingCard": {
+    "updated": "آخر تحديث {{datetime}}",
+    "reason": "السبب",
+    "selectedSlot": "الموعد المؤكد",
+    "cancellationReason": "السبب: {{reason}}",
+    "completedAt": "انُعقد في {{datetime}}",
+    "directionLine_studentRequested": "طلبت هذا الاجتماع",
+    "directionLine_studentRequest": "طلب من الطالب",
+    "directionLine_advisorInvite": "لقد دعوت الطالب",
+    "directionLine_advisorInviteToYou": "دعاك مرشدك"
+  }
 }
