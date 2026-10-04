@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/form';
 
-import type { VisitSlotInput } from '../api/create-visit-request';
+import type { SlotInput } from '../api/slot-inputs';
 
-export const emptySlotRow = (): VisitSlotInput => ({
+export const emptySlotRow = (): SlotInput => ({
   date: '',
   start: '',
   end: '',
@@ -14,7 +14,7 @@ export const emptySlotRow = (): VisitSlotInput => ({
 
 export type SlotRowError = 'rowIncomplete' | 'endBeforeStart' | null;
 
-export const slotRowError = (row: VisitSlotInput): SlotRowError => {
+export const slotRowError = (row: SlotInput): SlotRowError => {
   if (!row.date || !row.start || !row.end) {
     return 'rowIncomplete';
   }
@@ -22,19 +22,19 @@ export const slotRowError = (row: VisitSlotInput): SlotRowError => {
 };
 
 export type SlotRowsFieldProps = {
-  rows: VisitSlotInput[];
-  onRowsChange: (rows: VisitSlotInput[]) => void;
+  rows: SlotInput[];
+  onRowsChange: (rows: SlotInput[]) => void;
   maxRows?: number;
 };
 
 export const SlotRowsField = ({
   rows,
   onRowsChange,
-  maxRows = 10,
+  maxRows = 5,
 }: SlotRowsFieldProps) => {
   const { t } = useTranslation('advisor');
 
-  const updateRow = (index: number, patch: Partial<VisitSlotInput>) =>
+  const updateRow = (index: number, patch: Partial<SlotInput>) =>
     onRowsChange(
       rows.map((row, rowIndex) =>
         rowIndex === index ? { ...row, ...patch } : row,
