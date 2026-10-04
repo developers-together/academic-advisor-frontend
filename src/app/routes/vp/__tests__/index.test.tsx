@@ -5,12 +5,10 @@ import { HttpResponse, http } from 'msw';
 import { AppProvider } from '@/app/provider';
 import { AppRouter } from '@/app/router';
 import { env } from '@/config/env';
-import { i18n } from '@/lib/i18n/i18n-instance';
 import { governanceNode, seedGovernanceTree } from '@/testing/governance-tree';
 import { db } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
 import {
-  act,
   createUser,
   loginAsUser,
   screen,
@@ -114,7 +112,7 @@ const vpSeesScorecard = async (
 ): Promise<MockUser> => {
   const vp = await createUser({ role: 'vp', ...overrides });
   await loginAsUser(vp);
-  renderRealRouter('/vp');
+  renderRealRouter('/vp/faculties');
   return vp;
 };
 
@@ -142,44 +140,17 @@ test('the scorecard lists faculties by completion descending with nulls last', a
   expect(within(education).getAllByText('—').length).toBeGreaterThanOrEqual(2);
 });
 
-test('each faculty card names its deans and bands its completion rate', async () => {
-  seedGovernanceTree(universityTree());
-
-  await vpSeesScorecard();
-
-  const science = await screen.findByRole('group', { name: 'Science' });
-  expect(within(science).getByText('Salma Ibrahim')).toBeInTheDocument();
-  expect(within(science).getByText('80%')).toHaveClass('bg-data-4');
-
-  const engineering = screen.getByRole('group', { name: 'Engineering' });
-  expect(within(engineering).getByText('Omar Khaled')).toBeInTheDocument();
-
-  const education = screen.getByRole('group', { name: 'Education' });
-  expect(
-    within(education).getByText('No dean assigned yet.'),
-  ).toBeInTheDocument();
-});
-
-test('faculty stats speak Arabic labels and names in the Arabic locale', async () => {
+test('the scorecard never names deans beside faculty statistics', async () => {
   seedGovernanceTree(universityTree());
 
   await vpSeesScorecard();
 
   await screen.findByRole('table');
-  await act(async () => {
-    await i18n.changeLanguage('ar');
-  });
-
-  const science = await screen.findByRole('group', { name: 'العلوم' });
-  expect(within(science).getByText('العمداء')).toBeInTheDocument();
-  expect(within(science).getByText('Salma Ibrahim')).toBeInTheDocument();
-
-  const education = screen.getByRole('group', { name: 'Education' });
-  expect(within(education).getByText('لا عميد مسند بعد.')).toBeInTheDocument();
-
-  await act(async () => {
-    await i18n.changeLanguage('en');
-  });
+  const body =
+    (await screen.findByRole('main').then((main) => main.textContent)) ?? '';
+  expect(body).not.toContain('Salma Ibrahim');
+  expect(body).not.toContain('Omar Khaled');
+  expect(body).not.toContain('No dean assigned yet.');
 });
 
 test('the completion header carries aria-sort and other headers do not', async () => {
