@@ -8,7 +8,7 @@ describe('deepLinkHref', () => {
     ['advisor', '/advisor'],
     ['dean', '/dean'],
     ['vp', '/vp'],
-    ['admin', '/admin/students'],
+    ['admin', '/admin'],
   ])('routes the plan screen for a %s recipient', (role, expected) => {
     const link: DeepLink = { screen: 'plan', plan_id: 11 };
     expect(deepLinkHref(link, role as UserRole)).toBe(expected);
@@ -24,7 +24,7 @@ describe('deepLinkHref', () => {
   });
 
   test.each([
-    ['student', '/app'],
+    ['student', '/app/advisor'],
     ['advisor', '/advisor'],
   ])('routes the advisor screen for a %s recipient', (role, expected) => {
     const link: DeepLink = { screen: 'advisor', advisor_id: 2 };
@@ -34,7 +34,7 @@ describe('deepLinkHref', () => {
   test('routes the visit screen by recipient role', () => {
     const link: DeepLink = { screen: 'visit', visit_request_id: 100 };
     expect(deepLinkHref(link, 'advisor')).toBe('/advisor/meetings');
-    expect(deepLinkHref(link, 'student')).toBe('/app');
+    expect(deepLinkHref(link, 'student')).toBe('/app/advisor');
     expect(deepLinkHref(link, 'dean')).toBe('/dean');
   });
 
@@ -44,6 +44,6 @@ describe('deepLinkHref', () => {
     );
     expect(deepLinkHref('app/plan/3', 'student')).toBe('/app');
     expect(deepLinkHref(null, 'advisor')).toBe('/advisor');
-    expect(deepLinkHref('nope', 'admin')).toBe('/admin/students');
+    expect(deepLinkHref('nope', 'admin')).toBe('/admin');
   });
 });
