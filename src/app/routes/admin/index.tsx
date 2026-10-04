@@ -1,7 +1,14 @@
-import { Navigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
-import { paths } from '@/config/paths';
+import { ContentLayout } from '@/components/layouts';
+import { AdminOverviewDocument } from '@/features/admin/components/overview-document';
 
 export default function AdminIndexRoute() {
-  return <Navigate to={paths.admin.students.getHref()} replace />;
+  const { t } = useTranslation('admin');
+
+  return (
+    <ContentLayout title={t('overview.title')} context={t('overview.context')}>
+      <AdminOverviewDocument />
+    </ContentLayout>
+  );
 }
