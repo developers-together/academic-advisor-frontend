@@ -25,7 +25,18 @@
     "university": "University",
     "faculty": "Faculty",
     "school": "School",
-    "department": "Department"
+    "department": "Department",
+    "advisor": "Advisor"
+  },
+  "view": {
+    "label": "Grouping",
+    "units": "By school/department",
+    "advisor": "By advisor"
+  },
+  "filter": {
+    "all": "All",
+    "bySchool": "Filter by school",
+    "byDepartment": "Filter by department"
   },
   "contextLine": "{{level}} . {{term}} . {{students}} students",
   "scopeLine": "{{level}} . {{name}}",

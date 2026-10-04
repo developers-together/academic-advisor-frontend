@@ -97,6 +97,10 @@ const models = {
     id: primaryKey(() => 'university'),
     payload: String,
   },
+  governanceAdvisor: {
+    id: primaryKey(() => nextId()),
+    payload: String,
+  },
   adminSettings: {
     id: primaryKey(() => 'admin'),
     aging_threshold_days: Number,

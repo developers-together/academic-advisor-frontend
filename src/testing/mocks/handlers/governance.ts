@@ -15,6 +15,11 @@ const treeOf = (): GovernanceNode | null => {
   return row ? (JSON.parse(row.payload) as GovernanceNode) : null;
 };
 
+const advisorsOf = (): GovernanceNode[] =>
+  db.governanceAdvisor
+    .getAll()
+    .map((row) => JSON.parse(row.payload) as GovernanceNode);
+
 const scopedToFaculty = (
   root: GovernanceNode,
   faculty: string | null,
@@ -90,6 +95,12 @@ export const governanceHandlers = [
           { message: 'No faculty is assigned to you yet.' },
           { status: 404 },
         );
+      }
+      const groupBy = new URL(request.url).searchParams.get('group_by');
+      if (groupBy === 'advisor') {
+        return HttpResponse.json({
+          data: { ...faculty, children: advisorsOf() },
+        });
       }
       return HttpResponse.json({ data: faculty });
     }

@@ -200,7 +200,11 @@ export type VisitRequest = {
 };
 
 export type GovernanceLevel =
-  'university' | 'faculty' | 'school' | 'department';
+  'university' | 'faculty' | 'school' | 'department' | 'advisor';
+
+export type GovernanceGroupBy = 'advisor';
+
+export type GovernanceGrouping = 'units' | GovernanceGroupBy;
 
 export type GovernanceFunnel = {
   draft: number;

@@ -25,7 +25,18 @@
     "university": "الجامعة",
     "faculty": "الكلية",
     "school": "المدرسة",
-    "department": "القسم"
+    "department": "القسم",
+    "advisor": "مرشد"
+  },
+  "view": {
+    "label": "التجميع",
+    "units": "حسب المدرسة/القسم",
+    "advisor": "حسب المرشد"
+  },
+  "filter": {
+    "all": "الكل",
+    "bySchool": "تصفية حسب المدرسة",
+    "byDepartment": "تصفية حسب القسم"
   },
   "contextLine": "{{level}} . {{term}} . {{students}} طالب",
   "scopeLine": "{{level}} . {{name}}",

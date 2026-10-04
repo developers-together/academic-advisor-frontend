@@ -4,6 +4,7 @@ import { cloneElement } from 'react';
 import DeanOverviewRoute from '@/app/routes/dean';
 import { env } from '@/config/env';
 import { i18n } from '@/lib/i18n/i18n-instance';
+import { applyLanguage } from '@/lib/language';
 import { governanceNode, seedGovernanceTree } from '@/testing/governance-tree';
 import { db } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
@@ -523,6 +524,231 @@ test('the overview carries no mutation affordances', async () => {
     expect(button).toHaveAccessibleName('Export CSV');
   }
   expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-  expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
   expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+  const comboboxes = screen.getAllByRole('combobox');
+  for (const combobox of comboboxes) {
+    expect(combobox).toHaveAccessibleName('Filter by school');
+  }
+});
+
+const recordDashboardRequests = () => {
+  const urls: string[] = [];
+  server.events.on('request:start', ({ request }) => {
+    if (request.url.includes('/governance/dashboard')) {
+      urls.push(request.url);
+    }
+  });
+  return urls;
+};
+
+afterEach(() => {
+  server.events.removeAllListeners();
+});
+
+test('the overview loads on the school and department grouping without group_by', async () => {
+  const urls = recordDashboardRequests();
+  seedGovernanceTree(
+    governanceNode({
+      level: 'university',
+      nameEn: 'E-JUST',
+      children: [facultyTree()],
+    }),
+  );
+
+  await deanSeesFaculty();
+
+  expect(
+    screen.getByRole('tab', { name: 'By school/department' }),
+  ).toHaveAttribute('aria-selected', 'true');
+  expect(urls.length).toBeGreaterThan(0);
+  for (const url of urls) {
+    expect(url).not.toContain('group_by=');
+  }
+  expect(
+    await screen.findByRole('link', { name: /Engineering Applied School/ }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: /Engineering Core School/ }),
+  ).toBeInTheDocument();
+});
+
+const advisorNodes = () => [
+  governanceNode({
+    level: 'advisor',
+    code: 'AD-101',
+    nameEn: 'Layla Hassan',
+    metrics: { caseload: 32, approved: 28, completion_rate: 88 },
+  }),
+  governanceNode({
+    level: 'advisor',
+    code: 'AD-102',
+    nameEn: 'Omar Fathi',
+    metrics: { caseload: 30, approved: 9, completion_rate: 30 },
+  }),
+];
+
+test('the grouping toggle queries the advisor view and renders advisor nodes', async () => {
+  const user = userEvent.setup();
+  const urls = recordDashboardRequests();
+  seedGovernanceTree(
+    governanceNode({
+      level: 'university',
+      nameEn: 'E-JUST',
+      children: [facultyTree()],
+    }),
+    advisorNodes(),
+  );
+
+  await deanSeesFaculty();
+
+  await user.click(screen.getByRole('tab', { name: 'By advisor' }));
+
+  const layla = await screen.findByText('Layla Hassan');
+  expect(layla.closest('div')).toHaveTextContent('88%');
+  expect(screen.getByText('Omar Fathi')).toBeInTheDocument();
+  expect(screen.getByText('Omar Fathi').closest('div')).toHaveTextContent(
+    '30%',
+  );
+  expect(
+    screen.queryByRole('link', { name: /Layla Hassan/ }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole('tab', { name: 'By advisor' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  expect(
+    screen.getByRole('tab', { name: 'By school/department' }),
+  ).toHaveAttribute('aria-selected', 'false');
+  expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+  expect(urls.some((url) => url.includes('group_by=advisor'))).toBe(true);
+
+  const completion = await screen.findByText('Live during the window');
+  expect(completion.closest('div')).toHaveTextContent('72%');
+
+  await user.click(screen.getByRole('tab', { name: 'By school/department' }));
+
+  expect(
+    await screen.findByRole('link', { name: /Engineering Applied School/ }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Layla Hassan')).not.toBeInTheDocument();
+});
+
+test('the grouping toggle and filter render Arabic labels and advisor names under RTL', async () => {
+  const user = userEvent.setup();
+  seedGovernanceTree(
+    governanceNode({
+      level: 'university',
+      nameEn: 'E-JUST',
+      children: [facultyTree()],
+    }),
+    [
+      governanceNode({
+        level: 'advisor',
+        code: 'AD-101',
+        nameEn: 'Layla Hassan',
+        nameAr: 'ليلى حسن',
+        metrics: { caseload: 32, approved: 28, completion_rate: 88 },
+      }),
+    ],
+  );
+
+  await deanSeesFaculty();
+
+  expect(
+    await screen.findByRole('link', { name: /Engineering Applied School/ }),
+  ).toBeInTheDocument();
+
+  applyLanguage('ar');
+
+  expect(
+    await screen.findByRole('tab', { name: 'حسب المرشد' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('tab', { name: 'حسب المدرسة/القسم' }),
+  ).toHaveAttribute('aria-selected', 'true');
+  expect(
+    screen.getByRole('combobox', { name: 'تصفية حسب المدرسة' }),
+  ).toBeInTheDocument();
+  expect(document.documentElement.dir).toBe('rtl');
+  expect(document.documentElement).toHaveAttribute('lang', 'ar');
+
+  await user.click(screen.getByRole('tab', { name: 'حسب المرشد' }));
+
+  const layla = await screen.findByText('ليلى حسن');
+  expect(layla.closest('div')).toHaveTextContent('88%');
+  expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+
+  applyLanguage('en');
+  expect(document.documentElement.dir).toBe('ltr');
+});
+
+test('the school filter narrows the visible child cells', async () => {
+  const user = userEvent.setup();
+  seedGovernanceTree(
+    governanceNode({
+      level: 'university',
+      nameEn: 'E-JUST',
+      children: [facultyTree()],
+    }),
+  );
+
+  await deanSeesFaculty();
+
+  expect(
+    await screen.findByRole('link', { name: /Engineering Applied School/ }),
+  ).toBeInTheDocument();
+
+  await user.selectOptions(
+    screen.getByRole('combobox', { name: 'Filter by school' }),
+    'F-ENG-S2',
+  );
+
+  expect(
+    screen.queryByRole('link', { name: /Engineering Applied School/ }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: /Engineering Core School/ }),
+  ).toBeInTheDocument();
+
+  await user.selectOptions(
+    screen.getByRole('combobox', { name: 'Filter by school' }),
+    'all',
+  );
+
+  expect(
+    screen.getByRole('link', { name: /Engineering Applied School/ }),
+  ).toBeInTheDocument();
+});
+
+test('the department filter narrows the cells inside a school', async () => {
+  const user = userEvent.setup();
+  seedGovernanceTree(
+    governanceNode({
+      level: 'university',
+      nameEn: 'E-JUST',
+      children: [facultyTree()],
+    }),
+  );
+
+  await renderApp(<DeanOverviewRoute />, {
+    user: await createUser({ role: 'dean', faculty: 'Engineering' }),
+    path: '/dean',
+    url: '/dean?node=F-ENG-S2',
+  });
+
+  expect(
+    await screen.findByRole('link', { name: /Engineering Core A/ }),
+  ).toBeInTheDocument();
+
+  await user.selectOptions(
+    screen.getByRole('combobox', { name: 'Filter by department' }),
+    'F-ENG-S2-D2',
+  );
+
+  expect(
+    screen.queryByRole('link', { name: /Engineering Core A/ }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: /Engineering Core B/ }),
+  ).toBeInTheDocument();
 });
