@@ -186,6 +186,55 @@ export type AdvisorCaseloadStudent = {
 
 export type VisitRequestStatus = 'proposed' | 'done';
 
+export type MeetingRequestStatus =
+  | 'requested'
+  | 'awaiting_response'
+  | 'confirmed'
+  | 'completed'
+  | 'declined'
+  | 'cancelled'
+  | 'expired'
+  | 'conflict';
+
+export type MeetingDirection = 'student_to_advisor' | 'advisor_to_student';
+
+export type MeetingReason =
+  | 'plan_review'
+  | 'course_selection'
+  | 'academic_standing'
+  | 'degree_progress'
+  | 'other';
+
+export type MeetingSlot = {
+  id: number;
+  starts_at: string;
+  ends_at: string;
+  is_conflict?: boolean;
+};
+
+export type MeetingRequest = {
+  id: number;
+  status: MeetingRequestStatus;
+  direction: MeetingDirection;
+  requester_id: number;
+  recipient_id: number;
+  student: StudentSummary;
+  reason: MeetingReason;
+  note: string | null;
+  slots: MeetingSlot[];
+  selected_slot_id: number | null;
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+  cancellation_reason: string | null;
+};
+
+export type MeetingOpenSlot = {
+  starts_at: string;
+  ends_at: string;
+  is_conflict: boolean;
+};
+
 export type VisitRequestSlot = {
   id: number;
   starts_at: string;
@@ -234,6 +283,26 @@ export type GovernanceMetrics = {
 
 export type GovernanceDean = { id: number; name: string };
 
+export type GovernanceAdvisorRow = {
+  id: number;
+  name: string;
+  unit_en: string | null;
+  unit_ar: string | null;
+  caseload: number;
+  queue_size: number;
+  median_decision_hours: number | null;
+  aging_count: number;
+  approved: number;
+  completion_rate: number | null;
+};
+
+export type GovernanceTrendPoint = {
+  term_code: string;
+  completion_rate: number | null;
+  median_decision_hours: number | null;
+  aging_count: number;
+};
+
 export type GovernanceNode = {
   level: GovernanceLevel;
   code: string | null;
@@ -241,6 +310,8 @@ export type GovernanceNode = {
   name_ar: string | null;
   term_code: string | null;
   metrics: GovernanceMetrics;
+  trends: GovernanceTrendPoint[];
+  advisors?: GovernanceAdvisorRow[];
   deans?: GovernanceDean[];
   children: GovernanceNode[];
 };
@@ -271,12 +342,16 @@ export type NotificationSlug =
   | 'plan_returned'
   | 'plan_approved'
   | 'advisor_changed'
+  | 'meeting_requested'
+  | 'meeting_proposed'
+  | 'meeting_confirmed'
+  | 'meeting_declined'
+  | 'meeting_cancelled'
+  | 'meeting_completed'
   | 'caseload_student_removed'
   | 'caseload_student_added'
   | 'window_opened'
-  | 'window_deadline_nearing'
-  | 'visit_requested'
-  | 'visit_slots_provided';
+  | 'window_deadline_nearing';
 
 export type DeepLinkScreen = 'plan' | 'student' | 'advisor' | 'visit';
 
@@ -365,3 +440,33 @@ export type AssignAdvisorResult = {
 };
 
 export type QueueAgingThreshold = { days: number };
+
+export type AdminCourse = {
+  id: number;
+  code: string;
+  title_en: string;
+  title_ar: string | null;
+  credits: number;
+  level: number | null;
+};
+
+export type AdminProgram = {
+  id: number;
+  code: string;
+  name_en: string;
+  name_ar: string | null;
+  faculty: string | null;
+};
+
+export type RegistrationWindow = {
+  id: number;
+  term_code: string;
+  opens_at: string;
+  closes_at: string;
+  is_active: boolean;
+};
+
+export type AiConfiguration = {
+  quota_per_student: number;
+  assistant_enabled: boolean;
+};
