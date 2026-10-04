@@ -112,8 +112,8 @@
     "retryQueued": "SIS check queued."
   },
   "assignments": {
-    "title": "Caseloads",
-    "context": "Which advisor carries which student.",
+    "title": "Assignments",
+    "context": "Advisor and student assignments across the university.",
     "assign": "Assign advisor",
     "import": "Import CSV",
     "columns": {
@@ -325,5 +325,111 @@
       "required": "Enter the number of days.",
       "min": "Use at least 1 day."
     }
+  },
+  "overview": {
+    "title": "Overview",
+    "context": "Jump into the operational task you came for.",
+    "windowActive": "Registration open for {{term}}",
+    "windowNone": "No active registration window."
+  },
+  "users": {
+    "title": "Users",
+    "context": "Student and staff accounts, bindings, and staff creation."
+  },
+  "courses": {
+    "title": "Courses",
+    "context": "Course metadata that plans and the AI build on.",
+    "create": "Add course",
+    "edit": "Edit",
+    "delete": "Delete",
+    "saved": "{{code}} updated.",
+    "created": "{{code}} created.",
+    "deleted": "{{code}} deleted.",
+    "errors": {
+      "codeExists": "That course code already exists."
+    },
+    "columns": {
+      "code": "Code",
+      "title": "Title",
+      "credits": "Credits",
+      "level": "Level",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No courses yet.",
+      "body": "Add the courses plans are built from."
+    },
+    "editor": {
+      "createTitle": "Add a course",
+      "editTitle": "Edit {{code}}",
+      "body": "Credits and prerequisites feed plan validation.",
+      "code": "Course code",
+      "title": "Title",
+      "credits": "Credits",
+      "level": "Level",
+      "saveCreate": "Create course",
+      "saveEdit": "Save changes",
+      "fixAndRetry": "Fix the highlighted field and retry."
+    },
+    "deleteDialog": {
+      "title": "Delete {{code}}?",
+      "body": "Plans that reference this course lose its metadata. This cannot be undone."
+    }
+  },
+  "programs": {
+    "title": "Programs",
+    "context": "Program structures behind plans and degree progress.",
+    "create": "Add program",
+    "edit": "Edit",
+    "saved": "{{code}} updated.",
+    "created": "{{code}} created.",
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "faculty": "Faculty",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No programs yet.",
+      "body": "Add the programs students belong to."
+    },
+    "editor": {
+      "createTitle": "Add a program",
+      "editTitle": "Edit {{code}}",
+      "body": "Programs group plans and degree requirements.",
+      "code": "Program code",
+      "name": "Program name",
+      "faculty": "Faculty",
+      "saveCreate": "Create program",
+      "saveEdit": "Save changes"
+    }
+  },
+  "windows": {
+    "title": "Registration Windows",
+    "context": "The academic clock plans submit inside. Dates mirror the SIS.",
+    "hint": "Dates come from the SIS. Activation controls whether students can submit.",
+    "columns": {
+      "term": "Term",
+      "opens": "Opens",
+      "closes": "Closes",
+      "state": "State",
+      "actions": "Actions"
+    },
+    "active": "Active",
+    "inactive": "Inactive",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "activated": "Registration open for {{term}}.",
+    "deactivated": "Registration closed for {{term}}."
+  },
+  "ai": {
+    "title": "AI Configuration",
+    "context": "Product settings for the student-facing AI advisor.",
+    "hint": "These settings govern the AI advisor students use. They change nothing for validation.",
+    "quotaLabel": "Messages per student per day",
+    "quotaHint": "Applies when the window is busy. Zero disables new conversations.",
+    "enabledLabel": "AI advisor available to students",
+    "save": "Save configuration",
+    "saved": "AI configuration saved."
   }
 }
