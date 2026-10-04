@@ -20,8 +20,14 @@ import {
 import { EmptyState } from '@/components/ui/empty-state';
 import { Textarea } from '@/components/ui/form';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatNumber } from '@/lib/i18n/format';
-import type { Plan, PlanComment, StudentSummary } from '@/types/domain';
+import { StatusChip } from '@/components/ui/status-chip';
+import { formatDateTime, formatNumber } from '@/lib/i18n/format';
+import type {
+  MeetingRequest,
+  Plan,
+  PlanComment,
+  StudentSummary,
+} from '@/types/domain';
 
 export type ReviewDrawerProps = {
   open: boolean;
@@ -36,6 +42,7 @@ export type ReviewDrawerProps = {
   planReviewable?: boolean;
   onRequestMeeting?: () => void;
   comments: PlanComment[];
+  meeting?: MeetingRequest | null;
   commentPending?: boolean;
   onAddComment: (body: string) => void;
   approvePending?: boolean;
@@ -60,6 +67,7 @@ export const ReviewDrawer = ({
   planReviewable = true,
   onRequestMeeting,
   comments,
+  meeting = null,
   commentPending = false,
   onAddComment,
   approvePending = false,
@@ -220,6 +228,26 @@ export const ReviewDrawer = ({
                       </ul>
                     </section>
                   )}
+
+                  <section aria-label={t('review.meeting')}>
+                    <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+                      {t('review.meeting')}
+                    </h2>
+                    {meeting ? (
+                      <div className="mt-2 space-y-2 rounded-md border p-3">
+                        <StatusChip domain="meeting" status={meeting.status} />
+                        {meeting.slots.map((slot) => (
+                          <p key={slot.id} className="text-sm tabular-nums">
+                            {formatDateTime(slot.starts_at)}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {t('review.meetingNone')}
+                      </p>
+                    )}
+                  </section>
 
                   <CommentThread
                     comments={comments}
