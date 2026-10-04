@@ -62,9 +62,10 @@ describe('advisor section', () => {
 
     await expectLanding('Queue', [
       ['Queue', '/advisor'],
-      ['Student Explorer', '/advisor/students'],
+      ['Students', '/advisor/students'],
       ['Meetings', '/advisor/meetings'],
       ['Office Hours', '/advisor/hours'],
+      ['Profile', '/advisor/profile'],
       ['Notifications', '/advisor/notifications'],
     ]);
     expect(
@@ -78,7 +79,7 @@ describe('advisor section', () => {
       'Student Explorer',
       'No students are assigned to you yet.',
     ],
-    ['/advisor/meetings', 'Meetings', 'No open meeting requests.'],
+    ['/advisor/meetings', 'Meetings', 'No meetings waiting on you'],
     [
       '/advisor/hours',
       'Office Hours',
@@ -109,6 +110,8 @@ describe('dean section', () => {
 
     await expectLanding('Department Overview', [
       ['Overview', '/dean'],
+      ['Advisors', '/dean/advisors'],
+      ['Analytics', '/dean/analytics'],
       ['Notifications', '/dean/notifications'],
     ]);
     expect(
@@ -131,16 +134,31 @@ describe('dean section', () => {
 });
 
 describe('vp section', () => {
-  test('sign-in lands on the scorecard with the staff rail and compact shell', async () => {
+  test('sign-in lands on the overview with the staff rail and compact shell', async () => {
     const vp = await staffUser('vp');
 
     renderRealRouter('/');
     await signIn(vp);
 
-    await expectLanding('University Scorecard', [
-      ['Scorecard', '/vp'],
-      ['Drill-down', '/vp/drilldown'],
+    await expectLanding('Overview', [
+      ['Overview', '/vp'],
+      ['Faculties', '/vp/faculties'],
+      ['Trends', '/vp/trends'],
+      ['Notifications', '/vp/notifications'],
     ]);
+    expect(
+      await screen.findByText('No overview data yet.'),
+    ).toBeInTheDocument();
+  });
+
+  test('renders the faculties scorecard with its honest empty state', async () => {
+    await loginAsUser(await staffUser('vp'));
+
+    renderRealRouter('/vp/faculties');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Faculties' }),
+    ).toBeInTheDocument();
     expect(
       await screen.findByText('No scorecard data yet.'),
     ).toBeInTheDocument();
@@ -161,37 +179,32 @@ describe('vp section', () => {
 });
 
 describe('admin section', () => {
-  test('sign-in lands on the accounts with the staff rail and compact shell', async () => {
+  test('sign-in lands on the overview with the operations rail', async () => {
     const admin = await staffUser('admin');
 
     renderRealRouter('/');
     await signIn(admin);
 
-    await expectLanding('Accounts', [
-      ['Accounts', '/admin/students'],
-      ['Caseloads', '/admin/assignments'],
+    await expectLanding('Overview', [
+      ['Overview', '/admin'],
+      ['Users', '/admin/students'],
+      ['Assignments', '/admin/assignments'],
+      ['Courses', '/admin/courses'],
+      ['Programs', '/admin/programs'],
       ['Rules', '/admin/rules'],
+      ['Registration Windows', '/admin/registration-windows'],
+      ['AI Configuration', '/admin/ai-configuration'],
       ['Staff', '/admin/staff'],
-      ['Settings', '/admin/settings'],
+      ['Notifications', '/admin/notifications'],
     ]);
     expect(
-      await screen.findByText('No student accounts yet.'),
+      await screen.findByText(/Jump into the operational task/),
     ).toBeInTheDocument();
-  });
-
-  test('the /admin index redirects to the accounts', async () => {
-    await loginAsUser(await staffUser('admin'));
-
-    renderRealRouter('/admin');
-
-    expect(
-      await screen.findByRole('heading', { name: 'Accounts' }),
-    ).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/admin/students');
   });
 
   test.each([
-    ['/admin/assignments', 'Caseloads', 'No caseload assignments yet.'],
+    ['/admin/students', 'Accounts', 'No student accounts yet.'],
+    ['/admin/assignments', 'Assignments', 'No caseload assignments yet.'],
     ['/admin/rules', 'University Rules', 'No university rules yet.'],
   ])(
     'renders the %s slot with its honest settled state',
@@ -229,22 +242,6 @@ describe('admin section', () => {
       await screen.findByRole('button', { name: 'Edit Nora Admin' }),
     ).toBeInTheDocument();
   });
-
-  test('renders the /admin/settings slot with only the queue-aging card', async () => {
-    await loginAsUser(await staffUser('admin'));
-
-    renderRealRouter('/admin/settings');
-
-    expect(
-      await screen.findByRole('heading', { name: 'Settings' }),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByRole('heading', { name: 'Queue aging' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: 'Staff accounts' }),
-    ).not.toBeInTheDocument();
-  });
 });
 
 describe('cross-role hits', () => {
@@ -269,7 +266,7 @@ describe('cross-role hits', () => {
       );
 
       expect(
-        await screen.findByRole('heading', { name: 'Dashboard' }),
+        await screen.findByRole('heading', { name: 'Home' }),
       ).toBeInTheDocument();
       expect(window.location.pathname).toMatch(/^\/app\/?$/);
     },
