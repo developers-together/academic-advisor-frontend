@@ -15,12 +15,21 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { AdvisorQueueItem, PlanStatus } from '@/types/domain';
 
-type QueueFilter = 'all' | 'submitted' | 'under_review';
+type QueueFilter = 'all' | 'submitted' | 'under_review' | 'returned' | 'aging';
 
-const QUEUE_FILTERS: QueueFilter[] = ['all', 'submitted', 'under_review'];
+const QUEUE_FILTERS: QueueFilter[] = [
+  'all',
+  'submitted',
+  'under_review',
+  'returned',
+  'aging',
+];
 
-const filterMatches = (item: AdvisorQueueItem, filter: QueueFilter) =>
-  filter === 'all' || item.status === (filter as PlanStatus);
+const filterMatches = (item: AdvisorQueueItem, filter: QueueFilter) => {
+  if (filter === 'all') return true;
+  if (filter === 'aging') return item.is_aging;
+  return item.status === (filter as PlanStatus);
+};
 
 export type QueueTableProps = {
   items: AdvisorQueueItem[];
@@ -42,6 +51,8 @@ export const QueueTable = ({
     all: items.length,
     submitted: items.filter((item) => item.status === 'submitted').length,
     under_review: items.filter((item) => item.status === 'under_review').length,
+    returned: items.filter((item) => item.status === 'returned').length,
+    aging: items.filter((item) => item.is_aging).length,
   };
   const visible = items.filter((item) => filterMatches(item, filter));
 
