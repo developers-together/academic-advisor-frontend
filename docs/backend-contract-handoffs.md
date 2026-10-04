@@ -1,6 +1,6 @@
-# Backend contract handoffs from the Advaisor frontend effort
+# Backend contract handoffs from the Advisor frontend effort
 
-Date: 2026-10-02. Source: the frontend map "Wayfinder map: Advaisor React client v1 decisions", ticket "Contract gaps and contradictions" (acad-abl.20). Each ask was verified against the backend implementation on 2026-10-01 (`routes/api.php`, `app/Notifications`, controllers, `openapi.json`). The frontend ships workarounds for every item, so none of these block the client spec; they fix real gaps users will hit.
+Date: 2026-10-02. Source: the frontend map "Wayfinder map: Advisor React client v1 decisions", ticket "Contract gaps and contradictions" (acad-abl.20). Each ask was verified against the backend implementation on 2026-10-01 (`routes/api.php`, `app/Notifications`, controllers, `openapi.json`). The frontend ships workarounds for every item, so none of these block the client spec; they fix real gaps users will hit.
 
 ## H1: Point the verification email at the SPA
 
