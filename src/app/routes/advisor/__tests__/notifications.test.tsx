@@ -145,7 +145,7 @@ test('mark all as read empties the badge in one call', async () => {
   seedNotification(advisor.id as number, { id: 'unread-1' });
   seedNotification(advisor.id as number, {
     id: 'unread-2',
-    slug: 'visit_requested',
+    slug: 'meeting_requested',
     title: 'Visit requested',
   });
 
