@@ -5,14 +5,7 @@ import { Card, CardBody, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import type { GovernanceNode } from '@/types/domain';
 
-import { rateBand, type RateBand } from '../utils/governance-tree';
-
-const bandClasses: Record<RateBand, string> = {
-  1: 'bg-data-1 text-data-1-foreground',
-  2: 'bg-data-2 text-data-2-foreground',
-  3: 'bg-data-3 text-data-3-foreground',
-  4: 'bg-data-4 text-data-4-foreground',
-};
+import { rateBand, rateBandClasses } from '../utils/governance-tree';
 
 const NO_DATA_CLASSES = 'bg-muted text-muted-foreground';
 
@@ -58,7 +51,7 @@ export const GovernanceChildGrid = ({
                   className={`flex h-full min-h-24 flex-col justify-between gap-2 rounded-lg border border-black/5 p-3 transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden dark:border-white/10 ${
                     rate === null
                       ? NO_DATA_CLASSES
-                      : bandClasses[rateBand(rate)]
+                      : rateBandClasses[rateBand(rate)]
                   }`}
                 >
                   <span className="text-sm font-medium">{nameOf(child)}</span>
