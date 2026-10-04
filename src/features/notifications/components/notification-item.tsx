@@ -4,6 +4,7 @@ import {
   Bell,
   CalendarCheck,
   CalendarPlus,
+  CalendarX2,
   CircleCheck,
   DoorOpen,
   FileX2,
@@ -25,8 +26,12 @@ const slugIcons: Record<NotificationSlug, LucideIcon> = {
   caseload_student_removed: UserMinus,
   window_opened: DoorOpen,
   window_deadline_nearing: AlarmClock,
-  visit_requested: CalendarPlus,
-  visit_slots_provided: CalendarCheck,
+  meeting_requested: CalendarPlus,
+  meeting_proposed: CalendarCheck,
+  meeting_confirmed: CalendarCheck,
+  meeting_declined: CalendarX2,
+  meeting_cancelled: CalendarX2,
+  meeting_completed: CircleCheck,
 };
 
 export type NotificationItemProps = {
