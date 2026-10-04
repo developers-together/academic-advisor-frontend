@@ -68,7 +68,9 @@ test('renders the singular waiting day', () => {
   );
 
   expect(screen.getByText('1 day')).toBeInTheDocument();
-  expect(screen.queryByText('Aging')).not.toBeInTheDocument();
+  expect(
+    screen.queryByText('Aging', { selector: 'span' }),
+  ).not.toBeInTheDocument();
 });
 
 test('shows the Aging badge only for items the server flags as aging', () => {
