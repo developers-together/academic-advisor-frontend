@@ -6,7 +6,7 @@ test('J1: the student builds and submits a plan', async ({ page, request }) => {
   await switchScenario(request, 'happy');
 
   await page.goto('/app');
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Home' })).toBeVisible();
   await expect(page.getByText('Not submitted yet.')).toBeVisible();
 
   await page.getByRole('link', { name: 'Resume in builder' }).click();
