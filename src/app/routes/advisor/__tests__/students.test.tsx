@@ -1,4 +1,3 @@
-import { fireEvent } from '@testing-library/react';
 import dayjs from 'dayjs';
 import { HttpResponse, http } from 'msw';
 
@@ -89,11 +88,13 @@ const seedExplorerStudent = async (
     });
   }
   if (withOpenRequest) {
-    db.visitRequest.create({
+    db.meetingRequest.create({
       studentId: student.id as number,
-      initiatorId: student.id as number,
-      status: 'proposed',
-      term_code: CURRENT_TERM,
+      advisorId: advisor.id as number,
+      requesterId: student.id as number,
+      direction: 'student_to_advisor',
+      status: 'requested',
+      reason: 'plan_review',
       slots: JSON.stringify([]),
     });
   }
@@ -347,9 +348,9 @@ test('a draft plan renders without the decision actions and names the queue', as
   ).not.toBeInTheDocument();
 });
 
-test('requesting a meeting from the drawer creates the visit request and toasts the sent line', async () => {
+test('inviting a student to a meeting from the drawer creates the request', async () => {
   const advisor = await createUser({ role: 'advisor' });
-  await seedExplorerStudent(advisor, {
+  const student = await seedExplorerStudent(advisor, {
     name: 'Lina Majors',
     studentId: '3020451',
     cgpa: 2.8,
@@ -369,32 +370,26 @@ test('requesting a meeting from the drawer creates the visit request and toasts 
   );
 
   const requestDialog = await screen.findByRole('dialog', {
-    name: 'Request a meeting with Lina Majors',
+    name: 'Invite a student to a meeting',
   });
+  expect(within(requestDialog).getByText('Lina Majors')).toBeInTheDocument();
+
+  const slots = await within(requestDialog).findAllByRole('checkbox');
+  await userEvent.click(slots[0]);
   await userEvent.click(
-    within(requestDialog).getByRole('button', { name: 'Add a time' }),
-  );
-  fireEvent.change(within(requestDialog).getByLabelText('Date'), {
-    target: { value: '2026-11-05' },
-  });
-  fireEvent.change(within(requestDialog).getByLabelText('Start'), {
-    target: { value: '10:00' },
-  });
-  fireEvent.change(within(requestDialog).getByLabelText('End'), {
-    target: { value: '11:00' },
-  });
-  await userEvent.click(
-    within(requestDialog).getByRole('button', { name: 'Send request' }),
+    within(requestDialog).getByRole('button', { name: 'Send invitation' }),
   );
 
+  await waitFor(() =>
+    expect(
+      db.meetingRequest.findFirst({
+        where: { studentId: { equals: student.id as number } },
+      })?.status,
+    ).toBe('awaiting_response'),
+  );
   expect(
-    await screen.findByText(
-      'Request sent. Lina Majors is notified in the app.',
-    ),
+    await screen.findByText('Invitation sent to Lina Majors.'),
   ).toBeInTheDocument();
-  expect(
-    screen.queryByRole('dialog', { name: /Request a meeting/ }),
-  ).not.toBeInTheDocument();
 });
 
 test('a caseload error renders the shared error state with retry', async () => {
