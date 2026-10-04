@@ -14,6 +14,7 @@ import { governanceHandlers } from './governance';
 import { notificationsHandlers } from './notifications';
 import { planHandlers } from './plan';
 import { planConversationHandlers } from './plan-conversations';
+import { rulesHandlers } from './rules';
 
 export const handlers = [
   ...authHandlers,
@@ -24,6 +25,7 @@ export const handlers = [
   ...notificationsHandlers,
   ...governanceHandlers,
   ...adminHandlers,
+  ...rulesHandlers,
   http.get(`${env.API_URL}/healthcheck`, async () => {
     await networkDelay();
     return HttpResponse.json({ ok: true });

@@ -9,6 +9,7 @@ import {
   LogOut,
   MessagesSquare,
   Moon,
+  ScrollText,
   Settings,
   ShieldCheck,
   Sun,
@@ -60,6 +61,11 @@ export const roleNav: Record<UserRole, NavItem[]> = {
       labelKey: 'nav.profile',
       to: paths.app.profile.getHref(),
       icon: GraduationCap,
+    },
+    {
+      labelKey: 'nav.rules',
+      to: paths.app.rules.getHref(),
+      icon: ScrollText,
     },
     {
       labelKey: 'nav.chat',
