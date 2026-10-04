@@ -1,43 +1,47 @@
-import { HttpResponse, http } from 'msw';
+import dayjs from 'dayjs';
 
 import AdvisorMeetingsRoute from '@/app/routes/advisor/meetings';
-import { env } from '@/config/env';
 import { db } from '@/testing/mocks/db';
 import { CURRENT_TERM } from '@/testing/mocks/mock-auth';
-import { server } from '@/testing/mocks/server';
-import { networkDelay } from '@/testing/mocks/utils';
 import {
   createUser,
-  fireEvent,
   renderApp,
   screen,
   userEvent,
   waitFor,
   within,
+  type MockUser,
 } from '@/testing/test-utils';
-import type { MockUser } from '@/testing/test-utils';
 
 const seedStudent = async (advisor: MockUser, name: string, id: string) =>
   createUser({ name, student_id: id, advisor_id: advisor.id as number });
 
-const seedVisitRequest = (studentId: number, initiatorId: number) =>
-  db.visitRequest.create({
+const seedMeeting = (
+  studentId: number,
+  advisorId: number,
+  overrides: Record<string, unknown> = {},
+) =>
+  db.meetingRequest.create({
     studentId,
-    initiatorId,
-    status: 'proposed',
+    advisorId,
+    requesterId: studentId,
+    direction: 'student_to_advisor',
+    status: 'requested',
+    reason: 'plan_review',
+    note: null,
+    slots: JSON.stringify([]),
+    selectedSlotIndex: null,
+    cancellationReason: null,
     term_code: CURRENT_TERM,
-    slots: JSON.stringify([
-      {
-        starts_at: '2026-11-05T12:00:00.000Z',
-        ends_at: '2026-11-05T13:00:00.000Z',
-      },
-    ]),
+    createdAt: dayjs().toISOString(),
+    completedAt: null,
+    ...overrides,
   });
 
-test('mark done flips the badge with no dialog and moves the request to Done', async () => {
+test('a student request lands in Needs action with the decision actions', async () => {
   const advisor = await createUser({ role: 'advisor' });
   const student = await seedStudent(advisor, 'Lina Majors', '3020451');
-  const request = seedVisitRequest(student.id as number, student.id as number);
+  seedMeeting(student.id as number, advisor.id as number);
 
   await renderApp(<AdvisorMeetingsRoute />, {
     user: advisor,
@@ -46,79 +50,63 @@ test('mark done flips the badge with no dialog and moves the request to Done', a
   });
 
   expect(await screen.findByText('Lina Majors')).toBeInTheDocument();
-  expect(screen.getByText('Requested by Lina Majors')).toBeInTheDocument();
-  expect(screen.getByText('05 Nov 2026, 14:00-15:00')).toBeInTheDocument();
-  expect(screen.getByRole('tab', { name: 'Open (1)' })).toHaveAttribute(
-    'aria-selected',
-    'true',
+  expect(screen.getByText('Requested')).toBeInTheDocument();
+  expect(
+    screen.getByRole('tab', { name: /Needs action \(1\)/ }),
+  ).toHaveAttribute('aria-selected', 'true');
+  expect(
+    screen.getByRole('button', { name: 'Confirm time' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Propose another time' }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Decline' })).toBeInTheDocument();
+});
+
+test('confirming picks an availability slot and the card turns confirmed', async () => {
+  const advisor = await createUser({ role: 'advisor' });
+  const student = await seedStudent(advisor, 'Omar Fathi', '3020452');
+  const meeting = seedMeeting(student.id as number, advisor.id as number, {
+    reason: 'academic_standing',
+  });
+
+  await renderApp(<AdvisorMeetingsRoute />, {
+    user: advisor,
+    path: '/advisor/meetings',
+    url: '/advisor/meetings',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'Confirm time' }),
   );
 
-  await userEvent.click(screen.getByRole('button', { name: 'Mark done' }));
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Confirm a time with Omar Fathi',
+  });
+  const firstRadio = await within(dialog).findAllByRole('radio');
+  expect(firstRadio.length).toBeGreaterThan(0);
 
-  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  await userEvent.click(firstRadio[0]);
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Confirm time' }),
+  );
+
   await waitFor(() =>
     expect(
-      db.visitRequest.findFirst({
-        where: { id: { equals: request.id as number } },
+      db.meetingRequest.findFirst({
+        where: { id: { equals: meeting.id as number } },
       })?.status,
-    ).toBe('done'),
+    ).toBe('confirmed'),
   );
-  expect(await screen.findByRole('tab', { name: 'Done (1)' })).toHaveAttribute(
-    'aria-selected',
-    'false',
-  );
-  expect(
-    await screen.findByText('No open meeting requests.'),
-  ).toBeInTheDocument();
-
-  await userEvent.click(screen.getByRole('tab', { name: /Done/ }));
-  expect(
-    await screen.findByText('Requested by Lina Majors'),
-  ).toBeInTheDocument();
-  expect(
-    screen.queryByRole('button', { name: 'Mark done' }),
-  ).not.toBeInTheDocument();
+  await userEvent.click(await screen.findByRole('tab', { name: /Scheduled/ }));
+  expect(await screen.findByText('Confirmed')).toBeInTheDocument();
+  expect(screen.getByText('Confirmed time')).toBeInTheDocument();
 });
 
-test('propose slots blocks an end-before-start row, sends Cairo instants, and renders the returned row', async () => {
+test('decline moves the request to history with the reason attached', async () => {
   const advisor = await createUser({ role: 'advisor' });
-  const student = await seedStudent(advisor, 'Lina Majors', '3020451');
-  seedVisitRequest(student.id as number, student.id as number);
-
-  let sentSlots: Array<{ starts_at: string; ends_at: string }> = [];
-  server.use(
-    http.post(
-      `${env.API_URL}/advisor/visit-requests/:visitRequestId/slots`,
-      async ({ request }) => {
-        await networkDelay();
-        const row = db.visitRequest.findFirst({ where: {} });
-        sentSlots = ((await request.json()) as { slots: typeof sentSlots })
-          .slots;
-        db.visitRequest.update({
-          where: { id: { equals: row?.id as number } },
-          data: { slots: JSON.stringify(sentSlots) },
-        });
-        return HttpResponse.json({
-          data: {
-            id: row?.id,
-            status: 'proposed',
-            term_code: CURRENT_TERM,
-            initiator_id: student.id,
-            student: {
-              id: student.id,
-              name: student.name,
-              student_id: student.student_id,
-            },
-            slots: sentSlots.map((slot, index) => ({
-              id: index + 1,
-              ...slot,
-            })),
-            created_at: new Date().toISOString(),
-          },
-        });
-      },
-    ),
-  );
+  const student = await seedStudent(advisor, 'Nour Adel', '3020453');
+  const meeting = seedMeeting(student.id as number, advisor.id as number);
 
   await renderApp(<AdvisorMeetingsRoute />, {
     user: advisor,
@@ -126,126 +114,39 @@ test('propose slots blocks an end-before-start row, sends Cairo instants, and re
     url: '/advisor/meetings',
   });
 
-  await userEvent.click(
-    await screen.findByRole('button', { name: 'Propose slots' }),
-  );
+  await userEvent.click(await screen.findByRole('button', { name: 'Decline' }));
 
   const dialog = await screen.findByRole('dialog', {
-    name: 'Propose slots for Lina Majors',
+    name: 'Decline this request?',
   });
-  expect(
-    within(dialog).getByText('Times are Africa/Cairo time.'),
-  ).toBeInTheDocument();
+  await userEvent.type(
+    within(dialog).getByLabelText('Reason for the student'),
+    'Bring your transcript to the office first.',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Decline' }),
+  );
 
-  const dateField = within(dialog).getByLabelText('Date');
-  const startField = within(dialog).getByLabelText('Start');
-  const endField = within(dialog).getByLabelText('End');
-  fireEvent.change(dateField, { target: { value: '2026-11-05' } });
-  fireEvent.change(startField, { target: { value: '14:00' } });
-  fireEvent.change(endField, { target: { value: '13:00' } });
-
-  expect(
-    await within(dialog).findByText('End time must be after the start time.'),
-  ).toBeInTheDocument();
-  expect(
-    within(dialog).getByRole('button', { name: 'Send slots' }),
-  ).toBeDisabled();
-
-  fireEvent.change(endField, { target: { value: '15:00' } });
   await waitFor(() =>
     expect(
-      within(dialog).getByRole('button', { name: 'Send slots' }),
-    ).toBeEnabled(),
+      db.meetingRequest.findFirst({
+        where: { id: { equals: meeting.id as number } },
+      })?.status,
+    ).toBe('declined'),
   );
 
-  await userEvent.click(
-    within(dialog).getByRole('button', { name: 'Send slots' }),
-  );
-
-  await waitFor(() => expect(sentSlots).toHaveLength(1));
-  expect(sentSlots[0].starts_at).toBe('2026-11-05T12:00:00.000Z');
-  expect(sentSlots[0].ends_at).toBe('2026-11-05T13:00:00.000Z');
-
-  expect(
-    await screen.findByText('Slots sent. Lina Majors is notified in the app.'),
-  ).toBeInTheDocument();
-  expect(
-    await screen.findByText('05 Nov 2026, 14:00-15:00'),
-  ).toBeInTheDocument();
-});
-
-test('a 409 on propose invalidates the list and toasts the calm line', async () => {
-  const advisor = await createUser({ role: 'advisor' });
-  const student = await seedStudent(advisor, 'Lina Majors', '3020451');
-  seedVisitRequest(student.id as number, student.id as number);
-
-  let listReads = 0;
-  server.events.on('request:start', ({ request }) => {
-    const url = new URL(request.url);
-    if (
-      url.pathname.endsWith('/advisor/visit-requests') &&
-      request.method === 'GET'
-    ) {
-      listReads += 1;
-    }
-  });
-
-  server.use(
-    http.post(
-      `${env.API_URL}/advisor/visit-requests/:visitRequestId/slots`,
-      () =>
-        networkDelay().then(() =>
-          HttpResponse.json(
-            {
-              message: 'Only a proposed visit request accepts proposed times.',
-              key: 'visit.not_slotable',
-            },
-            { status: 409 },
-          ),
-        ),
-    ),
-  );
-
-  await renderApp(<AdvisorMeetingsRoute />, {
-    user: advisor,
-    path: '/advisor/meetings',
-    url: '/advisor/meetings',
-  });
-  const readsAfterLoad = listReads;
-
-  await userEvent.click(
-    await screen.findByRole('button', { name: 'Propose slots' }),
-  );
-  const dialog = await screen.findByRole('dialog', {
-    name: 'Propose slots for Lina Majors',
-  });
-  fireEvent.change(within(dialog).getByLabelText('Date'), {
-    target: { value: '2026-11-06' },
-  });
-  fireEvent.change(within(dialog).getByLabelText('Start'), {
-    target: { value: '10:00' },
-  });
-  fireEvent.change(within(dialog).getByLabelText('End'), {
-    target: { value: '11:00' },
-  });
-
-  await userEvent.click(
-    within(dialog).getByRole('button', { name: 'Send slots' }),
-  );
-
+  await userEvent.click(await screen.findByRole('tab', { name: /History/ }));
+  expect(await screen.findByText('Declined')).toBeInTheDocument();
   expect(
     await screen.findByText(
-      'That action is no longer available. Your view is up to date.',
+      'Reason: Bring your transcript to the office first.',
     ),
   ).toBeInTheDocument();
-  expect(
-    screen.queryByRole('dialog', { name: /Propose slots/ }),
-  ).not.toBeInTheDocument();
-  await waitFor(() => expect(listReads).toBeGreaterThan(readsAfterLoad));
 });
 
-test('an empty meetings list renders the open empty state', async () => {
+test('the advisor can invite a caseload student with proposed times', async () => {
   const advisor = await createUser({ role: 'advisor' });
+  const student = await seedStudent(advisor, 'Lina Majors', '3020451');
 
   await renderApp(<AdvisorMeetingsRoute />, {
     user: advisor,
@@ -253,33 +154,36 @@ test('an empty meetings list renders the open empty state', async () => {
     url: '/advisor/meetings',
   });
 
-  expect(
-    await screen.findByText('No open meeting requests.'),
-  ).toBeInTheDocument();
-  expect(
-    screen.getByText('Requests from your students appear here.'),
-  ).toBeInTheDocument();
-});
-
-test('a list error renders the shared error state with retry', async () => {
-  const advisor = await createUser({ role: 'advisor' });
-
-  server.use(
-    http.get(`${env.API_URL}/advisor/visit-requests`, () =>
-      HttpResponse.json(
-        { message: 'The server encountered an error.' },
-        { status: 500 },
-      ),
-    ),
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'Invite student' }),
   );
 
-  await renderApp(<AdvisorMeetingsRoute />, {
-    user: advisor,
-    path: '/advisor/meetings',
-    url: '/advisor/meetings',
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Invite a student to a meeting',
   });
+  const combo = within(dialog).getByRole('combobox', { name: 'Student' });
+  await userEvent.click(combo);
+  await userEvent.type(combo, 'Lina');
+  await userEvent.click(
+    await screen.findByRole('option', { name: /Lina Majors/ }),
+  );
 
+  const slots = await within(dialog).findAllByRole('checkbox');
+  expect(slots.length).toBeGreaterThan(0);
+  await userEvent.click(slots[0]);
+
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Send invitation' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.meetingRequest.findFirst({
+        where: { studentId: { equals: student.id as number } },
+      })?.status,
+    ).toBe('awaiting_response'),
+  );
   expect(
-    await screen.findByText('Could not load this content.'),
+    await screen.findByText('Invitation sent to Lina Majors.'),
   ).toBeInTheDocument();
 });
