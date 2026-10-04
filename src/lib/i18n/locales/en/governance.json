@@ -105,5 +105,60 @@
   "noFaculty": {
     "title": "No faculty assigned",
     "body": "Your dean account has no faculty assigned. Ask an administrator to finish setup."
+  },
+  "vpOverview": {
+    "title": "Overview",
+    "context": "University-wide advising outcomes for this term.",
+    "compareCta": "Compare faculties",
+    "emptyTitle": "No overview data yet.",
+    "emptyBody": "University metrics appear here."
+  },
+  "vpFaculties": {
+    "title": "Faculties",
+    "context": "All faculties compared on this term's outcomes.",
+    "emptyTitle": "No scorecard data yet.",
+    "emptyBody": "Per-faculty metrics appear here."
+  },
+  "advisors": {
+    "title": "Advisors",
+    "context": "Advisor workload and outcomes across your area, as aggregates.",
+    "columns": {
+      "advisor": "Advisor",
+      "unit": "Department",
+      "caseload": "Caseload",
+      "queue": "Queue",
+      "approved": "Approved",
+      "completion": "Completion",
+      "median": "Median",
+      "aging": "Aging"
+    },
+    "empty": {
+      "title": "No advisor data yet.",
+      "body": "Advisor aggregates appear here."
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "context": "How advising in your area moves over terms."
+  },
+  "trends": {
+    "term": "Term",
+    "dean": {
+      "title": "Completion rate by term",
+      "question": "Is advising performance in your area improving?"
+    },
+    "vp": {
+      "title": "Completion rate by faculty, by term",
+      "question": "Which faculties move differently over time?",
+      "pageTitle": "Trends",
+      "pageContext": "Faculties compared across terms on completion."
+    },
+    "series": {
+      "completion": "Completion rate"
+    },
+    "empty": {
+      "title": "No trend data yet.",
+      "body": "Term history appears here."
+    }
   }
 }
