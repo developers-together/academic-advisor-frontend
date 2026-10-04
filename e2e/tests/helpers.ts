@@ -10,6 +10,9 @@ export const APP_URL = 'http://127.0.0.1:3100';
 
 export const STUDENT_AUTH_FILE = 'e2e/.auth/student.json';
 export const ADVISOR_AUTH_FILE = 'e2e/.auth/advisor.json';
+export const DEAN_AUTH_FILE = 'e2e/.auth/dean.json';
+export const VP_AUTH_FILE = 'e2e/.auth/vp.json';
+export const ADMIN_AUTH_FILE = 'e2e/.auth/admin.json';
 
 export type Scenario =
   | 'happy'
