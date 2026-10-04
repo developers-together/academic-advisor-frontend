@@ -16,7 +16,11 @@
     "caseload_student_added": "أُضيف طالب إلى القائمة",
     "window_opened": "فُتحت نافذة التسجيل",
     "window_deadline_nearing": "نافذة التسجيل تاقت للإغلاق",
-    "visit_requested": "طُلب اجتماع",
-    "visit_slots_provided": "اقُترحت أوقات للزيارة"
+    "meeting_requested": "طلب اجتماع",
+    "meeting_proposed": "مواعيد مقترحة للاجتماع",
+    "meeting_confirmed": "تم تأكيد الاجتماع",
+    "meeting_declined": "تم رفض الاجتماع",
+    "meeting_cancelled": "تم إلغاء الاجتماع",
+    "meeting_completed": "تم الاجتماع"
   }
 }
