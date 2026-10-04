@@ -6,7 +6,7 @@ import { getAdminRulesQueryOptions } from '@/features/admin/api/get-admin-rules'
 import { getAdminStudentsQueryOptions } from '@/features/admin/api/get-admin-students';
 import { getQueueAgingThresholdQueryOptions } from '@/features/admin/api/get-queue-aging-threshold';
 import { getAvailabilityQueryOptions } from '@/features/advisor-hours/api/get-availability';
-import { getVisitRequestsQueryOptions } from '@/features/advisor-meetings/api/get-visit-requests';
+import { getMeetingRequestsQueryOptions } from '@/features/advisor-meetings/api/get-meeting-requests';
 import { getAdvisorQueueQueryOptions } from '@/features/advisor-queue/api/get-advisor-queue';
 import { getCaseloadQueryOptions } from '@/features/advisor-students/api/get-caseload';
 import {
@@ -69,8 +69,8 @@ describe('settled per-family query freshness (acad-abl.13 rules 24-27)', () => {
       staleTime: 30 * 1000,
       refetchOnWindowFocus: true,
     });
-    expect(getVisitRequestsQueryOptions()).toMatchObject({
-      queryKey: ['advisor', 'visit-requests'],
+    expect(getMeetingRequestsQueryOptions()).toMatchObject({
+      queryKey: ['advisor', 'meeting-requests'],
       staleTime: 30 * 1000,
       refetchOnWindowFocus: true,
     });
