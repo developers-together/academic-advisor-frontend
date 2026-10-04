@@ -105,7 +105,7 @@ export const governanceHandlers = [
       return HttpResponse.json({ data: faculty });
     }
     if (user.role === 'vp') {
-      return HttpResponse.json({ data: root });
+      return HttpResponse.json({ data: stripAdvisors(root) });
     }
     return HttpResponse.json(
       { message: 'This action is unauthorized.' },
@@ -148,3 +148,9 @@ export const governanceHandlers = [
     });
   }),
 ];
+
+const stripAdvisors = (node: GovernanceNode): GovernanceNode => ({
+  ...node,
+  advisors: undefined,
+  children: node.children.map(stripAdvisors),
+});
