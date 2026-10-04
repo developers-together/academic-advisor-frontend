@@ -11,24 +11,36 @@
     "admin": "Administrator"
   },
   "nav": {
-    "dashboard": "Dashboard",
+    "home": "Home",
     "myPlan": "My Plan",
-    "builder": "Plan Builder",
-    "profile": "Profile",
-    "chat": "AI Chat",
+    "academicRecord": "Academic Record",
+    "aiAdvisor": "AI Advisor",
+    "myAdvisor": "My Advisor",
     "notifications": "Notifications",
+    "account": "Account",
     "queue": "Queue",
-    "students": "Student Explorer",
+    "students": "Students",
     "meetings": "Meetings",
     "hours": "Office Hours",
+    "profile": "Profile",
     "overview": "Overview",
-    "scorecard": "Scorecard",
-    "drilldown": "Drill-down",
+    "advisors": "Advisors",
+    "analytics": "Analytics",
+    "faculties": "Faculties",
+    "trends": "Trends",
+    "users": "Users",
     "accounts": "Accounts",
-    "assignments": "Caseloads",
+    "operations": "Operations",
+    "assignments": "Assignments",
+    "courses": "Courses",
+    "programs": "Programs",
     "rules": "Rules",
+    "registrationWindows": "Registration Windows",
+    "aiConfiguration": "AI Configuration",
     "staff": "Staff",
-    "settings": "Settings"
+    "settings": "Settings",
+    "more": "More"
+
   },
   "topbar": {
     "language": "Change language",
@@ -128,5 +140,73 @@
   "confirm": {
     "cancel": "Cancel"
   },
-  "skipToContent": "Skip to content"
+  "commandPalette": {
+    "open": "Search",
+    "label": "Command palette",
+    "placeholder": "Search pages, people, and actions",
+    "noResults": "No results for \"{{query}}\"",
+    "sections": {
+      "pages": "Pages",
+      "actions": "Actions",
+      "students": "Your students",
+      "users": "Users"
+    },
+    "hints": {
+      "navigate": "Move",
+      "select": "Open",
+      "dismiss": "Close"
+    },
+    "actions": {
+      "askAi": "Ask the AI advisor",
+      "setAvailability": "Set office hours",
+      "requestMeeting": "Request a meeting",
+      "openQueue": "Open the review queue"
+    }
+  },
+  "statusChip": {
+    "srLabel": "{{domain}}: {{status}}",
+    "domains": {
+      "meeting": "Meeting status",
+      "account": "Account status",
+      "data": "Status"
+    },
+    "meeting": {
+      "requested": "Requested",
+      "awaiting_response": "Awaiting response",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "declined": "Declined",
+      "cancelled": "Cancelled",
+      "expired": "Expired",
+      "conflict": "Conflict"
+    },
+    "account": {
+      "active": "Active",
+      "suspended": "Suspended"
+    },
+    "data": {
+      "saving": "Saving",
+      "saved": "Saved",
+      "updating": "Updating",
+      "stale": "Stale",
+      "offline": "Offline",
+      "error": "Error"
+    }
+  },
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "expand": "Show hidden levels"
+  },
+  "skipToContent": "Skip to content",
+  "meetingCard": {
+    "updated": "Updated {{datetime}}",
+    "reason": "Reason",
+    "selectedSlot": "Confirmed time",
+    "cancellationReason": "Reason: {{reason}}",
+    "completedAt": "Completed {{datetime}}",
+    "directionLine_studentRequested": "You requested this meeting",
+    "directionLine_studentRequest": "Requested by the student",
+    "directionLine_advisorInvite": "You invited the student",
+    "directionLine_advisorInviteToYou": "Your advisor invited you"
+  }
 }
