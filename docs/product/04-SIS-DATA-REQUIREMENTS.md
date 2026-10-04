@@ -1,20 +1,20 @@
-# Advaisor → SIS — Data Requirements Specification
+# Advisor → SIS — Data Requirements Specification
 
-> **To**: SIS engineering team · **From**: Advaisor product/engineering · **Version**: 1.0 (2026-09-29)
+> **To**: SIS engineering team · **From**: Advisor product/engineering · **Version**: 1.0 (2026-09-29)
 > **Status**: awaiting SIS review and sign-off (§8)
 > **Basis**: `01-PRODUCT-FOUNDATION.md` §9 (integration contract), decisions Q56–Q68.
 
 ---
 
-## 1. Context — what Advaisor is and how it touches the SIS
+## 1. Context — what Advisor is and how it touches the SIS
 
-Advaisor is the university's academic plan platform with a student-facing AI advisor. Students build one
+Advisor is the university's academic plan platform with a student-facing AI advisor. Students build one
 official course-registration plan per semester, the assigned advisor approves it, the student then
-registers for the approved courses **in the SIS**, and Advaisor verifies afterwards that the registration
+registers for the approved courses **in the SIS**, and Advisor verifies afterwards that the registration
 happened.
 
-What this means for you, in one sentence: **Advaisor is a pull-only, read-only consumer of SIS data.**
-We never write to the SIS, we never proxy users into it, and we need no SSO integration — Advaisor has
+What this means for you, in one sentence: **Advisor is a pull-only, read-only consumer of SIS data.**
+We never write to the SIS, we never proxy users into it, and we need no SSO integration — Advisor has
 its own account system restricted to `@ejust.edu.eg` addresses. Everything in this document is data we
 would like to *read* from endpoints you provide.
 
@@ -45,7 +45,7 @@ Scale for sizing: **6,000–8,000 active students**; catalog size university-wid
 
 **REQ-A1 — Student identity record** · P0 · `nightly` (spike at term start)
 
-The unique key of the whole integration: students bind their Advaisor account to their academic record
+The unique key of the whole integration: students bind their Advisor account to their academic record
 by **student ID** at sign-up, and every piece of academic data we hold is keyed by it.
 
 | Field | Type | Notes |
@@ -152,7 +152,7 @@ Otherwise we derive from REQ-B4 + REQ-C1, with your confirmation that the deriva
 
 **REQ-D2 — Registration status (verification)** · P0 · **`live-ish` during the window**
 
-After an advisor approves a plan, Advaisor checks the SIS to confirm the student actually registered the
+After an advisor approves a plan, Advisor checks the SIS to confirm the student actually registered the
 approved courses. This is how the platform closes its loop — it is the single most important read after
 the window opens.
 
@@ -184,12 +184,12 @@ data — if so, confirm our history mirror is complete for all students, not per
 
 If the SIS exposes its own rule parameters (min/max credits per term, summer cap, probation threshold,
 repeat limits, graduation totals), we sync them and display "source: SIS" per rule. **If you don't
-expose them, no problem** — Advaisor's admin enters them manually as a fallback. Tell us either way.
+expose them, no problem** — Advisor's admin enters them manually as a fallback. Tell us either way.
 
 ## 4. Explicitly NOT needed (please don't build or expose for us)
 
 - **Any write access** to the SIS — registration, grades, records: never
-- Student emails, phone numbers, addresses, national IDs, photos — Advaisor accounts are in-system
+- Student emails, phone numbers, addresses, national IDs, photos — Advisor accounts are in-system
 - Attendance, financial/billing, scholarship, disciplinary, housing, HR data
 - Section meeting times / timetables — we do no clash checking
 - SSO / identity federation — no user login flows touch the SIS
@@ -247,9 +247,9 @@ expose them, no problem** — Advaisor's admin enters them manually as a fallbac
 
 | Role | Name | Date |
 |---|---|---|
-| Advaisor product owner | | |
+| Advisor product owner | | |
 | SIS engineering lead | | |
 | University IT / integration owner | | |
 
-**Next step**: a working session to walk §6 question by question; then Advaisor proceeds against a
+**Next step**: a working session to walk §6 question by question; then Advisor proceeds against a
 staging endpoint; production cutover only after both sides sign this document's final revision.
