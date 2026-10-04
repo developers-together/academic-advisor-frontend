@@ -11,6 +11,7 @@ import { adminHandlers } from './admin';
 import { advisorHandlers } from './advisor';
 import { authHandlers } from './auth';
 import { governanceHandlers } from './governance';
+import { meetingsHandlers } from './meetings';
 import { notificationsHandlers } from './notifications';
 import { planHandlers } from './plan';
 import { planConversationHandlers } from './plan-conversations';
@@ -22,6 +23,7 @@ export const handlers = [
   ...planConversationHandlers,
   ...academicRecordHandlers,
   ...advisorHandlers,
+  ...meetingsHandlers,
   ...notificationsHandlers,
   ...governanceHandlers,
   ...adminHandlers,
