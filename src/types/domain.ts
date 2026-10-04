@@ -245,6 +245,11 @@ export type UniversityRule = {
   updated_at: string;
 };
 
+export type UniversityRuleSummary = Pick<
+  UniversityRule,
+  'id' | 'title_en' | 'title_ar' | 'body_en' | 'body_ar'
+>;
+
 export type UniversityRuleInput = {
   title_en: string;
   title_ar: string;

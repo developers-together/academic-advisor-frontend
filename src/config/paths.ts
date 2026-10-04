@@ -41,6 +41,10 @@ export const paths = {
       path: 'profile',
       getHref: () => '/app/profile',
     },
+    rules: {
+      path: 'rules',
+      getHref: () => '/app/rules',
+    },
     chat: {
       path: 'chat',
       getHref: () => '/app/chat',

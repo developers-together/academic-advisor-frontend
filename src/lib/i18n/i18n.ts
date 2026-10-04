@@ -9,6 +9,7 @@ import arCommon from './locales/ar/common.json';
 import arGovernance from './locales/ar/governance.json';
 import arNotifications from './locales/ar/notifications.json';
 import arPlan from './locales/ar/plan.json';
+import arRules from './locales/ar/rules.json';
 import enAdmin from './locales/en/admin.json';
 import enAdvisor from './locales/en/advisor.json';
 import enAuth from './locales/en/auth.json';
@@ -17,6 +18,7 @@ import enCommon from './locales/en/common.json';
 import enGovernance from './locales/en/governance.json';
 import enNotifications from './locales/en/notifications.json';
 import enPlan from './locales/en/plan.json';
+import enRules from './locales/en/rules.json';
 
 export const namespaces = [
   'common',
@@ -27,6 +29,7 @@ export const namespaces = [
   'governance',
   'admin',
   'notifications',
+  'rules',
 ] as const;
 
 export const supportedLanguages = ['en', 'ar'] as const;
@@ -42,6 +45,7 @@ export const resources = {
     governance: enGovernance,
     admin: enAdmin,
     notifications: enNotifications,
+    rules: enRules,
   },
   ar: {
     common: arCommon,
@@ -52,6 +56,7 @@ export const resources = {
     governance: arGovernance,
     admin: arAdmin,
     notifications: arNotifications,
+    rules: arRules,
   },
 } as const;
 

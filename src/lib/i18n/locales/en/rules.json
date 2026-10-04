@@ -1,0 +1,8 @@
+{
+  "title": "University Rules",
+  "context": "The regulations your plan must honor.",
+  "empty": {
+    "title": "No university rules published yet.",
+    "body": "Rules appear here once the administration publishes them."
+  }
+}
