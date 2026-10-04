@@ -37,9 +37,10 @@ test('the bell badge shows the unread count with its accessible name and a polit
   expect(
     await screen.findByRole('button', { name: '1 unread notifications' }),
   ).toBeInTheDocument();
-  expect(screen.getByRole('status')).toHaveTextContent(
-    '1 unread notifications',
-  );
+  const statuses = await screen.findAllByRole('status');
+  expect(
+    statuses.some((node) => node.textContent === '1 unread notifications'),
+  ).toBe(true);
 
   await userEvent.click(
     screen.getByRole('button', { name: '1 unread notifications' }),
@@ -56,10 +57,12 @@ test('the bell badge shows the unread count with its accessible name and a polit
   expect(
     await screen.findByRole('button', { name: '0 unread notifications' }),
   ).toBeInTheDocument();
-  await waitFor(() =>
-    expect(screen.getByRole('status')).toHaveTextContent(
-      '0 unread notifications',
-    ),
-  );
+  await waitFor(() => {
+    expect(
+      screen
+        .getAllByRole('status')
+        .some((node) => node.textContent === '0 unread notifications'),
+    ).toBe(true);
+  });
   await waitFor(() => expect(window.location.pathname).toBe('/app/plan'));
 });
