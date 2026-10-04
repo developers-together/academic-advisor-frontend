@@ -5,7 +5,9 @@
     "tabs": {
       "all": "All",
       "submitted": "Submitted",
-      "under_review": "Under review"
+      "under_review": "Under review",
+      "returned": "Returned",
+      "aging": "Aging"
     },
     "columns": {
       "student": "Student",
@@ -59,7 +61,9 @@
       "body": "The checks below failed. You can still return the plan to the student."
     },
     "notReviewable": "This plan is not waiting for review. Plans you can act on appear in the queue.",
-    "requestMeeting": "Request meeting"
+    "requestMeeting": "Request meeting",
+    "meeting": "Meeting",
+    "meetingNone": "No active meeting request."
   },
   "students": {
     "title": "Student Explorer",
@@ -94,10 +98,11 @@
   },
   "meetings": {
     "title": "Meetings",
-    "context": "Visit requests between you and your caseload.",
+    "context": "Requests and confirmed meetings with your caseload, in both directions.",
     "tabs": {
-      "open": "Open",
-      "done": "Done"
+      "attention": "Needs action",
+      "scheduled": "Scheduled",
+      "history": "History"
     },
     "requestedBy": "Requested by {{name}}",
     "requestedByYou": "Requested by you",
@@ -134,11 +139,80 @@
       "timezone": "Times are Africa/Cairo time.",
       "save": "Send request",
       "success": "Request sent. {{name}} is notified in the app."
+    },
+    "invite": "Invite student",
+    "empty": {
+      "attention": {
+        "title": "No meetings waiting on you",
+        "body": "Requests from your students appear here."
+      },
+      "scheduled": {
+        "title": "No upcoming meetings"
+      },
+      "history": {
+        "title": "No past meetings"
+      }
+    },
+    "actions": {
+      "confirm": "Confirm time",
+      "propose": "Propose another time",
+      "decline": "Decline",
+      "complete": "Mark completed",
+      "cancel": "Cancel meeting"
+    },
+    "slotPicker": {
+      "empty": "No open times in the next two weeks. Add office hours to open more.",
+      "booked": "Booked",
+      "singleLabel": "Pick one time",
+      "multiLabel": "Pick up to five times"
+    },
+    "confirmDialog": {
+      "title": "Confirm a time with {{name}}",
+      "body": "The chosen time becomes the confirmed meeting. Both of you see it.",
+      "save": "Confirm time",
+      "success": "Meeting confirmed with {{name}}.",
+      "conflict": "That time was taken.",
+      "conflictBody": "Pick another time."
+    },
+    "inviteDialog": {
+      "title": "Invite a student to a meeting",
+      "body": "Propose times from your availability. The student accepts one or declines.",
+      "studentLabel": "Student",
+      "studentPlaceholder": "Choose a student",
+      "studentEmpty": "No assigned student matches \"{{query}}\".",
+      "reasonLabel": "Reason",
+      "noteLabel": "Note for the student",
+      "slotsLabel": "Proposed times",
+      "save": "Send invitation",
+      "success": "Invitation sent to {{name}}."
+    },
+    "proposeDialog": {
+      "title": "Propose another time for {{name}}",
+      "body": "The student can accept one of these times or decline.",
+      "save": "Send times",
+      "success": "New times sent to {{name}}."
+    },
+    "declineDialog": {
+      "title": "Decline this request?",
+      "body": "The student sees that the request was declined.",
+      "confirm": "Decline",
+      "reasonLabel": "Reason for the student"
+    },
+    "cancelDialog": {
+      "title": "Cancel this meeting?",
+      "body": "The other party sees the cancellation.",
+      "confirm": "Cancel meeting",
+      "reasonLabel": "Reason"
     }
   },
   "profile": {
     "title": "Profile",
     "context": "How your students find you.",
+    "name": "Name",
+    "email": "Email",
+    "faculty": "Faculty",
+    "role": "Role",
+    "unavailable": "Not reported yet.",
     "locationLabel": "Office location",
     "save": "Save location",
     "success": "Office location saved.",
@@ -182,5 +256,53 @@
       "friday": "Friday",
       "saturday": "Saturday"
     }
+  },
+  "reasons": {
+    "plan_review": "Plan review",
+    "course_selection": "Course selection",
+    "academic_standing": "Academic standing",
+    "degree_progress": "Degree progress",
+    "other": "Something else"
+  },
+  "myMeetings": {
+    "request": "Request a meeting",
+    "none": "No meetings with your advisor yet.",
+    "with": "With {{name}}",
+    "advisorFallback": "With your advisor",
+    "pickSlot": "Pick a time",
+    "actions": {
+      "accept": "Accept time",
+      "decline": "Decline",
+      "cancel": "Cancel"
+    },
+    "requestDialog": {
+      "title": "Request a meeting with your advisor",
+      "body": "Your advisor confirms a time or proposes another one.",
+      "reasonLabel": "Reason",
+      "noteLabel": "Add a note",
+      "noteHint": "Optional. Tell your advisor what you want to discuss.",
+      "preferredLabel": "Preferred time",
+      "preferredHint": "Optional. Your advisor sees it as a hint.",
+      "date": "Date",
+      "from": "From",
+      "to": "To",
+      "save": "Send request",
+      "success": "Request sent to your advisor.",
+      "exists": "You already have an open meeting request.",
+      "existsBody": "Cancel it before requesting a new one."
+    },
+    "declineDialog": {
+      "title": "Decline this proposal?",
+      "body": "Your advisor sees that you declined.",
+      "confirm": "Decline",
+      "reasonLabel": "Reason for your advisor"
+    },
+    "cancelDialog": {
+      "title": "Cancel this meeting?",
+      "body": "Your advisor sees the cancellation.",
+      "confirm": "Cancel meeting",
+      "reasonLabel": "Reason"
+    },
+    "cancelled": "Meeting cancelled."
   }
 }
