@@ -59,6 +59,19 @@ export const createAppRouter = (queryClient: QueryClient) =>
           lazy: () => import('./routes/app/builder').then(convert(queryClient)),
         },
         {
+          path: paths.app.record.path,
+          lazy: () => import('./routes/app/record').then(convert(queryClient)),
+        },
+        {
+          path: paths.app.advisor.path,
+          lazy: () =>
+            import('./routes/app/my-advisor').then(convert(queryClient)),
+        },
+        {
+          path: paths.app.account.path,
+          lazy: () => import('./routes/app/account').then(convert(queryClient)),
+        },
+        {
           path: paths.app.profile.path,
           lazy: () => import('./routes/app/profile').then(convert(queryClient)),
         },
@@ -129,6 +142,16 @@ export const createAppRouter = (queryClient: QueryClient) =>
           lazy: () => import('./routes/dean/index').then(convert(queryClient)),
         },
         {
+          path: paths.dean.advisors.path,
+          lazy: () =>
+            import('./routes/dean/advisors').then(convert(queryClient)),
+        },
+        {
+          path: paths.dean.analytics.path,
+          lazy: () =>
+            import('./routes/dean/analytics').then(convert(queryClient)),
+        },
+        {
           path: paths.dean.notifications.path,
           lazy: () =>
             import('./routes/dean/notifications').then(convert(queryClient)),
@@ -143,6 +166,15 @@ export const createAppRouter = (queryClient: QueryClient) =>
         {
           index: true,
           lazy: () => import('./routes/vp/index').then(convert(queryClient)),
+        },
+        {
+          path: paths.vp.faculties.path,
+          lazy: () =>
+            import('./routes/vp/faculties').then(convert(queryClient)),
+        },
+        {
+          path: paths.vp.trends.path,
+          lazy: () => import('./routes/vp/trends').then(convert(queryClient)),
         },
         {
           path: paths.vp.drilldown.path,
@@ -166,9 +198,37 @@ export const createAppRouter = (queryClient: QueryClient) =>
           lazy: () => import('./routes/admin/index').then(convert(queryClient)),
         },
         {
+          path: paths.admin.users.path,
+          lazy: () => import('./routes/admin/users').then(convert(queryClient)),
+        },
+        {
           path: paths.admin.students.path,
           lazy: () =>
             import('./routes/admin/students').then(convert(queryClient)),
+        },
+        {
+          path: paths.admin.courses.path,
+          lazy: () =>
+            import('./routes/admin/courses').then(convert(queryClient)),
+        },
+        {
+          path: paths.admin.programs.path,
+          lazy: () =>
+            import('./routes/admin/programs').then(convert(queryClient)),
+        },
+        {
+          path: paths.admin.registrationWindows.path,
+          lazy: () =>
+            import('./routes/admin/registration-windows').then(
+              convert(queryClient),
+            ),
+        },
+        {
+          path: paths.admin.aiConfiguration.path,
+          lazy: () =>
+            import('./routes/admin/ai-configuration').then(
+              convert(queryClient),
+            ),
         },
         {
           path: paths.admin.assignments.path,
