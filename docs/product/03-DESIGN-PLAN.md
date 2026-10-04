@@ -1,4 +1,4 @@
-# Advaisor — Design Plan (Figma Journey)
+# Advisor — Design Plan (Figma Journey)
 
 > **Basis**: `01-PRODUCT-FOUNDATION.md` (§ refs). **Sequencing**: this plan executes only after the
 > foundation doc is signed. Build phases (P0–P4 in `02-PROJECT-PLAN.md`) consume D-phase outputs — each
@@ -20,9 +20,9 @@ things worth keeping on their merits: the **prerequisite map** (foundation §14-
 | **D0 — Design system** | Tokens (Figma variables), type scale, grid, core component library (~30 components, §2), both themes, LTR+RTL | everything |
 | **D1 — Shell + auth** | App shell (role-scoped rail, topbar), X1 auth (login + in-system **account registration** with student-ID binding, `@ejust.edu.eg` gate, states) | P0 |
 | **D2 — Student journey** | S1–S6 **fully**, all plan states (§15 matrix), edge states, phone + desktop frames | P1 |
-| **D3 — Advisor workspace** | A1–A5 fully: queue, review drawer (approve/return+comment/visit), explorer, meetings, office-hours editor | P1 |
+| **D3 — Advisor workspace** | A1–A5 fully: queue, review drawer (approve/return+comment/meeting), explorer, meetings, office-hours editor | P1 |
 | **D4 — Dean** | D1–D4: scoreboard, funnel, advisor detail, student explorer | P3 |
-| **D5 — VP + Admin** | V1–V2 scorecard/drill; M1–M5 admin console | P3 |
+| **D5 — VP + Admin** | V1–V3 scorecard/drill/trends; M0–M8 admin operations (design.md §4.5) | P3 |
 | **D6 — State matrix coverage** | Every screen × loading/empty/error/denied/stale-SIS/window-closed (foundation §15); deadline + notification moments | P4 |
 | **D7 — Prototype + handoff** | Clickable stakeholder prototype: **J1 happy loop + J2 return loop + one advisor review** (the demo that sells the product); dev-mode handoff, redlines, token export | P4, university sign-off |
 
@@ -42,11 +42,11 @@ empty-state illustration set (bilingual).
 | `ValidationPanel` | §7.3 | Hard-block messaging; **reveals constraints, never labels** (Q57) |
 | `CommentThread` | §7.2 | Advisor-only comments; student = read + **Seen** button |
 | `SeenButton` | Q32 | Unlock affordance; confirm micro-dialog |
-| `DraftPlanCard` | §12 | AI chat → Plan Builder handoff |
+| `SubmitSuggestionCard` | §12 | AI chat → submit handoff; the AI edits the one plan in place |
 | `PrereqMap` | S4 | Port of prototype SVG roadmap; 4-state coloring, level columns |
-| `SlotEditor` / `SlotViewer` | §10 | day/from/to rows, max 5, defaults pre-offered |
-| `VisitRequestCard` | §10 | Both directions; approve/deny with slots |
-| `QueueTable` + `ReviewDrawer` | A1 | Approve / Return+comment / Request visit — the advisor's one job |
+| `AvailabilityEditor` / `SlotPicker` / `SlotViewer` | §10 | recurring rows, slot generation, conflicts, confirmation |
+| `MeetingRequestCard` | §10 | Both directions; the v2 request state machine with confirmation |
+| `QueueTable` + `ReviewDrawer` | A1 | Approve / Return+comment / Request meeting — the advisor's one job |
 | `ScoreboardTable`, `FunnelChart` | §13 | Dean; completion %, median decision time, aging |
 | `FacultyScorecard`, `DrilldownTable` | §13 | VP; approvals per faculty |
 | `NotificationCenter` + `NotificationItem` | §11 | 8 trigger types, deep links |
@@ -72,12 +72,12 @@ empty-state illustration set (bilingual).
 1. Every frame states its **foundation §** and its position in the §15 state matrix.
 2. No screen is "done" without: loading, empty, error, and (where relevant) window-closed and
    stale-SIS states.
-3. Student screens are designed at 390px **and** 1440px; staff screens at 1440px with a defined
-   mobile-read fallback (view-only).
+3. Student screens are designed at 390px **and** 1440px; staff screens at 1440px and usable to 360px
+   with the mobile shell (top bar, bottom navigation, sheets) per design.md §5 and §20.
 4. All copy in both EN and AR — no lorem, no English-only frames. Placeholder content uses the seeded
    dataset shape (extraction §2) so frames double as dev specs.
-5. Numbers follow the foundation: no risk labels, no simulator UIs, no student free-text inputs outside
-   plan fields and chat (Q57, Q36, Q66).
+5. Numbers follow the foundation: no risk labels, no simulator UIs; student free text stays inside
+   plan fields, chat, and meeting-request notes (Q57, Q36, Q66 as amended).
 
 ## 5. Acceptance Checklist (per D-phase)
 
