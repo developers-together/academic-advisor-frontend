@@ -1,14 +1,7 @@
-import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router';
 
-import { ContentLayout } from '@/components/layouts';
-import { SettingsDocument } from '@/features/admin/components/settings-document';
+import { paths } from '@/config/paths';
 
 export default function AdminSettingsRoute() {
-  const { t } = useTranslation('admin');
-
-  return (
-    <ContentLayout title={t('settings.title')} context={t('settings.context')}>
-      <SettingsDocument />
-    </ContentLayout>
-  );
+  return <Navigate to={paths.admin.users.getHref()} replace />;
 }
