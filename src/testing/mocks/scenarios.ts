@@ -1,11 +1,15 @@
 import dayjs from 'dayjs';
 
+import { dayjsInCairo } from '@/lib/i18n/cairo';
 import type {
+  GovernanceAdvisorRow,
   GovernanceDean,
   GovernanceFunnel,
   GovernanceLevel,
   GovernanceNode,
 } from '@/types/domain';
+
+import { governanceTrends } from '../governance-tree';
 
 import { db } from './db';
 import { CURRENT_TERM, FRESH_STALENESS, STALE_STALENESS } from './mock-auth';
@@ -37,7 +41,7 @@ export const setScenario = (scenario: Scenario) => {
   db.plan.deleteMany({ where: {} });
   db.academicRecord.deleteMany({ where: {} });
   db.planComment.deleteMany({ where: {} });
-  db.visitRequest.deleteMany({ where: {} });
+  db.meetingRequest.deleteMany({ where: {} });
   db.notification.deleteMany({ where: {} });
   db.planConversation.deleteMany({ where: {} });
   db.governanceTree.deleteMany({ where: {} });
@@ -45,6 +49,10 @@ export const setScenario = (scenario: Scenario) => {
   db.adminSettings.deleteMany({ where: {} });
   db.rule.deleteMany({ where: {} });
   db.advisorProfile.deleteMany({ where: {} });
+  db.course.deleteMany({ where: {} });
+  db.program.deleteMany({ where: {} });
+  db.registrationWindow.deleteMany({ where: {} });
+  db.aiConfig.deleteMany({ where: {} });
   seeds[scenario]();
 };
 
@@ -296,6 +304,77 @@ const seedQueue = () => {
   });
 };
 
+const seedMeetings = () => {
+  const nextWeekday = (weekday: number) => {
+    let day = dayjsInCairo(new Date()).add(1, 'day');
+    while (day.day() !== weekday) day = day.add(1, 'day');
+    return day;
+  };
+  const slot = (day: dayjs.Dayjs, from: string, to: string) => ({
+    starts_at: dayjs
+      .tz(`${day.format('YYYY-MM-DD')} ${from}`, 'Africa/Cairo')
+      .toISOString(),
+    ends_at: dayjs
+      .tz(`${day.format('YYYY-MM-DD')} ${to}`, 'Africa/Cairo')
+      .toISOString(),
+  });
+  const sunday = nextWeekday(0);
+  const tuesday = nextWeekday(2);
+
+  db.meetingRequest.create({
+    studentId: 1,
+    advisorId: 2,
+    requesterId: 1,
+    direction: 'student_to_advisor',
+    status: 'confirmed',
+    reason: 'plan_review',
+    note: 'I want to discuss my elective choices before submitting.',
+    slots: JSON.stringify([
+      slot(sunday, '10:00', '10:30'),
+      slot(tuesday, '13:00', '13:30'),
+    ]),
+    selectedSlotIndex: 0,
+    cancellationReason: null,
+    term_code: CURRENT_TERM,
+    createdAt: dayjs().subtract(2, 'day').toISOString(),
+    updatedAt: dayjs().subtract(1, 'day').toISOString(),
+    completedAt: null,
+  });
+  db.meetingRequest.create({
+    studentId: 11,
+    advisorId: 2,
+    requesterId: 11,
+    direction: 'student_to_advisor',
+    status: 'requested',
+    reason: 'academic_standing',
+    note: null,
+    slots: JSON.stringify([]),
+    selectedSlotIndex: null,
+    cancellationReason: null,
+    term_code: CURRENT_TERM,
+    createdAt: dayjs().subtract(1, 'day').toISOString(),
+    completedAt: null,
+  });
+  db.meetingRequest.create({
+    studentId: 12,
+    advisorId: 2,
+    requesterId: 2,
+    direction: 'advisor_to_student',
+    status: 'awaiting_response',
+    reason: 'plan_review',
+    note: 'Your plan needs a quick check before the window closes.',
+    slots: JSON.stringify([
+      slot(sunday, '10:30', '11:00'),
+      slot(tuesday, '13:30', '14:00'),
+    ]),
+    selectedSlotIndex: null,
+    cancellationReason: null,
+    term_code: CURRENT_TERM,
+    createdAt: dayjs().subtract(3, 'hour').toISOString(),
+    completedAt: null,
+  });
+};
+
 const seedNotifications = () => {
   const notification = (
     userId: number,
@@ -342,12 +421,11 @@ const seedNotifications = () => {
     hoursAgo: 26,
   });
   notification(1, {
-    slug: 'visit_slots_provided',
-    title: 'Visit times proposed',
-    body: 'Amr Advisor proposed times for your visit request.',
+    slug: 'meeting_confirmed',
+    title: 'Meeting confirmed',
+    body: 'Amr Advisor confirmed your meeting. Check My Advisor for the time.',
     deep_link: { screen: 'visit', visit_request_id: 100 },
-    read_at: '2026-09-28T10:00:00.000Z',
-    hoursAgo: 30,
+    hoursAgo: 26,
   });
   notification(1, {
     slug: 'plan_approved',
@@ -366,10 +444,10 @@ const seedNotifications = () => {
     hoursAgo: 60,
   });
   notification(2, {
-    slug: 'visit_requested',
-    title: 'Visit requested',
-    body: 'Lina Majors requested a visit.',
-    deep_link: { screen: 'visit', visit_request_id: 100, student_id: 11 },
+    slug: 'meeting_requested',
+    title: 'Meeting requested',
+    body: 'Lina Majors requested a meeting.',
+    deep_link: { screen: 'visit', visit_request_id: 200, student_id: 11 },
     hoursAgo: 4,
   });
   notification(2, {
@@ -455,6 +533,34 @@ const seedGovernance = () => {
     discarded: Math.max(0, Math.round(submitted * 0.15)),
   });
 
+  const advisorRowsOf = (
+    code: string | null,
+    nameEn: string | null,
+  ): GovernanceAdvisorRow[] => {
+    if (!code || !nameEn) return [];
+    const hash = [...code].reduce(
+      (acc, ch) => (acc * 31 + ch.charCodeAt(0)) % 997,
+      7,
+    );
+    const count = 2;
+    return Array.from({ length: count }, (_, index) => {
+      const caseload = 18 + ((hash + index * 13) % 12);
+      const approved = 9 + ((hash + index * 7) % 8);
+      return {
+        id: hash * 10 + index,
+        name: `${['Amr', 'Dina', 'Hoda', 'Karim', 'Laila', 'Samir'][(hash + index) % 6]} ${['Hassan', 'Fahmy', 'Nasr', 'Selim'][(hash + index * 3) % 4]}`,
+        unit_en: nameEn,
+        unit_ar: null,
+        caseload,
+        queue_size: 2 + ((hash + index * 5) % 6),
+        median_decision_hours: 18 + ((hash + index * 11) % 30),
+        aging_count: (hash + index) % 4,
+        approved,
+        completion_rate: Math.round((approved / caseload) * 100),
+      };
+    });
+  };
+
   const nodeOf = (
     level: GovernanceLevel,
     code: string | null,
@@ -469,6 +575,15 @@ const seedGovernance = () => {
     name_ar: null,
     term_code: CURRENT_TERM,
     metrics,
+    trends: governanceTrends(
+      code ?? nameEn ?? level,
+      metrics.completion_rate,
+      metrics.median_decision_hours,
+      metrics.aging_count,
+    ),
+    ...(level === 'department'
+      ? { advisors: advisorRowsOf(code, nameEn) }
+      : {}),
     deans,
     children,
   });
@@ -619,6 +734,47 @@ const seedGovernance = () => {
   }
 };
 
+const seedAdminOperations = () => {
+  const courses = [
+    {
+      code: 'CS 101',
+      title_en: 'Introduction to Programming',
+      credits: 3,
+      level: 1,
+    },
+    { code: 'MATH 101', title_en: 'Calculus I', credits: 3, level: 1 },
+    { code: 'CS 201', title_en: 'Data Structures', credits: 3, level: 2 },
+    { code: 'MATH 201', title_en: 'Calculus II', credits: 3, level: 2 },
+    { code: 'CS 301', title_en: 'Algorithms', credits: 3, level: 3 },
+    { code: 'EE 210', title_en: 'Circuits', credits: 4, level: 2 },
+  ];
+  for (const course of courses) {
+    db.course.create({ ...course, title_ar: null });
+  }
+  db.program.create({
+    code: 'CSE',
+    name_en: 'Computer Science and Engineering',
+    name_ar: null,
+    faculty: 'Engineering',
+  });
+  db.program.create({
+    code: 'EE',
+    name_en: 'Electronics Engineering',
+    name_ar: null,
+    faculty: 'Engineering',
+  });
+  db.registrationWindow.create({
+    term_code: CURRENT_TERM,
+    opens_at: '2026-09-20T00:00:00.000Z',
+    closes_at: '2026-10-15T23:59:59.000Z',
+    is_active: true,
+  });
+  db.aiConfig.create({
+    quota_per_student: 25,
+    assistant_enabled: true,
+  });
+};
+
 const seeds: Record<Scenario, () => void> = {
   happy: () => {
     seedUsers();
@@ -635,9 +791,11 @@ const seeds: Record<Scenario, () => void> = {
     });
     seedAcademicRecord();
     seedQueue();
+    seedMeetings();
     seedNotifications();
     seedConversations();
     seedGovernance();
+    seedAdminOperations();
   },
 
   empty: () => {
