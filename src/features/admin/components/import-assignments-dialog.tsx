@@ -134,6 +134,13 @@ export const ImportAssignmentsDialog = ({
             : t('assignments.importSummary.unchangedOther', {
                 count: summary.unchanged,
               }),
+          summary.scheduled === 1
+            ? t('assignments.importSummary.scheduled', {
+                count: summary.scheduled,
+              })
+            : t('assignments.importSummary.scheduledOther', {
+                count: summary.scheduled,
+              }),
         ].join(' ');
 
   return (

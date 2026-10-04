@@ -1,5 +1,7 @@
 export type UserRole = 'student' | 'advisor' | 'dean' | 'vp' | 'admin';
 
+export type StaffRole = Exclude<UserRole, 'student'>;
+
 export type LanguagePreference = 'en' | 'ar';
 
 export type User = {
@@ -324,6 +326,27 @@ export type SubmitArmedFrame = {
 export type ImportSummary = {
   assigned: number;
   unchanged: number;
+  scheduled: number;
+};
+
+export type StaffMember = Omit<User, 'role'> & {
+  role: StaffRole;
+  students_count: number;
+};
+
+export type AssignmentMode = 'assigned' | 'scheduled' | 'unchanged';
+
+export type AssignmentRecord = {
+  id: number;
+  student_id: string;
+  advisor: UserSummary & { email: string };
+  created_at: string;
+};
+
+export type AssignAdvisorResult = {
+  mode: AssignmentMode;
+  student: User | null;
+  assignment: AssignmentRecord | null;
 };
 
 export type QueueAgingThreshold = { days: number };

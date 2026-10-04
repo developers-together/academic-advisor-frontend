@@ -33,6 +33,8 @@ import {
   type AccountBinding,
 } from '../utils/account-state';
 
+import { EditAccountDialog } from './edit-account-dialog';
+
 type ConfirmTarget = 'suspend' | 'correctId' | 'delete';
 
 const correctIdSchema = z.object({
@@ -76,6 +78,7 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
   const [sisBanner, setSisBanner] = useState<string | null>(null);
   const [reassignEmail, setReassignEmail] = useState('');
   const [reassignMessage, setReassignMessage] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
 
   const suspend = useSuspendStudent();
   const reactivate = useReactivateStudent();
@@ -211,6 +214,15 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
             {user.faculty && (
               <p className="text-sm text-muted-foreground">{user.faculty}</p>
             )}
+            <div className="pt-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setEditing(true)}
+              >
+                {t('accounts.editAccount')}
+              </Button>
+            </div>
           </section>
 
           <section
@@ -372,6 +384,10 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
           </section>
         </div>
       </DrawerContent>
+
+      {editing && (
+        <EditAccountDialog user={user} onClose={() => setEditing(false)} />
+      )}
 
       {activeConfirm && (
         <ConfirmDialog

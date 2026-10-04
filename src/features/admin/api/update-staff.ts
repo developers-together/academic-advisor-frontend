@@ -4,26 +4,29 @@ import { api } from '@/lib/api-client';
 import { unwrap } from '@/lib/api-envelope';
 import type { StaffRole, User } from '@/types/domain';
 
-import { invalidateStaff, prependStaffToCache } from './staff-cache';
+import { applyStaffToCache, invalidateStaff } from './staff-cache';
 
-export type CreateStaffInput = {
+export type UpdateStaffInput = {
   name: string;
-  email: string;
-  password: string;
   role: StaffRole;
   faculty?: string;
 };
 
-export const createStaff = (input: CreateStaffInput): Promise<User> =>
-  unwrap<User>(api.post('/admin/staff', input));
+export const updateStaff = ({
+  staffId,
+  input,
+}: {
+  staffId: number;
+  input: UpdateStaffInput;
+}): Promise<User> => unwrap<User>(api.patch(`/admin/staff/${staffId}`, input));
 
-export const useCreateStaff = () => {
+export const useUpdateStaff = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createStaff,
+    mutationFn: updateStaff,
     onSuccess: (staff) => {
-      prependStaffToCache(queryClient, staff);
+      applyStaffToCache(queryClient, staff);
       invalidateStaff(queryClient);
     },
   });

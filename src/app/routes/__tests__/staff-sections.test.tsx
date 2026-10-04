@@ -171,6 +171,7 @@ describe('admin section', () => {
       ['Accounts', '/admin/students'],
       ['Caseloads', '/admin/assignments'],
       ['Rules', '/admin/rules'],
+      ['Staff', '/admin/staff'],
       ['Settings', '/admin/settings'],
     ]);
     expect(
@@ -206,7 +207,30 @@ describe('admin section', () => {
     },
   );
 
-  test('renders the /admin/settings slot with the staff and aging cards', async () => {
+  test('renders the /admin/staff slot with the staff directory', async () => {
+    await loginAsUser(
+      await createUser({
+        name: 'Nora Admin',
+        email: 'nora.admin@ejust.edu.eg',
+        role: 'admin',
+        faculty: null,
+      }),
+    );
+
+    renderRealRouter('/admin/staff');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Staff' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Add staff' }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: 'Edit Nora Admin' }),
+    ).toBeInTheDocument();
+  });
+
+  test('renders the /admin/settings slot with only the queue-aging card', async () => {
     await loginAsUser(await staffUser('admin'));
 
     renderRealRouter('/admin/settings');
@@ -215,11 +239,11 @@ describe('admin section', () => {
       await screen.findByRole('heading', { name: 'Settings' }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole('heading', { name: 'Staff accounts' }),
+      await screen.findByRole('heading', { name: 'Queue aging' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { name: 'Queue aging' }),
-    ).toBeInTheDocument();
+      screen.queryByRole('heading', { name: 'Staff accounts' }),
+    ).not.toBeInTheDocument();
   });
 });
 

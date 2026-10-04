@@ -121,6 +121,10 @@ export const paths = {
       path: 'rules',
       getHref: () => '/admin/rules',
     },
+    staff: {
+      path: 'staff',
+      getHref: () => '/admin/staff',
+    },
     settings: {
       path: 'settings',
       getHref: () => '/admin/settings',

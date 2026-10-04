@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -21,6 +22,7 @@ export type ConfirmDialogProps = {
   confirmLabel: string;
   destructive?: boolean;
   pending?: boolean;
+  error?: string | null;
 };
 
 export const ConfirmDialog = ({
@@ -32,6 +34,7 @@ export const ConfirmDialog = ({
   confirmLabel,
   destructive = false,
   pending = false,
+  error = null,
 }: ConfirmDialogProps) => {
   const { t } = useTranslation();
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -48,6 +51,7 @@ export const ConfirmDialog = ({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{body}</DialogDescription>
         </DialogHeader>
+        {error && <Banner variant="destructive">{error}</Banner>}
         <DialogFooter>
           <Button ref={cancelRef} variant="outline" onClick={onCancel}>
             {t('actions.cancel')}

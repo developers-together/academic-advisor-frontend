@@ -20,6 +20,59 @@
       "assignment": "Caseload assignment",
       "dangerZone": "Danger zone"
     },
+    "language": {
+      "default": "Account default",
+      "en": "English",
+      "ar": "Arabic"
+    },
+    "addStudent": "Add student",
+    "addDialog": {
+      "title": "Add student",
+      "description": "Create the account from the student's SIS ID, then hand over the credentials.",
+      "studentId": "SIS student ID",
+      "studentIdHelper": "1 to 20 digits, as registered in the SIS.",
+      "name": "Display name",
+      "password": "Temporary password",
+      "passwordHelper": "At least 8 characters. Share it through a safe channel.",
+      "language": "Language preference",
+      "submit": "Create account",
+      "createdToast": "Student account created.",
+      "created": "Student account created. Share the temporary password with {{name}} through a safe channel.",
+      "done": "Done",
+      "credentials": {
+        "studentId": "Student ID",
+        "email": "Email",
+        "temporaryPassword": "Temporary password"
+      },
+      "errors": {
+        "studentIdRequired": "Enter the SIS student ID.",
+        "studentIdDigits": "Use 1 to 20 digits.",
+        "nameRequired": "Enter the display name.",
+        "nameTooLong": "Names are limited to 255 characters.",
+        "passwordMin": "Use at least 8 characters.",
+        "sisUnknown": "The student information system has no student with this ID. Check the ID and try again.",
+        "sisUnavailable": "The student information system is unavailable. Try again in a moment."
+      }
+    },
+    "editAccount": "Edit account",
+    "editDialog": {
+      "title": "Edit account",
+      "description": "Update the display name and language preference. The SIS record stays read-only.",
+      "name": "Display name",
+      "language": "Language preference",
+      "sisSection": "SIS record",
+      "sisHelper": "These fields come from the student information system and cannot be edited here.",
+      "email": "Email",
+      "studentId": "Student ID",
+      "faculty": "Faculty",
+      "notSet": "Not set",
+      "submit": "Save changes",
+      "savedToast": "Account updated.",
+      "errors": {
+        "nameRequired": "Enter the display name.",
+        "nameTooLong": "Names are limited to 255 characters."
+      }
+    },
     "actions": {
       "manage": "Manage {{name}}",
       "suspend": "Suspend",
@@ -53,7 +106,7 @@
       "title": "No students match this search.",
       "body": "Clear it or try another name or ID.",
       "noRows": "No student accounts yet.",
-      "noRowsBody": "Accounts appear when students sign up."
+      "noRowsBody": "Add the first student account with their SIS ID."
     },
     "reassignSuccess": "{{name}} moved to the new advisor.",
     "retryQueued": "SIS check queued."
@@ -61,12 +114,51 @@
   "assignments": {
     "title": "Caseloads",
     "context": "Which advisor carries which student.",
+    "assign": "Assign advisor",
     "import": "Import CSV",
     "columns": {
       "name": "Name",
       "studentId": "Student ID",
       "advisor": "Advisor",
       "faculty": "Faculty"
+    },
+    "assignDialog": {
+      "title": "Assign advisor",
+      "description": "Type the student's SIS ID and pick the advisor. Students without an account are scheduled instead.",
+      "studentId": "SIS student ID",
+      "studentIdHelper": "1 to 20 digits, as registered in the SIS.",
+      "advisor": "Advisor",
+      "chooseAdvisor": "Choose an advisor",
+      "submit": "Assign advisor",
+      "assignedToast": "Advisor assigned.",
+      "scheduledToast": "Assignment scheduled. It applies when the student registers.",
+      "unchangedToast": "This student already carries the selected advisor.",
+      "advisorsEmpty": "No advisor accounts yet. Create advisor staff accounts first.",
+      "errors": {
+        "studentIdRequired": "Enter the SIS student ID.",
+        "studentIdDigits": "Use 1 to 20 digits.",
+        "advisorRequired": "Pick an advisor."
+      }
+    },
+    "pending": {
+      "title": "Scheduled assignments",
+      "helper": "These apply automatically when the student registers.",
+      "columns": {
+        "studentId": "Student ID",
+        "advisor": "Advisor",
+        "created": "Scheduled on"
+      },
+      "cancel": "Cancel",
+      "cancelledToast": "Scheduled assignment cancelled.",
+      "empty": {
+        "title": "No scheduled assignments.",
+        "body": "Assignments for students without an account appear here."
+      },
+      "cancelDialog": {
+        "title": "Cancel this scheduled assignment?",
+        "body": "This removes the scheduled assignment for student {{studentId}}. Nothing applies when the student registers. This cannot be undone.",
+        "confirm": "Cancel assignment"
+      }
     },
     "importDialog": {
       "title": "Import assignments",
@@ -87,7 +179,9 @@
       "assigned": "{{count}} student moved.",
       "assignedOther": "{{count}} students moved.",
       "unchanged": "{{count}} already carried their advisor.",
-      "unchangedOther": "{{count}} already carried their advisor."
+      "unchangedOther": "{{count}} already carried their advisor.",
+      "scheduled": "{{count}} scheduled for registration.",
+      "scheduledOther": "{{count}} scheduled for registration."
     },
     "importReport": {
       "title": "Nothing was applied. Fix the rows and import again.",
@@ -134,16 +228,45 @@
       "edit": "Edit {{title}}"
     }
   },
-  "settings": {
-    "title": "Settings",
-    "context": "Staff accounts and the queue-aging threshold.",
-    "empty": {
-      "title": "No staff accounts yet.",
-      "body": "Create the first staff account and set the queue-aging threshold here."
+  "staff": {
+    "title": "Staff",
+    "context": "Every advisor, dean, vice president, and administrator in one directory.",
+    "addStaff": "Add staff",
+    "filterLabel": "Filter staff by role",
+    "filter": {
+      "all": "All",
+      "advisor": "Advisors",
+      "dean": "Deans",
+      "vp": "Vice Presidents",
+      "admin": "Administrators"
     },
-    "staff": {
-      "title": "Staff accounts",
-      "context": "Create a staff account and share the initial password.",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "faculty": "Faculty",
+      "caseload": "Caseload",
+      "actions": "Actions"
+    },
+    "caseloadCount_one": "{{count}} student",
+    "caseloadCount_other": "{{count}} students",
+    "roles": {
+      "advisor": "Advisor",
+      "dean": "Dean",
+      "vp": "Vice President",
+      "admin": "Administrator"
+    },
+    "actions": {
+      "edit": "Edit",
+      "editAria": "Edit {{name}}",
+      "resetPassword": "Reset password",
+      "resetAria": "Reset password for {{name}}",
+      "delete": "Delete",
+      "deleteAria": "Delete {{name}}"
+    },
+    "create": {
+      "title": "Add staff",
+      "description": "Create a staff account and share the initial password.",
       "name": "Name",
       "email": "Email",
       "password": "Initial password",
@@ -152,6 +275,7 @@
       "faculty": "Faculty",
       "facultyHelper": "Required for deans.",
       "submit": "Create staff account",
+      "createdToast": "Staff account created.",
       "created": "Staff account created. Share the initial password with {{name}} through a safe channel.",
       "resetLink": "Send reset link",
       "resetConfirmTitle": "Send a password reset?",
@@ -159,18 +283,43 @@
       "resetConfirm": "Send reset link",
       "resetSent": "Password reset link sent."
     },
+    "editDialog": {
+      "title": "Edit staff account",
+      "description": "Update the name, faculty, and role.",
+      "name": "Name",
+      "faculty": "Faculty",
+      "facultyHelper": "Required for deans.",
+      "role": "Role",
+      "submit": "Save changes",
+      "savedToast": "Staff account updated.",
+      "errors": {
+        "nameRequired": "Enter the name.",
+        "nameTooLong": "Names are limited to 255 characters.",
+        "facultyRequired": "Deans need a faculty."
+      }
+    },
+    "deleteDialog": {
+      "title": "Delete {{name}}?",
+      "body": "This deletes the staff account and unassigns their students. This cannot be undone.",
+      "confirm": "Delete account"
+    },
+    "deletedToast": "Staff account deleted.",
+    "empty": {
+      "filteredTitle": "No staff carry this role yet.",
+      "filteredBody": "Add a staff account or pick another role.",
+      "noRows": "No staff accounts yet.",
+      "noRowsBody": "Add the first staff account."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "context": "The queue-aging threshold for advisor queues.",
     "threshold": {
       "title": "Queue aging",
       "context": "How many days a plan waits before it counts as aging.",
       "days": "Days",
       "save": "Save threshold",
       "effect": "Advisor queue rows and caseload rows flag aging past this threshold. Dean and VP aging metrics use the same value."
-    },
-    "roles": {
-      "advisor": "Advisor",
-      "dean": "Dean",
-      "vp": "Vice President",
-      "admin": "Administrator"
     },
     "thresholdErrors": {
       "required": "Enter the number of days.",

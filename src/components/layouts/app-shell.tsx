@@ -12,6 +12,7 @@ import {
   Settings,
   ShieldCheck,
   Sun,
+  UserCog,
   Users,
 } from 'lucide-react';
 import * as React from 'react';
@@ -138,6 +139,11 @@ export const roleNav: Record<UserRole, NavItem[]> = {
       icon: GraduationCap,
     },
     { labelKey: 'nav.rules', to: paths.admin.rules.getHref(), icon: FileText },
+    {
+      labelKey: 'nav.staff',
+      to: paths.admin.staff.getHref(),
+      icon: UserCog,
+    },
     {
       labelKey: 'nav.settings',
       to: paths.admin.settings.getHref(),

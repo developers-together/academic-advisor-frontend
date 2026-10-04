@@ -101,6 +101,12 @@ const models = {
     id: primaryKey(() => 'admin'),
     aging_threshold_days: Number,
   },
+  pendingAssignment: {
+    id: primaryKey(() => nextId()),
+    student_id: String,
+    advisor_id: Number,
+    created_at: () => new Date().toISOString(),
+  },
   rule: {
     id: primaryKey(() => nextId()),
     title_en: String,

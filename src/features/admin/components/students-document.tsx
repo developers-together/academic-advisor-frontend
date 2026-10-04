@@ -16,7 +16,11 @@ import { StudentsTable } from './students-table';
 const SEARCH_DEBOUNCE_MS = 300;
 const STUDENTS_PER_PAGE = 50;
 
-export const StudentsDocument = () => {
+export type StudentsDocumentProps = {
+  onAddStudent: () => void;
+};
+
+export const StudentsDocument = ({ onAddStudent }: StudentsDocumentProps) => {
   const { t } = useTranslation('admin');
 
   const [search, setSearch] = useState('');
@@ -85,6 +89,10 @@ export const StudentsDocument = () => {
         compact
         title={t('accounts.empty.noRows')}
         description={t('accounts.empty.noRowsBody')}
+        action={{
+          label: t('accounts.addStudent'),
+          onClick: onAddStudent,
+        }}
         className="max-w-xl"
       />
     );

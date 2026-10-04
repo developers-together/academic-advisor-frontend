@@ -13,15 +13,16 @@ import {
   screen,
   userEvent,
   waitFor,
-  within,
 } from '@/testing/test-utils';
 
 beforeEach(() => {
   db.user.deleteMany({ where: {} });
+  db.adminSettings.deleteMany({ where: {} });
 });
 
-test('staff creation shows the share-the-password line without echoing it and offers the reset link', async () => {
+test('the settings page hosts only the queue-aging card and no staff creation', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  db.adminSettings.create({ id: 'admin', aging_threshold_days: 3 });
 
   await renderApp(<AdminSettingsRoute />, {
     user: admin,
@@ -29,69 +30,19 @@ test('staff creation shows the share-the-password line without echoing it and of
     url: '/admin/settings',
   });
 
-  await userEvent.type(screen.getByLabelText('Name'), 'Nadia Sherif');
-  await userEvent.type(
-    screen.getByLabelText('Email'),
-    'nadia.sherif@ejust.edu.eg',
-  );
-  await userEvent.type(
-    screen.getByLabelText('Initial password'),
-    'initial-secret-9',
-  );
-  await userEvent.selectOptions(screen.getByLabelText('Role'), 'advisor');
-  await userEvent.click(
-    screen.getByRole('button', { name: 'Create staff account' }),
-  );
-
   expect(
-    await screen.findByText(
-      'Staff account created. Share the initial password with Nadia Sherif through a safe channel.',
-    ),
+    await screen.findByRole('heading', { name: 'Queue aging' }),
   ).toBeInTheDocument();
-  expect(screen.queryByText('initial-secret-9')).not.toBeInTheDocument();
-
-  await userEvent.click(
-    screen.getByRole('button', { name: 'Send reset link' }),
-  );
-  const confirm = await screen.findByRole('dialog', {
-    name: 'Send a password reset?',
-  });
-  expect(confirm).toHaveTextContent(
-    'This emails a password reset link to nadia.sherif@ejust.edu.eg.',
-  );
-  await userEvent.click(
-    within(confirm).getByRole('button', { name: 'Send reset link' }),
-  );
-
+  await screen.findByLabelText('Days');
   expect(
-    await screen.findByText('Password reset link sent.'),
-  ).toBeInTheDocument();
-});
-
-test('a dean staff creation requires the faculty inline', async () => {
-  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
-
-  await renderApp(<AdminSettingsRoute />, {
-    user: admin,
-    path: '/admin/settings',
-    url: '/admin/settings',
-  });
-
-  await userEvent.type(screen.getByLabelText('Name'), 'Dalia Dean');
-  await userEvent.type(
-    screen.getByLabelText('Email'),
-    'dalia.dean@ejust.edu.eg',
-  );
-  await userEvent.type(
-    screen.getByLabelText('Initial password'),
-    'initial-secret-9',
-  );
-  await userEvent.selectOptions(screen.getByLabelText('Role'), 'dean');
-  await userEvent.click(
-    screen.getByRole('button', { name: 'Create staff account' }),
-  );
-
-  expect(await screen.findByText('Deans need a faculty.')).toBeInTheDocument();
+    screen.queryByRole('heading', { name: 'Staff accounts' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Create staff account' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Add staff' }),
+  ).not.toBeInTheDocument();
 });
 
 test('the threshold editor states what it affects and saves without a confirm', async () => {

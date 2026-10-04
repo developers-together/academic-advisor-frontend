@@ -23,6 +23,7 @@ import type { User } from '@/types/domain';
 import { useAdminStudents } from '../api/get-admin-students';
 
 import { ImportAssignmentsDialog } from './import-assignments-dialog';
+import { PendingAssignmentsCard } from './pending-assignments-card';
 
 const SEARCH_DEBOUNCE_MS = 300;
 const STUDENTS_PER_PAGE = 50;
@@ -75,16 +76,19 @@ export const AssignmentsDocument = () => {
   if (students.length === 0) {
     if (debouncedSearch) {
       return (
-        <EmptyState
-          compact
-          title={t('assignments.empty.title')}
-          description={t('assignments.empty.body')}
-          action={{
-            label: t('common:actions.clearSearch'),
-            onClick: () => setSearch(''),
-          }}
-          className="max-w-xl"
-        />
+        <>
+          <EmptyState
+            compact
+            title={t('assignments.empty.title')}
+            description={t('assignments.empty.body')}
+            action={{
+              label: t('common:actions.clearSearch'),
+              onClick: () => setSearch(''),
+            }}
+            className="max-w-xl"
+          />
+          <PendingAssignmentsCard />
+        </>
       );
     }
     return (
@@ -99,6 +103,7 @@ export const AssignmentsDocument = () => {
           }}
           className="max-w-xl"
         />
+        <PendingAssignmentsCard />
         {importOpen && (
           <ImportAssignmentsDialog open onClose={() => setImportOpen(false)} />
         )}
@@ -117,7 +122,7 @@ export const AssignmentsDocument = () => {
           onChange={(event) => setSearch(event.target.value)}
           className="max-w-sm"
         />
-        <Button onClick={() => setImportOpen(true)}>
+        <Button variant="outline" onClick={() => setImportOpen(true)}>
           {t('assignments.import')}
         </Button>
       </div>
@@ -167,6 +172,8 @@ export const AssignmentsDocument = () => {
           </TableBody>
         </TableElement>
       </div>
+
+      <PendingAssignmentsCard />
 
       {importOpen && (
         <ImportAssignmentsDialog open onClose={() => setImportOpen(false)} />

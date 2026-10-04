@@ -43,6 +43,40 @@ const accountById = (rawId: string | readonly string[]): UserRow | null => {
   return row;
 };
 
+const staffById = (rawId: string | readonly string[]): UserRow | null => {
+  const row = db.user.findFirst({
+    where: { id: { equals: Number(rawId) } },
+  });
+  if (!row || row.role === 'student') {
+    return null;
+  }
+  return row;
+};
+
+const STAFF_ROLES = ['advisor', 'dean', 'vp', 'admin'];
+
+const staffUpdateErrors = (
+  body: Record<string, unknown>,
+): Record<string, string[]> => {
+  const name = typeof body.name === 'string' ? body.name.trim() : '';
+  const role = typeof body.role === 'string' ? body.role : '';
+  const faculty =
+    typeof body.faculty === 'string' ? body.faculty.trim() : undefined;
+  const errors: Record<string, string[]> = {};
+  if (!name) {
+    errors.name = ['The name is required.'];
+  } else if (name.length > 255) {
+    errors.name = ['Names are limited to 255 characters.'];
+  }
+  if (!STAFF_ROLES.includes(role)) {
+    errors.role = ['Choose a staff role.'];
+  }
+  if (role === 'dean' && !faculty) {
+    errors.faculty = ['Deans need a faculty.'];
+  }
+  return errors;
+};
+
 const invalid = (errors: Record<string, string[]>) =>
   HttpResponse.json(
     { message: 'The given data was invalid.', errors },
@@ -90,6 +124,30 @@ const parseImportCsv = (text: string): ParsedImport => {
 
 const MAX_FILE_BYTES = 2048 * 1024;
 
+const UNKNOWN_SIS_STUDENT_ID = '3020404';
+const SIS_OUTAGE_STUDENT_ID = '3020503';
+const SIS_ID_PATTERN = /^\d{1,20}$/;
+
+const sisUnavailable = () =>
+  HttpResponse.json(
+    {
+      message: 'The student information system is unavailable.',
+      key: 'verification.sis_unavailable',
+    },
+    { status: 503 },
+  );
+
+const sisUnknownStudent = () =>
+  HttpResponse.json(
+    {
+      message: 'The student information system has no student with this ID.',
+      key: 'admin.sis_unknown_student',
+    },
+    { status: 422 },
+  );
+
+const sisEmailOf = (studentId: string) => `${studentId}@ejust.edu.eg`;
+
 export const adminHandlers = [
   http.get(`${env.API_URL}/admin/students`, async ({ request }) => {
     if (injectsErrors()) {
@@ -118,6 +176,126 @@ export const adminHandlers = [
       .map((student) => sanitizeUser(student));
     return HttpResponse.json({ data: students });
   }),
+
+  http.post(`${env.API_URL}/admin/students`, async ({ request }) => {
+    requireAdmin(request);
+    await networkDelay();
+    const body = (await request.json()) as Record<string, unknown>;
+    const studentId =
+      typeof body.student_id === 'string' ? body.student_id.trim() : '';
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    const languagePreference =
+      typeof body.language_preference === 'string'
+        ? body.language_preference
+        : '';
+
+    const errors: Record<string, string[]> = {};
+    if (!SIS_ID_PATTERN.test(studentId)) {
+      errors.student_id = ['Enter the SIS student ID as 1 to 20 digits.'];
+    } else if (
+      db.user.findFirst({ where: { student_id: { equals: studentId } } })
+    ) {
+      errors.student_id = ['This student ID already has an account.'];
+    }
+    if (!name) {
+      errors.name = ['The display name is required.'];
+    } else if (name.length > 255) {
+      errors.name = ['Names are limited to 255 characters.'];
+    }
+    if (password.length < 8) {
+      errors.password = [
+        'The temporary password must be at least 8 characters.',
+      ];
+    }
+    if (languagePreference && !['en', 'ar'].includes(languagePreference)) {
+      errors.language_preference = ['Choose English or Arabic.'];
+    }
+    if (Object.keys(errors).length > 0) {
+      return invalid(errors);
+    }
+    if (injectsErrors() || studentId === SIS_OUTAGE_STUDENT_ID) {
+      return sisUnavailable();
+    }
+    if (studentId === UNKNOWN_SIS_STUDENT_ID) {
+      return sisUnknownStudent();
+    }
+    const created = db.user.create({
+      name,
+      email: sisEmailOf(studentId),
+      password: hash(password),
+      role: 'student',
+      language_preference: languagePreference || 'en',
+      student_id: studentId,
+      email_verified_at: new Date().toISOString(),
+    });
+    return HttpResponse.json({ data: sanitizeUser(created) }, { status: 201 });
+  }),
+
+  http.get(
+    `${env.API_URL}/admin/students/:studentId`,
+    async ({ request, params }) => {
+      if (injectsErrors()) {
+        return HttpResponse.json(
+          { message: 'The server encountered an error.' },
+          { status: 500 },
+        );
+      }
+      if (deniesPermission()) {
+        return unauthorised();
+      }
+      requireAdmin(request);
+      await networkDelay();
+      const row = accountById(String(params.studentId));
+      if (!row) {
+        return notFound('No student account found.');
+      }
+      return userResponse(row);
+    },
+  ),
+
+  http.patch(
+    `${env.API_URL}/admin/students/:studentId`,
+    async ({ request, params }) => {
+      requireAdmin(request);
+      await networkDelay();
+      const row = accountById(String(params.studentId));
+      if (!row) {
+        return notFound('No student account found.');
+      }
+      const body = (await request.json()) as Record<string, unknown>;
+      const name = typeof body.name === 'string' ? body.name.trim() : undefined;
+      const languagePreference =
+        typeof body.language_preference === 'string'
+          ? body.language_preference
+          : undefined;
+      const errors: Record<string, string[]> = {};
+      if (name !== undefined && !name) {
+        errors.name = ['The display name is required.'];
+      } else if (name !== undefined && name.length > 255) {
+        errors.name = ['Names are limited to 255 characters.'];
+      }
+      if (
+        languagePreference !== undefined &&
+        !['en', 'ar'].includes(languagePreference)
+      ) {
+        errors.language_preference = ['Choose English or Arabic.'];
+      }
+      if (Object.keys(errors).length > 0) {
+        return invalid(errors);
+      }
+      const updated = db.user.update({
+        where: { id: { equals: row.id as number } },
+        data: {
+          ...(name !== undefined ? { name } : {}),
+          ...(languagePreference !== undefined
+            ? { language_preference: languagePreference }
+            : {}),
+        },
+      });
+      return userResponse(updated ?? row);
+    },
+  ),
 
   http.post(
     `${env.API_URL}/admin/students/:studentId/suspend`,
@@ -285,6 +463,125 @@ export const adminHandlers = [
     },
   ),
 
+  http.post(`${env.API_URL}/admin/assignments`, async ({ request }) => {
+    requireAdmin(request);
+    await networkDelay();
+    const body = (await request.json()) as Record<string, unknown>;
+    const studentId =
+      typeof body.student_id === 'string' ? body.student_id.trim() : '';
+    const advisorEmail =
+      typeof body.advisor_email === 'string' ? body.advisor_email.trim() : '';
+
+    const errors: Record<string, string[]> = {};
+    if (!SIS_ID_PATTERN.test(studentId)) {
+      errors.student_id = ['Enter the SIS student ID as 1 to 20 digits.'];
+    }
+    const advisor = findAdvisorByEmail(advisorEmail);
+    if (!advisor) {
+      errors.advisor_email = ['No advisor carries the email.'];
+    }
+    if (Object.keys(errors).length > 0) {
+      return invalid(errors);
+    }
+
+    const student = db.user.findFirst({
+      where: { role: { equals: 'student' }, student_id: { equals: studentId } },
+    });
+    if (student) {
+      if (student.advisor_id === advisor?.id) {
+        return HttpResponse.json({
+          data: {
+            mode: 'unchanged',
+            student: sanitizeUser(student),
+            assignment: null,
+          },
+        });
+      }
+      const updated = db.user.update({
+        where: { id: { equals: student.id as number } },
+        data: { advisor_id: advisor?.id as number },
+      });
+      return HttpResponse.json({
+        data: {
+          mode: 'assigned',
+          student: sanitizeUser(updated ?? student),
+          assignment: null,
+        },
+      });
+    }
+    return HttpResponse.json({
+      data: {
+        mode: 'scheduled',
+        student: null,
+        assignment: scheduleAssignment(studentId, advisor?.id as number),
+      },
+    });
+  }),
+
+  http.get(`${env.API_URL}/admin/assignments/pending`, async ({ request }) => {
+    if (injectsErrors()) {
+      return HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      );
+    }
+    if (deniesPermission()) {
+      return unauthorised();
+    }
+    requireAdmin(request);
+    await networkDelay();
+    const pending = db.pendingAssignment
+      .getAll()
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .map((row) => pendingAssignmentOf(row));
+    return HttpResponse.json({ data: pending });
+  }),
+
+  http.delete(
+    `${env.API_URL}/admin/assignments/pending/:assignmentId`,
+    async ({ request, params }) => {
+      requireAdmin(request);
+      await networkDelay();
+      const row = db.pendingAssignment.findFirst({
+        where: { id: { equals: Number(params.assignmentId) } },
+      });
+      if (!row) {
+        return notFound('No scheduled assignment found.');
+      }
+      db.pendingAssignment.delete({
+        where: { id: { equals: row.id as number } },
+      });
+      return new HttpResponse(null, { status: 204 });
+    },
+  ),
+
+  http.get(`${env.API_URL}/admin/staff`, async ({ request }) => {
+    if (injectsErrors()) {
+      return HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      );
+    }
+    if (deniesPermission()) {
+      return unauthorised();
+    }
+    requireAdmin(request);
+    await networkDelay();
+    const url = new URL(request.url);
+    const role = url.searchParams.get('role');
+    const staff = db.user
+      .findMany(role ? { where: { role: { equals: role } } } : {})
+      .filter((row) => row.role !== 'student')
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((row) => ({
+        ...sanitizeUser(row),
+        students_count: db.user.findMany({
+          where: { advisor_id: { equals: row.id as number } },
+        }).length,
+      }));
+    return HttpResponse.json({ data: staff });
+  }),
+
   http.post(`${env.API_URL}/admin/assignments/import`, async ({ request }) => {
     await networkDelay();
     if (deniesPermission()) {
@@ -320,8 +617,19 @@ export const adminHandlers = [
       return invalid({ file: [parsed.error] });
     }
     const errors: Record<string, string[]> = {};
-    const mappings: Array<{ studentId: number; advisorId: number }> = [];
+    const apply: Array<{
+      student: UserRow | null;
+      studentId: string;
+      advisorId: number;
+    }> = [];
     for (const row of parsed.rows) {
+      const advisor = findAdvisorByEmail(row.advisor_email);
+      if (!advisor) {
+        errors[`rows.${row.row}`] = [
+          `No advisor carries ${row.advisor_email || '(missing)'}.`,
+        ];
+        continue;
+      }
       const student = row.student_id
         ? db.user.findFirst({
             where: {
@@ -330,25 +638,13 @@ export const adminHandlers = [
             },
           })
         : null;
-      if (!student) {
-        errors[`rows.${row.row}`] = [
-          `No student carries ID ${row.student_id || '(missing)'}.`,
-        ];
+      if (!student && !row.student_id) {
+        errors[`rows.${row.row}`] = ['No student carries ID (missing).'];
         continue;
       }
-      const advisor = row.advisor_email
-        ? db.user.findFirst({
-            where: { email: { equals: row.advisor_email.toLowerCase() } },
-          })
-        : null;
-      if (!advisor || advisor.role !== 'advisor') {
-        errors[`rows.${row.row}`] = [
-          `No advisor carries ${row.advisor_email || '(missing)'}.`,
-        ];
-        continue;
-      }
-      mappings.push({
-        studentId: student.id as number,
+      apply.push({
+        student,
+        studentId: row.student_id,
         advisorId: advisor.id as number,
       });
     }
@@ -357,22 +653,24 @@ export const adminHandlers = [
     }
     let assigned = 0;
     let unchanged = 0;
-    for (const mapping of mappings) {
-      const student = db.user.findFirst({
-        where: { id: { equals: mapping.studentId } },
-      });
-      if (!student) continue;
-      if (student.advisor_id === mapping.advisorId) {
-        unchanged += 1;
+    let scheduled = 0;
+    for (const entry of apply) {
+      if (entry.student) {
+        if (entry.student.advisor_id === entry.advisorId) {
+          unchanged += 1;
+        } else {
+          db.user.update({
+            where: { id: { equals: entry.student.id as number } },
+            data: { advisor_id: entry.advisorId },
+          });
+          assigned += 1;
+        }
       } else {
-        db.user.update({
-          where: { id: { equals: mapping.studentId } },
-          data: { advisor_id: mapping.advisorId },
-        });
-        assigned += 1;
+        scheduleAssignment(entry.studentId, entry.advisorId);
+        scheduled += 1;
       }
     }
-    const summary: ImportSummary = { assigned, unchanged };
+    const summary: ImportSummary = { assigned, unchanged, scheduled };
     return HttpResponse.json({ data: summary });
   }),
 
@@ -508,6 +806,67 @@ export const adminHandlers = [
     return HttpResponse.json({ data: sanitizeUser(created) }, { status: 201 });
   }),
 
+  http.patch(
+    `${env.API_URL}/admin/staff/:staffId`,
+    async ({ request, params }) => {
+      requireAdmin(request);
+      await networkDelay();
+      const row = staffById(String(params.staffId));
+      if (!row) {
+        return notFound('Staff account not found.');
+      }
+      const body = (await request.json()) as Record<string, unknown>;
+      const errors = staffUpdateErrors(body);
+      if (Object.keys(errors).length > 0) {
+        return invalid(errors);
+      }
+      const faculty =
+        typeof body.faculty === 'string' ? body.faculty.trim() : '';
+      const updated = db.user.update({
+        where: { id: { equals: row.id as number } },
+        data: {
+          name: String(body.name).trim(),
+          role: String(body.role),
+          faculty: faculty || (null as unknown as string),
+        },
+      });
+      return userResponse(updated ?? row);
+    },
+  ),
+
+  http.delete(
+    `${env.API_URL}/admin/staff/:staffId`,
+    async ({ request, params }) => {
+      const authed = requireAdmin(request);
+      await networkDelay();
+      const row = staffById(String(params.staffId));
+      if (!row) {
+        return notFound('Staff account not found.');
+      }
+      if (row.id === authed.id) {
+        return HttpResponse.json(
+          { message: 'You cannot delete your own account.' },
+          { status: 403 },
+        );
+      }
+      if (
+        row.role === 'admin' &&
+        db.user.findMany({ where: { role: { equals: 'admin' } } }).length === 1
+      ) {
+        return HttpResponse.json(
+          { message: 'The last administrator cannot be deleted.' },
+          { status: 422 },
+        );
+      }
+      db.user.updateMany({
+        where: { advisor_id: { equals: row.id as number } },
+        data: { advisor_id: null as unknown as number },
+      });
+      db.user.delete({ where: { id: { equals: row.id as number } } });
+      return new HttpResponse(null, { status: 204 });
+    },
+  ),
+
   http.post(
     `${env.API_URL}/admin/staff/:staffId/password-reset`,
     async ({ request, params }) => {
@@ -588,6 +947,43 @@ const importErrorsSeed = (): Record<string, string[]> | null => {
     errors[`rows.${row}`] = ['No student carries this ID.'];
   }
   return errors;
+};
+
+type PendingAssignmentRow = NonNullable<
+  ReturnType<typeof db.pendingAssignment.findFirst>
+>;
+
+const pendingAssignmentOf = (row: PendingAssignmentRow) => {
+  const advisor = db.user.findFirst({
+    where: { id: { equals: row.advisor_id as number } },
+  });
+  return {
+    id: row.id as number,
+    student_id: row.student_id,
+    advisor: {
+      id: advisor?.id as number,
+      name: advisor?.name ?? '',
+      email: advisor?.email ?? '',
+    },
+    created_at: row.created_at,
+  };
+};
+
+const findAdvisorByEmail = (advisorEmail: string) => {
+  const advisor = advisorEmail
+    ? db.user.findFirst({
+        where: { email: { equals: advisorEmail.toLowerCase() } },
+      })
+    : null;
+  return advisor && advisor.role === 'advisor' ? advisor : null;
+};
+
+const scheduleAssignment = (studentId: string, advisorId: number) => {
+  const created = db.pendingAssignment.create({
+    student_id: studentId,
+    advisor_id: advisorId,
+  });
+  return pendingAssignmentOf(created);
 };
 
 const ruleOf = (row: {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { rtlRender, screen, userEvent } from '@/testing/test-utils';
+import { rtlRender, screen, userEvent, within } from '@/testing/test-utils';
 
 import { ConfirmDialog } from '../confirm-dialog';
 
@@ -148,4 +148,28 @@ test('destructive renders the confirm button with the destructive variant', asyn
 
   const confirm = await screen.findByRole('button', { name: 'Return plan' });
   expect(confirm).toHaveClass('bg-destructive');
+});
+
+test('an error renders the destructive banner inside the dialog', async () => {
+  const onConfirm = vi.fn();
+  const onCancel = vi.fn();
+
+  rtlRender(
+    <ConfirmDialog
+      open
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+      title="Delete this account?"
+      body="This deletes the account."
+      confirmLabel="Delete account"
+      destructive
+      error="You cannot delete your own account."
+    />,
+  );
+
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Delete this account?',
+  });
+  const alert = within(dialog).getByRole('alert');
+  expect(alert).toHaveTextContent('You cannot delete your own account.');
 });

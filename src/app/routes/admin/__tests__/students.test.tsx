@@ -387,7 +387,7 @@ test('reassigning moves the student to the advisor by email without a dialog', a
   await within(row).findByText('Assigned');
 });
 
-test('a true empty directory renders the no-rows empty state', async () => {
+test('a true empty directory renders the no-rows empty state with the add action', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
 
   await renderApp(<AdminStudentsRoute />, {
@@ -399,8 +399,276 @@ test('a true empty directory renders the no-rows empty state', async () => {
     await screen.findByText('No student accounts yet.'),
   ).toBeInTheDocument();
   expect(
-    screen.getByText('Accounts appear when students sign up.'),
+    screen.getByText('Add the first student account with their SIS ID.'),
   ).toBeInTheDocument();
+  expect(screen.getAllByRole('button', { name: 'Add student' })).toHaveLength(
+    2,
+  );
+
+  await userEvent.click(
+    screen.getAllByRole('button', { name: 'Add student' })[0],
+  );
+  expect(
+    await screen.findByRole('dialog', { name: 'Add student' }),
+  ).toBeInTheDocument();
+});
+
+test('adding a student creates the account, prepends the row, and surfaces the credentials', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  await createUser({ name: 'Lina Majors', role: 'student' });
+
+  await renderApp(<AdminStudentsRoute />, {
+    user: admin,
+    path: '/admin/students',
+    url: '/admin/students',
+  });
+  await screen.findByText('Lina Majors');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add student' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add student' });
+
+  await userEvent.type(
+    within(dialog).getByLabelText('SIS student ID'),
+    '3020801',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Display name'),
+    'Laila Hassan',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Temporary password'),
+    'temp12345',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create account' }),
+  );
+
+  expect(
+    await within(dialog).findByText(
+      'Student account created. Share the temporary password with Laila Hassan through a safe channel.',
+    ),
+  ).toBeInTheDocument();
+  expect(within(dialog).getByText('3020801')).toBeInTheDocument();
+  expect(within(dialog).getByText('3020801@ejust.edu.eg')).toBeInTheDocument();
+  expect(within(dialog).getByText('temp12345')).toBeInTheDocument();
+  expect(screen.getByText('Student account created.')).toBeInTheDocument();
+
+  const created = db.user.findFirst({
+    where: { student_id: { equals: '3020801' } },
+  });
+  expect(created?.role).toBe('student');
+  expect(created?.name).toBe('Laila Hassan');
+
+  const lailaRow = screen
+    .getByText('Laila Hassan')
+    .closest('tr') as HTMLElement;
+  const linaRow = screen.getByText('Lina Majors').closest('tr') as HTMLElement;
+  expect(
+    lailaRow.compareDocumentPosition(linaRow) &
+      Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Done' }));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('dialog', { name: 'Add student' }),
+    ).not.toBeInTheDocument(),
+  );
+});
+
+test('a SIS-unknown ID renders the distinct 422 state and creates nothing', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  await createUser({ name: 'Lina Majors', role: 'student' });
+
+  await renderApp(<AdminStudentsRoute />, {
+    user: admin,
+    path: '/admin/students',
+    url: '/admin/students',
+  });
+  await screen.findByText('Lina Majors');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add student' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add student' });
+
+  await userEvent.type(
+    within(dialog).getByLabelText('SIS student ID'),
+    '3020404',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Display name'),
+    'Laila Hassan',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Temporary password'),
+    'temp12345',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create account' }),
+  );
+
+  const alert = await within(dialog).findByRole('alert');
+  expect(alert).toHaveTextContent(
+    'The student information system has no student with this ID. Check the ID and try again.',
+  );
+  expect(
+    db.user.findFirst({ where: { student_id: { equals: '3020404' } } }),
+  ).toBeNull();
+  expect(
+    within(dialog).getByRole('button', { name: 'Create account' }),
+  ).toBeInTheDocument();
+});
+
+test('a SIS outage on create renders the distinct 503 state', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  await createUser({ name: 'Lina Majors', role: 'student' });
+
+  await renderApp(<AdminStudentsRoute />, {
+    user: admin,
+    path: '/admin/students',
+    url: '/admin/students',
+  });
+  await screen.findByText('Lina Majors');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add student' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add student' });
+
+  await userEvent.type(
+    within(dialog).getByLabelText('SIS student ID'),
+    '3020503',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Display name'),
+    'Laila Hassan',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Temporary password'),
+    'temp12345',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create account' }),
+  );
+
+  const alert = await within(dialog).findByRole('alert');
+  expect(alert).toHaveTextContent(
+    'The student information system is unavailable. Try again in a moment.',
+  );
+  expect(
+    db.user.findFirst({ where: { student_id: { equals: '3020503' } } }),
+  ).toBeNull();
+});
+
+test('the account panel edits name and language preference and keeps SIS fields read-only', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const student = await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+    faculty: 'Engineering',
+  });
+
+  await renderApp(<AdminStudentsRoute />, {
+    user: admin,
+    path: '/admin/students',
+    url: '/admin/students',
+  });
+
+  const panel = await openPanel('Lina Majors');
+  await userEvent.click(
+    within(panel).getByRole('button', { name: 'Edit account' }),
+  );
+  const dialog = await screen.findByRole('dialog', { name: 'Edit account' });
+
+  const nameInput = await within(dialog).findByLabelText('Display name');
+  expect(nameInput).toHaveValue('Lina Majors');
+  expect(within(dialog).getByText(student.email)).toBeInTheDocument();
+  expect(
+    within(dialog).queryByDisplayValue(student.email),
+  ).not.toBeInTheDocument();
+  const studentId = db.user.findFirst({
+    where: { id: { equals: student.id as number } },
+  })?.student_id as string;
+  expect(within(dialog).getByText(studentId)).toBeInTheDocument();
+  expect(within(dialog).getByText('Engineering')).toBeInTheDocument();
+
+  await userEvent.clear(nameInput);
+  await userEvent.type(nameInput, 'Lina Hassan Majors');
+  await userEvent.selectOptions(
+    within(dialog).getByLabelText('Language preference'),
+    'ar',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.user.findFirst({ where: { id: { equals: student.id as number } } })
+        ?.name,
+    ).toBe('Lina Hassan Majors'),
+  );
+  expect(
+    db.user.findFirst({ where: { id: { equals: student.id as number } } })
+      ?.language_preference,
+  ).toBe('ar');
+  expect(await screen.findByText('Account updated.')).toBeInTheDocument();
+  const row = screen
+    .getByRole('button', { name: 'Manage Lina Hassan Majors', hidden: true })
+    .closest('tr') as HTMLElement;
+  await within(row).findByText('Lina Hassan Majors');
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('dialog', { name: 'Edit account' }),
+    ).not.toBeInTheDocument(),
+  );
+});
+
+test('a server 422 on edit lands on the name field and keeps the dialog open', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const student = await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+  });
+
+  await renderApp(<AdminStudentsRoute />, {
+    user: admin,
+    path: '/admin/students',
+    url: '/admin/students',
+  });
+
+  const panel = await openPanel('Lina Majors');
+  await userEvent.click(
+    within(panel).getByRole('button', { name: 'Edit account' }),
+  );
+  const dialog = await screen.findByRole('dialog', { name: 'Edit account' });
+  await within(dialog).findByLabelText('Display name');
+
+  server.use(
+    http.patch(`${env.API_URL}/admin/students/:studentId`, () =>
+      networkDelay().then(() =>
+        HttpResponse.json(
+          {
+            message: 'The given data was invalid.',
+            errors: { name: ['The registrar rejects this name.'] },
+          },
+          { status: 422 },
+        ),
+      ),
+    ),
+  );
+
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  );
+
+  expect(
+    await within(dialog).findByText('The registrar rejects this name.'),
+  ).toBeInTheDocument();
+  expect(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  ).toBeInTheDocument();
+  expect(
+    db.user.findFirst({ where: { id: { equals: student.id as number } } })
+      ?.name,
+  ).toBe('Lina Majors');
 });
 
 test('a missed search renders the search empty state with a clear action', async () => {
