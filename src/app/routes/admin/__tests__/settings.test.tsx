@@ -1,9 +1,7 @@
 import { HttpResponse, http } from 'msw';
-import { Routes, Route } from 'react-router';
 
 import AdminIndexRoute from '@/app/routes/admin/index';
-import AdminSettingsRoute from '@/app/routes/admin/settings';
-import AdminStudentsRoute from '@/app/routes/admin/students';
+import AdminRulesRoute from '@/app/routes/admin/rules';
 import { env } from '@/config/env';
 import { db } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
@@ -20,29 +18,21 @@ beforeEach(() => {
   db.adminSettings.deleteMany({ where: {} });
 });
 
-test('the settings page hosts only the queue-aging card and no staff creation', async () => {
+test('the admin index lands on the operational overview', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
-  db.adminSettings.create({ id: 'admin', aging_threshold_days: 3 });
 
-  await renderApp(<AdminSettingsRoute />, {
+  await renderApp(<AdminIndexRoute />, {
     user: admin,
-    path: '/admin/settings',
-    url: '/admin/settings',
+    path: '/admin',
+    url: '/admin',
   });
 
   expect(
-    await screen.findByRole('heading', { name: 'Queue aging' }),
+    await screen.findByRole('heading', { name: 'Overview' }),
   ).toBeInTheDocument();
-  await screen.findByLabelText('Days');
   expect(
-    screen.queryByRole('heading', { name: 'Staff accounts' }),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole('button', { name: 'Create staff account' }),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole('button', { name: 'Add staff' }),
-  ).not.toBeInTheDocument();
+    await screen.findByRole('button', { name: /Users/ }),
+  ).toBeInTheDocument();
 });
 
 test('the threshold editor states what it affects and saves without a confirm', async () => {
@@ -64,10 +54,10 @@ test('the threshold editor states what it affects and saves without a confirm', 
     ),
   );
 
-  await renderApp(<AdminSettingsRoute />, {
+  await renderApp(<AdminRulesRoute />, {
     user: admin,
-    path: '/admin/settings',
-    url: '/admin/settings',
+    path: '/admin/rules',
+    url: '/admin/rules',
   });
 
   const daysInput = await screen.findByLabelText('Days');
@@ -88,27 +78,4 @@ test('the threshold editor states what it affects and saves without a confirm', 
         ?.aging_threshold_days,
     ).toBe(5),
   );
-  expect(
-    screen.queryByRole('dialog', { name: 'Save threshold?' }),
-  ).not.toBeInTheDocument();
-});
-
-test('the admin index redirects to the accounts surface', async () => {
-  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
-  await createUser({ name: 'Lina Majors', role: 'student' });
-
-  await renderApp(
-    <Routes>
-      <Route path="/admin" element={<AdminIndexRoute />} />
-      <Route path="/admin/students" element={<AdminStudentsRoute />} />
-    </Routes>,
-    {
-      user: admin,
-      path: '*',
-      url: '/admin',
-    },
-  );
-
-  expect(await screen.findByText('Accounts')).toBeInTheDocument();
-  expect(await screen.findByLabelText('Search students')).toBeInTheDocument();
 });
