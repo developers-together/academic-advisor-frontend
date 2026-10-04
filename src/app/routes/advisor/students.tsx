@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContentLayout } from '@/components/layouts';
-import { RequestMeetingDialog } from '@/features/advisor-meetings/components/request-meeting-dialog';
+import { InviteStudentDialog } from '@/features/advisor-meetings/components/invite-student-dialog';
 import { ExplorerDocument } from '@/features/advisor-students/components/explorer-document';
 import type { StudentSummary } from '@/types/domain';
 
@@ -16,7 +16,8 @@ export default function AdvisorStudentsRoute() {
     <ContentLayout title={t('students.title')} context={t('students.context')}>
       <ExplorerDocument onRequestMeeting={setRequestStudent} />
       {requestStudent && (
-        <RequestMeetingDialog
+        <InviteStudentDialog
+          caseload={[]}
           student={requestStudent}
           onClose={() => setRequestStudent(null)}
         />
