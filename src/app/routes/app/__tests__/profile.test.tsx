@@ -1,5 +1,5 @@
 import { db } from '@/testing/mocks/db';
-import { STALE_STALENESS } from '@/testing/mocks/mock-auth';
+import { CURRENT_TERM, STALE_STALENESS } from '@/testing/mocks/mock-auth';
 import { server } from '@/testing/mocks/server';
 import {
   createUser,
@@ -7,9 +7,12 @@ import {
   screen,
   userEvent,
   waitFor,
+  within,
 } from '@/testing/test-utils';
 
-import ProfileRoute from '../profile';
+import AccountRoute from '../account';
+import MyAdvisorRoute from '../my-advisor';
+import RecordRoute from '../record';
 
 const fourStateMap = [
   {
@@ -124,28 +127,21 @@ const trackRequests = () => {
   };
 };
 
-test('renders the read-only profile with identity, KPIs, map, enrollments, history, and advisor', async () => {
+test('renders the read-only academic record with KPIs, map, enrollments, and history', async () => {
   const user = await createUser({
     advisor_id: 2,
     faculty: 'Engineering',
     student_id: '3020117',
   });
-  seedAdvisor();
   seedRecord(user.id as number);
 
-  await renderApp(<ProfileRoute />, {
+  await renderApp(<RecordRoute />, {
     user,
-    path: '/app/profile',
-    url: '/app/profile',
+    path: '/app/record',
+    url: '/app/record',
   });
 
-  expect(await screen.findByText('Sara Student')).toBeInTheDocument();
-  expect(screen.getByText('3020117')).toBeInTheDocument();
-  expect(screen.getByText(user.email)).toBeInTheDocument();
-  expect(screen.getByText('Engineering')).toBeInTheDocument();
-  expect(screen.getByText('2')).toBeInTheDocument();
-
-  expect(screen.getByText('3.2')).toBeInTheDocument();
+  expect(await screen.findByText('3.2')).toBeInTheDocument();
   expect(screen.getByText('60 credit hours')).toBeInTheDocument();
 
   expect(screen.getByText('Completed')).toBeInTheDocument();
@@ -159,11 +155,7 @@ test('renders the read-only profile with identity, KPIs, map, enrollments, histo
   expect(screen.getByText('2025F')).toBeInTheDocument();
   expect(screen.getByText('A')).toBeInTheDocument();
 
-  expect(await screen.findByText('Amr Advisor')).toBeInTheDocument();
-  expect(screen.getByText('Sunday 10:00-12:00')).toBeInTheDocument();
-
   expect(screen.queryAllByRole('status')).toHaveLength(0);
-  expect(screen.queryAllByRole('button')).toHaveLength(0);
   expect(screen.queryAllByRole('textbox')).toHaveLength(0);
   expect(screen.queryAllByRole('combobox')).toHaveLength(0);
   expect(screen.queryAllByRole('spinbutton')).toHaveLength(0);
@@ -171,14 +163,13 @@ test('renders the read-only profile with identity, KPIs, map, enrollments, histo
 
 test('shows one stale banner listing the stale datasets and retries the record only', async () => {
   const user = await createUser({ advisor_id: 2 });
-  seedAdvisor();
   seedRecord(user.id as number, { staleness: JSON.stringify(STALE_STALENESS) });
   const reads = trackRequests();
 
-  await renderApp(<ProfileRoute />, {
+  await renderApp(<RecordRoute />, {
     user,
-    path: '/app/profile',
-    url: '/app/profile',
+    path: '/app/record',
+    url: '/app/record',
   });
 
   const banners = await screen.findAllByRole('status');
@@ -187,8 +178,6 @@ test('shows one stale banner listing the stale datasets and retries the record o
   expect(banners[0]).toHaveTextContent('academic record');
   expect(banners[0]).toHaveTextContent('course catalog');
   expect(banners[0]).not.toHaveTextContent('identity');
-
-  expect(await screen.findByText('Amr Advisor')).toBeInTheDocument();
 
   reads.startRecording();
   await userEvent.click(screen.getByRole('button', { name: /retry/i }));
@@ -206,10 +195,10 @@ test('renders compact empty states for empty sections and the retry copy for an 
   });
   const reads = trackRequests();
 
-  await renderApp(<ProfileRoute />, {
+  await renderApp(<RecordRoute />, {
     user,
-    path: '/app/profile',
-    url: '/app/profile',
+    path: '/app/record',
+    url: '/app/record',
   });
 
   expect(
@@ -225,14 +214,122 @@ test('renders compact empty states for empty sections and the retry copy for an 
   await waitFor(() => expect(reads.reads).toBe(2));
 });
 
+test('renders the advisor identity, office hours, and the meetings empty state on My Advisor', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedAdvisor();
+
+  await renderApp(<MyAdvisorRoute />, {
+    user,
+    path: '/app/advisor',
+    url: '/app/advisor',
+  });
+
+  expect(await screen.findByText('Amr Advisor')).toBeInTheDocument();
+  expect(screen.getByText('Sunday 10:00-12:00')).toBeInTheDocument();
+  expect(screen.getByText('Meetings')).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Request a meeting' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText('No meetings with your advisor yet.'),
+  ).toBeInTheDocument();
+});
+
+test('the student accepts a proposed slot and the meeting turns confirmed', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedAdvisor();
+  const meeting = db.meetingRequest.create({
+    studentId: user.id as number,
+    advisorId: 2,
+    requesterId: 2,
+    direction: 'advisor_to_student',
+    status: 'awaiting_response',
+    reason: 'plan_review',
+    note: 'Quick check before the window closes.',
+    slots: JSON.stringify([
+      {
+        starts_at: '2026-11-08T08:00:00.000Z',
+        ends_at: '2026-11-08T08:30:00.000Z',
+      },
+      {
+        starts_at: '2026-11-08T08:30:00.000Z',
+        ends_at: '2026-11-08T09:00:00.000Z',
+      },
+    ]),
+    selectedSlotIndex: null,
+    cancellationReason: null,
+    term_code: CURRENT_TERM,
+  });
+
+  await renderApp(<MyAdvisorRoute />, {
+    user,
+    path: '/app/advisor',
+    url: '/app/advisor',
+  });
+
+  const radios = await screen.findAllByRole('radio');
+  await userEvent.click(radios[1]);
+  await userEvent.click(screen.getByRole('button', { name: 'Accept time' }));
+
+  await waitFor(() =>
+    expect(
+      db.meetingRequest.findFirst({
+        where: { id: { equals: meeting.id as number } },
+      })?.status,
+    ).toBe('confirmed'),
+  );
+  expect(await screen.findByText('Confirmed')).toBeInTheDocument();
+  expect(screen.getByText('Confirmed time')).toBeInTheDocument();
+});
+
+test('the student requests a meeting with a reason and an optional note', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedAdvisor();
+
+  await renderApp(<MyAdvisorRoute />, {
+    user,
+    path: '/app/advisor',
+    url: '/app/advisor',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'Request a meeting' }),
+  );
+
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Request a meeting with your advisor',
+  });
+  await userEvent.selectOptions(
+    within(dialog).getByLabelText('Reason'),
+    'course_selection',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Add a note'),
+    'Which electives fit my plan?',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Send request' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.meetingRequest.findFirst({
+        where: { studentId: { equals: user.id as number } },
+      })?.reason,
+    ).toBe('course_selection'),
+  );
+  expect(
+    await screen.findByText('Request sent to your advisor.'),
+  ).toBeInTheDocument();
+});
+
 test('renders the calm no-advisor line when no advisor is assigned', async () => {
   const user = await createUser();
-  seedRecord(user.id as number);
 
-  await renderApp(<ProfileRoute />, {
+  await renderApp(<MyAdvisorRoute />, {
     user,
-    path: '/app/profile',
-    url: '/app/profile',
+    path: '/app/advisor',
+    url: '/app/advisor',
   });
 
   expect(
@@ -240,4 +337,24 @@ test('renders the calm no-advisor line when no advisor is assigned', async () =>
       'You have no assigned advisor yet. The administration office assigns advisors.',
     ),
   ).toBeInTheDocument();
+});
+
+test('renders the identity and the sign-out action on Account', async () => {
+  const user = await createUser({
+    faculty: 'Engineering',
+    student_id: '3020117',
+  });
+  seedRecord(user.id as number);
+
+  await renderApp(<AccountRoute />, {
+    user,
+    path: '/app/account',
+    url: '/app/account',
+  });
+
+  expect(await screen.findByText('Sara Student')).toBeInTheDocument();
+  expect(screen.getByText('3020117')).toBeInTheDocument();
+  expect(screen.getByText(user.email)).toBeInTheDocument();
+  expect(screen.getByText('Engineering')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument();
 });
