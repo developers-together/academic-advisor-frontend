@@ -37,9 +37,21 @@ export const paths = {
       path: 'builder',
       getHref: () => '/app/builder',
     },
+    record: {
+      path: 'record',
+      getHref: () => '/app/record',
+    },
+    advisor: {
+      path: 'advisor',
+      getHref: () => '/app/advisor',
+    },
     profile: {
       path: 'profile',
-      getHref: () => '/app/profile',
+      getHref: () => '/app/account',
+    },
+    account: {
+      path: 'account',
+      getHref: () => '/app/account',
     },
     rules: {
       path: 'rules',
@@ -91,6 +103,14 @@ export const paths = {
       path: '/dean',
       getHref: () => '/dean',
     },
+    advisors: {
+      path: 'advisors',
+      getHref: () => '/dean/advisors',
+    },
+    analytics: {
+      path: 'analytics',
+      getHref: () => '/dean/analytics',
+    },
     notifications: {
       path: 'notifications',
       getHref: () => '/dean/notifications',
@@ -102,9 +122,17 @@ export const paths = {
       path: '/vp',
       getHref: () => '/vp',
     },
+    faculties: {
+      path: 'faculties',
+      getHref: () => '/vp/faculties',
+    },
     drilldown: {
       path: 'drilldown',
       getHref: (node?: string) => `/vp/drilldown${node ? `?node=${node}` : ''}`,
+    },
+    trends: {
+      path: 'trends',
+      getHref: () => '/vp/trends',
     },
     notifications: {
       path: 'notifications',
@@ -115,19 +143,43 @@ export const paths = {
   admin: {
     root: {
       path: '/admin',
+      getHref: () => '/admin',
+    },
+    users: {
+      path: 'users',
       getHref: () => '/admin/students',
     },
     students: {
       path: 'students',
       getHref: () => '/admin/students',
     },
+    operations: {
+      path: 'operations',
+      getHref: () => '/admin/operations',
+    },
     assignments: {
       path: 'assignments',
       getHref: () => '/admin/assignments',
     },
+    courses: {
+      path: 'courses',
+      getHref: () => '/admin/courses',
+    },
+    programs: {
+      path: 'programs',
+      getHref: () => '/admin/programs',
+    },
     rules: {
       path: 'rules',
       getHref: () => '/admin/rules',
+    },
+    registrationWindows: {
+      path: 'registration-windows',
+      getHref: () => '/admin/registration-windows',
+    },
+    aiConfiguration: {
+      path: 'ai-configuration',
+      getHref: () => '/admin/ai-configuration',
     },
     staff: {
       path: 'staff',
