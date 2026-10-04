@@ -72,6 +72,10 @@ export const paths = {
       path: 'hours',
       getHref: () => '/advisor/hours',
     },
+    profile: {
+      path: 'profile',
+      getHref: () => '/advisor/profile',
+    },
     notifications: {
       path: 'notifications',
       getHref: () => '/advisor/notifications',

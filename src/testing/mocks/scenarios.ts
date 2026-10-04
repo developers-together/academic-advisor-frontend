@@ -65,6 +65,7 @@ const seedUsers = () => {
   db.advisorProfile.create({
     advisorId: 2,
     rows: JSON.stringify(officeHours),
+    office_location: 'Building 3, Room 2140',
   });
   db.user.create({
     id: 1,

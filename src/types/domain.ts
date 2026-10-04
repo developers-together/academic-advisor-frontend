@@ -136,7 +136,10 @@ export type Staleness = {
 export type AdvisorProfile = {
   advisor: UserSummary;
   availability_window: { rows: AvailabilityWindowRow[] };
+  office_location: string | null;
 };
+
+export type OfficeLocation = { office_location: string | null };
 
 export type AvailabilityWindowRow = {
   day: string;
