@@ -21,11 +21,11 @@ const screenHrefs: Record<
     advisor: paths.advisor.students.getHref(),
   },
   advisor: {
-    student: paths.app.root.getHref(),
+    student: paths.app.advisor.getHref(),
   },
   visit: {
     advisor: paths.advisor.meetings.getHref(),
-    student: paths.app.root.getHref(),
+    student: paths.app.advisor.getHref(),
   },
 };
 
