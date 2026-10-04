@@ -1,4 +1,10 @@
-# Advaisor — Project Plan (React + Laravel + DeepSeek Rebuild)
+# Advisor — Project Plan (React + Laravel Rebuild)
+
+> **v2 note (2026-10-04):** this plan aligns with `01-PRODUCT-FOUNDATION.md` v2.0. Changes: the
+> product name is Advisor; the meeting model is the unified two-directional request flow with
+> confirmation (foundation §10); the client information architecture, mobile navigation, and command
+> palette follow design.md v2.0; the Admin scope covers users, assignments, courses, programs, rules,
+> registration windows, notifications configuration, and AI configuration.
 
 > **Basis**: `01-PRODUCT-FOUNDATION.md` (§ refs below). **Prototype reference**: `docs/migration/00-MASTER-EXTRACTION.md`.
 > The prototype is a behavioral inventory and a **spec to port** (rules engine + 2,212-assertion test suite),
@@ -10,7 +16,7 @@
 
 ```text
 ┌────────────────────────── React 18 SPA (Vite) ──────────────────────────┐
-│  Role-scoped route tree (5 roles × 22 pages, foundation §14)            │
+│  Role-scoped route tree (5 roles, foundation §14 v2 IA + mobile nav)    │
 │  TanStack Query + API client · SSE chat streaming · i18n EN/AR + RTL    │
 │  Tokens ↔ CSS variables (dark/light) · no business logic in client      │
 └──────────────────────────────┬──────────────────────────────────────────┘
@@ -47,7 +53,7 @@
 · `advisor_student` (caseload, Admin-managed) · `plans` (student, term, state, locked_at) ·
 `plan_lines` (course, group, section, credits snapshot) · `plan_comments` (advisor-only) ·
 `plan_transitions` (audit of §7.2 table) · `availability_windows` (advisor, day/from/to, is_default) ·
-`visit_requests` (direction, state, windows JSON) · `notifications` (user, type, payload, read_at) ·
+`meeting_requests` (direction, state machine §10.1, slots, timestamps) · `notifications` (user, type, payload, read_at) ·
 `sis_sync_log` + source badges · `academic_windows` (mirrored from SIS, Q67) · `rules_config` (SIS-first,
 manual fallback, Q56) · `audit_chain`.
 
@@ -61,12 +67,12 @@ Registration/appointments/audit leave sessionStorage permanently (extraction B5)
 |---|---|
 | **Ports ~1:1** | 12-grade-independent rule invariants V1–V6 from `policyInvariants` + `rulesEngine` (as PHP, unit-tested against the 2,212-assertion JS suite as the behavioral spec) · ReAct loop (≤6 turns, temp 0.15, tool-cycle breaker) · system prompt + student ground-truth block · security guard (injection regexes, PII masking, token bucket — as Laravel middleware) · prereq SVG roadmap · EN/AR dictionaries (`translations.js` seed) |
 | **Dies** | GPA simulator + its scale conflict · plan/what-if simulator · registration desk (SIS owns) · petitions + 4-type modal · career recommender (+ bug B1 dies with it) · nudges-as-labels panel (Q57) · attendance/FW/scholarship/finance rules (ATT-001, SCHOL-001, tuition) · advisory emails (5 templates) · WhatsApp/SMS · 3-tier client router · client API keys |
-| **New builds** | Plan lifecycle machine + hard-block submission gate · Seen/comment flow · verification against SIS registration status · availability windows + visit requests · notification center · advisor queue + scoreboard/funnel aggregates · VP rollups (precomputed summary tables — never scan 8K transcripts per request, extraction §9.2) · Admin console · self-registration + SIS record matching |
+| **New builds** | Plan lifecycle machine + hard-block submission gate · Seen/comment flow · verification against SIS registration status · availability windows + meeting requests · notification center · advisor queue + scoreboard/funnel aggregates · VP rollups (precomputed summary tables — never scan 8K transcripts per request, extraction §9.2) · Admin console · self-registration + SIS record matching |
 
 **AI tool set (rewrite of the prototype's 12 schemas for the new scope, ~10 tools)**:
 `get_my_profile` · `get_my_history` · `get_remaining_requirements` · `get_catalog` (search/filter) ·
 `get_prereq_map` · `recommend_courses` (uses history + course analytics) · `draft_plan` (structured
-output → Draft Plan Card; **cannot submit**) · `validate_plan_lines` (calls RulesEngine) ·
+output → in-place plan edit + submit suggestion; **cannot submit**) · `validate_plan_lines` (calls RulesEngine) ·
 `explain_rule` · `get_my_plan_status` (state + comments). Course analytics feeds `recommend_courses`
 internally; no separate staff-facing analytics tool.
 
@@ -77,9 +83,9 @@ Design runs ahead of build per `03-DESIGN-PLAN.md` (D-phases land before the mat
 | Phase | Weeks | Scope | Exit criteria |
 |---|---|---|---|
 | **P0 — Foundations** | 1–3 | Laravel skeleton, Sanctum auth + **in-system sign-up** (`@ejust.edu.eg` gate, student-ID binding), roles/policies, migrations, org structure, SIS sync skeleton + **mock SIS server** (contract §9), CI; RulesEngine PHP port with parity tests; React shell (routing, i18n, theming, role gates). Design D0–D1 parallel. | All P0 tests green; rules parity suite passing; mock SIS serving contract §9 |
-| **P1 — Plan loop** | 3–7 | Plan CRUD + lifecycle + hard-block validation server-side, comments/Seen, advisor queue + review drawer, availability + visit requests, notifications v1, Admin accounts/caseloads minimum. Design D2–D3 done before build. | J1 + J2 journeys E2E on mock SIS; every plan transition audited |
-| **P2 — AI** | 5–9 (overlap) | DeepSeek integration (server-side key), ReAct loop port, tool set (§3), SSE streaming, Draft Plan Card handoff, rate limiting + semantic cache, audit of AI calls. | All 6 AI capabilities demoed; injection/red-team suite from prototype passes server-side |
-| **P3 — Governance + Admin** | 7–10 | Dean overview + explorer, VP scorecard + drill, aggregate summary tables + nightly recompute, exports (CSV/PDF), full Admin console. Design D4–D5 done before build. | Dean/VP screens answer foundation §13 with <300ms p95 on seeded 8K dataset |
+| **P1 — Plan loop** | 3–7 | Plan CRUD + lifecycle + hard-block validation server-side, comments/Seen, advisor queue + review drawer, availability + meeting requests (§10 v2), notifications v1, Admin accounts/caseloads minimum. Design D2–D3 done before build. | J1 + J2 journeys E2E on mock SIS; every plan transition audited |
+| **P2 — AI** | 5–9 (overlap) | DeepSeek integration (server-side key), ReAct loop port, tool set (§3), SSE streaming, submit-suggestion handoff, rate limiting + semantic cache, audit of AI calls. | All 6 AI capabilities demoed; injection/red-team suite from prototype passes server-side |
+| **P3 — Governance + Admin** | 7–10 | Dean overview + advisors aggregate, VP scorecard + drill, aggregate summary tables + nightly recompute, exports (CSV/PDF), full Admin console. Design D4–D5 done before build. | Dean/VP screens answer foundation §13 with <300ms p95 on seeded 8K dataset |
 | **P4 — Verification + hardening** | 9–12 | SIS registration verification, deadline/aging engine, stale-data banners, edge states (§15), RTL/i18n sweep, dark/light QA, a11y pass, load test at registration-week concurrency (~600 users), 6–8K synthetic seeder (extraction §9.3 distribution), UAT with one pilot department | All §15 states implemented; load test p95 < 1.5s non-AI; UAT sign-off |
 
 Post-launch candidates (explicitly **not** v1): real SIS calendar/auth integrations beyond the contract,
