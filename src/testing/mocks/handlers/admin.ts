@@ -934,6 +934,323 @@ export const adminHandlers = [
       return HttpResponse.json({ data: { days } });
     },
   ),
+  http.get(`${env.API_URL}/admin/courses`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    requireAdmin(request);
+    const courses = db.course
+      .findMany({ where: {} })
+      .sort((a, b) => a.code.localeCompare(b.code));
+    return HttpResponse.json({ data: courses });
+  }),
+
+  http.post(`${env.API_URL}/admin/courses`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    requireAdmin(request);
+    const body = (await request.json()) as Record<string, unknown>;
+    const code = typeof body.code === 'string' ? body.code.trim() : '';
+    if (!code) {
+      return HttpResponse.json(
+        { message: 'A course code is required.', key: 'course.code_required' },
+        { status: 422 },
+      );
+    }
+    const duplicate = db.course.findFirst({
+      where: { code: { equals: code } },
+    });
+    if (duplicate) {
+      return HttpResponse.json(
+        {
+          message: 'That course code already exists.',
+          key: 'course.code_exists',
+        },
+        { status: 409 },
+      );
+    }
+    const created = db.course.create({
+      code,
+      title_en: typeof body.title_en === 'string' ? body.title_en : '',
+      title_ar: typeof body.title_ar === 'string' ? body.title_ar : null,
+      credits: Number(body.credits) || 0,
+      level:
+        body.level === null || body.level === undefined
+          ? null
+          : Number(body.level),
+    });
+    return HttpResponse.json({ data: created }, { status: 201 });
+  }),
+
+  http.put(
+    `${env.API_URL}/admin/courses/:courseId`,
+    async ({ request, params }) => {
+      await networkDelay();
+      if (deniesPermission()) {
+        return HttpResponse.json(
+          { message: 'This action is unauthorized.' },
+          { status: 403 },
+        );
+      }
+      requireAdmin(request);
+      const row = db.course.findFirst({
+        where: { id: { equals: Number(params.courseId) } },
+      });
+      if (!row) {
+        return HttpResponse.json(
+          { message: 'Course not found.' },
+          { status: 404 },
+        );
+      }
+      const body = (await request.json()) as Record<string, unknown>;
+      const updated = db.course.update({
+        where: { id: { equals: row.id as number } },
+        data: {
+          ...(typeof body.title_en === 'string'
+            ? { title_en: body.title_en }
+            : {}),
+          ...(body.title_ar === null || typeof body.title_ar === 'string'
+            ? { title_ar: body.title_ar as string | null }
+            : {}),
+          ...(body.credits !== undefined
+            ? { credits: Number(body.credits) || 0 }
+            : {}),
+          ...(body.level !== undefined
+            ? { level: body.level === null ? null : Number(body.level) }
+            : {}),
+        },
+      });
+      return HttpResponse.json({ data: updated });
+    },
+  ),
+
+  http.delete(
+    `${env.API_URL}/admin/courses/:courseId`,
+    async ({ request, params }) => {
+      await networkDelay();
+      if (deniesPermission()) {
+        return HttpResponse.json(
+          { message: 'This action is unauthorized.' },
+          { status: 403 },
+        );
+      }
+      requireAdmin(request);
+      const row = db.course.findFirst({
+        where: { id: { equals: Number(params.courseId) } },
+      });
+      if (!row) {
+        return HttpResponse.json(
+          { message: 'Course not found.' },
+          { status: 404 },
+        );
+      }
+      db.course.delete({ where: { id: { equals: row.id as number } } });
+      return new HttpResponse(null, { status: 204 });
+    },
+  ),
+
+  http.get(`${env.API_URL}/admin/programs`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    requireAdmin(request);
+    const programs = db.program
+      .findMany({ where: {} })
+      .sort((a, b) => a.code.localeCompare(b.code));
+    return HttpResponse.json({ data: programs });
+  }),
+
+  http.post(`${env.API_URL}/admin/programs`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    requireAdmin(request);
+    const body = (await request.json()) as Record<string, unknown>;
+    const code = typeof body.code === 'string' ? body.code.trim() : '';
+    if (!code || typeof body.name_en !== 'string' || !body.name_en.trim()) {
+      return HttpResponse.json(
+        {
+          message: 'A program code and name are required.',
+          key: 'program.fields_required',
+        },
+        { status: 422 },
+      );
+    }
+    const created = db.program.create({
+      code,
+      name_en: body.name_en.trim(),
+      name_ar: typeof body.name_ar === 'string' ? body.name_ar : null,
+      faculty: typeof body.faculty === 'string' ? body.faculty : null,
+    });
+    return HttpResponse.json({ data: created }, { status: 201 });
+  }),
+
+  http.put(
+    `${env.API_URL}/admin/programs/:programId`,
+    async ({ request, params }) => {
+      await networkDelay();
+      if (deniesPermission()) {
+        return HttpResponse.json(
+          { message: 'This action is unauthorized.' },
+          { status: 403 },
+        );
+      }
+      requireAdmin(request);
+      const row = db.program.findFirst({
+        where: { id: { equals: Number(params.programId) } },
+      });
+      if (!row) {
+        return HttpResponse.json(
+          { message: 'Program not found.' },
+          { status: 404 },
+        );
+      }
+      const body = (await request.json()) as Record<string, unknown>;
+      const updated = db.program.update({
+        where: { id: { equals: row.id as number } },
+        data: {
+          ...(typeof body.name_en === 'string'
+            ? { name_en: body.name_en }
+            : {}),
+          ...(body.name_ar === null || typeof body.name_ar === 'string'
+            ? { name_ar: body.name_ar as string | null }
+            : {}),
+          ...(body.faculty === null || typeof body.faculty === 'string'
+            ? { faculty: body.faculty as string | null }
+            : {}),
+        },
+      });
+      return HttpResponse.json({ data: updated });
+    },
+  ),
+
+  http.get(`${env.API_URL}/admin/registration-windows`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    requireAdmin(request);
+    const windows = db.registrationWindow
+      .findMany({ where: {} })
+      .sort((a, b) => b.term_code.localeCompare(a.term_code));
+    return HttpResponse.json({ data: windows });
+  }),
+
+  http.put(
+    `${env.API_URL}/admin/registration-windows/:windowId`,
+    async ({ request, params }) => {
+      await networkDelay();
+      if (deniesPermission()) {
+        return HttpResponse.json(
+          { message: 'This action is unauthorized.' },
+          { status: 403 },
+        );
+      }
+      requireAdmin(request);
+      const row = db.registrationWindow.findFirst({
+        where: { id: { equals: Number(params.windowId) } },
+      });
+      if (!row) {
+        return HttpResponse.json(
+          { message: 'Window not found.' },
+          { status: 404 },
+        );
+      }
+      const body = (await request.json()) as Record<string, unknown>;
+      if (body.is_active === true) {
+        for (const other of db.registrationWindow.findMany({ where: {} })) {
+          db.registrationWindow.update({
+            where: { id: { equals: other.id as number } },
+            data: { is_active: false },
+          });
+        }
+      }
+      const updated = db.registrationWindow.update({
+        where: { id: { equals: row.id as number } },
+        data: {
+          ...(body.is_active !== undefined
+            ? { is_active: Boolean(body.is_active) }
+            : {}),
+          ...(typeof body.opens_at === 'string'
+            ? { opens_at: body.opens_at }
+            : {}),
+          ...(typeof body.closes_at === 'string'
+            ? { closes_at: body.closes_at }
+            : {}),
+        },
+      });
+      return HttpResponse.json({ data: updated });
+    },
+  ),
+
+  http.get(`${env.API_URL}/admin/ai-configuration`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    requireAdmin(request);
+    const config = db.aiConfig.findFirst({ where: {} });
+    return HttpResponse.json({
+      data: config ?? { quota_per_student: 25, assistant_enabled: true },
+    });
+  }),
+
+  http.put(`${env.API_URL}/admin/ai-configuration`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return HttpResponse.json(
+        { message: 'This action is unauthorized.' },
+        { status: 403 },
+      );
+    }
+    requireAdmin(request);
+    const body = (await request.json()) as Record<string, unknown>;
+    const config = db.aiConfig.findFirst({ where: {} });
+    const data = {
+      ...(body.quota_per_student !== undefined
+        ? {
+            quota_per_student: Math.max(0, Number(body.quota_per_student) || 0),
+          }
+        : {}),
+      ...(body.assistant_enabled !== undefined
+        ? { assistant_enabled: Boolean(body.assistant_enabled) }
+        : {}),
+    };
+    const updated = config
+      ? db.aiConfig.update({
+          where: { id: { equals: config.id as number } },
+          data,
+        })
+      : db.aiConfig.create({
+          quota_per_student: 25,
+          assistant_enabled: true,
+          ...data,
+        });
+    return HttpResponse.json({ data: updated });
+  }),
 ];
 
 const importErrorsSeed = (): Record<string, string[]> | null => {
