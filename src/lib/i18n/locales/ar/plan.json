@@ -193,5 +193,38 @@
     "notificationsTitle": "الإشعارات",
     "notificationsViewAll": "عرض الكل",
     "notificationsEmpty": "لا جديد لديك."
+  },
+  "courseMap": {
+    "title": "خريطة المقررات",
+    "summary": "أكملت {{completed}} من {{total}} مقررًا",
+    "requires": "يتطلب",
+    "noRequirements": "لا متطلبات سابقة. متاح لك الآن.",
+    "lockedHint": "أكمل {{courses}} أولًا لفتح هذا المقرر.",
+    "pickHint": "اختر مقررًا لرؤية متطلباته وما يفتحه.",
+    "zoomIn": "تكبير",
+    "zoomOut": "تصغير",
+    "zoomReset": "إعادة الضبط",
+    "zoomLabel": "تكبير الخريطة",
+    "empty": {
+      "title": "خريطة مقرراتك غير متاحة بعد.",
+      "body": "تظهر بمجرد يبلغك نظام SIS بخطة دراستك."
+    }
+  },
+  "progressRing": {
+    "label": "{{percent}} بالمئة من الخطة الدراسية المرسومة مكتمل"
+  },
+  "milestones": {
+    "title": "المحطات",
+    "score": "أُنجز {{earned}} من {{total}}",
+    "earned": "أُنجزت",
+    "pending": "لم بعد",
+    "items": {
+      "first_step": "الخطوات الأولى",
+      "plan_architect": "مهندس الخطة",
+      "approved": "إشارة خضراء",
+      "level_cleared": "أساس مكتمل",
+      "halfway": "في منتصف الطريق",
+      "map_mastered": "إتقان الخريطة"
+    }
   }
 }

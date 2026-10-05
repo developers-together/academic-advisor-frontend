@@ -193,5 +193,38 @@
     "notificationsTitle": "Notifications",
     "notificationsViewAll": "View all",
     "notificationsEmpty": "You are all caught up."
+  },
+  "courseMap": {
+    "title": "Course map",
+    "summary": "{{completed}} of {{total}} courses completed",
+    "requires": "Requires",
+    "noRequirements": "No prerequisites. Open to you now.",
+    "lockedHint": "Complete {{courses}} first to unlock this course.",
+    "pickHint": "Select a course to see its requirements and what it unlocks.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomReset": "Reset zoom",
+    "zoomLabel": "Map zoom",
+    "empty": {
+      "title": "Your course map is not available yet.",
+      "body": "It appears once the SIS reports your curriculum."
+    }
+  },
+  "progressRing": {
+    "label": "{{percent}} percent of the mapped curriculum completed"
+  },
+  "milestones": {
+    "title": "Milestones",
+    "score": "{{earned}} of {{total}} earned",
+    "earned": "Earned",
+    "pending": "Not yet",
+    "items": {
+      "first_step": "First steps",
+      "plan_architect": "Plan architect",
+      "approved": "Green light",
+      "level_cleared": "Foundation cleared",
+      "halfway": "Halfway there",
+      "map_mastered": "Map mastered"
+    }
   }
 }
