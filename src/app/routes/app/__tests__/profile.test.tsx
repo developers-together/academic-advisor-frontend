@@ -144,10 +144,13 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   expect(await screen.findByText('3.2')).toBeInTheDocument();
   expect(screen.getByText('60 credit hours')).toBeInTheDocument();
 
-  expect(screen.getByText('Completed')).toBeInTheDocument();
-  expect(screen.getByText('Planned')).toBeInTheDocument();
-  expect(screen.getByText('Eligible')).toBeInTheDocument();
-  expect(screen.getByText('Locked')).toBeInTheDocument();
+  expect(screen.getByRole('group', { name: 'Course map' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /CS 101/ })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /CS 301/ })).toBeInTheDocument();
+  expect(screen.getAllByText('1 of 4 courses completed').length).toBe(2);
+  expect(screen.getByRole('img', { name: /25 percent/ })).toBeInTheDocument();
+  expect(screen.getByText('Milestones')).toBeInTheDocument();
+  expect(screen.getByText('First steps')).toBeInTheDocument();
 
   expect(screen.getAllByText('EE 210').length).toBeGreaterThanOrEqual(1);
   expect(screen.getByText('Group G1, Section 01')).toBeInTheDocument();
@@ -155,7 +158,6 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   expect(screen.getByText('2025F')).toBeInTheDocument();
   expect(screen.getByText('A')).toBeInTheDocument();
 
-  expect(screen.queryAllByRole('status')).toHaveLength(0);
   expect(screen.queryAllByRole('textbox')).toHaveLength(0);
   expect(screen.queryAllByRole('combobox')).toHaveLength(0);
   expect(screen.queryAllByRole('spinbutton')).toHaveLength(0);
