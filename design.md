@@ -975,11 +975,34 @@ violet-600 `#7C3AED`.
 - docs/product/04-SIS-DATA-REQUIREMENTS.md: data contracts behind stale-data and verification surfaces
 - The agreed v2 product/UX/UI implementation specification (2026-10-04)
 
+## 3.13 Interactive course map and progress gamification (v3)
+
+The prerequisite map evolves into an **interactive course map** on the student record:
+
+- Nodes are real buttons (44px targets, focus rings); the prerequisite edges render as an SVG
+  layer beneath with directional arrowheads.
+- Selecting or focusing a node highlights its full prerequisite chain, dims unrelated nodes, and
+  opens a detail panel: code, title, status chip, its requirements as selectable chips, and the
+  reason a locked course is locked ("Complete CS 201 first").
+- Zoom buttons scale with transform only and respect reduced motion; the map stays keyboard
+  operable end to end and ships a visually-hidden list alternative.
+
+Gamification stays institutional (PR-01 spirit): a **degree progress ring** (completed share of
+the mapped curriculum), and **milestones** computed only from real states (plan submitted,
+approved, level cleared, halfway, map mastered). Earned milestones use the success tint with a
+lucide medal; pending ones stay muted with the concrete next step. No points, no streaks, no
+badges for invented actions, no confetti.
+
+**DS-C-14:** interactive cards may elevate with `shadow-xs` on hover only; rest state stays flat
+(material honesty, DP-04).
+
 ## Changelog
 
 - v1.0 (2026-09-30): initial version. Tokens, states, components, rules, and the skill system.
 - v1.1 (2026-10-01): correction pass from wayfinder ticket flags. Lifecycle reset to 8 settled states
   plus discarded; SubmitSuggestionCard; dean rail reduced; queue aging via server flag.
+- v3.0 (2026-10-05): interactive course map with chain highlighting and a detail panel,
+  degree progress ring, milestone system, and the hover-elevation amendment (DS-C-14).
 - v2.0 (2026-10-04): the agreed product/UX/UI implementation contract. 25-section structure. Role IA,
   mobile bottom navigation, command palette, breadcrumbs and page headers, unified meeting and
   availability UX, per-role UX sections, Admin operational scope, VP dean-identity rule (PR-15),
