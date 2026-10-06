@@ -154,7 +154,12 @@ export const MeetingsDocument = () => {
               type: 'info',
               title: t('common:errors.conflict'),
             });
+            return;
           }
+          addNotification({
+            type: 'error',
+            title: t('meetings.actionFailed'),
+          });
         },
       },
     );
@@ -221,11 +226,7 @@ export const MeetingsDocument = () => {
           compact
           className="mt-4 max-w-xl"
           title={t(`meetings.empty.${filter}.title`)}
-          description={
-            filter === 'attention'
-              ? t('meetings.empty.attention.body')
-              : undefined
-          }
+          description={t(`meetings.empty.${filter}.body`)}
         />
       ) : (
         <ul className="mt-4 space-y-3">
@@ -274,6 +275,11 @@ export const MeetingsDocument = () => {
             { id: declineId, input: reason },
             {
               onSuccess: () => setDeclineId(null),
+              onError: () =>
+                addNotification({
+                  type: 'error',
+                  title: t('meetings.actionFailed'),
+                }),
             },
           );
         }}
@@ -292,6 +298,11 @@ export const MeetingsDocument = () => {
             { id: cancelId, input: reason },
             {
               onSuccess: () => setCancelId(null),
+              onError: () =>
+                addNotification({
+                  type: 'error',
+                  title: t('meetings.actionFailed'),
+                }),
             },
           );
         }}
