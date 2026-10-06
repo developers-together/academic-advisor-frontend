@@ -218,8 +218,8 @@ App.views['/app/record'] = function () {
   const done = Store.s.completed;
   const planned = Store.myPlan().courses.map((c) => c.code);
   const node = (code) => {
-    const state = done.includes(code) ? ['success', 'Completed', ''] : planned.includes(code) ? ['warning', 'Planned', ''] : ['neutral', 'locked until prerequisites', '⊘'];
-    return `<button class="chip ${state[0]}" style="cursor:pointer; padding:8px 12px;" onclick="selectedCourse='${code}'; App.render();">${state[2]} ${code}</button>`;
+    const state = done.includes(code) ? ['success', 'Completed', ''] : planned.includes(code) ? ['warning', 'Planned', ''] : ['neutral', 'locked until prerequisites', ''];
+    return `<button class="chip ${state[0]}" style="cursor:pointer; padding:8px 12px;" onclick="selectedCourse='${code}'; App.render();">${state[2] ? icon('ban', 'ic') : ''} ${code}</button>`;
   };
   return `
     ${UI.pageHead('Academic Record', 'The facts behind your decisions')}
