@@ -40,7 +40,6 @@
     "staff": "Staff",
     "settings": "Settings",
     "more": "More"
-
   },
   "topbar": {
     "language": "Change language",
@@ -85,7 +84,11 @@
     "sessionEnded": "Your session ended. Sign in again to continue.",
     "requestRef": "Request reference: {{id}}",
     "sisUnavailable": "The university data service is unavailable.",
-    "sisUnavailableBody": "Your data may be out of date. Retry in a moment."
+    "sisUnavailableBody": "Your data may be out of date. Retry in a moment.",
+    "saveFailed": "We could not save that.",
+    "saveFailedBody": "Nothing was saved. Retry in a moment.",
+    "sendFailed": "We could not send that.",
+    "sendFailedBody": "Nothing was sent. Retry in a moment."
   },
   "staleSis": {
     "dataAsOf": "Data as of {{datetime}}",
@@ -131,7 +134,14 @@
     "all": "All",
     "previous": "Previous page",
     "next": "Next page",
-    "empty": "No rows to show."
+    "empty": "No rows to show.",
+    "navLabel": "Pagination",
+    "previousLabel": "Previous",
+    "nextLabel": "Next",
+    "morePages": "More pages",
+    "emptyTitle": "Nothing in this table yet",
+    "emptyBody": "Rows appear here once the data is available.",
+    "pageInfo": "Showing {{from}}-{{to}} of {{total}}"
   },
   "emptyStates": {
     "title": "Nothing here yet",
