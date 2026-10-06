@@ -7,6 +7,8 @@ const now = () => new Date('2026-10-06T14:00:00');
 const seed = () => ({
   me: null,
   theme: (typeof localStorage !== 'undefined' && localStorage.getItem('proto-theme')) || 'v4',
+  dark: (typeof localStorage !== 'undefined' && localStorage.getItem('proto-dark')) === '1',
+  notifFilter: 'all',
   term: '2026F',
   prevTerm: '2025F',
   asOf: '05 Oct, 14:00',
@@ -310,6 +312,11 @@ const Store = {
     const id = this.s.chat.openId || (this.s.chat.openId = Date.now());
     const thread = (this.s.chat.messages[id] = this.s.chat.messages[id] || []);
     thread.push({ role: 'user', text });
+    const conv = this.s.chat.conversations.find((c) => c.id === id);
+    if (conv) {
+      if (conv.title === 'New conversation') conv.title = text.slice(0, 28) + (text.length > 28 ? '…' : '');
+      conv.snippet = text.slice(0, 40);
+    }
     this.emit();
     const reply = this.aiReply(text);
     setTimeout(() => { thread.push(reply); this.emit(); }, 900);
@@ -324,11 +331,18 @@ const Store = {
   },
   aiAddToPlan(code) { const r = this.addCourse(code); if (!r.ok) this.toast(r.msg, 'destructive'); },
   chatOpen(id) { this.s.chat.openId = id; this.emit(); },
-  chatNew() { this.s.chat.openId = null; this.emit(); },
+  chatNew() {
+    const c = { id: Date.now(), title: 'New conversation', snippet: '', at: 'just now', goal: null };
+    this.s.chat.conversations.unshift(c);
+    this.s.chat.openId = c.id;
+    this.emit();
+  },
 
   toastMsg: null,
   toast(msg, kind = 'success') { this.s.toastMsg = { msg, kind, at: Date.now() }; this.emit(); setTimeout(() => { this.s.toastMsg = null; this.emit(); }, 2600); },
   setTerm(t) { this.s.term = t; this.emit(); },
   setTheme(t) { this.s.theme = t; try { localStorage.setItem('proto-theme', t); } catch {} this.emit(); },
+  setDark(d) { this.s.dark = d; try { localStorage.setItem('proto-dark', d ? '1' : '0'); } catch {} this.emit(); },
+  setNotifFilter(f) { this.s.notifFilter = f; this.emit(); },
   theme() { return this.s.theme || 'v4'; },
 };
