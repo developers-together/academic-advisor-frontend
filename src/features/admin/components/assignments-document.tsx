@@ -32,13 +32,20 @@ export const AssignmentsDocument = () => {
   const { t } = useTranslation('admin');
 
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
   const studentsQuery = useAdminStudents({
     search: debouncedSearch,
     perPage: STUDENTS_PER_PAGE,
+    page,
   });
 
   const [importOpen, setImportOpen] = useState(false);
+
+  const changeSearch = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   if (studentsQuery.isPending) {
     return (
@@ -119,7 +126,7 @@ export const AssignmentsDocument = () => {
           label={t('accounts.searchLabel')}
           placeholder={t('accounts.searchPlaceholder')}
           value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={(event) => changeSearch(event.target.value)}
           className="max-w-sm"
         />
         <Button variant="outline" onClick={() => setImportOpen(true)}>
@@ -174,6 +181,46 @@ export const AssignmentsDocument = () => {
       </div>
 
       <PendingAssignmentsCard />
+
+      {(() => {
+        const total = studentsQuery.data.meta?.total ?? null;
+        if (total === null || total <= students.length) {
+          return null;
+        }
+        const offset = (page - 1) * STUDENTS_PER_PAGE;
+        return (
+          <nav
+            aria-label={t('common:table.navLabel')}
+            className="flex flex-wrap items-center justify-between gap-2 text-sm"
+          >
+            <p className="text-muted-foreground tabular-nums">
+              {t('common:table.pageInfo', {
+                from: offset + 1,
+                to: offset + students.length,
+                total,
+              })}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => setPage(page - 1)}
+              >
+                {t('common:table.previousLabel')}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={offset + students.length >= total}
+                onClick={() => setPage(page + 1)}
+              >
+                {t('common:table.nextLabel')}
+              </Button>
+            </div>
+          </nav>
+        );
+      })()}
 
       {importOpen && (
         <ImportAssignmentsDialog open onClose={() => setImportOpen(false)} />
