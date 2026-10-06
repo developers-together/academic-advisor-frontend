@@ -44,6 +44,19 @@ export const RecordDocument = ({
         isRetrying={isRetryingRecord}
       />
 
+      <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+        <MilestonesCard milestones={milestones} />
+        <Card className="flex flex-col items-center justify-center gap-2 px-8">
+          <ProgressRing value={completedShare} size={96} />
+          <p className="text-center text-xs text-muted-foreground tabular-nums">
+            {t('courseMap.summary', {
+              completed: completedCount,
+              total: record.prerequisite_map.length,
+            })}
+          </p>
+        </Card>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <KpiCard
           label={t('profile.cgpa.label')}
@@ -69,19 +82,6 @@ export const RecordDocument = ({
           }
           context={t('profile.remaining.context')}
         />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
-        <MilestonesCard milestones={milestones} />
-        <Card className="flex flex-col items-center justify-center gap-2 px-8">
-          <ProgressRing value={completedShare} size={96} />
-          <p className="text-center text-xs text-muted-foreground tabular-nums">
-            {t('courseMap.summary', {
-              completed: completedCount,
-              total: record.prerequisite_map.length,
-            })}
-          </p>
-        </Card>
       </div>
 
       <Card>

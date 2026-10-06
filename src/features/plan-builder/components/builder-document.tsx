@@ -11,6 +11,7 @@ import {
 } from '@/lib/api/academic-record';
 import { ApiError } from '@/lib/api-error';
 import type { Plan } from '@/types/domain';
+import { cn } from '@/utils/cn';
 
 import { useAddPlanCourse } from '../api/add-plan-course';
 import { useDiscardPlan } from '../api/discard-plan';
@@ -135,6 +136,25 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
           <h2 className="text-base font-semibold">
             {t('termContext', { term: plan.term_code })}
           </h2>
+          <p
+            className={cn(
+              'mt-1 text-sm tabular-nums',
+              plan.total_credit_hours < 12 || plan.total_credit_hours > 18
+                ? 'font-medium text-warning'
+                : 'text-muted-foreground',
+            )}
+          >
+            {t('builder.creditsTotal', {
+              total: plan.total_credit_hours,
+              min: 12,
+              max: 18,
+            })}
+          </p>
+          {(plan.total_credit_hours < 12 || plan.total_credit_hours > 18) && (
+            <p className="mt-1 text-sm text-warning">
+              {t('builder.creditsOut', { min: 12, max: 18 })}
+            </p>
+          )}
         </CardHeader>
         <CardBody>
           {plan.courses.length === 0 ? (

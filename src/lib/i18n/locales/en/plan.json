@@ -113,7 +113,9 @@
     "submitUnavailableBody": "The registration service is unavailable. Retry in a moment.",
     "discard": "Discard plan",
     "startPlan": "Start your plan",
-    "startPending": "Creating"
+    "startPending": "Creating",
+    "creditsTotal": "Planned credits: {{total}} ({{min}}-{{max}} window)",
+    "creditsOut": "Outside the {{min}}-{{max}} credit window. The validator blocks submission outside it."
   },
   "profile": {
     "title": "Profile",
@@ -190,7 +192,8 @@
     "aiCta": "Open AI Advisor",
     "notificationsTitle": "Notifications",
     "notificationsViewAll": "View all",
-    "notificationsEmpty": "You are all caught up."
+    "notificationsEmpty": "You are all caught up.",
+    "aiDisclaimer": "AI suggestions never change or submit your plan."
   },
   "courseMap": {
     "title": "Course map",
@@ -226,7 +229,6 @@
     }
   },
   "pulse": {
-    "heading": "Academic pulse — plan · load · degree",
     "degree": "{{share}}% of the curriculum",
     "credits": "{{credits}} of {{min}}–{{max}} credits",
     "loadLine": "{{credits}} of {{min}}–{{max}} credits",
@@ -239,6 +241,11 @@
       "submitted": "Plan submitted — awaiting review",
       "under_review": "Plan under review",
       "approved": "Plan approved — register in the SIS"
+    },
+    "label": {
+      "plan": "Plan state",
+      "load": "Credit load",
+      "degree": "Degree progress"
     }
   },
   "planStatus": {

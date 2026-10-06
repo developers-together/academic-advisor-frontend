@@ -20,11 +20,18 @@ describe('PulseStrip', () => {
         />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/Academic pulse/i)).toBeInTheDocument();
-    expect(screen.getAllByText('6 of 12–18 credits').length).toBeGreaterThan(0);
+    expect(screen.getByText('Plan state')).toBeInTheDocument();
+    expect(screen.getByText('Credit load')).toBeInTheDocument();
+    expect(screen.getByText('Degree progress')).toBeInTheDocument();
+    expect(screen.getAllByText('6 of 12–18 credits')).toHaveLength(1);
+    expect(screen.getByText('40% of the curriculum')).toBeInTheDocument();
     expect(
       screen.getByText('Plan returned — read the feedback'),
     ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Open my plan' })).toHaveAttribute(
+      'href',
+      '/#/app/plan',
+    );
   });
 
   it('flags a below-minimum load in the load line', () => {

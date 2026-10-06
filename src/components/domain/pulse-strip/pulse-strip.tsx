@@ -41,55 +41,75 @@ export const PulseStrip = ({
   return (
     <Card className={cn(className)} aria-busy="false">
       <CardBody className="gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="font-medium">{planStatusLabel}</span>
-          </div>
-          <div className="flex gap-2">
-            <Link className="text-sm font-medium text-primary" to={planHref}>
-              {t('pulse.openPlan')}
-            </Link>
-            <Link className="text-sm font-medium text-primary" to={recordHref}>
-              {t('pulse.openRecord')}
-            </Link>
-          </div>
+        <div
+          aria-hidden="true"
+          className="flex h-2.5 overflow-hidden rounded-full border border-border"
+        >
+          <span
+            className={cn(
+              'h-full',
+              statusTone[planStatus] || 'bg-muted-foreground/40',
+            )}
+            style={{ width: '33%' }}
+          />
+          <span
+            data-testid="pulse-load"
+            data-under-min={underMin ? 'true' : 'false'}
+            className={cn('h-full', underMin ? 'bg-warning' : 'bg-success')}
+            style={{
+              width: `${Math.max(8, Math.round((credits / creditsMax) * 100) - 8)}%`,
+            }}
+          />
+          <span className="h-full flex-1 bg-success/85" />
         </div>
-        <div>
-          <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
-            <span>{t('pulse.heading')}</span>
-            <span className="tabular-nums">
+        <dl className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <div>
+            <dt className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+              {t('pulse.label.plan')}
+            </dt>
+            <dd className="mt-0.5 text-sm font-medium">{planStatusLabel}</dd>
+          </div>
+          <div>
+            <dt className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+              {t('pulse.label.load')}
+            </dt>
+            <dd className="mt-0.5 text-sm font-medium tabular-nums">
+              {t('pulse.loadLine', {
+                credits,
+                min: creditsMin,
+                max: creditsMax,
+              })}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+              {t('pulse.label.degree')}
+            </dt>
+            <dd className="mt-0.5 text-sm font-medium tabular-nums">
               {t('pulse.degree', { share: earnedShare })}
-            </span>
+            </dd>
           </div>
-          <div className="flex h-2.5 overflow-hidden rounded-full border border-border">
-            <span
-              className={cn(
-                'h-full',
-                statusTone[planStatus] || 'bg-muted-foreground/40',
-              )}
-              style={{ width: '33%' }}
-            />
-            <span
-              data-testid="pulse-load"
-              data-under-min={underMin ? 'true' : 'false'}
-              className={cn('h-full', underMin ? 'bg-warning' : 'bg-success')}
-              style={{
-                width: `${Math.max(8, Math.round((credits / creditsMax) * 100) - 8)}%`,
-              }}
-            />
-            <span className="h-full flex-1 bg-success/85" />
-          </div>
-        </div>
-        <div className="flex items-center justify-between text-xs text-muted-foreground tabular-nums">
-          <span>
+        </dl>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm text-muted-foreground">
             {t(`pulse.planLine.${planStatus}`, {
               defaultValue: planStatusLabel,
             })}
-          </span>
-          <span>
-            {t('pulse.loadLine', { credits, min: creditsMin, max: creditsMax })}
-          </span>
-          <span>{t('pulse.earnedLine')}</span>
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              className="inline-flex min-h-11 items-center text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+              to={planHref}
+            >
+              {t('pulse.openPlan')}
+            </Link>
+            <Link
+              className="inline-flex min-h-11 items-center text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+              to={recordHref}
+            >
+              {t('pulse.openRecord')}
+            </Link>
+          </div>
         </div>
       </CardBody>
     </Card>

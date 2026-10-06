@@ -105,7 +105,6 @@ export default function DashboardRoute() {
           <ProgressStrip
             isPending={recordQuery.isPending}
             cgpa={recordQuery.data?.cgpa ?? null}
-            remaining={recordQuery.data?.remaining_requirements ?? null}
             onRetry={() => void recordQuery.refetch()}
             requestId={
               recordQuery.error instanceof ApiError
@@ -155,6 +154,9 @@ export default function DashboardRoute() {
                 <p className="mt-1 text-sm text-muted-foreground">
                   {t('home.aiBody')}
                 </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t('home.aiDisclaimer')}
+                </p>
               </div>
               <Button asChild variant="outline">
                 <Link to={paths.app.chat.getHref()}>{t('home.aiCta')}</Link>
@@ -170,14 +172,12 @@ export default function DashboardRoute() {
 const ProgressStrip = ({
   isPending,
   cgpa,
-  remaining,
   onRetry,
   requestId,
   failed,
 }: {
   isPending: boolean;
   cgpa: number | null;
-  remaining: string | null;
   onRetry: () => void;
   requestId: string | null;
   failed: boolean;
@@ -192,7 +192,7 @@ const ProgressStrip = ({
   }
 
   return (
-    <div className="grid max-w-2xl gap-4 sm:grid-cols-2">
+    <div className="max-w-2xl">
       <KpiCard
         label={t('profile.cgpa.label')}
         value={
@@ -205,17 +205,6 @@ const ProgressStrip = ({
           )
         }
         context={t('profile.cgpa.context')}
-      />
-      <KpiCard
-        label={t('profile.remaining.label')}
-        value={
-          remaining ?? (
-            <span className="text-base font-normal text-muted-foreground">
-              {t('profile.unavailable')}
-            </span>
-          )
-        }
-        context={t('profile.remaining.context')}
       />
     </div>
   );
