@@ -15,6 +15,13 @@ let aiDirty = false;
 let staffTab = 'All';
 let staffSearch = '';
 let confirmDeleteStaff = null;
+let editCourse = null;
+let showAddStudent = false;
+
+function windowDays() {
+  const closes = new Date('2026-10-16');
+  return Math.max(0, Math.ceil((closes - new Date('2026-10-06')) / 86400000));
+}
 
 function adminRefocus(id) {
   const el = document.getElementById(id);
@@ -81,6 +88,27 @@ function adminCreateWindow() {
   Store.toast('Window ' + term + ' created. Activate it when the SIS opens.');
 }
 
+function adminSaveCourse() {
+  const c = Store.s.admin.courses.find((x) => x.code === editCourse);
+  if (!c) { editCourse = null; App.render(); return; }
+  c.title = document.getElementById('ec-title').value.trim() || c.title;
+  c.credits = parseInt(document.getElementById('ec-credits').value, 10) || c.credits;
+  c.program = document.getElementById('ec-program').value;
+  c.updated = 'just now';
+  editCourse = null;
+  Store.toast('Course saved.');
+  App.render();
+}
+
+function adminCreateStudent() {
+  const name = document.getElementById('ns-name').value.trim();
+  if (!name) { Store.toast('A name is required.', 'destructive'); return; }
+  Store.s.admin.students.unshift({ id: Date.now(), name, binding: 'pending', status: 'active', assigned: false });
+  showAddStudent = false;
+  Store.toast('Account created. Binding runs next.');
+  App.render();
+}
+
 function adminAttention() {
   const a = Store.s.admin;
   return `
@@ -102,7 +130,7 @@ App.views['/admin'] = function () {
     ${attention}
     ${w ? `<div class="card col gap-1" style="margin-top:12px;">
       <div class="row between"><h2>Registration window</h2>${w.active ? '<span class="chip success">Active</span>' : '<span class="chip neutral">Inactive</span>'}</div>
-      <p class="sm num"><b>${UI.esc(w.term)}</b> closes in 11 days</p>
+      <p class="sm num"><b>${UI.esc(w.term)}</b> closes in ${windowDays()} days</p>
       <a class="sm" href="#/admin/windows">Open windows</a>
     </div>` : ''}
     <div class="col gap-3" style="margin-top:12px;">${adminTaskGrid(false)}</div>`;
@@ -135,9 +163,28 @@ App.views['/admin/students'] = function () {
       <td class="num"><button class="btn ghost sm" onclick="openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
     </tr>`;
   }).join('');
+  const modal = showAddStudent ? UI.modal(`
+    <div class="card col gap-3" style="max-width:480px; margin:10vh auto;">
+      <h2>Add a student</h2>
+      <div class="col gap-2">
+        <div>
+          <label class="label" for="ns-name">Full name</label>
+          <input class="input" id="ns-name" placeholder="Sara Student" />
+        </div>
+        <div>
+          <label class="label" for="ns-id">Student ID</label>
+          <input class="input" id="ns-id" placeholder="20221202" />
+        </div>
+      </div>
+      <p class="hint">The account binds to the SIS record; credentials are issued after binding.</p>
+      <div class="row gap-2" style="justify-content:flex-end;">
+        <button class="btn outline" onclick="showAddStudent=false; App.render();">Cancel</button>
+        <button class="btn primary" onclick="adminCreateStudent()">Create account</button>
+      </div>
+    </div>`) : '';
   return `
     ${UI.pageHead('Students', 'Accounts, binding, and assignment',
-      `<button class="btn primary" onclick="Store.toast('Add-student ships with the real binding flow.', 'info')">Add student</button>`)}
+      `<button class="btn primary" onclick="showAddStudent=true; App.render();">Add student</button>`)}
     <div class="row gap-2 wrap" style="margin:4px 0 8px;">
       <input class="input" id="stu-search" style="max-width:260px;" placeholder="Search by name" value="${UI.esc(studentSearch)}" oninput="studentSearch=this.value; App.render(); adminRefocus('stu-search')" />
       <select class="input" style="width:auto;" onchange="studentFilter=this.value; App.render();">
@@ -145,7 +192,8 @@ App.views['/admin/students'] = function () {
       </select>
       <span class="sm muted num">${list.length} students</span>
     </div>
-    ${UI.tableWrap(['Name', 'Student binding', 'Status', 'Advisor', ''], rows)}`;
+    ${UI.tableWrap(['Name', 'Student binding', 'Status', 'Advisor', ''], rows)}
+    ${modal}`;
 };
 
 App.views['/admin/assignments'] = function () {
@@ -188,6 +236,7 @@ App.views['/admin/assignments'] = function () {
 
 App.views['/admin/courses'] = function () {
   App.titles['/admin/courses'] = ['Overview', 'Courses'];
+  if (App.adminProgramFilter) { courseProgram = App.adminProgramFilter; App.adminProgramFilter = null; }
   const a = Store.s.admin;
   const q = courseSearch.trim().toLowerCase();
   let list = a.courses.filter((c) => !q || c.code.toLowerCase().includes(q) || c.title.toLowerCase().includes(q));
@@ -211,7 +260,7 @@ App.views['/admin/courses'] = function () {
     const key = 'crs-' + c.code;
     const menu = openMenuId === key ? `
       <div class="popover menu" style="position:static; margin-top:6px;">
-        <button onclick="openMenuId=null; Store.toast('Edit dialog ships with implementation.', 'info')">Edit</button>
+        <button onclick="openMenuId=null; editCourse='${c.code}'; App.render();">Edit</button>
         <button class="danger" onclick="openMenuId=null; confirmDeleteCourse='${c.code}'; App.render();">Delete</button>
       </div>` : '';
     return `<tr>
@@ -235,6 +284,33 @@ App.views['/admin/courses'] = function () {
         <button class="btn destructive" onclick="const c=confirmDeleteCourse; confirmDeleteCourse=null; Store.deleteCourse(c); Store.toast('Course deleted.');">Delete course</button>
       </div>
     </div>`) : '';
+  const editTarget = editCourse ? a.courses.find((c) => c.code === editCourse) : null;
+  const editModal = editTarget ? UI.modal(`
+    <div class="card col gap-3" style="max-width:480px; margin:10vh auto;">
+      <h2>Edit ${UI.esc(editTarget.code)}</h2>
+      <div class="col gap-2">
+        <div>
+          <label class="label" for="ec-title">Title</label>
+          <input class="input" id="ec-title" value="${UI.esc(editTarget.title)}" />
+        </div>
+        <div class="row gap-2">
+          <div>
+            <label class="label" for="ec-credits">Credits</label>
+            <input class="input" id="ec-credits" type="number" min="0" value="${editTarget.credits}" style="max-width:120px;" />
+          </div>
+          <div>
+            <label class="label" for="ec-program">Program</label>
+            <select class="input" id="ec-program" style="width:auto;">
+              ${['CSE', 'EE', 'MEP', 'Common'].map((p) => `<option ${editTarget.program === p ? 'selected' : ''}>${p}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row gap-2" style="justify-content:flex-end;">
+        <button class="btn outline" onclick="editCourse=null; App.render();">Cancel</button>
+        <button class="btn primary" onclick="adminSaveCourse()">Save changes</button>
+      </div>
+    </div>`) : '';
   return `
     ${UI.pageHead('Courses', 'Metadata the rules and plans read',
       `<button class="btn primary" onclick="showAddCourse=true; App.render();">Add course</button>`)}
@@ -255,7 +331,7 @@ App.views['/admin/courses'] = function () {
         <button class="btn outline sm" onclick="Store.toast('Page 2 ships with the real API.', 'info')">Next</button>
       </div>
     </div>
-    ${modal}`;
+    ${modal}${editModal}`;
 };
 
 App.views['/admin/programs'] = function () {
@@ -270,7 +346,7 @@ App.views['/admin/programs'] = function () {
       <td><code>${UI.esc(p.code)}</code></td>
       <td>${UI.esc(p.title)}</td>
       <td class="num">${p.courses}</td>
-      <td class="num"><button class="btn ghost sm" onclick="openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
+      <td class="num"><button class="btn outline sm" onclick="App.adminProgramFilter='${p.code}'; App.go('#/admin/courses');">View courses</button> <button class="btn ghost sm" onclick="openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
     </tr>`;
   }).join('');
   return `
@@ -349,7 +425,7 @@ App.views['/admin/windows'] = function () {
     ${UI.pageHead('Registration Windows', 'The academic clock plans submit inside',
       `<button class="btn primary" onclick="showAddWindow=!showAddWindow; App.render();">Add window</button>`)}
     ${addCard}
-    ${UI.banner('info', `SIS mirror as of ${Store.s.asOf}`, 'Dates come from the SIS; activation is yours.')}
+    ${UI.banner('info', `SIS mirror as of ${Store.s.asOf}`, (Store.s.admin.windows.some((x) => x.active) ? `The active window closes in ${windowDays()} days. ` : '') + 'Dates come from the SIS; activation is yours.')}
     <div style="margin-top:12px;">${UI.tableWrap(['Term', { label: 'Opens', right: true }, { label: 'Closes', right: true }, 'State', ''], rows)}</div>
     <p class="hint">Deactivating confirms first: students can no longer submit plans for the term.</p>`;
 };
@@ -429,24 +505,8 @@ App.views['/admin/staff'] = function () {
 };
 
 App.views['/admin/notifications'] = function () {
-  App.titles['/admin/notifications'] = ['Overview', 'Notifications'];
-  const items = Store.notifsFor();
-  return `
-    ${UI.pageHead('Notifications', 'Everything that needs you, in one list',
-      `<button class="btn outline sm" onclick="Store.markAllRead()">Mark all as read</button>`)}
-    <div class="card col" style="padding:0; overflow:hidden;">
-      ${items.map((n) => `
-        <div class="notif ${n.read ? '' : 'unread'}">
-          ${n.read ? '<span style="width:7px; flex:none;"></span>' : '<span class="unread-dot"></span>'}
-          <span class="n-icon" style="background:var(--muted);">${n.icon}</span>
-          <div class="col gap-1" style="flex:1;">
-            <span class="n-title">${UI.esc(n.title)}</span>
-            <span class="n-body">${UI.esc(n.body)}</span>
-            ${n.action ? `<div class="row gap-2" style="margin-top:4px;"><a class="btn outline sm" href="${n.action.route}" onclick="Store.markRead(${n.id})">${n.action.label}</a></div>` : ''}
-          </div>
-          <span class="n-time">${n.time}</span>
-        </div>`).join('')}
-    </div>`;
+  App.titles['/admin/notifications'] = ['Notifications'];
+  return UI.notificationsView();
 };
 
 App.views['/admin/operations'] = function () {
