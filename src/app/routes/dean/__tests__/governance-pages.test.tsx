@@ -89,7 +89,9 @@ test('the dean advisors view renders aggregate advisor rows', async () => {
   await deanSeesAdvisors();
 
   expect(
-    await screen.findByRole('heading', { name: 'Advisors' }),
+    await screen.findByRole('heading', {
+      name: 'Which advisors need attention?',
+    }),
   ).toBeInTheDocument();
   const table = await screen.findByRole('table');
   const rows = within(table).getAllByRole('row').slice(1);
@@ -109,7 +111,9 @@ test('the dean analytics view renders the completion trend with a text alternati
   renderRealRouter('/dean/analytics');
 
   expect(
-    await screen.findByRole('heading', { name: 'Analytics' }),
+    await screen.findByRole('heading', {
+      name: 'Where are trends heading in your area?',
+    }),
   ).toBeInTheDocument();
   expect(
     (await screen.findAllByText('Completion rate by term')).length,

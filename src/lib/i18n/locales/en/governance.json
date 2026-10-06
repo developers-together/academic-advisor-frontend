@@ -1,6 +1,6 @@
 {
   "dean": {
-    "title": "Faculty Overview",
+    "title": "How is advising running in your faculty?",
     "context": "Plan pipeline for your faculty this term.",
     "export": "Export CSV",
     "exported": "CSV export generated.",
@@ -116,20 +116,20 @@
     "body": "Your dean account has no faculty assigned. Ask an administrator to finish setup."
   },
   "vpOverview": {
-    "title": "Overview",
+    "title": "How do faculties compare this term?",
     "context": "University-wide advising outcomes for this term.",
     "compareCta": "Compare faculties",
     "emptyTitle": "No overview data yet.",
     "emptyBody": "University metrics appear here."
   },
   "vpFaculties": {
-    "title": "Faculties",
+    "title": "How does each faculty perform?",
     "context": "All faculties compared on this term’s outcomes.",
     "emptyTitle": "No scorecard data yet.",
     "emptyBody": "Per-faculty metrics appear here."
   },
   "advisors": {
-    "title": "Advisors",
+    "title": "Which advisors need attention?",
     "context": "Advisor workload and outcomes across your area, as aggregates.",
     "columns": {
       "advisor": "Advisor",
@@ -147,7 +147,7 @@
     }
   },
   "analytics": {
-    "title": "Analytics",
+    "title": "Where are trends heading in your area?",
     "context": "How advising in your area moves over terms."
   },
   "trends": {
@@ -159,7 +159,7 @@
     "vp": {
       "title": "Completion rate by faculty, by term",
       "question": "Which faculties move differently over time?",
-      "pageTitle": "Trends",
+      "pageTitle": "Which faculties move differently over time?",
       "pageContext": "Faculties compared across terms on completion."
     },
     "series": {

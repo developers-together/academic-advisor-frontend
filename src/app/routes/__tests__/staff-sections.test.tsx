@@ -108,7 +108,7 @@ describe('dean section', () => {
     renderRealRouter('/');
     await signIn(dean);
 
-    await expectLanding('Faculty Overview', [
+    await expectLanding('How is advising running in your faculty?', [
       ['Overview', '/dean'],
       ['Advisors', '/dean/advisors'],
       ['Analytics', '/dean/analytics'],
@@ -140,7 +140,7 @@ describe('vp section', () => {
     renderRealRouter('/');
     await signIn(vp);
 
-    await expectLanding('Overview', [
+    await expectLanding('How do faculties compare this term?', [
       ['Overview', '/vp'],
       ['Faculties', '/vp/faculties'],
       ['Trends', '/vp/trends'],
@@ -157,7 +157,9 @@ describe('vp section', () => {
     renderRealRouter('/vp/faculties');
 
     expect(
-      await screen.findByRole('heading', { name: 'Faculties' }),
+      await screen.findByRole('heading', {
+        name: 'How does each faculty perform?',
+      }),
     ).toBeInTheDocument();
     expect(
       await screen.findByText('No scorecard data yet.'),
