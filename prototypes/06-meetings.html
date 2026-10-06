@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>06 · Advisor meetings, day model — C-03</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  .slot { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:999px; padding:8px 14px; cursor:pointer; font-size:13px; font-weight:500; background:var(--card); }
+  .slot input { margin:0; accent-color:var(--crimson-700); }
+  .slot.sel, .slot:has(input:checked) { border-color:var(--crimson-700); background:var(--crimson-50); color:var(--crimson-700); }
+  .slot.locked { background:var(--muted); color:var(--muted-fg); cursor:not-allowed; }
+  .slot.disabled { opacity:0.55; cursor:not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">06 · Advisor meetings, day model — C-03, D-11</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="today">Today first</button>
+    <button data-pane="awaiting">Awaiting response</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ TODAY FIRST ============ -->
+<div class="pane active" data-pane="today">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>≡ Queue</a><a>👥 Students</a><a class="active">📅 Meetings</a>
+    <div class="side-section">More</div>
+    <a>🕐 Office Hours</a><a>🔔 Notifications</a><a>👤 Profile</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span class="current">Meetings</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">AA</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Meetings</h1><p class="desc">Your day first, then what waits on a decision</p></div>
+        <button class="btn outline">Invite student</button>
+      </div>
+
+      <!-- today strip -->
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Today · Sun 12 Oct</h2>
+          <span class="chip neutral">2 confirmed</span>
+        </div>
+        <div class="col gap-2">
+          <div class="row between wrap gap-2" style="border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px;">
+            <span class="sm"><b>Sara Student</b> · 10:00–10:30 · Course selection · Building 3, Room 2140</span>
+            <button class="btn outline sm">Mark completed</button>
+          </div>
+          <div class="row between wrap gap-2" style="border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px;">
+            <span class="sm"><b>Mona Fathy</b> · 12:00–12:30 · Plan return follow-up · Building 3, Room 2140</span>
+            <button class="btn outline sm">Mark completed</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- needs action -->
+      <div class="col gap-3">
+        <h2>Needs action <span class="muted num" style="font-weight:400;">(2)</span></h2>
+
+        <div class="card col gap-2">
+          <div class="row between wrap gap-2">
+            <div class="row gap-2 wrap"><h3>Lina Majors</h3><span class="chip info"><span class="dot"></span> New request</span></div>
+            <span class="xs muted">waiting 2 days</span>
+          </div>
+          <p class="sm">Reason: Credit overload discussion</p>
+          <div class="row wrap gap-2">
+            <button class="btn primary sm">Confirm time</button>
+            <button class="btn outline sm">Propose another</button>
+            <button class="btn ghost sm">Delay</button>
+            <button class="btn ghost sm">Decline</button>
+          </div>
+        </div>
+
+        <div class="card col gap-2">
+          <div class="row between wrap gap-2">
+            <div class="row gap-2 wrap"><h3>Omar Nabil</h3><span class="chip info"><span class="dot"></span> Awaiting response</span></div>
+            <span class="xs muted">you proposed 2 slots</span>
+          </div>
+          <p class="sm">Reason: Plan review</p>
+          <div class="row wrap gap-4" style="align-items:flex-start;">
+            <div class="col gap-1">
+              <span class="slot locked">⊘ Sun 12 Oct · 10:00</span>
+              <span class="xs" style="color:var(--destructive);">Booked 10:00 — CS 301 lecture</span>
+            </div>
+            <label class="slot"><input type="radio" name="omar-today" /> Mon 13 Oct · 11:00</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="note"><b>What changes (C-03, D-11):</b> the Today strip comes first. Each view holds one
+      primary: Confirm time here, Mark completed in the strip, so Invite student becomes outline.
+      Delay returns as an action. Proposed slots render as chips, and a booked slot states its conflict.</div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ AWAITING RESPONSE ============ -->
+<div class="pane" data-pane="awaiting">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>≡ Queue</a><a>👥 Students</a><a class="active">📅 Meetings</a>
+    <div class="side-section">More</div>
+    <a>🕐 Office Hours</a><a>🔔 Notifications</a><a>👤 Profile</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span class="current">Meetings</span><span>·</span><span>Awaiting response</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">AA</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Meetings</h1><p class="desc">Awaiting response · one card, one decision</p></div>
+      </div>
+
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <div class="row gap-2 wrap"><h3>Omar Nabil</h3><span class="chip info"><span class="dot"></span> Awaiting response</span></div>
+          <span class="xs muted">reason: Plan review</span>
+        </div>
+        <p class="sm muted">Sun 12 Oct · 10:00 is no longer free (CS 301 lecture). Pick a free slot for the same meeting.</p>
+        <div class="col gap-2">
+          <span class="section-title" style="margin-bottom:0;">Mon 13 Oct</span>
+          <div class="row wrap gap-2">
+            <label class="slot sel"><input type="radio" name="omar-pick" checked /> 11:00</label>
+            <label class="slot disabled"><input type="radio" name="omar-pick" disabled /> 14:00 · booked</label>
+          </div>
+        </div>
+        <div class="row between wrap gap-2" style="border-top:1px solid var(--border); padding-top:14px;">
+          <span class="sm muted">Mon 13 Oct · 11:00 · 30 min · Building 3, Room 2140</span>
+          <div class="row gap-2">
+            <button class="btn ghost sm">Cancel</button>
+            <button class="btn primary sm">Confirm time</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="note"><b>Slot-picker detail:</b> booked slots are disabled and say why. The confirm bar
+      restates the pick in one line, so the advisor confirms a fact, not a dialog.</div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
