@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -48,6 +49,7 @@ export const GoalDialog = ({ open, onClose, onCreated }: GoalDialogProps) => {
       onOpenChange={(next) => {
         if (!next) {
           setGoal(null);
+          createConversation.reset();
           onClose();
         }
       }}
@@ -57,6 +59,11 @@ export const GoalDialog = ({ open, onClose, onCreated }: GoalDialogProps) => {
           <DialogTitle>{t('goalDialog.title')}</DialogTitle>
           <DialogDescription>{t('goalDialog.body')}</DialogDescription>
         </DialogHeader>
+        {createConversation.isError && (
+          <Banner variant="destructive" title={t('common:errors.saveFailed')}>
+            <p>{t('common:errors.saveFailedBody')}</p>
+          </Banner>
+        )}
         <div className="grid gap-2 sm:grid-cols-3">
           {GOALS.map((candidate) => (
             <button
