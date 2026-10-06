@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>11 · Auth alignment — C-14, D-33</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  /* local prototype-only helpers */
+  .auth-wrap { position: relative; min-height: calc(100vh - 44px); display: grid; place-items: start center; padding: 88px 24px 48px; }
+  .auth-mark { width: 32px; height: 32px; border-radius: 50%; background: var(--crimson-700); color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 700; flex: none; }
+  .lang { position: absolute; top: 16px; inset-inline-end: 16px; }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">11 · Auth alignment — C-14, D-33</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="signin">Sign in</button>
+    <button data-pane="error">Error state</button>
+    <button data-pane="forgot">Forgot password</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ PANE 1 · SIGN IN ============ -->
+<div class="pane active" data-pane="signin">
+  <div class="auth-wrap">
+    <div class="row gap-1 lang">
+      <button class="btn outline sm">EN</button>
+      <button class="btn ghost sm">العربية</button>
+    </div>
+    <div class="col gap-4" style="width:400px; max-width:100%;">
+      <div class="row gap-2" style="justify-content:center;">
+        <span class="auth-mark">A</span><b style="font-size:16px;">Advisor</b>
+      </div>
+      <div class="card">
+        <h1>Sign in</h1>
+        <form class="col gap-4" style="margin-top:20px;">
+          <div>
+            <label class="label" for="si-email">University email</label>
+            <input class="input" id="si-email" type="email" placeholder="name@ejust.edu.eg" />
+          </div>
+          <div>
+            <label class="label" for="si-password">Password</label>
+            <div style="position:relative;">
+              <input class="input" id="si-password" type="password" style="padding-inline-end:44px;" />
+              <button type="button" class="btn ghost" aria-label="Show password" style="position:absolute; top:4px; inset-inline-end:4px; width:32px; height:32px; padding:0;">👁</button>
+            </div>
+          </div>
+          <button type="button" class="btn primary" style="width:100%;">Sign in</button>
+        </form>
+        <div class="row between wrap gap-2" style="margin-top:16px;">
+          <a href="#">Forgot password?</a>
+          <a href="#">Create an account</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANE 2 · ERROR STATE ============ -->
+<div class="pane" data-pane="error">
+  <div class="auth-wrap">
+    <div class="row gap-1 lang">
+      <button class="btn outline sm">EN</button>
+      <button class="btn ghost sm">العربية</button>
+    </div>
+    <div class="col gap-4" style="width:400px; max-width:100%;">
+      <div class="row gap-2" style="justify-content:center;">
+        <span class="auth-mark">A</span><b style="font-size:16px;">Advisor</b>
+      </div>
+      <div class="card">
+        <h1>Sign in</h1>
+        <div class="banner destructive" style="margin-top:16px;">
+          <span class="b-icon">!</span>
+          <span class="sm">That email or password is wrong. Nothing was sent. Try again or <a href="#">reset your password</a>.</span>
+        </div>
+        <form class="col gap-4" style="margin-top:16px;">
+          <div>
+            <label class="label" for="er-email">University email</label>
+            <input class="input" id="er-email" type="email" value="name@ejust.edu.eg" />
+          </div>
+          <div>
+            <label class="label" for="er-password">Password</label>
+            <div style="position:relative;">
+              <input class="input" id="er-password" type="password" style="padding-inline-end:44px; border-color:var(--destructive);" />
+              <button type="button" class="btn ghost" aria-label="Show password" style="position:absolute; top:4px; inset-inline-end:4px; width:32px; height:32px; padding:0;">👁</button>
+            </div>
+            <p class="sm" style="color:var(--destructive); margin-top:6px;">Password is required.</p>
+          </div>
+          <button type="button" class="btn primary" style="width:100%;">Sign in</button>
+        </form>
+        <div class="row between wrap gap-2" style="margin-top:16px;">
+          <a href="#">Forgot password?</a>
+          <a href="#">Create an account</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANE 3 · FORGOT PASSWORD ============ -->
+<div class="pane" data-pane="forgot">
+  <div class="auth-wrap">
+    <div class="row gap-1 lang">
+      <button class="btn outline sm">EN</button>
+      <button class="btn ghost sm">العربية</button>
+    </div>
+    <div class="col gap-4" style="width:400px; max-width:100%;">
+      <div class="row gap-2" style="justify-content:center;">
+        <span class="auth-mark">A</span><b style="font-size:16px;">Advisor</b>
+      </div>
+      <div class="card">
+        <h1>Reset your password</h1>
+        <p class="sm muted" style="margin-top:4px;">We send a reset link to your university email.</p>
+        <form class="col gap-4" style="margin-top:20px;">
+          <div>
+            <label class="label" for="fp-email">University email</label>
+            <input class="input" id="fp-email" type="email" placeholder="name@ejust.edu.eg" />
+          </div>
+          <button type="button" class="btn primary" style="width:100%;">Send reset link</button>
+        </form>
+        <div class="banner success" style="margin-top:16px;">
+          <span class="b-icon">✓</span>
+          <span class="sm">Reset link sent. Check your inbox — it expires in 30 minutes.</span>
+        </div>
+      </div>
+      <p style="text-align:center;"><a href="#">← Back to sign in</a></p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
