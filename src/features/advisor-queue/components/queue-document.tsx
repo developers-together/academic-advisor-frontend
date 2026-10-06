@@ -182,7 +182,7 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
           onRequestMeeting={() => setInviteOpen(true)}
           comments={commentsQuery.data ?? []}
           commentPending={addComment.isPending}
-          onAddComment={(body) => addComment.mutate(body)}
+          onAddComment={(body) => addComment.mutateAsync(body)}
           approvePending={approveMutation.isPending}
           approveGate={approveGate}
           approveUnavailable={approveUnavailable}
