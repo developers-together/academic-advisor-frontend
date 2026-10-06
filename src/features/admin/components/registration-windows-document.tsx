@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
 import { ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/dialog';
 import { useNotifications } from '@/components/ui/notifications';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -27,6 +29,10 @@ export const RegistrationWindowsDocument = () => {
   const addNotification = useNotifications((state) => state.addNotification);
   const windowsQuery = useRegistrationWindows();
   const updateWindow = useUpdateRegistrationWindow();
+  const [closeTerm, setCloseTerm] = useState<{
+    id: number;
+    term: string;
+  } | null>(null);
 
   if (windowsQuery.isPending) {
     return (
@@ -100,18 +106,7 @@ export const RegistrationWindowsDocument = () => {
                     variant="ghost"
                     disabled={updateWindow.isPending}
                     onClick={() =>
-                      updateWindow.mutate(
-                        { id: entry.id, input: { is_active: false } },
-                        {
-                          onSuccess: () =>
-                            addNotification({
-                              type: 'info',
-                              title: t('windows.deactivated', {
-                                term: entry.term_code,
-                              }),
-                            }),
-                        },
-                      )
+                      setCloseTerm({ id: entry.id, term: entry.term_code })
                     }
                   >
                     {t('windows.deactivate')}
@@ -132,6 +127,11 @@ export const RegistrationWindowsDocument = () => {
                                 term: entry.term_code,
                               }),
                             }),
+                          onError: () =>
+                            addNotification({
+                              type: 'error',
+                              title: t('common:errors.saveFailed'),
+                            }),
                         },
                       )
                     }
@@ -144,6 +144,40 @@ export const RegistrationWindowsDocument = () => {
           ))}
         </TableBody>
       </TableElement>
+
+      <ConfirmDialog
+        open={closeTerm !== null}
+        onCancel={() => setCloseTerm(null)}
+        title={t('windows.deactivateConfirm.title', {
+          term: closeTerm?.term,
+        })}
+        body={t('windows.deactivateConfirm.body', {
+          term: closeTerm?.term,
+        })}
+        confirmLabel={t('windows.deactivateConfirm.confirm')}
+        onConfirm={() => {
+          if (closeTerm === null) return;
+          updateWindow.mutate(
+            { id: closeTerm.id, input: { is_active: false } },
+            {
+              onSuccess: () => {
+                addNotification({
+                  type: 'info',
+                  title: t('windows.deactivated', { term: closeTerm.term }),
+                });
+                setCloseTerm(null);
+              },
+              onError: () => {
+                addNotification({
+                  type: 'error',
+                  title: t('common:errors.saveFailed'),
+                });
+                setCloseTerm(null);
+              },
+            },
+          );
+        }}
+      />
     </div>
   );
 };
