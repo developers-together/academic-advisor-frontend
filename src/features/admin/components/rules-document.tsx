@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { ApiError } from '@/lib/api-error';
 import { PermissionDenied } from '@/lib/authorization';
+import { formatDate } from '@/lib/i18n/format';
 import type { UniversityRule } from '@/types/domain';
 
 import { useAdminRules } from '../api/get-admin-rules';
@@ -126,8 +127,8 @@ export const RulesDocument = () => {
                 <TableCell className="px-3 py-2 text-sm" dir="rtl">
                   {rule.title_ar}
                 </TableCell>
-                <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
-                  {rule.updated_at}
+                <TableCell className="px-3 py-2 text-2xs text-muted-foreground tabular-nums">
+                  {formatDate(rule.updated_at)}
                 </TableCell>
               </TableRow>
             ))}
