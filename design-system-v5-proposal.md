@@ -128,3 +128,18 @@ background as text). These align with the existing dark tokens; v5 formalizes th
    values, accessible text; rail overload → prioritize signal/urgency, progressive
    disclosure.
 7. Next loop (after your approval): design.md v5 merge, then implementation tickets.
+## Part 7 — Enhancement and accessibility closure (2026-10-06, final)
+
+The working replica was enhanced with the full contracted feature set: role-scoped
+command palette (Ctrl/Cmd+K), dark mode with persistence, keyboard queue triage
+(J/K/Enter/A/R/Esc), a live office-hours editor, clickable breadcrumbs, a shared
+notification center with All/Unread, multi-thread AI chat, real admin edit/create
+dialogs, programs-to-courses drills, computed window countdowns, and real CSV export.
+
+ChatGPT verdict: FEATURE-COMPLETE. Its final item — an accessibility/RTL stress pass —
+was executed and closed (ChatGPT: "CLOSED"). The pass caught and fixed four real
+defects: no responsive mobile shell at 390px, no dialog focus trap or focus return, no
+global focus-visible ring, and 40px buttons against the 44px contract. Final state:
+23/23 accessibility+RTL checks, 28/28 feature checks, 26/26 v5 checks, 20/20 v4
+checks; zero console errors everywhere. The four scripted suites live in
+`prototypes/qa/` and are re-runnable with any Chromium runner.
