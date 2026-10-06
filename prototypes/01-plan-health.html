@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>01 · Plan health strip and Returned hero — C-01</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">01 · Plan health strip and Returned hero — C-01, D-01, D-03, D-04, W-05</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="draft">State: Draft</button>
+    <button data-pane="returned">State: Returned</button>
+    <button data-pane="approved">State: Approved</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ DRAFT ============ -->
+<div class="pane active" data-pane="draft">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a class="active">⌂ Home</a><a>▤ My Plan</a><a>🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a>👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>My Plan</span><span>·</span><span class="current">Term 2026F</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">3</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>My Plan</h1><p class="desc">Term 2026F · one official plan per term</p></div>
+        <div class="row gap-2">
+          <span class="chip draft"><span class="dot"></span> Draft</span>
+          <a class="btn primary" href="#">Open in builder</a>
+        </div>
+      </div>
+
+      <!-- plan health strip -->
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Plan health</h2>
+          <div class="row gap-2">
+            <button class="btn outline sm">Validate plan</button>
+            <button class="btn outline sm" title="Becomes the primary action once validation passes">Submit for review</button>
+          </div>
+        </div>
+        <div>
+          <div class="row between sm" style="margin-bottom:6px;">
+            <span class="muted">Planned load</span>
+            <span class="num"><b>6</b> of 12–18 credits · 2 courses</span>
+          </div>
+          <div class="meter" title="standard load 12-18">
+            <span class="zone" style="left:50%; right:0;"></span>
+            <span class="fill" style="width:33%; background: var(--warning);"></span>
+          </div>
+          <p class="hint">Below the standard load. Registration rules cap plans at 18 credits and expect at least 12 in a fall or spring term.</p>
+        </div>
+        <div class="banner info">
+          <span class="b-icon">i</span>
+          <div class="col gap-1"><span class="b-title">Not validated yet</span>
+          <p class="sm">Validation runs the university checks: credit load, prerequisites, repeats, program rules. Run it now or at submit time.</p></div>
+        </div>
+      </div>
+
+      <!-- plan lines -->
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Course</th><th>Title</th><th class="num">Credits</th><th>Group</th><th>Section</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><code>CS 201</code></td><td>Data Structures</td><td class="num">3</td><td>Lecture</td><td>01</td><td class="num"><button class="btn ghost sm">Remove</button></td></tr>
+            <tr><td><code>MATH 205</code></td><td>Linear Algebra</td><td class="num">3</td><td>Lecture</td><td>02</td><td class="num"><button class="btn ghost sm">Remove</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note"><b>What changes in the builder (D-04, W-05):</b> each line shows its credits;
+      a blocked add explains itself inline — “CS 301 cannot be added: complete CS 201 first. [Why?];
+      and every edit autosaves with a saving → saved indicator beside the title.</div>
+
+      <div class="card col gap-2">
+        <h2>Advisor comments</h2>
+        <div class="banner info" style="padding:12px 14px;"><span class="b-icon">i</span>
+          <p class="sm">No comments yet. Your advisor writes here when reviewing your plan.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ RETURNED ============ -->
+<div class="pane" data-pane="returned">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a class="active">⌂ Home</a><a>▤ My Plan</a><a>🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a>👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>My Plan</span><span>·</span><span class="current">Term 2026F</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">3</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>My Plan</h1><p class="desc">Term 2026F · one official plan per term</p></div>
+        <div class="row gap-2">
+          <span class="chip returned"><span class="dot"></span> Returned</span>
+          <a class="btn primary" href="#">Open in builder to fix</a>
+        </div>
+      </div>
+
+      <div class="banner warning">
+        <span class="b-icon">!</span>
+        <div class="col gap-1">
+          <span class="b-title">Your plan was returned. Read the reason, fix the plan, resubmit.</span>
+          <p class="sm">Amr Advisor returned this plan on 05 Oct 2026, 20:20. Editing is open again.</p>
+        </div>
+      </div>
+
+      <!-- return reason: the fact, stated once, at the top -->
+      <div class="card col gap-2" style="border-inline-start: 3px solid var(--state-returned-border);">
+        <div class="row between">
+          <h2>Return reason</h2>
+          <button class="btn outline sm">Mark as seen</button>
+        </div>
+        <p>“Drop MATH 205 this term — your repeat rule flags it against MATH 101 timing.
+        Add one more 3-credit course to reach the 12-credit minimum, then resubmit.”</p>
+        <p class="sm muted">Amr Advisor · 05 Oct 2026, 20:20</p>
+      </div>
+
+      <!-- health strip reflects the same facts -->
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Plan health</h2>
+          <div class="row gap-2">
+            <button class="btn outline sm">Validate plan</button>
+            <button class="btn primary sm" disabled>Submit for review</button>
+          </div>
+        </div>
+        <div>
+          <div class="row between sm" style="margin-bottom:6px;">
+            <span class="muted">Planned load</span>
+            <span class="num" style="color: var(--warning); font-weight:600;">6 of 12–18 credits · below minimum</span>
+          </div>
+          <div class="meter">
+            <span class="zone" style="left:50%; right:0;"></span>
+            <span class="fill" style="width:33%; background: var(--warning);"></span>
+          </div>
+          <p class="hint" style="color: var(--warning);">Add at least 2 courses (6 credits) to reach the 12-credit minimum.</p>
+        </div>
+        <div class="banner destructive">
+          <span class="b-icon">✕</span>
+          <div class="col gap-1"><span class="b-title">1 check fails: credit load</span>
+          <p class="sm">REG-001 · Credit load must be 12–18 for fall and spring terms. Submit stays blocked until this passes.</p></div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Course</th><th>Title</th><th class="num">Credits</th><th>Group</th><th>Section</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><code>CS 201</code></td><td>Data Structures</td><td class="num">3</td><td>Lecture</td><td>01</td><td class="num"><button class="btn ghost sm">Remove</button></td></tr>
+            <tr style="background:var(--destructive-bg);"><td><code>MATH 205</code></td><td>Linear Algebra</td><td class="num">3</td><td>Lecture</td><td>02</td>
+              <td class="num" style="color:var(--destructive); font-size:12px;">flagged · repeat rule</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card col gap-2">
+        <h2>Advisor comments</h2>
+        <div class="col gap-2">
+          <div class="row gap-2" style="align-items:flex-start;">
+            <span class="avatar">AA</span>
+            <div class="col gap-1 card" style="padding:12px 14px; flex:1;">
+              <p class="sm">Same as the reason above: fix the load, drop the flagged repeat, resubmit.
+              I approve same-day once the checks pass.</p>
+              <span class="xs muted">Amr Advisor · 05 Oct 2026, 20:21</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ APPROVED ============ -->
+<div class="pane" data-pane="approved">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a class="active">⌂ Home</a><a>▤ My Plan</a><a>🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a>👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>My Plan</span><span>·</span><span class="current">Term 2026F</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>My Plan</h1><p class="desc">Term 2026F · one official plan per term</p></div>
+        <span class="chip approved"><span class="dot"></span> Approved</span>
+      </div>
+
+      <div class="banner success">
+        <span class="b-icon">✓</span>
+        <div class="col gap-1">
+          <span class="b-title">Approved by Amr Advisor on 05 Oct 2026. Register these sections in the SIS, then mark each line done.</span>
+          <p class="sm">Approval locks the plan. The SIS remains the registration system; this checklist only tracks your progress.</p>
+        </div>
+      </div>
+
+      <!-- W-01 registration checklist -->
+      <div class="card col gap-2">
+        <h2>Registration checklist</h2>
+        <label class="row gap-2 sm"><input type="checkbox" checked /> Register <b>CS 201</b> · Lecture 01 in the SIS</label>
+        <label class="row gap-2 sm"><input type="checkbox" checked /> Register <b>MATH 101</b> · Lecture 03 in the SIS</label>
+        <label class="row gap-2 sm"><input type="checkbox" /> Register <b>EE 210</b> · Lab 11 in the SIS</label>
+        <label class="row gap-2 sm"><input type="checkbox" /> Register <b>ME 215</b> · Lecture 02 in the SIS</label>
+        <p class="hint">2 of 4 registered. The SIS is the ledger; if a section is full there, pick another section here and ask your advisor to re-approve.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Course</th><th>Title</th><th class="num">Credits</th><th>Group</th><th>Section</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><code>CS 201</code></td><td>Data Structures</td><td class="num">3</td><td>Lecture</td><td>01</td><td><span class="chip success">Registered</span></td></tr>
+            <tr><td><code>MATH 101</code></td><td>Calculus I</td><td class="num">3</td><td>Lecture</td><td>03</td><td><span class="chip success">Registered</span></td></tr>
+            <tr><td><code>EE 210</code></td><td>Circuits</td><td class="num">3</td><td>Lab</td><td>11</td><td><span class="chip neutral">In plan</span></td></tr>
+            <tr><td><code>ME 215</code></td><td>Thermodynamics</td><td class="num">3</td><td>Lecture</td><td>02</td><td><span class="chip neutral">In plan</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="sm muted">Term total: <b class="num">12</b> credits — inside the standard 12–18 load.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
