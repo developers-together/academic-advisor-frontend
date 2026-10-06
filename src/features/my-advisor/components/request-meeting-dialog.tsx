@@ -42,7 +42,9 @@ export const RequestMeetingDialog = ({
   const [preferredDate, setPreferredDate] = useState('');
   const [preferredStart, setPreferredStart] = useState('');
   const [preferredEnd, setPreferredEnd] = useState('');
-  const [failed, setFailed] = useState<string | null>(null);
+  const [failed, setFailed] = useState<{ title: string; body: string } | null>(
+    null,
+  );
 
   const preferredComplete =
     (preferredDate === '' && preferredStart === '' && preferredEnd === '') ||
@@ -71,10 +73,16 @@ export const RequestMeetingDialog = ({
         },
         onError: (error) => {
           if (error instanceof ApiError && error.status === 409) {
-            setFailed(t('myMeetings.requestDialog.exists'));
+            setFailed({
+              title: t('myMeetings.requestDialog.exists'),
+              body: t('myMeetings.requestDialog.existsBody'),
+            });
             return;
           }
-          setFailed(t('common:errors.loadFailed'));
+          setFailed({
+            title: t('common:errors.sendFailed'),
+            body: t('common:errors.sendFailedBody'),
+          });
         },
       },
     );
@@ -148,7 +156,7 @@ export const RequestMeetingDialog = ({
                   type="date"
                   value={preferredDate}
                   onChange={(event) => setPreferredDate(event.target.value)}
-                  className="mt-1 flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                  className="mt-1 flex h-11 w-full rounded-md border border-input bg-background px-3 text-base tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden sm:text-sm"
                 />
               </div>
               <div>
@@ -163,7 +171,7 @@ export const RequestMeetingDialog = ({
                   type="time"
                   value={preferredStart}
                   onChange={(event) => setPreferredStart(event.target.value)}
-                  className="mt-1 flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                  className="mt-1 flex h-11 w-full rounded-md border border-input bg-background px-3 text-base tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden sm:text-sm"
                 />
               </div>
               <div>
@@ -178,15 +186,15 @@ export const RequestMeetingDialog = ({
                   type="time"
                   value={preferredEnd}
                   onChange={(event) => setPreferredEnd(event.target.value)}
-                  className="mt-1 flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                  className="mt-1 flex h-11 w-full rounded-md border border-input bg-background px-3 text-base tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden sm:text-sm"
                 />
               </div>
             </div>
           </fieldset>
 
           {failed && (
-            <Banner variant="destructive" title={failed}>
-              {t('myMeetings.requestDialog.existsBody')}
+            <Banner variant="destructive" title={failed.title}>
+              {failed.body}
             </Banner>
           )}
         </div>
