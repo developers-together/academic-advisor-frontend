@@ -205,6 +205,10 @@ const NextMeeting = () => {
     return <SkeletonText lines={2} />;
   }
 
+  if (meetingsQuery.isError) {
+    return <ErrorState compact onRetry={() => void meetingsQuery.refetch()} />;
+  }
+
   const meetings = meetingsQuery.data ?? [];
   const confirmed = meetings.find(
     (meeting) =>
@@ -264,7 +268,9 @@ const NotificationsDigest = () => {
     return <SkeletonText lines={2} />;
   }
   if (notificationsQuery.isError) {
-    return null;
+    return (
+      <ErrorState compact onRetry={() => void notificationsQuery.refetch()} />
+    );
   }
 
   const unread = (notificationsQuery.data?.items ?? [])
