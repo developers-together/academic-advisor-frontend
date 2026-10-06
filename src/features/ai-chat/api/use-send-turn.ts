@@ -3,6 +3,7 @@ import { useRef } from 'react';
 
 import { useTurnStreamStore } from '@/features/ai-chat/stores/turn-stream-store';
 import { ApiError } from '@/lib/api-error';
+import { i18n } from '@/lib/i18n/i18n-instance';
 
 import { planConversationsRootKey } from './conversations';
 import { streamTurn } from './turn-stream';
@@ -66,7 +67,12 @@ export const useSendTurn = (conversationId: number) => {
           store.stopTurn(conversationId);
           outcome = 'terminal';
         } else {
-          store.clearTurn(conversationId);
+          store.failTurn(conversationId, {
+            code: 'turn_failed',
+            retryable: true,
+            key: 'composer.sendFailed',
+            message: i18n.t('chat:composer.sendFailed'),
+          });
           throw error;
         }
       }
