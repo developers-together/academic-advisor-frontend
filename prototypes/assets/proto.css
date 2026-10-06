@@ -182,3 +182,14 @@ td.num, th.num { text-align: end; font-variant-numeric: tabular-nums; }
 
 /* sparkline */
 .spark polyline { fill: none; stroke-width: 2; }
+
+/* signature elements (v5) */
+.pulse { display: flex; height: 10px; border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+.pulse span { display: block; height: 100%; }
+.rail-row {
+  display: grid; grid-template-columns: 1.2fr 0.9fr 1.3fr 1fr auto; gap: 12px;
+  align-items: center; background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 12px 16px;
+}
+@media (max-width: 900px) { .rail-row { grid-template-columns: 1fr 1fr; } }
+.cream-card { background: #F5F0E8; border-color: #E8DFC9; }
