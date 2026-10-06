@@ -107,4 +107,24 @@ background as text). These align with the existing dark tokens; v5 formalizes th
 4. Think → hybrid decision (mine) → stress-test prompt to ChatGPT. Generation
    stalled twice after the first heading; the deterministic parts (contrast math,
    dark pairs, chart order, RTL, rail spec) were completed by hand, recorded above.
-5. Next loop (after your approval): v5 skin on the replica → your review → design.md v5.
+5. v5 skin built into the working replica (prototypes/app/, "Theme · v4/v5" toggle in
+   the top bar; the choice survives refresh) and stress-tested: 26/26 v5 checks plus
+   20/20 v4 regression checks, zero console errors.
+6. Repo pushed to github.com/developers-together/academic-advisor-frontend and reviewed
+   by ChatGPT on the web (waited the full streamed output). Its verdict:
+   "production-credible: yes". Adopted on the spot:
+   - Pulse strip segments are now data-proportional (flex by credit load and degree
+     share) with persistent text labels, never color alone.
+   - The decision rail carries ONE primary action (Review); Approve and Return moved
+     fully into the review surface, restoring strict DP-03 on the queue.
+   - Accent discipline: #5A67A8 is the sole secondary interactive accent; decorative
+     accent use is banned (contract line).
+   Recorded as v5 contract lines (implementation phase): explicit
+   focus/selected/disabled/error tokens at both radii with 3:1 focus indicators, and a
+   mandatory dataviz contract (palette + question title + text alternative +
+   reference-line rules).
+   Risks logged with mitigations: hybrid feels like two products → identical
+   typography/nav/states/token anatomy across modes; pulse ambiguity → labels, exact
+   values, accessible text; rail overload → prioritize signal/urgency, progressive
+   disclosure.
+7. Next loop (after your approval): design.md v5 merge, then implementation tickets.

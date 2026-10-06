@@ -163,9 +163,9 @@ App.views['/app'] = function () {
       <div class="col gap-1">
         <div class="row between xs muted"><span>Academic pulse — plan · load · degree</span><span class="num">40% of 156 courses</span></div>
         <div class="pulse">
-          <span style="width:33%; background:var(--crimson-700);" title="plan state"></span>
-          <span style="width:33%; background:var(--warning);" title="credit load"></span>
-          <span style="width:34%; background:var(--success);" title="degree progress"></span>
+          <span style="flex:1 1 0; background:var(--crimson-700);" title="plan state"></span>
+          <span style="flex:${Math.max(1, Math.round(credits / 3))} 1 0; background:var(--warning);" title="credit load ${credits} of 18"></span>
+          <span style="flex:4 1 0; background:var(--success);" title="degree progress 40%"></span>
         </div>
         <div class="row between xs muted num">
           <span>${plan.status === 'returned' ? 'Plan returned · fix and resubmit' : 'Plan ' + plan.status.replace('_', ' ')}</span>

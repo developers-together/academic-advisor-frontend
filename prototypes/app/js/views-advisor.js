@@ -93,10 +93,9 @@ App.views['/advisor'] = function () {
         <div>${stateChip(r.plan.status)}</div>
         <div class="col"><span class="xs muted">Signal</span><span class="sm">${r.plan.note ? `“${UI.esc(r.plan.note)}”` : 'Awaiting first decision'}</span></div>
         <div class="col"><span class="xs muted">Urgency</span><span class="sm num" ${r.plan.aging ? 'style="color:var(--warning); font-weight:600;"' : ''}>${dayWord(r.plan.waitingDays)}${r.plan.aging ? ' · aging' : ''}</span></div>
-        <div class="row gap-1">
-          <button class="btn outline sm" onclick="App.reviewStudent = ${r.id}; App.go('#/advisor/review')">Review</button>
-          <button class="btn primary sm" onclick="Store.approvePlan(${r.id}); Store.toast('Plan approved.')">Approve</button>
-          <button class="btn ghost sm" onclick="App.returnTarget = ${r.id}; App.go('#/advisor/return')">Return</button>
+        <div class="col gap-1" style="align-items:flex-end;">
+          <button class="btn primary sm" onclick="App.reviewStudent = ${r.id}; App.go('#/advisor/review')">Review</button>
+          <span class="xs muted">Approve and Return live in review</span>
         </div>
       </div>`).join('')}
     </div>` : UI.tableWrap(
