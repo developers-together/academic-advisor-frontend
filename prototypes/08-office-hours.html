@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>08 · Office hours and availability — C-16</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  .hrow { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .add-row { border:1px dashed var(--border); border-radius:var(--radius-sm); }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">08 · Office hours and availability — C-16, D-12, D-13</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="editor">Editor</button>
+    <button data-pane="saved">Saved state</button>
+    <button data-pane="dirty">Dirty guard</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ EDITOR ============ -->
+<div class="pane active" data-pane="editor">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>≡ Queue</a><a>👥 Students</a><a>📅 Meetings</a>
+    <div class="side-section">More</div>
+    <a class="active">🕐 Office Hours</a><a>🔔 Notifications</a><a>👤 Profile</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Office Hours</span><span>·</span><span class="current">Availability and profile</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">AA</button>
+      </div>
+    </div>
+    <div class="content" data-dirty="dirtybar-editor">
+
+      <div class="page-head">
+        <div><h1>Availability and profile</h1><p class="desc">One page: where students find you, and when they can book</p></div>
+      </div>
+
+      <div class="card col gap-2" style="max-width:560px;">
+        <h2>Office location</h2>
+        <div>
+          <label class="label" for="office-editor">Office</label>
+          <input class="input" id="office-editor" value="Building 3, Room 2140" />
+          <p class="hint">How students find you.</p>
+        </div>
+      </div>
+
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Weekly hours</h2>
+          <span class="chip neutral">30-minute slots</span>
+        </div>
+        <div class="col gap-2">
+          <div class="hrow">
+            <select class="input" style="width:130px;" aria-label="Day"><option>Sunday</option></select>
+            <input class="input" type="time" style="width:110px;" value="10:00" aria-label="From" />
+            <input class="input" type="time" style="width:110px;" value="12:00" aria-label="To" />
+            <button class="btn ghost sm">Remove</button>
+          </div>
+          <div class="hrow">
+            <select class="input" style="width:130px;" aria-label="Day"><option>Tuesday</option></select>
+            <input class="input" type="time" style="width:110px;" value="13:00" aria-label="From" />
+            <input class="input" type="time" style="width:110px;" value="15:00" aria-label="To" />
+            <button class="btn ghost sm">Remove</button>
+          </div>
+          <div class="hrow" style="background:var(--destructive-bg); border:1px solid var(--destructive-border); border-radius:var(--radius-sm); padding:8px;">
+            <select class="input" style="width:130px; background:var(--card);" aria-label="Day"><option>Wednesday</option></select>
+            <input class="input" type="time" style="width:110px; background:var(--card);" value="16:00" aria-label="From" />
+            <input class="input" type="time" style="width:110px; background:var(--card);" value="14:00" aria-label="To" />
+            <button class="btn ghost sm">Remove</button>
+          </div>
+          <p class="xs" style="color:var(--destructive);">End time must be after the start time.</p>
+          <button class="btn ghost sm add-row" style="width:fit-content;">+ Add a row (max 5)</button>
+        </div>
+        <div class="banner info">
+          <span class="b-icon">i</span>
+          <p class="sm">Students can book 30-minute slots between 10:00 and 12:00. 2 slots already booked this week.</p>
+        </div>
+      </div>
+
+      <div class="card col gap-2" style="max-width:560px;">
+        <h2>Publish</h2>
+        <div class="row wrap gap-2">
+          <button class="btn primary">Publish hours</button>
+          <button class="btn outline">Clear hours</button>
+        </div>
+        <p class="hint">Clear hours opens a confirm dialog: "Clear hours?".</p>
+      </div>
+
+      <div class="note"><b>What changes (C-16, D-12, D-13):</b> one merged page replaces the one-field
+      Profile. Validation runs inline, per row. The preview line states the slot contract and the booked
+      count. Publish is the single primary; Clear asks first.</div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ SAVED STATE ============ -->
+<div class="pane" data-pane="saved">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>≡ Queue</a><a>👥 Students</a><a>📅 Meetings</a>
+    <div class="side-section">More</div>
+    <a class="active">🕐 Office Hours</a><a>🔔 Notifications</a><a>👤 Profile</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Office Hours</span><span>·</span><span class="current">Availability and profile</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">AA</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div class="row gap-2 wrap"><h1>Availability and profile</h1><span class="chip success">Saved 14:05</span></div>
+      </div>
+
+      <div class="banner success">
+        <span class="b-icon">✓</span>
+        <p>Published. Students see these hours from tomorrow.</p>
+      </div>
+
+      <div class="card col gap-2" style="max-width:560px;">
+        <h2>Office location</h2>
+        <div>
+          <label class="label" for="office-saved">Office</label>
+          <input class="input" id="office-saved" value="Building 3, Room 2140" />
+          <p class="hint">How students find you.</p>
+        </div>
+      </div>
+
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Weekly hours</h2>
+          <span class="chip neutral">30-minute slots</span>
+        </div>
+        <div class="col gap-2">
+          <div class="hrow">
+            <select class="input" style="width:130px;" aria-label="Day"><option>Sunday</option></select>
+            <input class="input" type="time" style="width:110px;" value="10:00" aria-label="From" />
+            <input class="input" type="time" style="width:110px;" value="12:00" aria-label="To" />
+            <button class="btn ghost sm">Remove</button>
+          </div>
+          <div class="hrow">
+            <select class="input" style="width:130px;" aria-label="Day"><option>Tuesday</option></select>
+            <input class="input" type="time" style="width:110px;" value="13:00" aria-label="From" />
+            <input class="input" type="time" style="width:110px;" value="15:00" aria-label="To" />
+            <button class="btn ghost sm">Remove</button>
+          </div>
+        </div>
+        <div class="banner info">
+          <span class="b-icon">i</span>
+          <p class="sm">Students can book 30-minute slots between 10:00 and 12:00. 2 slots already booked this week.</p>
+        </div>
+      </div>
+
+      <div class="card col gap-2" style="max-width:560px;">
+        <h2>Publish</h2>
+        <div class="row wrap gap-2">
+          <button class="btn primary" disabled>Publish hours</button>
+          <button class="btn outline">Clear hours</button>
+        </div>
+        <p class="hint">Saved at 14:05. Publish returns when you edit again.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ DIRTY GUARD ============ -->
+<div class="pane" data-pane="dirty">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>≡ Queue</a><a>👥 Students</a><a>📅 Meetings</a>
+    <div class="side-section">More</div>
+    <a class="active">🕐 Office Hours</a><a>🔔 Notifications</a><a>👤 Profile</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Office Hours</span><span>·</span><span class="current">Availability and profile</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">AA</button>
+      </div>
+    </div>
+    <div class="content" data-dirty="dirtybar">
+
+      <div class="banner warning" id="dirtybar" style="display:flex;">
+        <span class="b-icon">!</span>
+        <div class="row between" style="flex:1; gap:8px; flex-wrap:wrap;">
+          <span class="b-title">You have unsaved changes</span>
+          <div class="row gap-2">
+            <button class="btn ghost sm">Discard</button>
+            <button class="btn primary sm">Save now</button>
+          </div>
+        </div>
+      </div>
+      <p class="xs muted">Navigating away asks first. Save now shows "Saving…", then "Saved" beside the title.</p>
+
+      <div class="card col gap-2" style="max-width:560px;">
+        <h2>Office location</h2>
+        <div>
+          <label class="label" for="office-dirty">Office</label>
+          <input class="input" id="office-dirty" value="Building 4, Room 1105" />
+          <p class="hint">How students find you. Type here to keep the guard up.</p>
+        </div>
+      </div>
+
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Weekly hours</h2>
+          <span class="chip neutral">30-minute slots</span>
+        </div>
+        <div class="col gap-2">
+          <div class="hrow">
+            <select class="input" style="width:130px;" aria-label="Day"><option>Sunday</option></select>
+            <input class="input" type="time" style="width:110px;" value="10:30" aria-label="From" />
+            <input class="input" type="time" style="width:110px;" value="12:00" aria-label="To" />
+            <button class="btn ghost sm">Remove</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
