@@ -92,8 +92,49 @@ const UI = {
   },
 
   crumb(trail) {
-    return trail.map((c, i) => i === trail.length - 1 ? `<span class="current">${c}</span>` : `<span>${c}</span>`).join('<span aria-hidden="true">·</span>');
+    const HREFS = {
+      'My Plan': '#/app/plan', 'Builder': '#/app/builder', 'Academic Record': '#/app/record',
+      'Queue': '#/advisor', 'Review': '#/advisor', 'Return plan': '#/advisor',
+      'Students': '#/advisor/students', 'Meetings': '#/advisor/meetings',
+      'Overview': null, 'Advisors': '#/dean/advisors', 'Analytics': '#/dean/analytics',
+      'Faculties': '#/vp/faculties', 'Trends': '#/vp/trends',
+      'Operations': '#/admin/operations', 'Courses': '#/admin/courses', 'Accounts': '#/admin/students',
+    };
+    return trail.map((c, i) => {
+      const last = i === trail.length - 1;
+      const href = !last && HREFS[c] ? HREFS[c] : null;
+      const inner = href ? `<a href="${href}">${c}</a>` : `<span class="${last ? 'current' : ''}">${c}</span>`;
+      return i === 0 ? inner : `<span aria-hidden="true">·</span>${inner}`;
+    }).join('');
   },
 
   fmt(n) { return Number(n).toLocaleString('en'); },
+};
+
+UI.notificationsView = function () {
+  const me = Store.me();
+  const filter = Store.s.notifFilter || 'all';
+  const all = Store.notifsFor();
+  const items = filter === 'unread' ? all.filter((n) => !n.read) : all;
+  return `
+    ${UI.pageHead('Notifications', 'Everything that needs you, in one list',
+      `<div class="tabs">
+        <button class="tab ${filter === 'all' ? 'active' : ''}" onclick="Store.setNotifFilter('all')">All <span class="count">(${all.length})</span></button>
+        <button class="tab ${filter === 'unread' ? 'active' : ''}" onclick="Store.setNotifFilter('unread')">Unread <span class="count">(${all.filter((n) => !n.read).length})</span></button>
+      </div>
+      <button class="btn outline sm" onclick="Store.markAllRead()">Mark all as read</button>`)}
+    <div class="card col" style="padding:0; overflow:hidden;">
+      ${items.length === 0 ? `<p class="sm muted" style="padding:24px; text-align:center;">${filter === 'unread' ? 'You are all caught up. Nothing unread.' : 'Nothing here yet. Events that need you appear here.'}</p>` : ''}
+      ${items.map((n) => `
+        <div class="notif ${n.read ? '' : 'unread'}">
+          ${n.read ? '<span style="width:7px; flex:none;"></span>' : '<span class="unread-dot"></span>'}
+          <span class="n-icon" style="background:var(--muted);">${n.icon}</span>
+          <div class="col gap-1" style="flex:1;">
+            <span class="n-title">${UI.esc(n.title)}</span>
+            <span class="n-body">${UI.esc(n.body)}</span>
+            ${n.action ? `<div class="row gap-2" style="margin-top:4px;"><a class="btn outline sm" href="${n.action.route}" onclick="Store.markRead(${n.id})">${n.action.label}</a></div>` : ''}
+          </div>
+          <span class="n-time">${n.time}</span>
+        </div>`).join('')}
+    </div>`;
 };
