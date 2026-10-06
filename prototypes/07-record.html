@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>07 · Academic Record, truthful — C-15</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  .kpi { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; }
+  .kpi .k-label { font-size:12px; font-weight:500; color:var(--muted-fg); }
+  .kpi .k-value { font-size:24px; font-weight:600; margin-top:2px; }
+  .kpi .k-sub { font-size:12px; color:var(--muted-fg); margin-top:2px; }
+  .node { display:inline-flex; align-items:center; gap:8px; border:1px solid; border-radius:999px; padding:6px 14px; font-size:13px; font-weight:500; white-space:nowrap; }
+  .node.done { background:var(--success-bg); color:var(--success); border-color:var(--success-border); }
+  .node.planned { background:var(--card); color:var(--warning); border-color:var(--warning-border); }
+  .node.locked { background:var(--muted); color:var(--muted-fg); border-color:var(--border); }
+  .edge { color:var(--muted-fg); font-size:14px; line-height:1; padding-inline-start:16px; }
+  .medal { flex:none; width:28px; height:28px; border-radius:50%; display:grid; place-items:center; font-size:13px; font-weight:700; background:var(--muted); color:var(--muted-fg); }
+  .medal.done { background:var(--success-bg); color:var(--success); border:1px solid var(--success-border); }
+  .map-row { display:grid; grid-template-columns:1.7fr 1fr; gap:16px; align-items:start; }
+  .pan { overflow-x:auto; display:flex; gap:8px; width:390px; max-width:100%; padding-bottom:6px;
+         -webkit-mask-image:linear-gradient(90deg,#000 85%, transparent 100%);
+         mask-image:linear-gradient(90deg,#000 85%, transparent 100%); }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">07 · Academic Record, truthful — C-15, D-05</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="desktop">Desktop</button>
+    <button data-pane="legend">Map legend</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ DESKTOP ============ -->
+<div class="pane active" data-pane="desktop">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Home</a><a>▤ My Plan</a><a class="active">🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a>👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Home</span><span>·</span><span class="current">Academic Record</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">3</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Academic Record</h1><p class="desc">Your numbers come from the SIS, stamped and dated</p></div>
+      </div>
+
+      <!-- SIS as-of stamp: honest currency (PR-16) -->
+      <div class="banner info">
+        <span class="b-icon">i</span>
+        <div class="row between" style="flex:1; gap:8px; flex-wrap:wrap;">
+          <span>SIS data as of 05 Oct, 14:00</span>
+          <button class="btn outline sm">Refresh</button>
+        </div>
+      </div>
+
+      <!-- KPI row: earned beside remaining -->
+      <div class="grid-3">
+        <div class="kpi col">
+          <span class="k-label">CGPA</span>
+          <span class="k-value num">3.2</span>
+          <span class="k-sub">on a 4.0 scale, from the SIS</span>
+        </div>
+        <div class="kpi col">
+          <span class="k-label">Credits earned</span>
+          <span class="k-value num">96</span>
+          <span class="k-sub">from the SIS</span>
+        </div>
+        <div class="kpi col">
+          <span class="k-label">Credits remaining</span>
+          <span class="k-value num">60</span>
+          <span class="k-sub">of 156</span>
+        </div>
+      </div>
+
+      <!-- ring + milestones -->
+      <div class="grid-2">
+        <div class="card col gap-3">
+          <h2>Progress</h2>
+          <svg width="150" height="150" viewBox="0 0 140 140" role="img" aria-label="62 of 156 courses completed" style="margin:0 auto;">
+            <circle cx="70" cy="70" r="54" fill="none" stroke="var(--muted)" stroke-width="12" />
+            <circle cx="70" cy="70" r="54" fill="none" stroke="var(--success)" stroke-width="12"
+              stroke-linecap="round" stroke-dasharray="135.7 203.6" transform="rotate(-90 70 70)" />
+            <text x="70" y="67" text-anchor="middle" font-size="20" font-weight="600" fill="var(--fg)">62/156</text>
+            <text x="70" y="87" text-anchor="middle" font-size="11" fill="var(--muted-fg)">courses</text>
+          </svg>
+        </div>
+        <div class="card col gap-3">
+          <h2>Milestones</h2>
+          <div class="row gap-3" style="align-items:flex-start;">
+            <span class="medal done">✓</span>
+            <div class="col gap-1"><span class="sm"><b>First plan submitted</b></span><span class="xs muted">Earned 12 Sep 2026</span></div>
+          </div>
+          <div class="row gap-3" style="align-items:flex-start;">
+            <span class="medal">2</span>
+            <div class="col gap-1"><span class="sm"><b>Get a plan approved</b></span><span class="xs muted">Next step: submit your draft for review</span></div>
+          </div>
+          <div class="row gap-3" style="align-items:flex-start;">
+            <span class="medal">3</span>
+            <div class="col gap-1"><span class="sm"><b>Halfway</b></span><span class="xs muted">Next step: 17 courses to go</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- course map + detail -->
+      <div class="map-row">
+        <div class="card col gap-3">
+          <div class="row between wrap gap-2">
+            <h2>Your course map</h2>
+            <div class="row wrap gap-3">
+              <span class="swatch"><i style="background:var(--success-bg); border:1px solid var(--success-border);"></i> Completed</span>
+              <span class="swatch"><i style="background:var(--card); border:1px solid var(--warning-border);"></i> Planned this term</span>
+              <span class="swatch"><i style="background:var(--muted); border:1px solid var(--border);"></i> Locked until prerequisites</span>
+            </div>
+          </div>
+          <p class="sm muted">62 of 156 courses completed.</p>
+          <div class="grid-3">
+            <div class="col gap-1" style="align-items:flex-start;">
+              <span class="node done">✓ CS 201</span>
+              <span class="edge">↓</span>
+              <span class="node planned">CS 301 · planned</span>
+            </div>
+            <div class="col gap-1" style="align-items:flex-start;">
+              <span class="node done">✓ MATH 205</span>
+              <span class="edge">↓</span>
+              <span class="node locked">⊘ MATH 301 · locked</span>
+            </div>
+            <div class="col gap-1" style="align-items:flex-start;">
+              <span class="node done">✓ EE 210</span>
+              <span class="edge">↓</span>
+              <span class="node locked">⊘ EE 351 · locked</span>
+            </div>
+          </div>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between wrap gap-2">
+            <h3>CS 301</h3>
+            <span class="chip warning">Planned this term</span>
+          </div>
+          <p class="sm">Operating Systems · 3 credits</p>
+          <div class="col gap-1">
+            <span class="eyebrow">Prerequisites</span>
+            <span class="sm">CS 201 <b style="color:var(--success);">✓</b> completed</span>
+          </div>
+          <p class="xs muted">Select a node to see its detail. Locked nodes name the missing course.</p>
+        </div>
+      </div>
+
+      <div class="note"><b>What changes (C-15, D-05):</b> credits earned sit beside credits remaining.
+      The SIS stamp dates the data. The map has a legend, and the "62 of 156" sentence appears once.
+      Every pending milestone states its next step; no bare "Not yet".</div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ MAP LEGEND ============ -->
+<div class="pane" data-pane="legend">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Home</a><a>▤ My Plan</a><a class="active">🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a>👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Academic Record</span><span>·</span><span class="current">Course map legend</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">3</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Course map legend</h1><p class="desc">How to read every node state</p></div>
+      </div>
+
+      <div class="card col gap-3">
+        <h2>Node states</h2>
+        <div class="col gap-1" style="align-items:flex-start;">
+          <span class="node done" style="font-size:15px; padding:10px 18px;">✓ CS 201</span>
+          <p class="sm muted">Completed. The SIS recorded the course.</p>
+        </div>
+        <div class="col gap-1" style="align-items:flex-start;">
+          <span class="node planned" style="font-size:15px; padding:10px 18px;">CS 301 · planned</span>
+          <p class="sm muted">Planned this term. The course sits on your approved plan.</p>
+        </div>
+        <div class="col gap-1" style="align-items:flex-start;">
+          <span class="node locked" style="font-size:15px; padding:10px 18px;">⊘ MATH 301 · locked</span>
+          <p class="sm muted">Locked until prerequisites. The node names what is missing.</p>
+        </div>
+      </div>
+
+      <div class="note">Color never alone: every state carries a shape or label (DS-C-08).
+      On mobile the map pans in a scroll container with an edge fade and a
+      "Scroll to see all" hint.</div>
+
+      <div class="card col gap-2">
+        <h2>Mobile, 390 px</h2>
+        <div class="pan">
+          <span class="node done">✓ CS 100</span>
+          <span class="node done">✓ CS 201</span>
+          <span class="node done">✓ MATH 101</span>
+          <span class="node done">✓ MATH 205</span>
+          <span class="node done">✓ EE 210</span>
+          <span class="node planned">CS 301 · planned</span>
+          <span class="node locked">⊘ MATH 301 · locked</span>
+          <span class="node locked">⊘ EE 351 · locked</span>
+        </div>
+        <p class="hint">Scroll to see all</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
