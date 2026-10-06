@@ -31,7 +31,7 @@ export const Select = (props: SelectFieldProps) => {
     <FieldWrapper label={label} error={error}>
       <select
         className={cn(
-          'mt-1 block w-full rounded-md border-input bg-background py-2 ps-3 pe-10 text-base text-foreground focus:border-ring focus:ring-ring focus:outline-hidden sm:text-sm',
+          'mt-1 block min-h-11 w-full rounded-md border-input bg-background py-2 ps-3 pe-10 text-base text-foreground focus:border-ring focus:ring-ring focus:outline-hidden sm:text-sm [@media(pointer:fine)_and_(min-width:1024px)]:min-h-9',
           className,
         )}
         defaultValue={defaultValue}
