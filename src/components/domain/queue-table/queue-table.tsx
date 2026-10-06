@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PlanStateChip } from '@/components/domain/plan-state-chip';
 import { Badge } from '@/components/ui/badge';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
   TableBody,
   TableCell,
@@ -92,53 +93,67 @@ export const QueueTable = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {visible.map((item) => (
-              <TableRow
-                key={item.id}
-                aria-current={item.id === activeId ? 'true' : undefined}
-                data-state={item.id === activeId ? 'selected' : undefined}
-                className="border-border"
-              >
-                <TableCell className="px-3 py-2">
-                  <button
-                    type="button"
-                    id={`queue-row-${item.id}`}
-                    aria-label={t('queue.openReview', {
-                      name: item.student.name,
+            {visible.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="p-4">
+                  <EmptyState
+                    compact
+                    title={t('queue.filteredEmptyTitle', {
+                      filter: t(`queue.tabs.${filter}`),
                     })}
-                    onClick={() => onActivate(item)}
-                    className="rounded-sm text-start focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
-                  >
-                    <span className="block text-sm font-medium text-foreground">
-                      {item.student.name}
-                    </span>
-                    {item.student.student_id && (
-                      <span className="block text-2xs text-muted-foreground">
-                        {item.student.student_id}
+                    description={t('queue.filteredEmptyBody')}
+                  />
+                </td>
+              </tr>
+            ) : (
+              visible.map((item) => (
+                <TableRow
+                  key={item.id}
+                  aria-current={item.id === activeId ? 'true' : undefined}
+                  data-state={item.id === activeId ? 'selected' : undefined}
+                  className="border-border"
+                >
+                  <TableCell className="px-3 py-2">
+                    <button
+                      type="button"
+                      id={`queue-row-${item.id}`}
+                      aria-label={t('queue.openReview', {
+                        name: item.student.name,
+                      })}
+                      onClick={() => onActivate(item)}
+                      className="rounded-sm text-start focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                    >
+                      <span className="block text-sm font-medium text-foreground">
+                        {item.student.name}
                       </span>
-                    )}
-                  </button>
-                </TableCell>
-                <TableCell className="px-3 py-2">
-                  <PlanStateChip status={item.status} variant="dot" />
-                </TableCell>
-                <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
-                  {item.term_code}
-                </TableCell>
-                <TableCell className="px-3 py-2 text-end">
-                  <span className="inline-flex items-center gap-2">
-                    <span className="text-sm tabular-nums">
-                      {waitingLabel(item.submitted_at, t)}
+                      {item.student.student_id && (
+                        <span className="block text-2xs text-muted-foreground">
+                          {item.student.student_id}
+                        </span>
+                      )}
+                    </button>
+                  </TableCell>
+                  <TableCell className="px-3 py-2">
+                    <PlanStateChip status={item.status} variant="dot" />
+                  </TableCell>
+                  <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
+                    {item.term_code}
+                  </TableCell>
+                  <TableCell className="px-3 py-2 text-end">
+                    <span className="inline-flex items-center gap-2">
+                      <span className="text-sm tabular-nums">
+                        {waitingLabel(item.submitted_at, t)}
+                      </span>
+                      {item.is_aging && (
+                        <Badge variant="warning" dot size="sm">
+                          {t('badges.aging', { ns: 'common' })}
+                        </Badge>
+                      )}
                     </span>
-                    {item.is_aging && (
-                      <Badge variant="warning" dot size="sm">
-                        {t('badges.aging', { ns: 'common' })}
-                      </Badge>
-                    )}
-                  </span>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </TableElement>
       </div>
@@ -151,7 +166,5 @@ const waitingLabel = (
   t: (key: string, values?: Record<string, unknown>) => string,
 ) => {
   const days = submittedAt ? dayjs().diff(dayjs(submittedAt), 'day') : 0;
-  return days === 1
-    ? t('queue.waitingDays', { count: days })
-    : t('queue.waitingDaysOther', { count: days });
+  return t('queue.waitingDays', { count: days });
 };
