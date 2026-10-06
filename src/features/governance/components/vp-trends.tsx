@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next';
 
 import { useGovernanceDashboard } from '../api/get-governance-dashboard';
+import { governanceNodeName } from '../utils/governance-tree';
 
 import { GovernanceTableSkeleton } from './governance-children-table';
 import { GovernanceQueryStates } from './governance-query-states';
 import { TrendChart } from './trend-chart';
 
 export const VpTrends = () => {
-  const { t } = useTranslation('governance');
+  const { t, i18n } = useTranslation('governance');
   const dashboard = useGovernanceDashboard();
 
   return (
@@ -24,8 +25,12 @@ export const VpTrends = () => {
           title={t('trends.vp.title')}
           question={t('trends.vp.question')}
           series={root.children.map((faculty) => ({
-            key: faculty.code ?? faculty.name_en ?? '',
-            label: faculty.name_en ?? faculty.code ?? '',
+            key: faculty.code ?? governanceNodeName(faculty, i18n.language, ''),
+            label: governanceNodeName(
+              faculty,
+              i18n.language,
+              t(`levels.${faculty.level}`),
+            ),
             points: faculty.trends.map((point) => ({
               term_code: point.term_code,
               value: point.completion_rate,
