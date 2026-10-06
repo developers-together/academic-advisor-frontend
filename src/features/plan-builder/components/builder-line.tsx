@@ -30,7 +30,7 @@ export const BuilderLine = ({
   const { t } = useTranslation('plan');
 
   const selectClass =
-    'h-11 rounded-md border border-input bg-transparent px-2 text-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50';
+    'min-h-11 rounded-md border border-input bg-transparent px-2 text-base focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm [@media(pointer:fine)_and_(min-width:1024px)]:min-h-9';
 
   return (
     <div
