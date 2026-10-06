@@ -94,6 +94,36 @@ test('the accounts table renders status, binding, and assignment badges with ser
   await screen.findByText('Lina Majors');
 });
 
+test('narrow viewports render the priority card list instead of the table', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const advisor = await advisorFor();
+  await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+    advisor_id: advisor.id as number,
+  });
+  const originalMatchMedia = window.matchMedia;
+  window.matchMedia = ((query: string) => ({
+    matches: query.includes('max-width'),
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  })) as unknown as typeof window.matchMedia;
+  try {
+    await renderApp(<AdminUsersRoute />, {
+      user: admin,
+      path: '/admin/users',
+      url: '/admin/users',
+    });
+
+    expect(
+      await screen.findByRole('button', { name: /Manage Lina Majors/ }),
+    ).toBeInTheDocument();
+    expect(document.querySelector('table')).toBeNull();
+  } finally {
+    window.matchMedia = originalMatchMedia;
+  }
+});
+
 test('suspend and correct ID confirm with the settled copy; a bound account offers no ID edit', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   const advisor = await advisorFor();

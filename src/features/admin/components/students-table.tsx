@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import type { User } from '@/types/domain';
 
 import {
@@ -55,6 +56,7 @@ export const StudentsTable = ({
   onActivate,
 }: StudentsTableProps) => {
   const { t } = useTranslation('admin');
+  const isWide = !useMediaQuery('(max-width: 767.98px)');
 
   return (
     <div className="space-y-3">
@@ -67,81 +69,142 @@ export const StudentsTable = ({
         className="max-w-sm"
       />
 
-      <div className="overflow-hidden rounded-lg border bg-card">
-        <TableElement>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              {(['name', 'email', 'studentId', 'status'] as const).map(
-                (key) => (
-                  <TableHead
-                    key={key}
-                    className="sticky top-0 z-10 bg-card px-3 py-2 text-2xs font-medium tracking-wide uppercase"
-                  >
-                    {t(`accounts.columns.${key}`)}
-                  </TableHead>
-                ),
-              )}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {students.map((student) => {
-              const status = accountStatus(student);
-              const binding = accountBinding(student);
-              return (
-                <TableRow
-                  key={student.id}
-                  aria-current={student.id === activeId ? 'true' : undefined}
-                  data-state={student.id === activeId ? 'selected' : undefined}
-                  className="border-border"
+      {!isWide ? (
+        <ul className="list-none space-y-2 p-0">
+          {students.map((student) => {
+            const status = accountStatus(student);
+            const binding = accountBinding(student);
+            return (
+              <li
+                key={student.id}
+                aria-current={student.id === activeId ? 'true' : undefined}
+                className="rounded-md border bg-card p-3"
+              >
+                <button
+                  type="button"
+                  aria-label={t('accounts.actions.manage', {
+                    name: student.name,
+                  })}
+                  onClick={() => onActivate(student)}
+                  className="w-full rounded-sm text-start focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
                 >
-                  <TableCell className="px-3 py-2">
-                    <button
-                      type="button"
-                      aria-label={t('accounts.actions.manage', {
-                        name: student.name,
-                      })}
-                      onClick={() => onActivate(student)}
-                      className="rounded-sm text-start text-sm font-medium focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
-                    >
-                      {student.name}
-                    </button>
-                  </TableCell>
-                  <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
+                  <span className="block text-sm font-medium text-foreground">
+                    {student.name}
+                  </span>
+                  <span className="mt-0.5 block truncate text-2xs text-muted-foreground">
                     {student.email}
-                  </TableCell>
-                  <TableCell className="px-3 py-2">
-                    <span className="flex items-center gap-2">
-                      <span className="bidi-code text-sm tabular-nums">
-                        {student.student_id ?? '-'}
-                      </span>
-                      <Badge variant={BINDING_VARIANT[binding]} size="sm">
-                        {t(`common:badges.${BINDING_KEY[binding]}`)}
-                      </Badge>
+                  </span>
+                </button>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {student.student_id && (
+                    <span className="bidi-code text-sm text-muted-foreground tabular-nums">
+                      {student.student_id}
                     </span>
-                  </TableCell>
-                  <TableCell className="px-3 py-2">
-                    <span className="flex items-center gap-2">
-                      <Badge variant={STATUS_VARIANT[status]} size="sm">
-                        {t(`common:badges.${status}`)}
-                      </Badge>
-                      <Badge
-                        variant={accountAssigned(student) ? 'info' : 'neutral'}
-                        size="sm"
+                  )}
+                  <Badge variant={STATUS_VARIANT[status]} size="sm">
+                    {t(`common:badges.${status}`)}
+                  </Badge>
+                  <Badge variant={BINDING_VARIANT[binding]} size="sm">
+                    {t(`common:badges.${BINDING_KEY[binding]}`)}
+                  </Badge>
+                  <Badge
+                    variant={accountAssigned(student) ? 'info' : 'neutral'}
+                    size="sm"
+                  >
+                    {t(
+                      `common:badges.${
+                        accountAssigned(student) ? 'assigned' : 'unassigned'
+                      }`,
+                    )}
+                  </Badge>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div className="overflow-hidden rounded-lg border bg-card">
+          <TableElement>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                {(['name', 'email', 'studentId', 'status'] as const).map(
+                  (key) => (
+                    <TableHead
+                      key={key}
+                      className="sticky top-0 z-10 bg-card px-3 py-2 text-2xs font-medium tracking-wide uppercase"
+                    >
+                      {t(`accounts.columns.${key}`)}
+                    </TableHead>
+                  ),
+                )}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {students.map((student) => {
+                const status = accountStatus(student);
+                const binding = accountBinding(student);
+                return (
+                  <TableRow
+                    key={student.id}
+                    aria-current={student.id === activeId ? 'true' : undefined}
+                    data-state={
+                      student.id === activeId ? 'selected' : undefined
+                    }
+                    className="border-border"
+                  >
+                    <TableCell className="px-3 py-2">
+                      <button
+                        type="button"
+                        aria-label={t('accounts.actions.manage', {
+                          name: student.name,
+                        })}
+                        onClick={() => onActivate(student)}
+                        className="rounded-sm text-start text-sm font-medium focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
                       >
-                        {t(
-                          `common:badges.${
-                            accountAssigned(student) ? 'assigned' : 'unassigned'
-                          }`,
-                        )}
-                      </Badge>
-                    </span>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </TableElement>
-      </div>
+                        {student.name}
+                      </button>
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
+                      {student.email}
+                    </TableCell>
+                    <TableCell className="px-3 py-2">
+                      <span className="flex items-center gap-2">
+                        <span className="bidi-code text-sm tabular-nums">
+                          {student.student_id ?? '-'}
+                        </span>
+                        <Badge variant={BINDING_VARIANT[binding]} size="sm">
+                          {t(`common:badges.${BINDING_KEY[binding]}`)}
+                        </Badge>
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-3 py-2">
+                      <span className="flex items-center gap-2">
+                        <Badge variant={STATUS_VARIANT[status]} size="sm">
+                          {t(`common:badges.${status}`)}
+                        </Badge>
+                        <Badge
+                          variant={
+                            accountAssigned(student) ? 'info' : 'neutral'
+                          }
+                          size="sm"
+                        >
+                          {t(
+                            `common:badges.${
+                              accountAssigned(student)
+                                ? 'assigned'
+                                : 'unassigned'
+                            }`,
+                          )}
+                        </Badge>
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </TableElement>
+        </div>
+      )}
     </div>
   );
 };
