@@ -126,7 +126,7 @@
       </div>
       <div class="col gap-2">
         <div class="banner info"><span class="b-icon">i</span><div class="col gap-1"><span class="b-title">Not validated yet</span><p class="sm">Validation runs the university checks. Run it now or at submit time.</p></div></div>
-        <div class="banner destructive"><span class="b-icon">✕</span><div class="col gap-1"><span class="b-title">2 checks fail</span><p class="sm">MATH 205 repeats MATH 101. The repeat rule blocks it this term.</p></div></div>
+        <div class="banner destructive"><span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;vertical-align:-0.24em;" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><div class="col gap-1"><span class="b-title">2 checks fail</span><p class="sm">MATH 205 repeats MATH 101. The repeat rule blocks it this term.</p></div></div>
       </div>
     </div>
   </div>
@@ -195,7 +195,64 @@
     </div>
   </div>
 
-  <p class="sm muted" style="margin: 24px 0 48px;">Full specification: <b>DESIGN-SYSTEM.md</b> at the repo root. This page renders the same values the document defines.</p>
+
+  <!-- FORMS / TABLE / DIALOG -->
+  <div class="sec">
+    <h2>9 · Forms, tables, dialogs</h2>
+    <div class="grid-2">
+      <div class="demo-card col gap-2" style="padding:20px;">
+        <span class="eyebrow">Form field anatomy</span>
+        <div>
+          <label class="label">Return reason <span class="muted" style="font-weight:400;">· required</span></label>
+          <textarea class="input" rows="2" style="height:auto; padding:10px 12px; resize:vertical;">Swap EE 210 to the lecture group.</textarea>
+          <p class="hint">The reason goes to the student. They press Seen before they can edit.</p>
+        </div>
+        <div>
+          <label class="label">Preferred time <span class="muted" style="font-weight:400;">· optional</span></label>
+          <input class="input" type="time" value="10:00" />
+          <p class="hint" style="color:var(--warning);">End time must be after the start time.</p>
+        </div>
+        <div class="row gap-2">
+          <button class="btn primary">Save changes</button>
+          <button class="btn outline">Cancel</button>
+        </div>
+      </div>
+      <div class="demo-card col gap-2" style="padding:20px;">
+        <span class="eyebrow">Table pattern · staff density</span>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>State</th><th class="num">Waiting</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Lina Majors</b></td><td><span class="chip submitted"><span class="dot"></span> Submitted</span></td><td class="num">5 days</td>
+                <td class="num"><button class="btn ghost sm">⋯</button></td></tr>
+              <tr><td><b>Omar Nabil</b></td><td><span class="chip submitted"><span class="dot"></span> Submitted</span></td><td class="num">3 days</td>
+                <td class="num"><button class="btn ghost sm">⋯</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="row between xs muted"><span>Showing 1–2 of 42</span><span>Prev · Next</span></div>
+        <p class="xs muted">Header 11px caps · rows 13px · numbers right + tabular · one quiet row menu · destructive only inside the impact dialog.</p>
+      </div>
+    </div>
+    <div class="demo-card col gap-2" style="padding:20px; margin-top:16px;">
+      <span class="eyebrow">Impact dialog anatomy</span>
+      <div style="border:1px solid var(--border); border-radius:8px; padding:16px; max-width:440px;">
+        <p style="font-weight:600; margin:0 0 8px;">Delete CS 201?</p>
+        <ul class="sm" style="margin:0 0 8px; padding-inline-start:18px;">
+          <li>Used in 2 programs (CSE, Common)</li>
+          <li>Referenced by 14 plans this term</li>
+          <li>3 rules mention it</li>
+        </ul>
+        <p class="sm muted">This cannot be undone.</p>
+        <div class="row gap-2" style="margin-top:10px; justify-content:flex-end;">
+          <button class="btn outline sm">Cancel</button>
+          <button class="btn destructive sm">Delete course</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="sm muted" style="margin: 24px 0 48px;">Full specification: <b>DESIGN-SYSTEM.md</b> at the repo root · working replica: <a href="app/">prototypes/app</a> · theme screens: <a href="index.html">the hub</a>. This page renders the same values the document defines.</p>
 </div>
 </body>
 </html>
