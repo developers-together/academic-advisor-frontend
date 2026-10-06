@@ -485,7 +485,7 @@ const seedConversations = () => {
         id: 2,
         role: 'assistant',
         content:
-          'Your record shows a steady pass across CS 101 and MATH 101. A load of 12 to 15 credits keeps you comfortably inside the REG-001 range while you repeat nothing. What did you have in mind for electives?',
+          'Your record shows a steady pass across CS 101 and MATH 101. A load of 12 to 15 credits stays inside the standard credit-load range while you repeat nothing. What did you have in mind for electives?',
         created_at: '2026-10-01T10:00:05.000Z',
       },
     ]),
