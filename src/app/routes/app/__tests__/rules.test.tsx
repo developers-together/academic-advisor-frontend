@@ -1,5 +1,4 @@
 import { render as rtlRender, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { AppProvider } from '@/app/provider';
 import { AppRouter } from '@/app/router';
@@ -52,27 +51,24 @@ test('the rules page lists rules with bilingual titles and rendered markdown bod
   expect(screen.getByText('12 و18')).toBeInTheDocument();
 });
 
-test('the student rail gains a rules entry that opens the rules page', async () => {
+test('the rail holds no rules entry and the rules page stays reachable by deep link', async () => {
   const student = await createUser();
   await loginAsUser(student);
   seedRule({ body_en: 'Body.', body_ar: 'نص.' });
 
-  window.history.pushState({}, '', '/app');
+  window.history.pushState({}, '', '/app/rules');
   rtlRender(<AppRouter />, {
     wrapper: ({ children }) => <AppProvider>{children}</AppProvider>,
   });
-
-  const rail = within(await screen.findByRole('navigation'));
-  const rulesLink = await rail.findByRole('link', { name: 'Rules' });
-  expect(rulesLink).toHaveAttribute('href', '/app/rules');
-
-  await userEvent.click(rulesLink);
 
   expect(
     await screen.findByRole('heading', { name: 'University Rules' }),
   ).toBeInTheDocument();
   expect(await screen.findByText('Course load rule')).toBeInTheDocument();
   expect(window.location.pathname).toBe('/app/rules');
+
+  const rail = within(await screen.findByRole('navigation'));
+  expect(rail.queryByRole('link', { name: 'Rules' })).not.toBeInTheDocument();
 });
 
 test('shows the empty state when no rules exist', async () => {

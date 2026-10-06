@@ -1,6 +1,6 @@
 import { HttpResponse, http } from 'msw';
 
-import AdminStudentsRoute from '@/app/routes/admin/students';
+import AdminUsersRoute from '@/app/routes/admin/users';
 import { env } from '@/config/env';
 import { db } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
@@ -61,10 +61,10 @@ test('the accounts table renders status, binding, and assignment badges with ser
   });
   clearStudentId(unassigned.id as number);
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const basma = (await screen.findByText('Basma Tariq')).closest(
@@ -103,10 +103,10 @@ test('suspend and correct ID confirm with the settled copy; a bound account offe
     advisor_id: advisor.id as number,
   });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const panel = await openPanel('Lina Majors');
@@ -175,10 +175,10 @@ test('correcting the student ID requires the settled confirm and applies the new
     data: { pending_admin_at: '2026-09-16T10:00:00.000Z' },
   });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const panel = await openPanel('Faris Fail');
@@ -225,10 +225,10 @@ test('retrying the SIS check applies the returned user without a dialog', async 
   });
   clearStudentId(student.id as number);
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const panel = await openPanel('Hana Held');
@@ -275,10 +275,10 @@ test('a 503 SIS check renders the retry banner scoped to the panel', async () =>
     ),
   );
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const panel = await openPanel('Hana Held');
@@ -308,10 +308,10 @@ test('deleting the account confirms the caseload consequence and removes the row
     advisor_id: advisor.id as number,
   });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const panel = await openPanel('Lina Majors');
@@ -357,10 +357,10 @@ test('reassigning moves the student to the advisor by email without a dialog', a
     advisor_id: advisor.id as number,
   });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const panel = await openPanel('Lina Majors');
@@ -390,10 +390,10 @@ test('reassigning moves the student to the advisor by email without a dialog', a
 test('a true empty directory renders the no-rows empty state with the add action', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
   expect(
     await screen.findByText('No student accounts yet.'),
@@ -417,10 +417,10 @@ test('adding a student creates the account, prepends the row, and surfaces the c
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   await createUser({ name: 'Lina Majors', role: 'student' });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
   await screen.findByText('Lina Majors');
 
@@ -480,10 +480,10 @@ test('a SIS-unknown ID renders the distinct 422 state and creates nothing', asyn
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   await createUser({ name: 'Lina Majors', role: 'student' });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
   await screen.findByText('Lina Majors');
 
@@ -522,10 +522,10 @@ test('a SIS outage on create renders the distinct 503 state', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   await createUser({ name: 'Lina Majors', role: 'student' });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
   await screen.findByText('Lina Majors');
 
@@ -565,10 +565,10 @@ test('the account panel edits name and language preference and keeps SIS fields 
     faculty: 'Engineering',
   });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const panel = await openPanel('Lina Majors');
@@ -628,10 +628,10 @@ test('a server 422 on edit lands on the name field and keeps the dialog open', a
     role: 'student',
   });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
 
   const panel = await openPanel('Lina Majors');
@@ -675,10 +675,10 @@ test('a missed search renders the search empty state with a clear action', async
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   await createUser({ name: 'Lina Majors', role: 'student' });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
   await screen.findByText('Lina Majors');
 
@@ -695,10 +695,10 @@ test('a failed read renders the shared error state with retry', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   await createUser({ name: 'Lina Majors', role: 'student' });
 
-  await renderApp(<AdminStudentsRoute />, {
+  await renderApp(<AdminUsersRoute />, {
     user: admin,
-    path: '/admin/students',
-    url: '/admin/students',
+    path: '/admin/users',
+    url: '/admin/users',
   });
   await screen.findByText('Lina Majors');
 

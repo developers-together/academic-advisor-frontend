@@ -50,7 +50,7 @@ const expectLanding = async (
   for (const [name, href] of links) {
     expect(rail().getByRole('link', { name })).toHaveAttribute('href', href);
   }
-  expect(screen.getByRole('main')).toHaveClass('p-3', 'lg:p-4');
+  expect(screen.getByRole('main')).toHaveClass('p-4', 'md:p-6');
 };
 
 describe('advisor section', () => {
@@ -187,14 +187,13 @@ describe('admin section', () => {
 
     await expectLanding('Overview', [
       ['Overview', '/admin'],
-      ['Users', '/admin/students'],
+      ['Users', '/admin/users'],
       ['Assignments', '/admin/assignments'],
       ['Courses', '/admin/courses'],
       ['Programs', '/admin/programs'],
       ['Rules', '/admin/rules'],
       ['Registration Windows', '/admin/registration-windows'],
       ['AI Configuration', '/admin/ai-configuration'],
-      ['Staff', '/admin/staff'],
       ['Notifications', '/admin/notifications'],
     ]);
     expect(
@@ -203,7 +202,7 @@ describe('admin section', () => {
   });
 
   test.each([
-    ['/admin/students', 'Accounts', 'No student accounts yet.'],
+    ['/admin/users', 'Users', 'No student accounts yet.'],
     ['/admin/assignments', 'Assignments', 'No caseload assignments yet.'],
     ['/admin/rules', 'University Rules', 'No university rules yet.'],
   ])(
@@ -220,7 +219,7 @@ describe('admin section', () => {
     },
   );
 
-  test('renders the /admin/staff slot with the staff directory', async () => {
+  test('/admin/staff redirects to Users and the staff tab holds the directory', async () => {
     await loginAsUser(
       await createUser({
         name: 'Nora Admin',
@@ -233,10 +232,11 @@ describe('admin section', () => {
     renderRealRouter('/admin/staff');
 
     expect(
-      await screen.findByRole('heading', { name: 'Staff' }),
+      await screen.findByRole('heading', { name: 'Users' }),
     ).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Staff' }));
     expect(
-      screen.getByRole('button', { name: 'Add staff' }),
+      await screen.findByRole('button', { name: 'Add staff' }),
     ).toBeInTheDocument();
     expect(
       await screen.findByRole('button', { name: 'Edit Nora Admin' }),

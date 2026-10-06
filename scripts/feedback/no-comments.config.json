@@ -1,4 +1,4 @@
 {
   "include": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.mjs", "*.cjs"],
-  "exclude": [":!node_modules", ":!dist", ":!build", ":!coverage", ":!.next", ":!playwright-report", ":!.storybook", ":!*.md"]
+  "exclude": [":!public/mockServiceWorker.js", ":!node_modules", ":!dist", ":!build", ":!coverage", ":!.next", ":!playwright-report", ":!.storybook", ":!*.md"]
 }

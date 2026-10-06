@@ -1,6 +1,6 @@
 import { HttpResponse, http } from 'msw';
 
-import AdminStaffRoute from '@/app/routes/admin/staff';
+import AdminUsersRoute from '@/app/routes/admin/users';
 import { env } from '@/config/env';
 import { db } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
@@ -16,6 +16,18 @@ import {
 beforeEach(() => {
   db.user.deleteMany({ where: {} });
 });
+
+const renderStaffTab = async (
+  options: Parameters<typeof renderApp>[1] = {},
+) => {
+  const utils = await renderApp(<AdminUsersRoute />, {
+    path: '/admin/users',
+    url: '/admin/users',
+    ...options,
+  });
+  await userEvent.click(await screen.findByRole('tab', { name: 'Staff' }));
+  return utils;
+};
 
 const seedDirectory = async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
@@ -52,10 +64,8 @@ const rowOf = (name: string) =>
 test('the directory renders role badges, faculty, and advisor caseload, and the role filter works', async () => {
   const admin = await seedDirectory();
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
 
   const amr = await screen.findByRole('button', {
@@ -87,10 +97,8 @@ test('the directory renders role badges, faculty, and advisor caseload, and the 
 test('an empty role filter names the missing role and the directory lists the signed-in admin', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
 
   await userEvent.click(await screen.findByRole('tab', { name: 'Deans' }));
@@ -111,10 +119,8 @@ test('an empty role filter names the missing role and the directory lists the si
 test('creating a staff account on the page prepends the row and offers the reset link', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
   await screen.findByText('Mona Admin');
 
@@ -197,10 +203,8 @@ test('creating a staff account on the page prepends the row and offers the reset
 test('the edit dialog applies the dean-faculty rule and saves name, faculty, and role', async () => {
   const admin = await seedDirectory();
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
 
   await userEvent.click(
@@ -252,10 +256,8 @@ test('the edit dialog applies the dean-faculty rule and saves name, faculty, and
 test('a server 422 on edit lands on the field and keeps the dialog open', async () => {
   const admin = await seedDirectory();
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
 
   await userEvent.click(
@@ -298,10 +300,8 @@ test('deleting a staff account confirms the consequence and removes the row', as
     role: 'advisor',
   });
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
 
   await userEvent.click(
@@ -333,10 +333,8 @@ test('deleting a staff account confirms the consequence and removes the row', as
 test('deleting yourself surfaces the 403 readably and keeps the account', async () => {
   const admin = await seedDirectory();
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
 
   await userEvent.click(
@@ -374,10 +372,8 @@ test('deleting the last administrator surfaces the 422 readably', async () => {
     ),
   );
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
 
   await userEvent.click(
@@ -401,10 +397,8 @@ test('deleting the last administrator surfaces the 422 readably', async () => {
 test('the password reset confirm sends the reset link', async () => {
   const admin = await seedDirectory();
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
 
   await userEvent.click(
@@ -434,10 +428,8 @@ test('the password reset confirm sends the reset link', async () => {
 test('a failed read renders the shared error state with retry', async () => {
   const admin = await seedDirectory();
 
-  await renderApp(<AdminStaffRoute />, {
+  await renderStaffTab({
     user: admin,
-    path: '/admin/staff',
-    url: '/admin/staff',
   });
   await screen.findByText('Amr Advisor');
 

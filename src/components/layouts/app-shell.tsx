@@ -1,27 +1,11 @@
 import {
-  Bell,
-  BookOpen,
-  CalendarCheck,
   CalendarClock,
-  CircleUser,
-  ClipboardList,
-  FileText,
-  GraduationCap,
-  House,
-  LayoutDashboard,
   LogOut,
-  MapPin,
-  MessagesSquare,
   Moon,
   MoreHorizontal,
-  ScrollText,
   Search,
   Sparkles,
   Sun,
-  TrendingUp,
-  UserCheck,
-  UserCog,
-  Users,
 } from 'lucide-react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +23,12 @@ import {
   DropdownMenuTrigger as DropdownTrigger,
 } from '@/components/ui/dropdown';
 import { Spinner } from '@/components/ui/spinner';
-import { paths } from '@/config/paths';
+import {
+  commandRoutes,
+  roleRoutes,
+  routeTable,
+  type RoleRouteDefinition,
+} from '@/config/routes';
 import { useLogout, useUser } from '@/lib/auth';
 import { useLanguageStore } from '@/lib/language';
 import { useThemeStore } from '@/lib/theme';
@@ -63,6 +52,7 @@ export type NavItem = {
 export type NavGroup = {
   labelKey: string;
   icon?: IconComponent;
+  to?: string;
   items: NavItem[];
 };
 
@@ -71,259 +61,63 @@ export type NavEntry = NavItem | NavGroup;
 export const isNavGroup = (entry: NavEntry): entry is NavGroup =>
   'items' in entry;
 
-const entry = (labelKey: string): NavItem => {
-  for (const items of Object.values(roleNav)) {
-    for (const item of items) {
-      if (isNavGroup(item)) {
-        const hit = item.items.find((child) => child.labelKey === labelKey);
-        if (hit) return hit;
-      } else if (item.labelKey === labelKey) {
-        return item;
-      }
+const toNavItem = (route: RoleRouteDefinition): NavItem => ({
+  labelKey: route.labelKey ?? '',
+  to: route.path,
+  icon: route.icon ?? MoreHorizontal,
+  end: route.end,
+});
+
+const groupChildren = (route: RoleRouteDefinition): NavItem[] =>
+  routeTable
+    .filter(
+      (child) =>
+        child.role === route.role &&
+        child.nav === 'group' &&
+        child.parent === route.id,
+    )
+    .map(toNavItem);
+
+const buildRoleNav = (role: UserRole): NavEntry[] => {
+  const routes = roleRoutes(role);
+  const entries: NavEntry[] = [];
+  for (const route of routes) {
+    if (route.nav !== 'primary') continue;
+    const children = groupChildren(route);
+    if (children.length > 0) {
+      entries.push({
+        labelKey: route.labelKey ?? '',
+        icon: route.icon,
+        to: route.path,
+        items: children,
+      });
+    } else {
+      entries.push(toNavItem(route));
     }
   }
-  throw new Error(`Unknown nav entry: ${labelKey}`);
+  const moreItems = routes
+    .filter((route) => route.nav === 'more')
+    .map(toNavItem);
+  if (moreItems.length > 0) {
+    entries.push({ labelKey: 'nav.more', items: moreItems });
+  }
+  return entries;
 };
 
-export const roleNav: Record<UserRole, NavEntry[]> = {
-  student: [
-    {
-      labelKey: 'nav.home',
-      to: paths.app.root.getHref(),
-      icon: House,
-      end: true,
-    },
-    { labelKey: 'nav.myPlan', to: paths.app.plan.getHref(), icon: FileText },
-    {
-      labelKey: 'nav.academicRecord',
-      to: paths.app.record.getHref(),
-      icon: BookOpen,
-    },
-    {
-      labelKey: 'nav.rules',
-      to: paths.app.rules.getHref(),
-      icon: ScrollText,
-    },
-    {
-      labelKey: 'nav.aiAdvisor',
-      to: paths.app.chat.getHref(),
-      icon: MessagesSquare,
-    },
-    {
-      labelKey: 'nav.myAdvisor',
-      to: paths.app.advisor.getHref(),
-      icon: UserCheck,
-    },
-    {
-      labelKey: 'nav.notifications',
-      to: paths.app.notifications.getHref(),
-      icon: Bell,
-    },
-    {
-      labelKey: 'nav.account',
-      to: paths.app.account.getHref(),
-      icon: CircleUser,
-    },
-  ],
-  advisor: [
-    {
-      labelKey: 'nav.queue',
-      to: paths.advisor.root.getHref(),
-      icon: ClipboardList,
-      end: true,
-    },
-    {
-      labelKey: 'nav.students',
-      to: paths.advisor.students.getHref(),
-      icon: Users,
-    },
-    {
-      labelKey: 'nav.meetings',
-      to: paths.advisor.meetings.getHref(),
-      icon: CalendarCheck,
-    },
-    {
-      labelKey: 'nav.more',
-      items: [
-        {
-          labelKey: 'nav.hours',
-          to: paths.advisor.hours.getHref(),
-          icon: CalendarClock,
-        },
-        {
-          labelKey: 'nav.profile',
-          to: paths.advisor.profile.getHref(),
-          icon: MapPin,
-        },
-        {
-          labelKey: 'nav.notifications',
-          to: paths.advisor.notifications.getHref(),
-          icon: Bell,
-        },
-      ],
-    },
-  ],
-  dean: [
-    {
-      labelKey: 'nav.overview',
-      to: paths.dean.root.getHref(),
-      icon: LayoutDashboard,
-      end: true,
-    },
-    {
-      labelKey: 'nav.advisors',
-      to: paths.dean.advisors.getHref(),
-      icon: Users,
-    },
-    {
-      labelKey: 'nav.analytics',
-      to: paths.dean.analytics.getHref(),
-      icon: TrendingUp,
-    },
-    {
-      labelKey: 'nav.more',
-      items: [
-        {
-          labelKey: 'nav.notifications',
-          to: paths.dean.notifications.getHref(),
-          icon: Bell,
-        },
-      ],
-    },
-  ],
-  vp: [
-    {
-      labelKey: 'nav.overview',
-      to: paths.vp.root.getHref(),
-      icon: LayoutDashboard,
-      end: true,
-    },
-    {
-      labelKey: 'nav.faculties',
-      to: paths.vp.faculties.getHref(),
-      icon: GraduationCap,
-    },
-    {
-      labelKey: 'nav.trends',
-      to: paths.vp.trends.getHref(),
-      icon: TrendingUp,
-    },
-    {
-      labelKey: 'nav.more',
-      items: [
-        {
-          labelKey: 'nav.notifications',
-          to: paths.vp.notifications.getHref(),
-          icon: Bell,
-        },
-      ],
-    },
-  ],
-  admin: [
-    {
-      labelKey: 'nav.overview',
-      to: paths.admin.root.getHref(),
-      icon: LayoutDashboard,
-      end: true,
-    },
-    {
-      labelKey: 'nav.users',
-      to: paths.admin.users.getHref(),
-      icon: Users,
-    },
-    {
-      labelKey: 'nav.operations',
-      icon: ClipboardList,
-      items: [
-        {
-          labelKey: 'nav.assignments',
-          to: paths.admin.assignments.getHref(),
-          icon: GraduationCap,
-        },
-        {
-          labelKey: 'nav.courses',
-          to: paths.admin.courses.getHref(),
-          icon: FileText,
-        },
-        {
-          labelKey: 'nav.programs',
-          to: paths.admin.programs.getHref(),
-          icon: BookOpen,
-        },
-        {
-          labelKey: 'nav.rules',
-          to: paths.admin.rules.getHref(),
-          icon: FileText,
-        },
-        {
-          labelKey: 'nav.registrationWindows',
-          to: paths.admin.registrationWindows.getHref(),
-          icon: CalendarClock,
-        },
-        {
-          labelKey: 'nav.staff',
-          to: paths.admin.staff.getHref(),
-          icon: UserCog,
-        },
-        {
-          labelKey: 'nav.aiConfiguration',
-          to: paths.admin.aiConfiguration.getHref(),
-          icon: Sparkles,
-        },
-      ],
-    },
-    {
-      labelKey: 'nav.more',
-      items: [
-        {
-          labelKey: 'nav.notifications',
-          to: paths.admin.notifications.getHref(),
-          icon: Bell,
-        },
-      ],
-    },
-  ],
-};
-
-/**
- * Mobile bottom-nav slots per role (design.md section 5.3). `more` opens the
- * sheet holding every area that is not in the bar.
- */
-const mobileBar: Record<UserRole, Array<NavItem | NavGroup | 'more'>> = {
-  student: [
-    entry('nav.home'),
-    entry('nav.myPlan'),
-    entry('nav.aiAdvisor'),
-    entry('nav.myAdvisor'),
-    'more',
-  ],
-  advisor: [
-    entry('nav.queue'),
-    entry('nav.students'),
-    entry('nav.meetings'),
-    'more',
-  ],
-  dean: [
-    entry('nav.overview'),
-    entry('nav.advisors'),
-    entry('nav.analytics'),
-    'more',
-  ],
-  vp: [
-    entry('nav.overview'),
-    entry('nav.faculties'),
-    entry('nav.trends'),
-    'more',
-  ],
-  admin: [
-    entry('nav.overview'),
-    entry('nav.users'),
-    roleNav.admin.find(
-      (item): item is NavGroup =>
-        'items' in item && item.labelKey === 'nav.operations',
-    ) ?? 'more',
-    'more',
-  ],
+const buildMobileBar = (role: UserRole): Array<NavItem | NavGroup> => {
+  const routes = roleRoutes(role);
+  return routes
+    .filter((route) => route.mobile === 'bar')
+    .map((route) => {
+      const children = groupChildren(route);
+      if (children.length === 0) return toNavItem(route);
+      return {
+        labelKey: route.labelKey ?? '',
+        icon: route.icon,
+        to: route.path,
+        items: children,
+      };
+    });
 };
 
 const useIsMobile = () => {
@@ -359,14 +153,11 @@ const useCommandGroups = (forRole: UserRole): CommandGroup[] => {
   const navigate = useNavigate();
 
   return React.useMemo(() => {
-    const flatten = (entries: NavEntry[]): NavItem[] =>
-      entries.flatMap((item) => (isNavGroup(item) ? item.items : [item]));
-
-    const pageEntries = flatten(roleNav[forRole]).map((item, index) => ({
-      id: `page-${index}`,
-      label: t(item.labelKey),
-      icon: item.icon,
-      onSelect: () => navigate(item.to),
+    const pageEntries = commandRoutes(forRole).map((route) => ({
+      id: `page-${route.id}`,
+      label: t(route.labelKey ?? ''),
+      icon: route.icon ?? Sparkles,
+      onSelect: () => navigate(route.path),
     }));
 
     const groups: CommandGroup[] = [
@@ -379,7 +170,7 @@ const useCommandGroups = (forRole: UserRole): CommandGroup[] => {
         id: 'ask-ai',
         label: t('commandPalette.actions.askAi'),
         icon: Sparkles,
-        onSelect: () => navigate(paths.app.chat.getHref()),
+        onSelect: () => navigate('/app/chat'),
       });
     }
     if (forRole === 'advisor') {
@@ -387,7 +178,7 @@ const useCommandGroups = (forRole: UserRole): CommandGroup[] => {
         id: 'set-availability',
         label: t('commandPalette.actions.setAvailability'),
         icon: CalendarClock,
-        onSelect: () => navigate(paths.advisor.hours.getHref()),
+        onSelect: () => navigate('/advisor/hours'),
       });
     }
     if (actions.length > 0) {
@@ -401,8 +192,8 @@ const useCommandGroups = (forRole: UserRole): CommandGroup[] => {
 };
 
 const densityPadding: Record<TableDensity, string> = {
-  spacious: 'p-4 pb-24 lg:p-6 md:pb-6',
-  compact: 'p-3 pb-24 lg:p-4 md:pb-4',
+  spacious: 'p-4 pb-24 md:p-6 md:pb-6 lg:p-8',
+  compact: 'p-4 pb-24 md:p-6 md:pb-6',
 };
 
 export type AppShellProps = {
@@ -422,7 +213,8 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
       delete document.body.dataset.mode;
     };
   }, [forRole]);
-  const items = roleNav[forRole];
+  const items = React.useMemo(() => buildRoleNav(forRole), [forRole]);
+  const barSlots = React.useMemo(() => buildMobileBar(forRole), [forRole]);
   const [paletteOpen, setPaletteOpen] = React.useState(false);
   const commandGroups = useCommandGroups(forRole);
   const isMobile = useIsMobile();
@@ -456,9 +248,19 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
           {items.map((item) =>
             isNavGroup(item) ? (
               <div key={item.labelKey} className="mt-2">
-                <p className="hidden px-3 py-1 text-2xs font-medium tracking-wide text-muted-foreground uppercase lg:inline">
-                  {t(item.labelKey)}
-                </p>
+                {item.to ? (
+                  <NavLink
+                    to={item.to}
+                    aria-label={t(item.labelKey)}
+                    className="hidden h-9 items-center rounded-md px-3 text-2xs font-medium tracking-wide text-muted-foreground uppercase hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden lg:flex"
+                  >
+                    {t(item.labelKey)}
+                  </NavLink>
+                ) : (
+                  <p className="hidden px-3 py-1 text-2xs font-medium tracking-wide text-muted-foreground uppercase lg:inline">
+                    {t(item.labelKey)}
+                  </p>
+                )}
                 {item.items.map((child) => (
                   <SidebarLink key={child.to} item={child} />
                 ))}
@@ -484,7 +286,9 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
         </div>
       </div>
 
-      {isMobile && <BottomNav forRole={forRole} />}
+      {isMobile && (
+        <BottomNav forRole={forRole} entries={items} slots={barSlots} />
+      )}
       <CommandPalette
         open={paletteOpen}
         onOpenChange={setPaletteOpen}
@@ -515,30 +319,46 @@ const SidebarLink = ({ item }: { item: NavItem }) => {
   );
 };
 
-const BottomNav = ({ forRole }: { forRole: UserRole }) => {
+const BottomNav = ({
+  forRole,
+  entries,
+  slots,
+}: {
+  forRole: UserRole;
+  entries: NavEntry[];
+  slots: Array<NavItem | NavGroup>;
+}) => {
   const { t } = useTranslation();
   const [moreOpen, setMoreOpen] = React.useState(false);
   const [sheetSlot, setSheetSlot] = React.useState<NavGroup | 'more' | null>(
     null,
   );
-  const slots = mobileBar[forRole];
 
-  const sheetItems = roleNav[forRole].flatMap((entryItem) =>
+  const sheetItems = entries.flatMap((entryItem) =>
     isNavGroup(entryItem) ? entryItem.items : [entryItem],
   );
-  const barItems = slots.filter(
-    (slot): slot is NavItem | NavGroup => slot !== 'more',
-  );
-  // Only literal bar links leave the sheet; a group slot keeps its children
-  // reachable, so its areas stay in the sheet (design.md DS-IA-02).
   const barToSet = new Set(
-    barItems.flatMap((slot) => (isNavGroup(slot) ? [] : [slot])),
+    slots.flatMap((slot) => (isNavGroup(slot) ? [] : [slot])),
   );
   const remaining = sheetItems.filter((item) => !barToSet.has(item));
   const sheetTitleKey =
     sheetSlot && sheetSlot !== 'more' ? sheetSlot.labelKey : 'nav.more';
   const sheetLinks =
-    sheetSlot && sheetSlot !== 'more' ? sheetSlot.items : remaining;
+    sheetSlot && sheetSlot !== 'more'
+      ? [
+          ...(sheetSlot.to
+            ? [
+                {
+                  labelKey: sheetSlot.labelKey,
+                  to: sheetSlot.to,
+                  icon: sheetSlot.icon ?? MoreHorizontal,
+                  end: true,
+                },
+              ]
+            : []),
+          ...sheetSlot.items,
+        ]
+      : remaining;
 
   const openSheet = (slot: NavGroup | 'more') => {
     setSheetSlot(slot);
@@ -553,20 +373,7 @@ const BottomNav = ({ forRole }: { forRole: UserRole }) => {
       >
         <ul className="flex items-stretch">
           {slots.map((slot) =>
-            slot === 'more' ? (
-              <li key="more" className="flex-1">
-                <button
-                  type="button"
-                  onClick={() => openSheet('more')}
-                  aria-haspopup="dialog"
-                  aria-expanded={moreOpen && sheetSlot === 'more'}
-                  className="flex h-16 w-full flex-col items-center justify-center gap-1 text-2xs font-medium text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
-                >
-                  <MoreHorizontal className="size-5" aria-hidden />
-                  {t('nav.more')}
-                </button>
-              </li>
-            ) : isNavGroup(slot) ? (
+            isNavGroup(slot) ? (
               <li key={slot.labelKey} className="flex-1">
                 <button
                   type="button"
@@ -601,6 +408,18 @@ const BottomNav = ({ forRole }: { forRole: UserRole }) => {
               </li>
             ),
           )}
+          <li className="flex-1">
+            <button
+              type="button"
+              onClick={() => openSheet('more')}
+              aria-haspopup="dialog"
+              aria-expanded={moreOpen && sheetSlot === 'more'}
+              className="flex h-16 w-full flex-col items-center justify-center gap-1 text-2xs font-medium text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
+            >
+              <MoreHorizontal className="size-5" aria-hidden />
+              {t('nav.more')}
+            </button>
+          </li>
         </ul>
       </nav>
 
@@ -689,7 +508,7 @@ const Topbar = ({ bell, name, onOpenPalette }: TopbarProps) => {
             onSelect={(event) => {
               event.preventDefault();
               logout.mutate(undefined, {
-                onSettled: () => navigate(paths.auth.login.getHref()),
+                onSettled: () => navigate('/login'),
               });
             }}
           >

@@ -125,6 +125,17 @@
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1.45;
 
+  /* Content widths: reading, workflow, data surfaces (foundation contract) */
+  --container-reading: 720px;
+  --container-workflow: 960px;
+  --container-data: 1200px;
+
+  /* Motion durations (design.md section 19) */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --duration-modal: 400ms;
+
   /* Motion (design.md 3.10) */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --animate-fade-in: fade-in 150ms var(--ease-out-expo);
@@ -367,3 +378,24 @@
 /* v5 two-mode radius (section 26.2): student cards 14px, staff 6px */
 body[data-mode='student'] .card { border-radius: 14px; }
 body[data-mode='staff'] .card { border-radius: 6px; }
+
+/* Two-mode density primitives: card padding, stack and cluster gaps.
+   Student: 16px mobile / 24px desktop cards, 24px stacks.
+   Staff: 12px mobile / 16px desktop cards, 16px stacks. */
+body[data-mode='student'] .card-pad { padding: 1rem; }
+body[data-mode='staff'] .card-pad { padding: 0.75rem; }
+body[data-mode='student'] .stack { row-gap: 1.5rem; }
+body[data-mode='staff'] .stack { row-gap: 1rem; }
+body[data-mode='student'] .cluster { gap: 0.75rem; }
+body[data-mode='staff'] .cluster { gap: 0.5rem; }
+
+@media (width >= 64rem) {
+  body[data-mode='student'] .card-pad { padding: 1.5rem; }
+  body[data-mode='staff'] .card-pad { padding: 1rem; }
+}
+
+.stack { display: flex; flex-direction: column; }
+.cluster { display: flex; flex-wrap: wrap; align-items: center; }
+
+/* Numeric alignment for tables, metrics, and any repeated digits (DS-C-12). */
+.nums { font-variant-numeric: tabular-nums; }

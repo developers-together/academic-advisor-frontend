@@ -334,7 +334,11 @@
   },
   "users": {
     "title": "Users",
-    "context": "Student and staff accounts, bindings, and staff creation."
+    "context": "Student and staff accounts, bindings, and staff creation.",
+    "tabs": {
+      "students": "Students",
+      "staff": "Staff"
+    }
   },
   "courses": {
     "title": "Courses",
@@ -436,5 +440,17 @@
     "enabledLabel": "AI advisor available to students",
     "save": "Save configuration",
     "saved": "AI configuration saved."
+  },
+  "operations": {
+    "context": "Pick the operational area you came to work on.",
+    "items": {
+      "assignments": "Who advises whom. Imports, changes, and validation.",
+      "courses": "Course metadata that plans and the AI build on.",
+      "programs": "Program structure behind degree progress.",
+      "rules": "Prerequisite and eligibility rules the validator applies.",
+      "registrationWindows": "Open, close, and annotate registration periods.",
+      "notifications": "Notification categories and triggers.",
+      "aiConfiguration": "What the AI advisor may do for students."
+    }
   }
 }

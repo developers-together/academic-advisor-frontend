@@ -147,11 +147,11 @@ export const paths = {
     },
     users: {
       path: 'users',
-      getHref: () => '/admin/students',
+      getHref: () => '/admin/users',
     },
     students: {
       path: 'students',
-      getHref: () => '/admin/students',
+      getHref: () => '/admin/users',
     },
     operations: {
       path: 'operations',
@@ -183,11 +183,11 @@ export const paths = {
     },
     staff: {
       path: 'staff',
-      getHref: () => '/admin/staff',
+      getHref: () => '/admin/users',
     },
     settings: {
       path: 'settings',
-      getHref: () => '/admin/settings',
+      getHref: () => '/admin',
     },
     notifications: {
       path: 'notifications',

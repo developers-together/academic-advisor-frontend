@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
 
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vitest/config';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   base: './',
@@ -17,6 +17,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/testing/setup-tests.ts',
+    maxWorkers: 2,
     exclude: ['**/node_modules/**', '**/e2e/**'],
     coverage: {
       include: ['src/**'],

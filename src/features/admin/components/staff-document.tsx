@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ErrorState } from '@/components/ui/banner';
+import { AsyncSurface } from '@/components/ui/async-surface';
 import { ConfirmDialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/components/ui/notifications';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ApiError } from '@/lib/api-error';
-import { PermissionDenied } from '@/lib/authorization';
 import type { StaffMember, StaffRole } from '@/types/domain';
 
 import { useDeleteStaff } from '../api/delete-staff';
@@ -86,38 +84,7 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
     });
   };
 
-  if (staffQuery.isPending) {
-    return (
-      <div aria-busy="true" className="space-y-3">
-        <Skeleton className="h-10 w-72" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-      </div>
-    );
-  }
-
-  if (staffQuery.isError) {
-    if (
-      staffQuery.error instanceof ApiError &&
-      staffQuery.error.status === 403
-    ) {
-      return <PermissionDenied audience="admin" />;
-    }
-    return (
-      <ErrorState
-        onRetry={() => void staffQuery.refetch()}
-        requestId={
-          staffQuery.error instanceof ApiError
-            ? staffQuery.error.requestId
-            : null
-        }
-      />
-    );
-  }
-
-  const staff = staffQuery.data;
+  const staff = staffQuery.data ?? [];
 
   const confirmCopy = confirmTarget
     ? confirmTarget.kind === 'delete'
@@ -138,7 +105,7 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
     : null;
 
   return (
-    <div className="space-y-3">
+    <AsyncSurface query={staffQuery}>
       <Tabs
         value={filter}
         onValueChange={(value) => setFilter(value as StaffFilter)}
@@ -207,6 +174,6 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
           onConfirm={confirm}
         />
       )}
-    </div>
+    </AsyncSurface>
   );
 };
