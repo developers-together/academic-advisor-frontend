@@ -3,8 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { MeetingRequestCard } from '@/components/domain/meeting-request-card';
 import { ReasonDialog } from '@/components/domain/reason-dialog';
+import { ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/components/ui/notifications';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useMyAdvisor } from '@/features/profile/api/get-advisor';
 import { formatCairoSlotRange } from '@/lib/i18n/format';
 import type { MeetingRequest } from '@/types/domain';
@@ -20,11 +23,15 @@ import { RequestMeetingDialog } from './request-meeting-dialog';
 export type MyMeetingsProps = {
   meetings: MeetingRequest[] | undefined;
   isPending?: boolean;
+  isError?: boolean;
+  onRetry?: () => void;
 };
 
 export const MyMeetings = ({
   meetings,
   isPending = false,
+  isError = false,
+  onRetry,
 }: MyMeetingsProps) => {
   const { t } = useTranslation('advisor');
   const addNotification = useNotifications((state) => state.addNotification);
@@ -90,7 +97,16 @@ export const MyMeetings = ({
               }
               onClick={() =>
                 picked !== null &&
-                acceptProposal.mutate({ id: meeting.id, input: picked })
+                acceptProposal.mutate(
+                  { id: meeting.id, input: picked },
+                  {
+                    onError: () =>
+                      addNotification({
+                        type: 'error',
+                        title: t('myMeetings.actionFailed'),
+                      }),
+                  },
+                )
               }
             >
               {t('myMeetings.actions.accept')}
@@ -126,7 +142,17 @@ export const MyMeetings = ({
     ).length ?? 0;
 
   if (isPending) {
-    return null;
+    return (
+      <div className="space-y-3" aria-busy="true">
+        {[0, 1, 2].map((index) => (
+          <Skeleton key={index} className="h-28 w-full" />
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <ErrorState compact onRetry={onRetry} />;
   }
 
   return (
@@ -138,7 +164,11 @@ export const MyMeetings = ({
       )}
 
       {(meetings?.length ?? 0) === 0 ? (
-        <p className="text-sm text-muted-foreground">{t('myMeetings.none')}</p>
+        <EmptyState
+          compact
+          title={t('myMeetings.emptyTitle')}
+          description={t('myMeetings.emptyBody')}
+        />
       ) : (
         <ul className="space-y-3">
           {meetings?.map((meeting) => (
@@ -173,7 +203,14 @@ export const MyMeetings = ({
           if (declineId === null) return;
           declineProposal.mutate(
             { id: declineId, input: reason },
-            { onSuccess: () => setDeclineId(null) },
+            {
+              onSuccess: () => setDeclineId(null),
+              onError: () =>
+                addNotification({
+                  type: 'error',
+                  title: t('myMeetings.actionFailed'),
+                }),
+            },
           );
         }}
       />
@@ -197,6 +234,11 @@ export const MyMeetings = ({
                   title: t('myMeetings.cancelled'),
                 });
               },
+              onError: () =>
+                addNotification({
+                  type: 'error',
+                  title: t('myMeetings.actionFailed'),
+                }),
             },
           );
         }}
