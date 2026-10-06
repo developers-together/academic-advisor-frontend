@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/dialog';
@@ -43,6 +44,10 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
   const [failure, setFailure] = useState<SubmitFailure | null>(null);
   const [windowClosed, setWindowClosed] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [lineError, setLineError] = useState<{
+    message: string;
+    requestId: string | null;
+  } | null>(null);
   const [serviceUnavailable, setServiceUnavailable] = useState<{
     requestId: string | null;
   } | null>(null);
@@ -53,6 +58,21 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
     setFailure(null);
     setWindowClosed(false);
     setServiceUnavailable(null);
+    setLineError(null);
+  };
+
+  // The plan endpoints answer 422 with a message plus per-field lines
+  // (design.md section 7.4: the UI renders the server's words).
+  const describeLineError = (error: unknown) => {
+    if (error instanceof ApiError) {
+      const fieldMessages = Object.values(error.fields).flat().join(' ');
+      return {
+        message:
+          fieldMessages || error.message || t('common:errors.saveFailed'),
+        requestId: error.requestId,
+      };
+    }
+    return { message: t('common:errors.saveFailed'), requestId: null };
   };
 
   const pending =
@@ -95,9 +115,21 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
         disabled={addCourse.isPending}
         onSelect={(courseCode) => {
           clearResults();
-          addCourse.mutate({ courseCode });
+          addCourse.mutate(
+            { courseCode },
+            { onError: (error) => setLineError(describeLineError(error)) },
+          );
         }}
       />
+      {lineError && (
+        <Banner variant="destructive" title={lineError.message}>
+          {lineError.requestId && (
+            <p className="text-xs text-muted-foreground">
+              {t('common:errors.requestRef', { id: lineError.requestId })}
+            </p>
+          )}
+        </Banner>
+      )}
       <Card>
         <CardHeader className="pb-0">
           <h2 className="text-base font-semibold">
@@ -137,23 +169,41 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
                       errors={failure?.lineErrors[course.course_code] ?? []}
                       onGroupChange={(group) => {
                         clearResults();
-                        updateCourse.mutate({
-                          courseCode: course.course_code,
-                          group,
-                        });
+                        updateCourse.mutate(
+                          {
+                            courseCode: course.course_code,
+                            group,
+                          },
+                          {
+                            onError: (error) =>
+                              setLineError(describeLineError(error)),
+                          },
+                        );
                       }}
                       onSectionChange={(section) => {
                         clearResults();
-                        updateCourse.mutate({
-                          courseCode: course.course_code,
-                          section,
-                        });
+                        updateCourse.mutate(
+                          {
+                            courseCode: course.course_code,
+                            section,
+                          },
+                          {
+                            onError: (error) =>
+                              setLineError(describeLineError(error)),
+                          },
+                        );
                       }}
                       onRemove={() => {
                         clearResults();
-                        removeCourse.mutate({
-                          courseCode: course.course_code,
-                        });
+                        removeCourse.mutate(
+                          {
+                            courseCode: course.course_code,
+                          },
+                          {
+                            onError: (error) =>
+                              setLineError(describeLineError(error)),
+                          },
+                        );
                       }}
                     />
                   </li>
