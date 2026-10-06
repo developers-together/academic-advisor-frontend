@@ -7,20 +7,26 @@ import type { User } from '@/types/domain';
 export type AdminStudentsParams = {
   search: string;
   perPage: number;
+  page: number;
 };
 
 export const adminStudentsQueryKey = ({
   search,
   perPage,
+  page,
 }: AdminStudentsParams) =>
-  ['admin', 'students', { search, per_page: perPage }] as const;
+  ['admin', 'students', { search, per_page: perPage, page }] as const;
 
 export const getAdminStudents = (
   params: AdminStudentsParams,
 ): Promise<Page<User>> =>
   unwrapPage<User>(
     api.get('/admin/students', {
-      params: { search: params.search, per_page: params.perPage },
+      params: {
+        search: params.search,
+        per_page: params.perPage,
+        page: params.page,
+      },
     }),
   );
 
