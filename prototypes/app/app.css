@@ -71,3 +71,13 @@ body.dark .skeleton { background: linear-gradient(90deg, #1E2530 25%, #263041 50
 body.dark .meter { background: #263041; }
 body.dark .note { background:#3a1418; border-color:#7a2e35; color:#f2b8bd; }
 body.dark .cream-card { background:#26221A; border-color:#4A422F; }
+
+/* ===== accessibility layer (contract section 8) ===== */
+:focus-visible { outline: 2px solid var(--crimson-500); outline-offset: 2px; }
+/* touch-first control heights; staff density shrinks behind pointer:fine + lg */
+.btn { height: 44px; }
+.btn.sm { height: 40px; }
+@media (pointer: fine) and (min-width: 1024px) {
+  .btn { height: 36px; }
+  .btn.sm { height: 32px; }
+}
