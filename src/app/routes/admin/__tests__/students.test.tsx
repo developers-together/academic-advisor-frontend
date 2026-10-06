@@ -323,7 +323,7 @@ test('deleting the account confirms the caseload consequence and removes the row
     name: 'Delete Lina Majors?',
   });
   expect(confirm).toHaveTextContent(
-    "This deletes the student account and removes the student from their advisor's caseload.",
+    'This deletes the student account and removes the student from their advisor’s caseload.',
   );
 
   await userEvent.click(
