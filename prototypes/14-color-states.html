@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>14 · Color rules and the state layer — R-04, R-05</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  /* prototype-only helpers, tokens from proto.css */
+  .mock { border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--card); }
+  .ai-badge { flex:none; width:24px; height:24px; border-radius:6px; border:1px solid var(--border); background:var(--muted); color:var(--fg); display:inline-grid; place-items:center; font-size:10px; font-weight:700; }
+  .state-icon { width:40px; height:40px; border-radius:50%; background:var(--muted); display:grid; place-items:center; font-size:18px; }
+  .spin { display:inline-block; animation:rot 1s linear infinite; }
+  @keyframes rot { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">14 · Color rules and the state layer — R-04, R-05</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="color">Color: before/after</button>
+    <button data-pane="states">State gallery</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ COLOR: BEFORE / AFTER ============ -->
+<div class="pane active" data-pane="color">
+  <div class="content" style="max-width:1060px;">
+    <div class="page-head">
+      <div><h1>Color rules</h1><p class="desc">R-04, applied as an audit: each pair shows a live violation and its corrected form.</p></div>
+    </div>
+    <div class="note"><b>R-04:</b> crimson means brand and primary action — never decoration, never unread, never a dataset.
+    Status is one of four semantic channels, rendered as tint plus icon or text. Data series use the categorical palette.</div>
+
+    <!-- pair 1: notification unread -->
+    <div class="col gap-1">
+      <div class="grid-2">
+        <div class="card col gap-2" style="border-color:var(--destructive-border);">
+          <span class="eyebrow" style="color:var(--destructive);">Before — crimson border and title</span>
+          <div class="notif" style="border:1px solid var(--border); border-radius:var(--radius-sm); border-inline-start:3px solid var(--crimson-700);">
+            <span class="n-icon" style="background:var(--state-returned-bg); color:var(--state-returned-fg);">↩</span>
+            <div class="col gap-1" style="flex:1;">
+              <span class="n-title" style="color:var(--crimson-700); font-weight:600;">Plan returned</span>
+              <span class="n-body">Amr Advisor returned your plan with feedback.</span>
+            </div>
+            <span class="n-time">20:20</span>
+          </div>
+        </div>
+        <div class="card col gap-2">
+          <span class="eyebrow" style="color:var(--success);">After — info dot plus weight</span>
+          <div class="notif unread" style="border:1px solid var(--border); border-radius:var(--radius-sm);">
+            <span class="unread-dot"></span>
+            <span class="n-icon" style="background:var(--state-returned-bg); color:var(--state-returned-fg);">↩</span>
+            <div class="col gap-1" style="flex:1;">
+              <span class="n-title">Plan returned</span>
+              <span class="n-body">Amr Advisor returned your plan with feedback.</span>
+            </div>
+            <span class="n-time">20:20</span>
+          </div>
+        </div>
+      </div>
+      <p class="xs muted">Rule: crimson = brand and primary action only — never unread. Unread is an info dot plus title weight (C-13).</p>
+    </div>
+
+    <!-- pair 2: AI card -->
+    <div class="col gap-1">
+      <div class="grid-2">
+        <div class="card col gap-2" style="border-color:var(--destructive-border);">
+          <span class="eyebrow" style="color:var(--destructive);">Before — crimson border on an info card</span>
+          <div class="mock" style="padding:12px 14px; border:1.5px solid var(--crimson-700); border-radius:var(--radius-sm);">
+            <p style="font-weight:600;">Ask your AI advisor</p>
+            <p class="sm muted">Plan with your record and the university rules in one chat.</p>
+          </div>
+        </div>
+        <div class="card col gap-2">
+          <span class="eyebrow" style="color:var(--success);">After — neutral border, AI badge</span>
+          <div class="mock" style="padding:12px 14px;">
+            <div class="row gap-2">
+              <span class="ai-badge">AI</span>
+              <p style="font-weight:600;">Ask your AI advisor</p>
+            </div>
+            <p class="sm muted" style="margin-top:6px;">Plan with your record and the university rules in one chat.</p>
+          </div>
+        </div>
+      </div>
+      <p class="xs muted">Rule: crimson = brand and primary action only — never decoration. The AI is marked by a badge, not a colored border.</p>
+    </div>
+
+    <!-- pair 3: 404 exit -->
+    <div class="col gap-1">
+      <div class="grid-2">
+        <div class="card col gap-2" style="border-color:var(--destructive-border);">
+          <span class="eyebrow" style="color:var(--destructive);">Before — crimson primary exit</span>
+          <div class="mock col gap-2" style="padding:16px; align-items:flex-start;">
+            <p style="font-weight:600;">Page not found</p>
+            <p class="sm muted">The page moved or never existed. Your plan and record are safe.</p>
+            <button class="btn primary">Go to your dashboard</button>
+          </div>
+        </div>
+        <div class="card col gap-2">
+          <span class="eyebrow" style="color:var(--success);">After — outline wayfinding</span>
+          <div class="mock col gap-2" style="padding:16px; align-items:flex-start;">
+            <p style="font-weight:600;">Page not found</p>
+            <p class="sm muted">The page moved or never existed. Your plan and record are safe.</p>
+            <button class="btn outline">Go to your dashboard</button>
+          </div>
+        </div>
+      </div>
+      <p class="xs muted">Rule: crimson is the primary action of the page. A wayfinding exit is not it — an outline button renders the way back.</p>
+    </div>
+
+    <!-- pair 4: data series -->
+    <div class="col gap-1">
+      <div class="grid-2">
+        <div class="card col gap-2" style="border-color:var(--destructive-border);">
+          <span class="eyebrow" style="color:var(--destructive);">Before — faculty line in brand maroon</span>
+          <svg class="spark" width="100%" height="56" viewBox="0 0 220 56" preserveAspectRatio="none" aria-hidden="true">
+            <polyline stroke="#8b0000" points="0,42 30,34 60,40 90,26 120,30 150,16 180,24 220,10" />
+          </svg>
+          <span class="swatch"><i style="background:#8b0000;"></i> Faculty of Engineering</span>
+        </div>
+        <div class="card col gap-2">
+          <span class="eyebrow" style="color:var(--success);">After — categorical palette</span>
+          <svg class="spark" width="100%" height="56" viewBox="0 0 220 56" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="0" y1="30" x2="220" y2="30" stroke="#8b0000" stroke-width="1.5" stroke-dasharray="4 4" />
+            <polyline stroke="#2563eb" points="0,42 30,34 60,40 90,26 120,30 150,16 180,24 220,10" />
+          </svg>
+          <div class="row gap-3 wrap">
+            <span class="swatch"><i style="background:#2563eb;"></i> Faculty of Engineering</span>
+            <span class="swatch"><i style="background:repeating-linear-gradient(90deg, #8b0000 0 3px, transparent 3px 6px);"></i> University average</span>
+          </div>
+        </div>
+      </div>
+      <p class="xs muted">Rule: data series use the categorical palette, never brand maroon. The university-average line may stay crimson — there, crimson means the institution.</p>
+    </div>
+
+    <!-- pair 5: meeting chip on a student surface -->
+    <div class="col gap-1">
+      <div class="grid-2">
+        <div class="card col gap-2" style="border-color:var(--destructive-border);">
+          <span class="eyebrow" style="color:var(--destructive);">Before — alert chip on a data row</span>
+          <div class="mock row between" style="padding:10px 12px;">
+            <span class="sm"><b>Sara Student</b> · CS 201 advisee</span>
+            <span class="chip info">Meeting not met</span>
+          </div>
+        </div>
+        <div class="card col gap-2">
+          <span class="eyebrow" style="color:var(--success);">After — plain text status</span>
+          <div class="mock row between" style="padding:10px 12px;">
+            <span class="sm"><b>Sara Student</b> · CS 201 advisee</span>
+            <span class="sm muted">Meeting due</span>
+          </div>
+        </div>
+      </div>
+      <p class="xs muted">Rule: status is a semantic channel rendered as tint plus icon or text, where it means status. Meeting lifecycle on a student row is data, so it renders as muted text.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ STATE GALLERY ============ -->
+<div class="pane" data-pane="states">
+  <div class="content" style="max-width:760px; margin:0 auto;">
+    <div class="page-head">
+      <div><h1>State gallery</h1><p class="desc">R-05: one specification, enforced per surface class, on realistic Advisor content.</p></div>
+    </div>
+
+    <!-- 1 loading -->
+    <div class="col gap-2">
+      <span class="eyebrow">Loading · skeleton matches the final shape — no spinners for area loads</span>
+      <div class="card col gap-2" aria-busy="true">
+        <div class="row between">
+          <span class="skeleton" style="width:140px; height:16px; display:inline-block;"></span>
+          <span class="skeleton" style="width:90px; height:24px; display:inline-block;"></span>
+        </div>
+        <span class="skeleton" style="width:100%; height:10px; display:inline-block;"></span>
+        <span class="skeleton" style="width:82%; height:10px; display:inline-block;"></span>
+        <span class="skeleton" style="width:60%; height:10px; display:inline-block;"></span>
+      </div>
+    </div>
+
+    <!-- 2 empty -->
+    <div class="col gap-2">
+      <span class="eyebrow">Empty · names what, whether normal, the next step</span>
+      <div class="card col gap-2" style="align-items:center; text-align:center; padding:32px 24px;">
+        <span class="state-icon" aria-hidden="true">📅</span>
+        <p style="font-weight:600;">No meetings yet</p>
+        <p class="sm muted" style="max-width:44ch;">Meetings with your advisor appear here once they are scheduled.</p>
+        <button class="btn primary sm">Request a meeting</button>
+      </div>
+    </div>
+
+    <!-- 3 error -->
+    <div class="col gap-2">
+      <span class="eyebrow">Error · what failed, saved or not, retry, request id</span>
+      <div class="banner destructive">
+        <span class="b-icon">✕</span>
+        <div class="col gap-2" style="flex:1;">
+          <span class="b-title">We could not save that.</span>
+          <p class="sm">Nothing was saved. Retry in a moment.</p>
+          <div class="row gap-2 wrap">
+            <button class="btn primary sm">Retry</button>
+            <span class="xs muted" style="align-self:center;">Request reference: <code>req_4f2a</code></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 saving -->
+    <div class="col gap-2">
+      <span class="eyebrow">Saving · button state plus polite live region</span>
+      <div class="card col gap-2">
+        <div class="row gap-2 wrap">
+          <span class="sm muted" style="min-width:130px;">Monday hours</span>
+          <input class="input" style="max-width:180px;" value="10:00 – 12:00" aria-label="Monday hours" />
+          <button class="btn primary" disabled><span class="spin" aria-hidden="true">◌</span> Saving…</button>
+        </div>
+        <p class="sm muted" role="status">Saving…</p>
+      </div>
+    </div>
+
+    <!-- 5 saved -->
+    <div class="col gap-2">
+      <span class="eyebrow">Saved · confirmation with the time</span>
+      <div class="card col gap-2">
+        <div class="row gap-2 wrap">
+          <span class="sm muted" style="min-width:130px;">Monday hours</span>
+          <input class="input" style="max-width:180px;" value="10:00 – 12:00" aria-label="Monday hours" />
+          <button class="btn primary">Save</button>
+          <span class="chip success"><span class="dot"></span> Saved</span>
+          <span class="xs muted">Today, 14:05</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 dirty -->
+    <div class="col gap-2">
+      <span class="eyebrow">Dirty · unsaved-changes guard on editors</span>
+      <div class="banner warning">
+        <span class="b-icon">!</span>
+        <div class="col gap-2" style="flex:1;">
+          <span class="b-title">You have unsaved changes</span>
+          <p class="sm">Leave now and your edits to the rule text are lost.</p>
+          <div class="row gap-2">
+            <button class="btn outline sm">Stay</button>
+            <button class="btn ghost sm" style="color:var(--destructive);">Discard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 stale -->
+    <div class="col gap-2">
+      <span class="eyebrow">Stale · as-of time and refresh, above the affected content</span>
+      <div class="col gap-2">
+        <div class="banner warning">
+          <span class="b-icon">!</span>
+          <div class="row between wrap gap-2" style="flex:1;">
+            <div class="col gap-1">
+              <span class="b-title">SIS data as of 05 Oct, 14:00</span>
+              <p class="sm">This snapshot may be out of date. Refresh to load the latest from the SIS.</p>
+            </div>
+            <button class="btn outline sm">Refresh</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Course</th><th>Title</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><code>CS 201</code></td><td>Data Structures</td><td><span class="chip success">Complete</span></td></tr>
+              <tr><td><code>MATH 205</code></td><td>Linear Algebra</td><td><span class="chip neutral">In progress</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 permission -->
+    <div class="col gap-2">
+      <span class="eyebrow">Permission · calm panel, role reminder, a way back</span>
+      <div class="card col gap-2" style="background:var(--muted); align-items:flex-start; padding:28px 24px;">
+        <p style="font-weight:600;">This area is for advisors</p>
+        <p class="sm muted" style="max-width:48ch;">The review queue and caseload tools are advisor surfaces.
+        Your plans, record, and meetings stay in your own pages.</p>
+        <button class="btn outline sm">Go to your dashboard</button>
+      </div>
+    </div>
+
+    <!-- 9 conflict -->
+    <div class="col gap-2">
+      <span class="eyebrow">Conflict · two versions, two resolution actions</span>
+      <div class="banner warning">
+        <span class="b-icon">!</span>
+        <div class="col gap-2" style="flex:1;">
+          <span class="b-title">This plan changed on the server</span>
+          <p class="sm">Server version: plan edited 14:02 by you in another tab. Your version: edited 14:04 here.</p>
+          <div class="row gap-2">
+            <button class="btn primary sm">Keep mine</button>
+            <button class="btn outline sm">Take server</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
