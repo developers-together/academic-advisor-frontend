@@ -17,19 +17,19 @@ const Palette = {
     if (me.role === 'advisor') {
       Object.keys(Store.s.plans).forEach((id) => {
         const u = Store.user(Number(id));
-        if (u) records.push({ group: 'People', icon: '👤', label: u.name, hint: 'Caseload · ' + (u.studentId || ''), run: () => { App.reviewStudent = u.id; location.hash = '#/advisor/review'; } });
+        if (u) records.push({ group: 'People', icon: 'user', label: u.name, hint: 'Caseload · ' + (u.studentId || ''), run: () => { App.reviewStudent = u.id; location.hash = '#/advisor/review'; } });
       });
     }
     if (me.role === 'student') {
-      Store.s.chat.conversations.forEach((c) => records.push({ group: 'Conversations', icon: '💬', label: c.title, hint: c.at, run: () => Store.chatOpen(c.id) }));
+      Store.s.chat.conversations.forEach((c) => records.push({ group: 'Conversations', icon: 'chat', label: c.title, hint: c.at, run: () => Store.chatOpen(c.id) }));
     }
     if (me.role === 'dean' || me.role === 'vp') {
-      Store.s.governance.faculties.forEach((f) => records.push({ group: 'Faculties', icon: '🏛', label: f.name, hint: f.completion + '% completion', run: () => { location.hash = '#/vp/faculties'; } }));
+      Store.s.governance.faculties.forEach((f) => records.push({ group: 'Faculties', icon: 'building', label: f.name, hint: f.completion + '% completion', run: () => { location.hash = '#/vp/faculties'; } }));
     }
     if (me.role === 'admin') {
-      Store.s.admin.students.forEach((u) => records.push({ group: 'People', icon: '👤', label: u.name, hint: 'Account · ' + u.binding, run: () => { location.hash = '#/admin/students'; } }));
-      Store.s.admin.courses.forEach((c) => records.push({ group: 'Courses', icon: '📚', label: c.code + ' · ' + c.title, hint: c.program, run: () => { location.hash = '#/admin/courses'; } }));
-      Store.s.admin.staff.forEach((p) => records.push({ group: 'Staff', icon: '🧑‍💼', label: p.name, hint: p.role, run: () => { location.hash = '#/admin/staff'; } }));
+      Store.s.admin.students.forEach((u) => records.push({ group: 'People', icon: 'user', label: u.name, hint: 'Account · ' + u.binding, run: () => { location.hash = '#/admin/students'; } }));
+      Store.s.admin.courses.forEach((c) => records.push({ group: 'Courses', icon: 'book', label: c.code + ' · ' + c.title, hint: c.program, run: () => { location.hash = '#/admin/courses'; } }));
+      Store.s.admin.staff.forEach((p) => records.push({ group: 'Staff', icon: 'staff', label: p.name, hint: p.role, run: () => { location.hash = '#/admin/staff'; } }));
     }
     const actions = {
       student: [{ label: 'Open the Plan Builder', run: () => { location.hash = '#/app/builder'; } }, { label: 'Ask the AI Advisor', run: () => { location.hash = '#/app/chat'; } }, { label: 'Request a meeting', run: () => { location.hash = '#/app/advisor'; } }],
@@ -37,10 +37,10 @@ const Palette = {
       dean: [{ label: 'Export CSV', run: () => App.exportCsv && App.exportCsv() }, { label: 'Open advisor workload', run: () => { location.hash = '#/dean/advisors'; } }],
       vp: [{ label: 'Export CSV', run: () => App.exportCsv && App.exportCsv() }, { label: 'Open the scorecard', run: () => { location.hash = '#/vp/faculties'; } }],
       admin: [{ label: 'Add a course', run: () => { location.hash = '#/admin/courses'; } }, { label: 'Open registration windows', run: () => { location.hash = '#/admin/windows'; } }, { label: 'Run the assignments import', run: () => { location.hash = '#/admin/assignments'; } }],
-    }[me.role].map((a) => ({ group: 'Actions', icon: '⚡', label: a.label, hint: 'Action', run: a.run }));
+    }[me.role].map((a) => ({ group: 'Actions', icon: 'sparkles', label: a.label, hint: 'Action', run: a.run }));
     const theme = [
-      { group: 'Actions', icon: '◑', label: Store.s.dark ? 'Switch to light mode' : 'Switch to dark mode', hint: 'Theme', run: () => Store.setDark(!Store.s.dark) },
-      { group: 'Actions', icon: '◑', label: Store.theme() === 'v5' ? 'Switch to v4 skin' : 'Switch to v5 skin', hint: 'Theme', run: () => Store.setTheme(Store.theme() === 'v5' ? 'v4' : 'v5') },
+      { group: 'Actions', icon: 'moon', label: Store.s.dark ? 'Switch to light mode' : 'Switch to dark mode', hint: 'Theme', run: () => Store.setDark(!Store.s.dark) },
+      { group: 'Actions', icon: 'moon', label: Store.theme() === 'v5' ? 'Switch to v4 skin' : 'Switch to v5 skin', hint: 'Theme', run: () => Store.setTheme(Store.theme() === 'v5' ? 'v4' : 'v5') },
     ];
     return [...pages, ...records, ...actions, ...theme];
   },
@@ -61,13 +61,14 @@ const Palette = {
 
   view() {
     if (!this.open || !Store.me()) return '';
+
     const items = this.filtered();
     let idx = -1;
     return `
     <div class="overlay" style="align-items:flex-start;" onclick="Palette.close()">
       <div class="popover" role="dialog" aria-label="Command palette" style="width:560px; margin:12vh auto 0; overflow:hidden;" onclick="event.stopPropagation()">
         <div class="row gap-2" style="padding:12px 14px; border-bottom:1px solid var(--border);">
-          <span class="muted">⌕</span>
+          <span class='muted' id='palette-glyph'></span>
           <input id="palette-input" class="input" style="border:none; box-shadow:none; padding:0; height:auto; font-size:15px;"
             placeholder="Search pages, people, and actions" value="${UI.esc(this.query)}"
             oninput="Palette.query=this.value; Palette.index=0; App.render(); setTimeout(()=>{const i=document.getElementById('palette-input'); i&&i.focus(); i&&i.setSelectionRange(i.value.length,i.value.length);},0);"
@@ -81,7 +82,7 @@ const Palette = {
             const active = idx === this.index;
             return `<button class="row gap-2" style="display:flex; width:100%; text-align:start; padding:9px 10px; border:none; background:${active ? 'var(--muted)' : 'transparent'}; border-radius:6px; font:inherit; font-size:13px; cursor:pointer;"
               onmouseenter="Palette.index=${idx}" onclick="Palette.run(${idx})">
-              <span style="width:20px; text-align:center;">${item.icon}</span>
+              <span style="width:20px; text-align:center;">${icon(item.icon)}</span>
               <span style="font-weight:500; flex:1;">${UI.esc(item.label)}</span>
               <span class="xs muted">${UI.esc(item.hint)}</span>
               <span class="xs muted" style="width:70px; text-align:end;">${item.group}</span>
