@@ -67,7 +67,7 @@ export const TrendChart = ({
           >
             <XAxis dataKey="term" tick={{ fontSize: 11 }} />
             <YAxis tick={{ fontSize: 11 }} unit={unit} width={44} />
-            <Tooltip />
+            <Tooltip wrapperClassName="tabular-nums" />
             <Legend />
             {series.map((line, index) => (
               <Line
@@ -100,7 +100,9 @@ export const TrendChart = ({
             <tr key={row.term as string}>
               <th scope="row">{row.term}</th>
               {series.map((line) => (
-                <td key={line.key}>{row[line.key] ?? '—'}</td>
+                <td key={line.key} className="tabular-nums">
+                  {row[line.key] ?? '—'}
+                </td>
               ))}
             </tr>
           ))}
