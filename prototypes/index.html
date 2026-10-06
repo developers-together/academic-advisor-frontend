@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Advisor redesign — prototype hub</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+<div class="proto-bar">
+  <span class="p-title">Advisor redesign — prototype hub</span>
+  <span>Everything here is a proposal. Nothing is implemented.</span>
+</div>
+<div class="content" style="max-width: 900px; margin: 0 auto; padding: 32px 24px 64px;">
+  <div class="page-head" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+    <h1>Prototype suite for approval</h1>
+    <p class="desc max-prose">Each screen demonstrates one approved-for-prototyping theme from
+    <a href="../design-system-v4-draft.md" style="font-weight:500">design-system-v4-draft.md</a>.
+    Item numbers (C-01, R-02, W-03) match the catalog. Use the dark pill bar inside each
+    prototype to switch states. React with approve, amend, or reject per item.</p>
+  </div>
+
+  <div class="card col gap-2" style="border-color:var(--crimson-200);">
+    <h2>Full working replica — start here</h2>
+    <div class="col gap-2">
+      <a href="app/">▶ Open the full replica (all five roles, all flows, working)</a>
+      <p class="sm muted">Sign in with student / advisor / dean / vp / admin @ejust.edu.eg · password123.
+      Every redesign in this suite is applied and wired: fix Sara's returned plan in the builder, submit it,
+      approve it as the advisor, and watch the notification and checklist land. Data resets on refresh.</p>
+    </div>
+  </div>
+
+  <div class="card col gap-2">
+    <h2>Core loops</h2>
+    <div class="col gap-2">
+      <a href="01-plan-health.html">01 · Plan health strip and Returned hero</a>
+      <p class="sm muted">C-01, D-01, D-03, D-04, W-05 — credits per line, 12-18 load meter, validate before the gate, the returned-plan story, save states, why-blocked explainer. Three switchable states: draft, returned, approved.</p>
+      <a href="02-queue-workspace.html">02 · Advisor queue as a decision workspace</a>
+      <p class="sm muted">C-02, D-09 — row actions on hover and focus, sort control, summary line, keyboard triage, richer triage columns.</p>
+    </div>
+  </div>
+
+  <div class="card col gap-2">
+    <h2>Elements</h2>
+    <div class="col gap-2">
+      <a href="03-shell-notifications.html">03 · Shell, top bar, and notifications</a>
+      <p class="sm muted">R-01, R-02, C-12, C-13 — identity once, context top bar with breadcrumbs, avatar menu, bell popover with actions, More sheet, mobile frame, RTL sample.</p>
+      <a href="04-chat.html">04 · AI Advisor, one surface</a>
+      <p class="sm muted">R-03, C-11 — composer always visible, grounded starters, conversation rail, thinking, streaming, tool, failed states, submit suggestion card.</p>
+      <a href="14-color-states.html">14 · Color rules and the state layer</a>
+      <p class="sm muted">R-04, R-05 — before and after color misuse, and the full state gallery: loading, empty, error, saving, saved, dirty, stale, permission, conflict.</p>
+    </div>
+  </div>
+
+  <div class="card col gap-2">
+    <h2>Roles</h2>
+    <div class="col gap-2">
+      <a href="05-my-advisor.html">05 · My Advisor, complete</a>
+      <p class="sm muted">C-04, D-02 — Request meeting as the primary, meeting place and duration, past meetings, full advisor card.</p>
+      <a href="06-meetings.html">06 · Advisor meetings, day model</a>
+      <p class="sm muted">C-03, D-11 — Today strip, one primary action, slot-picker chips, Delay action.</p>
+      <a href="07-record.html">07 · Academic Record, truthful</a>
+      <p class="sm muted">C-15, D-05 — credits earned and remaining, SIS as-of stamp, course map legend, milestone next steps.</p>
+      <a href="08-office-hours.html">08 · Office hours, availability contract</a>
+      <p class="sm muted">C-16, D-12, D-13 — inline validation, slot-generation preview, dirty guard, saving and saved states, profile merged in.</p>
+      <a href="09-governance.html">09 · Governance: dean overview, advisor table, VP scorecard and trends</a>
+      <p class="sm muted">C-05, C-06, C-07, W-02 — term switcher, deltas versus prior term, bottleneck drill-through, quartile tints, VP direction columns with sparklines and inline drill, metric switcher, governance alerts.</p>
+      <a href="10-admin.html">10 · Admin: table standard, Operations landing, windows lifecycle</a>
+      <p class="sm muted">C-08, C-09, C-10, W-03, D-23 to D-32 — one table standard with impact dialogs, Operations landing with real counts, Add window with as-of stamp, import result panel, overview health strip.</p>
+      <a href="11-auth.html">11 · Auth alignment</a>
+      <p class="sm muted">C-14, D-33 — one layout, back links, consistent labels, eye toggles, error and success states.</p>
+      <a href="12-workflows.html">12 · New workflows</a>
+      <p class="sm muted">W-01, W-04 — registration checklist after approval, first-run activation strip.</p>
+    </div>
+  </div>
+
+  <p class="sm muted" style="margin-top: 16px;">Prototype assets: assets/proto.css (the real design tokens), assets/proto.js (state switchers). Screens are static; flows are implied, not wired.</p>
+</div>
+</body>
+</html>
