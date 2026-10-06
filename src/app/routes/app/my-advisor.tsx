@@ -26,6 +26,8 @@ export default function MyAdvisorRoute() {
             <MyMeetings
               meetings={meetingsQuery.data}
               isPending={meetingsQuery.isPending}
+              isError={meetingsQuery.isError}
+              onRetry={() => void meetingsQuery.refetch()}
             />
           </CardBody>
         </Card>
