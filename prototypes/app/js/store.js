@@ -69,18 +69,18 @@ const seed = () => ({
   ],
 
   notifications: [
-    { id: 1, to: 'student', icon: '↩', tone: 'returned', title: 'Plan returned', body: 'Amr Advisor returned your plan with feedback.', time: '05 Oct, 20:20', read: false, action: { label: 'Review plan', route: '#/app/plan' } },
-    { id: 2, to: 'student', icon: '🕐', tone: 'info', title: 'Meeting proposal', body: 'Pick a time for your meeting with Amr Advisor.', time: '05 Oct, 16:02', read: false, action: { label: 'Pick a time', route: '#/app/advisor' } },
-    { id: 3, to: 'student', icon: '✓', tone: 'success', title: 'Registration window opened', body: 'Registration for 2026F is open until 16 Oct.', time: '03 Oct', read: false, action: { label: 'Open my plan', route: '#/app/plan' } },
-    { id: 4, to: 'student', icon: '✓', tone: 'neutral', title: 'Plan approved', body: '2025F plan approved and registered.', time: '02 Oct', read: true, action: { label: 'Open my plan', route: '#/app/plan' } },
-    { id: 5, to: 'advisor', icon: '📥', tone: 'info', title: 'Plan submitted', body: 'Karim Adel submitted a plan for 2026F.', time: '35m ago', read: false, action: { label: 'Open queue', route: '#/advisor' } },
-    { id: 6, to: 'advisor', icon: '⏱', tone: 'warning', title: 'Plan aging', body: 'Lina Majors waits 5 days, past the threshold.', time: '08:00', read: false, action: { label: 'Open queue', route: '#/advisor' } },
-    { id: 7, to: 'advisor', icon: '📅', tone: 'info', title: 'Meeting requested', body: 'Lina Majors requests a meeting about credit load.', time: 'Yesterday', read: true, action: { label: 'Open meetings', route: '#/advisor/meetings' } },
-    { id: 8, to: 'dean', icon: '⏱', tone: 'warning', title: 'Aging threshold crossed', body: 'Design & Production completion is 58%, below 60%.', time: '08:00', read: false, action: { label: 'Open advisors', route: '#/dean/advisors' } },
-    { id: 9, to: 'dean', icon: '▲', tone: 'success', title: 'Completion recovered', body: 'Computer & Systems is back above 65%.', time: 'Yesterday', read: true, action: { label: 'Open overview', route: '#/dean' } },
-    { id: 10, to: 'vp', icon: '▼', tone: 'warning', title: 'Faculty watchlist', body: 'Education median decision time has no data this term.', time: '08:00', read: false, action: { label: 'Open scorecard', route: '#/vp/faculties' } },
-    { id: 11, to: 'admin', icon: '⚠', tone: 'warning', title: 'Pending bindings', body: '3 students await SIS binding.', time: '08:00', read: false, action: { label: 'Open users', route: '#/admin/students' } },
-    { id: 12, to: 'admin', icon: '⏳', tone: 'info', title: 'Window closing soon', body: '2026F closes in 11 days.', time: '07:30', read: false, action: { label: 'Open windows', route: '#/admin/windows' } },
+    { id: 1, to: 'student', icon: 'undo', tone: 'returned', title: 'Plan returned', body: 'Amr Advisor returned your plan with feedback.', time: '05 Oct, 20:20', read: false, action: { label: 'Review plan', route: '#/app/plan' } },
+    { id: 2, to: 'student', icon: 'clock', tone: 'info', title: 'Meeting proposal', body: 'Pick a time for your meeting with Amr Advisor.', time: '05 Oct, 16:02', read: false, action: { label: 'Pick a time', route: '#/app/advisor' } },
+    { id: 3, to: 'student', icon: 'check', tone: 'success', title: 'Registration window opened', body: 'Registration for 2026F is open until 16 Oct.', time: '03 Oct', read: false, action: { label: 'Open my plan', route: '#/app/plan' } },
+    { id: 4, to: 'student', icon: 'check', tone: 'neutral', title: 'Plan approved', body: '2025F plan approved and registered.', time: '02 Oct', read: true, action: { label: 'Open my plan', route: '#/app/plan' } },
+    { id: 5, to: 'advisor', icon: 'inbox', tone: 'info', title: 'Plan submitted', body: 'Karim Adel submitted a plan for 2026F.', time: '35m ago', read: false, action: { label: 'Open queue', route: '#/advisor' } },
+    { id: 6, to: 'advisor', icon: 'clock', tone: 'warning', title: 'Plan aging', body: 'Lina Majors waits 5 days, past the threshold.', time: '08:00', read: false, action: { label: 'Open queue', route: '#/advisor' } },
+    { id: 7, to: 'advisor', icon: 'calendar', tone: 'info', title: 'Meeting requested', body: 'Lina Majors requests a meeting about credit load.', time: 'Yesterday', read: true, action: { label: 'Open meetings', route: '#/advisor/meetings' } },
+    { id: 8, to: 'dean', icon: 'clock', tone: 'warning', title: 'Aging threshold crossed', body: 'Design & Production completion is 58%, below 60%.', time: '08:00', read: false, action: { label: 'Open advisors', route: '#/dean/advisors' } },
+    { id: 9, to: 'dean', icon: 'trendUp', tone: 'success', title: 'Completion recovered', body: 'Computer & Systems is back above 65%.', time: 'Yesterday', read: true, action: { label: 'Open overview', route: '#/dean' } },
+    { id: 10, to: 'vp', icon: 'trendUp', tone: 'warning', title: 'Faculty watchlist', body: 'Education median decision time has no data this term.', time: '08:00', read: false, action: { label: 'Open scorecard', route: '#/vp/faculties' } },
+    { id: 11, to: 'admin', icon: 'alertTriangle', tone: 'warning', title: 'Pending bindings', body: '3 students await SIS binding.', time: '08:00', read: false, action: { label: 'Open users', route: '#/admin/students' } },
+    { id: 12, to: 'admin', icon: 'clock', tone: 'info', title: 'Window closing soon', body: '2026F closes in 11 days.', time: '07:30', read: false, action: { label: 'Open windows', route: '#/admin/windows' } },
   ],
 
   checklist: [
@@ -233,7 +233,7 @@ const Store = {
     plan.status = 'submitted';
     plan.submittedAt = 'today';
     plan.waitingDays = 0; plan.aging = false; plan.lastUpdate = 'just now'; plan.note = 'Resubmitted after fixes';
-    this.pushNotif('advisor', '📥', 'info', 'Plan submitted', `${this.me().name} resubmitted the 2026F plan.`, { label: 'Open queue', route: '#/advisor' });
+    this.pushNotif('advisor', 'inbox', 'info', 'Plan submitted', `${this.me().name} resubmitted the 2026F plan.`, { label: 'Open queue', route: '#/advisor' });
     this.emit();
     return { ok: true };
   },
@@ -242,7 +242,7 @@ const Store = {
     const plan = this.s.plans[studentId];
     plan.status = 'approved';
     plan.decidedAt = 'today';
-    this.pushNotif('student', '✓', 'success', 'Plan approved', 'Your 2026F plan is approved. Register in the SIS, then tick the checklist.', { label: 'Open my plan', route: '#/app/plan' });
+    this.pushNotif('student', 'check', 'success', 'Plan approved', 'Your 2026F plan is approved. Register in the SIS, then tick the checklist.', { label: 'Open my plan', route: '#/app/plan' });
     this.emit();
   },
 
@@ -253,7 +253,7 @@ const Store = {
     plan.returnAt = 'just now';
     plan.seen = false;
     if (plan.comments) plan.comments.push({ author: 'Amr Advisor', body: reason, at: 'just now' });
-    this.pushNotif('student', '↩', 'returned', 'Plan returned', 'Your plan was returned with feedback.', { label: 'Review plan', route: '#/app/plan' });
+    this.pushNotif('student', 'undo', 'returned', 'Plan returned', 'Your plan was returned with feedback.', { label: 'Review plan', route: '#/app/plan' });
     this.emit();
   },
 
@@ -269,13 +269,13 @@ const Store = {
   requestMeeting(reason, note, slot) {
     const me = this.me();
     this.s.meetings.push({ id: Date.now(), studentId: me.id, advisorId: me.advisorId, status: 'requested', reason, note, direction: 'student', requestedSlot: slot, at: null });
-    this.pushNotif('advisor', '📅', 'info', 'Meeting requested', `${me.name} requests a meeting (${reason}).`, { label: 'Open meetings', route: '#/advisor/meetings' });
+    this.pushNotif('advisor', 'calendar', 'info', 'Meeting requested', `${me.name} requests a meeting (${reason}).`, { label: 'Open meetings', route: '#/advisor/meetings' });
     this.emit();
   },
   confirmMeetingSlot(id, slotLabel) {
     const m = this.s.meetings.find((x) => x.id === id);
     m.status = 'confirmed'; m.at = slotLabel.replace(' · ', ' · ') + '–' + '30 min later'; m.where = 'Building 3, Room 2140';
-    this.pushNotif('student', '✓', 'success', 'Meeting confirmed', `${m.at}.`, { label: 'Open My Advisor', route: '#/app/advisor' });
+    this.pushNotif('student', 'check', 'success', 'Meeting confirmed', `${m.at}.`, { label: 'Open My Advisor', route: '#/app/advisor' });
     this.emit();
   },
   proposeTime(id, label) { const m = this.s.meetings.find((x) => x.id === id); m.status = 'awaiting'; m.proposed = label; this.emit(); },
