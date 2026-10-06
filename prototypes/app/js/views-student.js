@@ -383,23 +383,7 @@ function aiCard(card) {
 
 App.views['/app/notifications'] = function () {
   App.titles['/app/notifications'] = ['Notifications'];
-  const items = Store.notifsFor();
-  return `
-    ${UI.pageHead('Notifications', 'Everything that needs you, in one list',
-      `<button class="btn outline sm" onclick="Store.markAllRead()">Mark all as read</button>`)}
-    <div class="card col" style="padding:0; overflow:hidden;">
-      ${items.map((n) => `
-        <div class="notif ${n.read ? '' : 'unread'}">
-          ${n.read ? '<span style="width:7px; flex:none;"></span>' : '<span class="unread-dot"></span>'}
-          <span class="n-icon" style="background:var(--muted);">${n.icon}</span>
-          <div class="col gap-1" style="flex:1;">
-            <span class="n-title">${UI.esc(n.title)}</span>
-            <span class="n-body">${UI.esc(n.body)}</span>
-            ${n.action ? `<div class="row gap-2" style="margin-top:4px;"><a class="btn outline sm" href="${n.action.route}" onclick="Store.markRead(${n.id})">${n.action.label}</a></div>` : ''}
-          </div>
-          <span class="n-time">${n.time}</span>
-        </div>`).join('')}
-    </div>`;
+  return UI.notificationsView();
 };
 
 App.views['/app/account'] = function () {
