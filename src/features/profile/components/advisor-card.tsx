@@ -76,7 +76,10 @@ export const AdvisorCard = () => {
                       key={`${row.day}-${row.from}-${row.to}`}
                       className="text-sm tabular-nums"
                     >
-                      {row.day} {row.from}-{row.to}
+                      {t(`advisor:hours.days.${row.day.toLowerCase()}`, {
+                        defaultValue: row.day,
+                      })}{' '}
+                      {row.from}-{row.to}
                     </li>
                   ))}
                 </ul>
