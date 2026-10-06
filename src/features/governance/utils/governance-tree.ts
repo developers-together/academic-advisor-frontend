@@ -83,3 +83,17 @@ export const collectAdvisors = (
   const own = node.advisors ?? [];
   return own.concat(...node.children.map((child) => collectAdvisors(child)));
 };
+
+export const governanceNodeName = (
+  node: Pick<GovernanceNode, 'name_en' | 'name_ar' | 'code' | 'level'>,
+  language: string,
+  levelFallback: string,
+): string =>
+  (language.startsWith('ar')
+    ? (node.name_ar ?? node.name_en)
+    : (node.name_en ?? node.name_ar)) ??
+  node.code ??
+  levelFallback;
+
+export const isBelowDepartment = (node: GovernanceNode): boolean =>
+  node.level === 'advisor';
