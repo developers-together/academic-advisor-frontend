@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>10 · Admin: table standard, Operations, windows — C-08, C-09, C-10, W-03</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  /* local prototype-only helpers */
+  .overlay { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 40; display: grid; place-items: center; padding: 24px; }
+  .cell-anchor { position: relative; display: inline-block; }
+  .count-big { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">10 · Admin: table standard, Operations, windows — C-08, C-09, C-10, W-03</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="courses">Table standard (Courses)</button>
+    <button data-pane="impact">Impact dialog</button>
+    <button data-pane="operations">Operations landing</button>
+    <button data-pane="windows">Registration windows</button>
+    <button data-pane="import">Assignments + import</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ PANE 1 · TABLE STANDARD (COURSES) ============ -->
+<div class="pane active" data-pane="courses">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Overview</a>
+    <div class="side-section">Users</div>
+    <a>👥 Students</a>
+    <div class="side-section">Operations</div>
+    <a>🗂 Assignments</a>
+    <a class="active">📖 Courses</a>
+    <a>🎓 Programs</a>
+    <a>📐 Rules</a>
+    <a>🗓 Registration Windows</a>
+    <a>🤖 AI Configuration</a>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Admin</span><span>›</span><span>Operations</span><span>›</span><span class="current">Courses</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">AD</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Courses</h1><p class="desc">The course catalog. Edits sync to the SIS nightly.</p></div>
+        <button class="btn primary">Add course</button>
+      </div>
+
+      <!-- one toolbar row: search, filters, result count -->
+      <div class="row gap-2 wrap">
+        <input class="input" style="max-width:320px; height:36px;" placeholder="Search by code or title" />
+        <select class="input" style="width:auto; height:36px;">
+          <option>Program: all</option><option>CSE</option><option>EE</option>
+        </select>
+        <select class="input" style="width:auto; height:36px;">
+          <option>Term offered: all</option><option>Fall</option><option>Spring</option><option>Summer</option>
+        </select>
+        <span class="sm muted num" style="margin-inline-start:auto;">6 courses</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Title</th><th class="num">Credits</th><th>Program</th><th class="num">Updated</th><th style="width:56px;"></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>CSE 101</b></td><td>Introduction to Programming</td><td class="num">3</td><td>CSE</td><td class="num sm muted">12 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>CSE 201</b></td><td>Data Structures</td><td class="num">3</td><td>CSE</td><td class="num sm muted">05 Oct 2026</td>
+              <td>
+                <span class="cell-anchor">
+                  <button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button>
+                  <div class="popover menu" style="display:block; position:absolute; top:36px; inset-inline-end:0; z-index:30;">
+                    <button>✏️ Edit</button>
+                    <button>⧉ Duplicate</button>
+                    <div class="menu-sep"></div>
+                    <button class="danger">🗑 Delete</button>
+                  </div>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td><b>CSE 301</b></td><td>Algorithms</td><td class="num">3</td><td>CSE</td><td class="num sm muted">28 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>EE 210</b></td><td>Circuit Analysis</td><td class="num">3</td><td>EE</td><td class="num sm muted">14 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>EE 310</b></td><td>Electronics I</td><td class="num">3</td><td>EE</td><td class="num sm muted">30 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>EE 420</b></td><td>Power Systems</td><td class="num">3</td><td>EE</td><td class="num sm muted">22 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- pager row -->
+      <div class="row between wrap gap-2">
+        <span class="sm muted">Showing <b class="num">1–6</b> of <b class="num">42</b></span>
+        <div class="row gap-2">
+          <button class="btn outline sm" disabled>Previous</button>
+          <button class="btn outline sm">Next</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ PANE 2 · IMPACT DIALOG (C-08 / PR-17) ============ -->
+<div class="pane" data-pane="impact">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Overview</a>
+    <div class="side-section">Users</div>
+    <a>👥 Students</a>
+    <div class="side-section">Operations</div>
+    <a>🗂 Assignments</a>
+    <a class="active">📖 Courses</a>
+    <a>🎓 Programs</a>
+    <a>📐 Rules</a>
+    <a>🗓 Registration Windows</a>
+    <a>🤖 AI Configuration</a>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Admin</span><span>›</span><span>Operations</span><span>›</span><span class="current">Courses</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">AD</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Courses</h1><p class="desc">The course catalog. Edits sync to the SIS nightly.</p></div>
+        <button class="btn primary">Add course</button>
+      </div>
+
+      <div class="row gap-2 wrap">
+        <input class="input" style="max-width:320px; height:36px;" placeholder="Search by code or title" />
+        <select class="input" style="width:auto; height:36px;">
+          <option>Program: all</option><option>CSE</option><option>EE</option>
+        </select>
+        <select class="input" style="width:auto; height:36px;">
+          <option>Term offered: all</option><option>Fall</option><option>Spring</option><option>Summer</option>
+        </select>
+        <span class="sm muted num" style="margin-inline-start:auto;">6 courses</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Title</th><th class="num">Credits</th><th>Program</th><th class="num">Updated</th><th style="width:56px;"></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>CSE 101</b></td><td>Introduction to Programming</td><td class="num">3</td><td>CSE</td><td class="num sm muted">12 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>CSE 201</b></td><td>Data Structures</td><td class="num">3</td><td>CSE</td><td class="num sm muted">05 Oct 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>CSE 301</b></td><td>Algorithms</td><td class="num">3</td><td>CSE</td><td class="num sm muted">28 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>EE 210</b></td><td>Circuit Analysis</td><td class="num">3</td><td>EE</td><td class="num sm muted">14 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>EE 310</b></td><td>Electronics I</td><td class="num">3</td><td>EE</td><td class="num sm muted">30 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+            <tr>
+              <td><b>EE 420</b></td><td>Power Systems</td><td class="num">3</td><td>EE</td><td class="num sm muted">22 Sep 2026</td>
+              <td><button class="btn ghost sm" aria-label="More actions" style="width:32px; padding:0;">⋯</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row between wrap gap-2">
+        <span class="sm muted">Showing <b class="num">1–6</b> of <b class="num">42</b></span>
+        <div class="row gap-2">
+          <button class="btn outline sm" disabled>Previous</button>
+          <button class="btn outline sm">Next</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- impact dialog: destructive actions live only here, with dependents listed (PR-17) -->
+<div class="overlay">
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="impact-title" style="width:440px; max-width:calc(100vw - 32px); box-shadow:var(--shadow-pop);">
+    <h2 id="impact-title">Delete CS 201?</h2>
+    <p class="sm muted" style="margin-top:2px;">Data Structures · 3 credits</p>
+    <div style="border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; margin:16px 0 12px;">
+      <p class="section-title" style="margin-bottom:6px;">If you delete it, this breaks</p>
+      <ul class="sm" style="margin:0; padding-inline-start:18px; display:grid; gap:4px;">
+        <li>Used in <b>2 programs</b> (CSE, EE)</li>
+        <li>Referenced by <b>14 plans</b> this term</li>
+        <li><b>3 rules</b> mention it</li>
+      </ul>
+    </div>
+    <p class="sm"><b>This cannot be undone.</b></p>
+    <div class="row gap-2" style="justify-content:flex-end; margin-top:16px;">
+      <button class="btn outline">Cancel</button>
+      <button class="btn destructive">Delete course</button>
+    </div>
+    <p class="xs muted" style="margin-top:10px;">Focus starts on Cancel.</p>
+  </div>
+</div>
+</div>
+
+<!-- ============ PANE 3 · OPERATIONS LANDING (C-09) ============ -->
+<div class="pane" data-pane="operations">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Overview</a>
+    <div class="side-section">Users</div>
+    <a>👥 Students</a>
+    <div class="side-section">Operations</div>
+    <a>🗂 Assignments</a>
+    <a>📖 Courses</a>
+    <a>🎓 Programs</a>
+    <a>📐 Rules</a>
+    <a>🗓 Registration Windows</a>
+    <a>🤖 AI Configuration</a>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Admin</span><span>›</span><span class="current">Operations</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">AD</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Operations</h1><p class="desc">Admin task areas. Counts are live for the 2026F term.</p></div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card col gap-2">
+          <div class="row between"><h3>Assignments</h3><span class="count-big num">4</span></div>
+          <p class="sm" style="color:var(--warning);"><b>2 unassigned</b></p>
+          <a class="sm" href="#" style="margin-top:auto;">Open assignments →</a>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>Courses</h3><span class="count-big num">42</span></div>
+          <p class="sm muted">Catalog, synced nightly from the SIS</p>
+          <a class="sm" href="#" style="margin-top:auto;">Open courses →</a>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>Programs</h3><span class="count-big num">2</span></div>
+          <p class="sm muted">CSE · EE</p>
+          <a class="sm" href="#" style="margin-top:auto;">Open programs →</a>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>Rules</h3><span class="count-big num">12</span></div>
+          <p class="sm muted">Prerequisites and eligibility</p>
+          <a class="sm" href="#" style="margin-top:auto;">Open rules →</a>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>Registration Windows</h3><span class="chip success"><span class="dot"></span> Active</span></div>
+          <p class="sm"><b>2026F closes in 11 days</b></p>
+          <button class="btn outline sm" style="margin-top:auto; align-self:flex-start;">Manage</button>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>AI Configuration</h3><span class="chip info">Quota 25/day</span></div>
+          <p class="sm muted">Model, grounding, and quota</p>
+          <a class="sm" href="#" style="margin-top:auto;">Open AI configuration →</a>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>Notifications</h3><span class="chip success">Configured</span></div>
+          <p class="sm muted">Templates per event, per role</p>
+          <a class="sm" href="#" style="margin-top:auto;">Open notifications →</a>
+        </div>
+      </div>
+
+      <!-- wide health card -->
+      <div class="card col gap-3">
+        <div class="row between"><h3>Needs attention</h3><span class="chip warning">2 items</span></div>
+        <div class="row between wrap gap-2">
+          <span class="sm"><b>3 students</b> pending SIS binding</span>
+          <a class="sm" href="#">Open users →</a>
+        </div>
+        <div class="menu-sep" style="margin:0;"></div>
+        <div class="row between wrap gap-2">
+          <span class="sm"><b>2 students</b> unassigned</span>
+          <a class="sm" href="#">Open assignments →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ PANE 4 · REGISTRATION WINDOWS (C-10) ============ -->
+<div class="pane" data-pane="windows">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Overview</a>
+    <div class="side-section">Users</div>
+    <a>👥 Students</a>
+    <div class="side-section">Operations</div>
+    <a>🗂 Assignments</a>
+    <a>📖 Courses</a>
+    <a>🎓 Programs</a>
+    <a>📐 Rules</a>
+    <a class="active">🗓 Registration Windows</a>
+    <a>🤖 AI Configuration</a>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Admin</span><span>›</span><span>Operations</span><span>›</span><span class="current">Registration Windows</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">AD</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Registration Windows</h1><p class="desc">Open windows let students submit plans. Dates mirror the SIS.</p></div>
+        <button class="btn primary">Add window</button>
+      </div>
+
+      <div class="banner info">
+        <span class="b-icon">ⓘ</span>
+        <div class="row between" style="flex:1; gap:8px; flex-wrap:wrap;">
+          <span class="sm">SIS mirror as of <b>05 Oct, 14:00</b></span>
+          <button class="btn outline sm">Refresh</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Term</th><th>Opens</th><th>Closes</th><th>State</th><th style="text-align:end;">Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>2026F</b></td>
+              <td>01 Oct 2026, 09:00</td>
+              <td>16 Oct 2026, 23:59</td>
+              <td><span class="chip success"><span class="dot"></span> Active</span></td>
+              <td class="num"><button class="btn outline sm">Deactivate</button></td>
+            </tr>
+            <tr>
+              <td><b>2027W</b></td>
+              <td>04 Jan 2027, 09:00</td>
+              <td>18 Jan 2027, 23:59</td>
+              <td><span class="chip neutral"><span class="dot"></span> Inactive</span></td>
+              <td class="num"><button class="btn outline sm">Activate</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="sm muted">Deactivating opens an impact confirm: students can no longer submit.</p>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ PANE 5 · ASSIGNMENTS + IMPORT (C-08 + W-03) ============ -->
+<div class="pane" data-pane="import">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Overview</a>
+    <div class="side-section">Users</div>
+    <a>👥 Students</a>
+    <div class="side-section">Operations</div>
+    <a class="active">🗂 Assignments</a>
+    <a>📖 Courses</a>
+    <a>🎓 Programs</a>
+    <a>📐 Rules</a>
+    <a>🗓 Registration Windows</a>
+    <a>🤖 AI Configuration</a>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Admin</span><span>›</span><span>Operations</span><span>›</span><span class="current">Assignments</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">AD</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Assignments</h1><p class="desc">Who advises whom. Import bulk assignments from a CSV.</p></div>
+        <button class="btn primary">Import CSV</button>
+      </div>
+
+      <div class="row gap-2 wrap">
+        <input class="input" style="max-width:280px; height:36px;" placeholder="Search by name or ID" />
+        <select class="input" style="width:auto; height:36px;">
+          <option>Unassigned only</option><option>All students</option><option>Assigned</option>
+        </select>
+        <select class="input" style="width:auto; height:36px;">
+          <option>Faculty: all</option><option>CSE</option><option>EE</option>
+        </select>
+        <select class="input" style="width:auto; height:36px;">
+          <option>Advisor: all</option><option>Amr Advisor</option><option>Mona Adel</option>
+        </select>
+        <span class="sm muted num" style="margin-inline-start:auto;">4 students</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Student</th><th>Faculty</th><th>Term</th><th>Advisor</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Nour Kamal</b><div class="xs muted">20230211</div></td>
+              <td>CSE</td><td class="xs muted">2026F</td>
+              <td><b>Amr Advisor</b> <span class="chip neutral">Assigned</span></td>
+            </tr>
+            <tr>
+              <td><b>Sara Ezzat</b><div class="xs muted">20230188</div></td>
+              <td>EE</td><td class="xs muted">2026F</td>
+              <td><span class="chip destructive">Unassigned</span> <button class="btn outline sm">Assign</button></td>
+            </tr>
+            <tr>
+              <td><b>Hany Saad</b><div class="xs muted">20230452</div></td>
+              <td>CSE</td><td class="xs muted">2026F</td>
+              <td><b>Mona Adel</b> <span class="chip neutral">Assigned</span></td>
+            </tr>
+            <tr>
+              <td><b>Laila Sherif</b><div class="xs muted">20230299</div></td>
+              <td>EE</td><td class="xs muted">2026F</td>
+              <td><b>Amr Advisor</b> <span class="chip neutral">Assigned</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- W-03 import result panel: matched, bound, failed with reasons, before commit -->
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Import report — assignments-v3.csv</h2>
+          <span class="sm muted">Staged · nothing committed yet</span>
+        </div>
+        <div class="row gap-2 wrap">
+          <span class="chip info">Matched 28</span>
+          <span class="chip success">Bound 25</span>
+          <span class="chip destructive">Failed 3</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Student ID</th><th>Row</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td class="num">20230512</td><td class="num">14</td><td class="sm muted">No SIS record</td></tr>
+              <tr><td class="num">20230777</td><td class="num">19</td><td class="sm muted">No SIS record</td></tr>
+              <tr><td class="num">20219999</td><td class="num">23</td><td class="sm muted">No SIS record</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="row gap-2 wrap">
+          <button class="btn primary">Commit 25 assignments</button>
+          <button class="btn outline">Discard</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
