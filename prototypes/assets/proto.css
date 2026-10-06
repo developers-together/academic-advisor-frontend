@@ -193,3 +193,10 @@ td.num, th.num { text-align: end; font-variant-numeric: tabular-nums; }
 }
 @media (max-width: 900px) { .rail-row { grid-template-columns: 1fr 1fr; } }
 .cream-card { background: #F5F0E8; border-color: #E8DFC9; }
+
+/* icon system (DS-I-01: one SVG family, no emoji) */
+.ic { width: 1.2em; height: 1.2em; flex: none; vertical-align: -0.22em; }
+.ic-lg { width: 20px; height: 20px; }
+.n-icon .ic { width: 16px; height: 16px; }
+.side a .ic { width: 18px; height: 18px; }
+.m-nav .ic { width: 18px; height: 18px; }
