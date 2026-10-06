@@ -136,7 +136,7 @@ function advisorDetailModal() {
   const d = advisorDetail;
   return UI.modal(`
     <div class="card col gap-3" style="max-width:520px; margin:10vh auto;">
-      <div class="row between"><h2>${UI.esc(d.name)}</h2><button class="icon-btn" onclick="advisorDetail=null; App.render()">✕</button></div>
+      <div class="row between"><h2>${UI.esc(d.name)}</h2><button class="icon-btn" onclick="advisorDetail=null; App.render()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;vertical-align:-0.24em;" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <p class="sm muted">Aggregate view only. Student rows never appear here (PR-14).</p>
       <div class="grid-3">
         ${UI.kpi('Caseload', d.caseload, 'students')}
