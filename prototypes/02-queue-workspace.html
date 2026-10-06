@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>02 · Advisor queue as a decision workspace — C-02</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  /* row actions appear on hover or keyboard focus */
+  .row-actions { display: inline-flex; gap: 6px; opacity: 0; }
+  tr:hover .row-actions, tr:focus-within .row-actions, tr.pinned .row-actions { opacity: 1; }
+  tr.pinned { outline: 2px solid var(--crimson-500); outline-offset: -2px; }
+  kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 6px; font-size: 11px; background: var(--card); font-family: inherit; }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">02 · Queue decision workspace — C-02, D-09</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="hover">Pointer mode</button>
+    <button data-pane="keyboard">Keyboard triage</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+<div class="pane active" data-pane="hover">
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a class="active">≡ Queue</a><a>👥 Students</a><a>📅 Meetings</a>
+    <div class="side-section">More</div>
+    <a>🕐 Office Hours</a><a>🔔 Notifications</a><a>👤 Profile</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Queue</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">AA</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Queue</h1><p class="desc">Plans waiting on your decision</p></div>
+        <div class="row gap-2">
+          <label class="row gap-2 sm muted" style="white-space:nowrap;">Sort
+            <select class="input" style="width:auto; height:36px;">
+              <option>Aging first</option><option>Newest</option><option>Last updated</option><option>Oldest first</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- summary line: the page states its own situation -->
+      <div class="row between wrap gap-2">
+        <div class="tabs">
+          <button class="tab active">All <span class="count">(4)</span></button>
+          <button class="tab">Submitted <span class="count">(2)</span></button>
+          <button class="tab">Under review <span class="count">(1)</span></button>
+          <button class="tab">Returned <span class="count">(0)</span></button>
+          <button class="tab">Aging <span class="count">(1)</span></button>
+        </div>
+        <p class="sm muted"><b>1 plan is aging</b> past the queue threshold · next: Lina Majors, waiting 5 days</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Student</th><th>State</th><th>Term</th><th class="num">Waiting</th><th class="num">Last update</th><th>Reason</th><th style="width:220px;"></th></tr>
+          </thead>
+          <tbody>
+            <tr class="pinned" tabindex="0">
+              <td><b>Lina Majors</b><div class="xs muted">20210432</div></td>
+              <td><span class="chip submitted"><span class="dot"></span> Submitted</span></td>
+              <td class="xs muted">2026F</td>
+              <td class="num"><b style="color:var(--warning);">5 days</b> <span class="chip warning sm" style="margin-inline-start:4px;">Aging</span></td>
+              <td class="num sm muted">2h ago</td>
+              <td class="sm muted">“Second submission, repeat fixed”</td>
+              <td><span class="row-actions"><button class="btn outline sm">Review</button><button class="btn primary sm">Approve</button><button class="btn ghost sm">Return</button></span></td>
+            </tr>
+            <tr tabindex="0">
+              <td><b>Omar Nabil</b><div class="xs muted">20210871</div></td>
+              <td><span class="chip submitted"><span class="dot"></span> Submitted</span></td>
+              <td class="xs muted">2026F</td>
+              <td class="num">3 days</td>
+              <td class="num sm muted">Yesterday</td>
+              <td class="sm muted">“First submission”</td>
+              <td><span class="row-actions"><button class="btn outline sm">Review</button><button class="btn primary sm">Approve</button><button class="btn ghost sm">Return</button></span></td>
+            </tr>
+            <tr tabindex="0">
+              <td><b>Mona Fathy</b><div class="xs muted">20220914</div></td>
+              <td><span class="chip review"><span class="dot"></span> Under review</span></td>
+              <td class="xs muted">2026F</td>
+              <td class="num">2 days</td>
+              <td class="num sm muted">4h ago</td>
+              <td class="sm muted">—</td>
+              <td><span class="row-actions"><button class="btn outline sm">Review</button><button class="btn primary sm">Approve</button><button class="btn ghost sm">Return</button></span></td>
+            </tr>
+            <tr tabindex="0">
+              <td><b>Karim Adel</b><div class="xs muted">20220560</div></td>
+              <td><span class="chip review"><span class="dot"></span> Under review</span></td>
+              <td class="xs muted">2026F</td>
+              <td class="num">1 day</td>
+              <td class="num sm muted">35m ago</td>
+              <td class="sm muted">“Added CS 301 section 02”</td>
+              <td><span class="row-actions"><button class="btn outline sm">Review</button><button class="btn primary sm">Approve</button><button class="btn ghost sm">Return</button></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="sm muted">4 plans · page 1 of 1. Rows open the review drawer; Approve and Return confirm in place.
+      <b>The first row is pinned to show you the hover state.</b></p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="pane" data-pane="keyboard">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a class="active">≡ Queue</a><a>👥 Students</a><a>📅 Meetings</a>
+    <div class="side-section">More</div>
+    <a>🕐 Office Hours</a><a>🔔 Notifications</a><a>👤 Profile</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Queue</span><span>·</span><span class="current">Keyboard triage on</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">AA</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="banner info">
+        <span class="b-icon">⌨</span>
+        <div class="row between" style="flex:1; gap:8px; flex-wrap:wrap;">
+          <span class="row gap-3 sm">
+            <span><kbd>J</kbd>/<kbd>K</kbd> move</span><span><kbd>Enter</kbd> review</span>
+            <span><kbd>A</kbd> approve</span><span><kbd>R</kbd> return</span><span><kbd>Esc</kbd> exit</span>
+          </span>
+          <button class="btn outline sm">Exit triage</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Student</th><th>State</th><th class="num">Waiting</th><th class="num">Last update</th><th></th></tr></thead>
+          <tbody>
+            <tr class="pinned"><td><b>Lina Majors</b> <span class="chip warning sm">Aging</span></td>
+              <td><span class="chip submitted"><span class="dot"></span> Submitted</span></td>
+              <td class="num"><b style="color:var(--warning);">5 days</b></td><td class="num sm muted">2h ago</td>
+              <td class="num"><button class="btn primary sm">Approve</button> <button class="btn ghost sm">Return</button></td></tr>
+            <tr><td><b>Omar Nabil</b></td><td><span class="chip submitted"><span class="dot"></span> Submitted</span></td>
+              <td class="num">3 days</td><td class="num sm muted">Yesterday</td><td></td></tr>
+            <tr><td><b>Mona Fathy</b></td><td><span class="chip review"><span class="dot"></span> Under review</span></td>
+              <td class="num">2 days</td><td class="num sm muted">4h ago</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note"><b>Why:</b> advisors process queues in batches. Approve confirms with a
+      verb-specific dialog; Return opens the mandatory-reason field in place. Nothing submits without
+      the advisor (PR-07). The queue summary and sort state persist for the session.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
