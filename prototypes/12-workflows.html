@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>12 · New workflows — W-01, W-04</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  .step { flex:none; width:24px; height:24px; border-radius:50%; border:1px solid var(--border); background:var(--card); color:var(--muted-fg); display:grid; place-items:center; font-size:12px; font-weight:600; }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">12 · New workflows — W-01, W-04</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="checklist">Registration checklist</button>
+    <button data-pane="firstrun">First run</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ REGISTRATION CHECKLIST ============ -->
+<div class="pane active" data-pane="checklist">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a class="active">⌂ Home</a><a>▤ My Plan</a><a>🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a>👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span class="current">Home</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Home</h1><p class="desc">Term 2026F</p></div>
+      </div>
+
+      <!-- W-01: the checklist after approval -->
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <div class="row gap-2 wrap">
+            <h2>Registration checklist</h2>
+            <span class="chip approved"><span class="dot"></span> 2026F plan approved</span>
+          </div>
+          <button class="btn primary sm">Open my plan</button>
+        </div>
+        <div class="col gap-2">
+          <label class="row gap-2 sm"><input type="checkbox" checked /> Register <b>CS 201</b> · Lecture 01 in the SIS</label>
+          <label class="row gap-2 sm"><input type="checkbox" checked /> Register <b>MATH 101</b> · Lecture 03 in the SIS</label>
+          <label class="row gap-2 sm"><input type="checkbox" /> Register <b>EE 210</b> · Lab 11 in the SIS</label>
+          <label class="row gap-2 sm"><input type="checkbox" /> Register <b>ME 215</b> · Lecture 02 in the SIS</label>
+        </div>
+        <div>
+          <div class="row between sm" style="margin-bottom:6px;">
+            <span class="muted">Progress</span>
+            <span class="num">2 of 4 registered</span>
+          </div>
+          <div class="meter"><span class="fill" style="width:50%;"></span></div>
+        </div>
+        <p class="hint">The SIS is the ledger. If a section is full there, pick another section and ask your advisor to re-approve.</p>
+      </div>
+
+      <div class="note"><b>What changes (W-01):</b> approval now ends in a real checklist, so the
+      notification line "follow the checklist" points at something that exists (D-08).
+      The SIS stays the ledger; this surface only tracks your marks.</div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ FIRST RUN ============ -->
+<div class="pane" data-pane="firstrun">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a class="active">⌂ Home</a><a>▤ My Plan</a><a>🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a>👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span class="current">Home</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Home</h1><p class="desc">First term · three steps to your first registration</p></div>
+      </div>
+
+      <!-- W-04: activation strip above the fold -->
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Three steps to your first registration</h2>
+          <button class="btn ghost sm">Don't show again</button>
+        </div>
+        <div class="col gap-3">
+          <div class="row gap-3" style="align-items:flex-start;">
+            <span class="step">1</span>
+            <div class="col gap-1" style="flex:1;">
+              <div class="row gap-2 wrap">
+                <span class="sm"><b>Check your record</b></span>
+                <span class="chip success">Done</span>
+              </div>
+              <p class="xs muted">Your CGPA and credits come from the SIS.</p>
+            </div>
+          </div>
+          <div class="row gap-3" style="align-items:flex-start;">
+            <span class="step">2</span>
+            <div class="col gap-1" style="flex:1;">
+              <div class="row gap-2 wrap">
+                <span class="sm"><b>Build your plan in the builder</b></span>
+                <span class="chip info">Current</span>
+              </div>
+              <p class="xs muted">Pick courses and sections for the term.</p>
+              <button class="btn primary sm" style="width:fit-content;">Open the Plan Builder</button>
+            </div>
+          </div>
+          <div class="row gap-3" style="align-items:flex-start;">
+            <span class="step">3</span>
+            <div class="col gap-1" style="flex:1;">
+              <div class="row gap-2 wrap">
+                <span class="sm"><b>Submit for advisor review</b></span>
+                <span class="chip neutral">Locked</span>
+              </div>
+              <p class="xs muted">Unlocks after step 2.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note"><b>What changes (W-04):</b> new students land on one path instead of an empty
+      home. Each step names its state. The strip sits above the fold and dismisses permanently.</div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
