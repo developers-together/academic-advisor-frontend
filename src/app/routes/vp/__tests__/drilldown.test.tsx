@@ -129,7 +129,14 @@ test('a scoped leaf shows the empty children line', async () => {
   expect(
     await screen.findByText('School . Engineering Applied School'),
   ).toBeInTheDocument();
-  expect(await screen.findByText('No rows to show.')).toBeInTheDocument();
+  expect(
+    await screen.findByText('Nothing below this level'),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      'Engineering Applied School has no sub-units with data this term.',
+    ),
+  ).toBeInTheDocument();
 });
 
 test('a missing tree renders the drill-down empty state', async () => {
