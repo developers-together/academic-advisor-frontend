@@ -80,10 +80,54 @@ const Shell = {
     </div>`;
   },
 
+
+  mobileLayout(active, crumbs, viewHtml) {
+    const me = Store.me();
+    const nav = NAV[me.role];
+    const slots = [nav.home, nav.items[0], nav.items[1], nav.items[2]].filter(Boolean).slice(0, 4);
+    const unread = this.unread();
+    return `
+    <div style="min-height:100vh; display:flex; flex-direction:column; background:var(--bg);">
+      <div class="anchor-wrap" style="display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border-bottom:1px solid var(--border); background:var(--card); position:sticky; top:0; z-index:20;">
+        <div class="crumbs">${crumbs}</div>
+        <div class="row gap-1">
+          ${this.iconBell(unread)}
+          ${this.iconAvatar()}
+        </div>
+        ${this.popoverBell()}
+        ${this.popoverAvatar()}
+      </div>
+      <div style="flex:1; padding:14px 14px 90px;">
+        ${this.urgentBanner()}
+        ${viewHtml}
+      </div>
+      <nav aria-label="Primary" style="position:fixed; inset-inline:0; bottom:0; display:flex; border-top:1px solid var(--border); background:var(--card); padding-bottom:env(safe-area-inset-bottom); z-index:30;">
+        ${slots.map(([href, glyph, label]) => `
+          <a href="${href}" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0 10px; font-size:11px; font-weight:500; color:var(--muted-fg); text-decoration:none; ${href === active ? 'color:var(--crimson-700);' : ''}">
+            <span aria-hidden="true">${glyph}</span><span>${label === 'My Plan' ? 'Plan' : label === 'AI Advisor' ? 'AI' : label === 'My Advisor' ? 'Advisor' : label}</span>
+          </a>`).join('')}
+        <button type="button" aria-haspopup="dialog" aria-expanded="${!!Shell.moreOpen}" onclick="Shell.moreOpen = !Shell.moreOpen; App.render();"
+          style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0 10px; font-size:11px; font-weight:500; color:var(--muted-fg); background:none; border:none; cursor:pointer; ${Shell.moreOpen ? 'color:var(--crimson-700);' : ''}">
+          <span aria-hidden="true">⋯</span><span>More</span>
+        </button>
+      </nav>
+      ${Shell.moreOpen ? `
+      <div style="position:fixed; inset:0; background:rgb(15 23 42 / .45); z-index:40;" onclick="Shell.moreOpen = false; App.render();">
+        <div class="col gap-2" style="position:absolute; inset-inline:0; bottom:0; background:var(--card); border-radius:16px 16px 0 0; padding:16px 16px 24px;" onclick="event.stopPropagation()">
+          <div class="row between"><b>More</b><button class="icon-btn" aria-label="Close" onclick="Shell.moreOpen = false; App.render();">✕</button></div>
+          ${nav.more.map(([href, glyph, label]) => `<a class="btn outline" style="justify-content:flex-start; height:48px;" href="${href}">${glyph} ${label}</a>`).join('')}
+          <button class="btn outline" style="justify-content:flex-start; height:48px;" onclick="Store.setDark(!Store.s.dark)">${Store.s.dark ? '☀' : '☾'} Theme · ${Store.theme() === 'v5' ? 'v5' : 'v4'} · ${Store.s.dark ? 'Dark' : 'Light'}</button>
+          <button class="btn outline" style="justify-content:flex-start; height:48px; color:var(--destructive);" onclick="Store.logout()">↩ Sign out</button>
+        </div>
+      </div>` : ''}
+    </div>`;
+  },
+
   layout(active, crumbs, viewHtml) {
     const me = Store.me();
     const unread = this.unread();
     document.body.className = (Store.theme() === 'v5' ? 'v5 ' : '') + (Store.s.dark ? 'dark ' : '') + 'r-' + me.role;
+    if (window.innerWidth < 768) return this.mobileLayout(active, crumbs, viewHtml);
     return `<div class="shell">
       <aside class="side">${this.sideLinks(active)}</aside>
       <div class="main">
@@ -91,7 +135,7 @@ const Shell = {
           <div class="crumbs">${crumbs}</div>
           <div class="row gap-1">
             <button class="btn outline sm" style="height:36px;" title="Toggle the v5 theme (prototype control)" onclick="Store.setTheme(Store.theme() === 'v5' ? 'v4' : 'v5')">Theme · ${Store.theme() === 'v5' ? 'v5' : 'v4'}</button>
-            <button class="icon-btn" style="width:36px; height:36px;" title="Toggle dark mode" onclick="Store.setDark(!Store.s.dark)">${Store.s.dark ? '☀' : '☾'}</button>
+            <button class="icon-btn" style="width:36px; height:36px;" aria-label="Toggle dark mode" title="Toggle dark mode" onclick="Store.setDark(!Store.s.dark)">${Store.s.dark ? '☀' : '☾'}</button>
             <button class="btn outline sm" style="height:36px;" onclick="Palette.show()">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
             ${this.iconBell(unread)}
             ${this.iconAvatar()}
@@ -107,7 +151,7 @@ const Shell = {
     </div>${UI.toastHtml()}`;
   },
 
-  iconBell(unread) { return `<button class="icon-btn" data-pop="pop-bell" style="position:relative;">🔔${unread ? `<span class="dot-count num">${unread}</span>` : ''}</button>`; },
+  iconBell(unread) { return `<button class="icon-btn" data-pop="pop-bell" aria-label="Notifications${unread ? ', ' + unread + ' unread' : ''}" style="position:relative;">🔔${unread ? `<span class="dot-count num">${unread}</span>` : ''}</button>`; },
   iconAvatar() {
     const me = Store.me();
     const initials = me.name.split(' ').map((w) => w[0]).slice(0, 2).join('');
