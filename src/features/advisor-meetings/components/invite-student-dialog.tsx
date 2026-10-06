@@ -191,8 +191,8 @@ export const InviteStudentDialog = ({
           </div>
 
           {failed && (
-            <Banner variant="destructive" title={t('common:errors.loadFailed')}>
-              {t('common:errors.loadFailedBody')}
+            <Banner variant="destructive" title={t('common:errors.sendFailed')}>
+              {t('common:errors.sendFailedBody')}
             </Banner>
           )}
         </div>
