@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   TableBody,
@@ -13,7 +14,11 @@ import {
 import { paths } from '@/config/paths';
 import type { GovernanceNode } from '@/types/domain';
 
-import { sortByCompletionDesc } from '../utils/governance-tree';
+import {
+  governanceNodeName,
+  isBelowDepartment,
+  sortByCompletionDesc,
+} from '../utils/governance-tree';
 
 export const GovernanceTableSkeleton = () => (
   <div aria-busy="true" className="space-y-3">
@@ -45,8 +50,10 @@ export const GovernanceChildrenTable = ({
   parent: GovernanceNode;
   onOpen: (code: string) => void;
 }) => {
-  const { t } = useTranslation('governance');
-  const children = sortByCompletionDesc(parent.children);
+  const { t, i18n } = useTranslation('governance');
+  const children = sortByCompletionDesc(
+    parent.children.filter((child) => !isBelowDepartment(child)),
+  );
   const unitColumn =
     children.length > 0
       ? t(`levels.${children[0].level}`)
@@ -54,7 +61,13 @@ export const GovernanceChildrenTable = ({
 
   if (children.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">{t('common:table.empty')}</p>
+      <EmptyState
+        compact
+        title={t('drilldown.childTableEmpty.title')}
+        description={t('drilldown.childTableEmpty.body', {
+          name: governanceNodeName(parent, i18n.language, ''),
+        })}
+      />
     );
   }
 
@@ -94,7 +107,11 @@ export const GovernanceChildrenTable = ({
                     to={code ? paths.vp.drilldown.getHref(code) : '.'}
                     className="rounded-sm text-sm font-medium text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
                   >
-                    {child.name_en ?? code}
+                    {governanceNodeName(
+                      child,
+                      i18n.language,
+                      t(`levels.${child.level}`),
+                    )}
                   </Link>
                 </TableCell>
                 <TableCell className="px-3 py-2 text-end text-sm tabular-nums">
