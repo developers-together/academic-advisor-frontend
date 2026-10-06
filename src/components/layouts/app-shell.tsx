@@ -512,6 +512,9 @@ const SidebarLink = ({ item }: { item: NavItem }) => {
 const BottomNav = ({ forRole }: { forRole: UserRole }) => {
   const { t } = useTranslation();
   const [moreOpen, setMoreOpen] = React.useState(false);
+  const [sheetSlot, setSheetSlot] = React.useState<NavGroup | 'more' | null>(
+    null,
+  );
   const slots = mobileBar[forRole];
 
   const sheetItems = roleNav[forRole].flatMap((entryItem) =>
@@ -520,10 +523,21 @@ const BottomNav = ({ forRole }: { forRole: UserRole }) => {
   const barItems = slots.filter(
     (slot): slot is NavItem | NavGroup => slot !== 'more',
   );
+  // Only literal bar links leave the sheet; a group slot keeps its children
+  // reachable, so its areas stay in the sheet (design.md DS-IA-02).
   const barToSet = new Set(
-    barItems.flatMap((slot) => (isNavGroup(slot) ? slot.items : [slot])),
+    barItems.flatMap((slot) => (isNavGroup(slot) ? [] : [slot])),
   );
   const remaining = sheetItems.filter((item) => !barToSet.has(item));
+  const sheetTitleKey =
+    sheetSlot && sheetSlot !== 'more' ? sheetSlot.labelKey : 'nav.more';
+  const sheetLinks =
+    sheetSlot && sheetSlot !== 'more' ? sheetSlot.items : remaining;
+
+  const openSheet = (slot: NavGroup | 'more') => {
+    setSheetSlot(slot);
+    setMoreOpen(true);
+  };
 
   return (
     <>
@@ -537,9 +551,9 @@ const BottomNav = ({ forRole }: { forRole: UserRole }) => {
               <li key="more" className="flex-1">
                 <button
                   type="button"
-                  onClick={() => setMoreOpen(true)}
+                  onClick={() => openSheet('more')}
                   aria-haspopup="dialog"
-                  aria-expanded={moreOpen}
+                  aria-expanded={moreOpen && sheetSlot === 'more'}
                   className="flex h-16 w-full flex-col items-center justify-center gap-1 text-2xs font-medium text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
                 >
                   <MoreHorizontal className="size-5" aria-hidden />
@@ -550,8 +564,9 @@ const BottomNav = ({ forRole }: { forRole: UserRole }) => {
               <li key={slot.labelKey} className="flex-1">
                 <button
                   type="button"
-                  onClick={() => setMoreOpen(true)}
+                  onClick={() => openSheet(slot)}
                   aria-haspopup="dialog"
+                  aria-expanded={moreOpen && sheetSlot === slot}
                   className="flex h-16 w-full flex-col items-center justify-center gap-1 text-2xs font-medium text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
                 >
                   {slot.icon ? (
@@ -586,10 +601,10 @@ const BottomNav = ({ forRole }: { forRole: UserRole }) => {
       <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
         <DrawerContent side="bottom" className="rounded-t-lg p-4 pb-8">
           <DrawerTitle className="mb-2 text-start text-base font-semibold">
-            {t('nav.more')}
+            {t(sheetTitleKey)}
           </DrawerTitle>
           <ul className="flex flex-col">
-            {remaining.map((item) => (
+            {sheetLinks.map((item) => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
@@ -704,7 +719,7 @@ const LanguageToggle = () => {
       type="button"
       aria-label={t('topbar.language')}
       onClick={() => setLanguage(next)}
-      className="flex h-11 min-w-11 items-center justify-center rounded-md px-2 text-xs font-semibold uppercase hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+      className="flex h-11 min-w-11 items-center justify-center rounded-md px-2 text-xs font-semibold tracking-wide uppercase hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
     >
       {next === 'ar' ? 'ع' : 'EN'}
     </button>
