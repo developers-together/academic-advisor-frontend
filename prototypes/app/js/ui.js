@@ -7,7 +7,7 @@ const UI = {
   },
 
   iconBtn(glyph, count, pop) {
-    return `<button class="icon-btn" ${pop ? `data-pop="${pop}"` : ''}>${glyph}${count ? `<span class="dot-count num">${count}</span>` : ''}</button>`;
+    return `<button class="icon-btn" ${pop ? `data-pop="${pop}"` : ''}>${icon(glyph)}${count ? `<span class="dot-count num">${count}</span>` : ''}</button>`;
   },
 
   chip(status) {
@@ -23,7 +23,7 @@ const UI = {
   },
 
   banner(kind, title, body, actionsHtml = '') {
-    const glyph = { info: 'i', warning: '!', destructive: '✕', success: '✓' }[kind] || 'i';
+    const glyph = icon({ info: 'info', warning: 'alertTriangle', destructive: 'alertCircle', success: 'check' }[kind] || 'info', 'ic');
     return `<div class="banner ${kind}"><span class="b-icon">${glyph}</span>
       <div class="col gap-1" style="flex:1;"><span class="b-title">${title}</span>${body ? `<p class="sm">${body}</p>` : ''}
       ${actionsHtml ? `<div class="row gap-2" style="margin-top:4px;">${actionsHtml}</div>` : ''}</div></div>`;
@@ -49,7 +49,7 @@ const UI = {
 
   empty(title, body, actionHtml = '') {
     return `<div class="card col gap-2" style="align-items:center; text-align:center; padding:40px;">
-      <span style="font-size:22px; color:var(--muted-fg);">◌</span>
+      <span style="color:var(--muted-fg);">${icon('inbox', 'ic-lg')}</span>
       <h2 style="font-size:16px;">${title}</h2><p class="sm muted max-prose">${body}</p>${actionHtml}</div>`;
   },
 
@@ -128,7 +128,7 @@ UI.notificationsView = function () {
       ${items.map((n) => `
         <div class="notif ${n.read ? '' : 'unread'}">
           ${n.read ? '<span style="width:7px; flex:none;"></span>' : '<span class="unread-dot"></span>'}
-          <span class="n-icon" style="background:var(--muted);">${n.icon}</span>
+          <span class="n-icon" style="background:var(--muted);">${icon(n.icon)}</span>
           <div class="col gap-1" style="flex:1;">
             <span class="n-title">${UI.esc(n.title)}</span>
             <span class="n-body">${UI.esc(n.body)}</span>
