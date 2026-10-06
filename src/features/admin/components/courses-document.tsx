@@ -25,7 +25,7 @@ import { useAdminCourses } from '../api/get-admin-courses';
 import { CourseEditorDialog } from './course-editor-dialog';
 
 export const CoursesDocument = () => {
-  const { t } = useTranslation('admin');
+  const { t, i18n } = useTranslation('admin');
   const addNotification = useNotifications((state) => state.addNotification);
   const coursesQuery = useAdminCourses();
   const deleteCourse = useDeleteCourse();
@@ -107,7 +107,9 @@ export const CoursesDocument = () => {
                   {course.code}
                 </TableCell>
                 <TableCell className="px-3 py-2 text-sm">
-                  {course.title_en}
+                  {i18n.language.startsWith('ar')
+                    ? (course.title_ar ?? course.title_en)
+                    : course.title_en}
                 </TableCell>
                 <TableCell className="px-3 py-2 text-end text-sm tabular-nums">
                   {course.credits}
@@ -168,6 +170,11 @@ export const CoursesDocument = () => {
               });
               setDeleting(null);
             },
+            onError: () =>
+              addNotification({
+                type: 'error',
+                title: t('common:errors.saveFailed'),
+              }),
           });
         }}
       />
