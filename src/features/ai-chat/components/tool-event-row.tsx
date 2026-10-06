@@ -31,7 +31,10 @@ export const ToolEventRow = ({ toolEvent }: ToolEventRowProps) => {
         ) : (
           <p>{t('toolRow.applied')}</p>
         )}
-        <Link to="/app/builder" className="mt-1 inline-block text-xs underline">
+        <Link
+          to="/app/builder"
+          className="mt-1 inline-block text-xs font-medium text-primary"
+        >
           {t('toolRow.openBuilder')}
         </Link>
       </div>
