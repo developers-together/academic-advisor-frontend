@@ -56,7 +56,7 @@ export const AdminOverviewDocument = () => {
   const { t } = useTranslation('admin');
   const { t: tNav } = useTranslation();
   const navigate = useNavigate();
-  const studentsQuery = useAdminStudents({ search: '', perPage: 50 });
+  const studentsQuery = useAdminStudents({ search: '', perPage: 50, page: 1 });
   const coursesQuery = useAdminCourses();
   const programsQuery = useAdminPrograms();
   const rulesQuery = useAdminRules();
@@ -107,7 +107,7 @@ export const AdminOverviewDocument = () => {
 
   const activeWindow = windowsQuery.data?.find((entry) => entry.is_active);
   const counts: Record<string, number | null> = {
-    students: studentsQuery.data?.items.length ?? null,
+    students: studentsQuery.data?.meta?.total ?? null,
     courses: coursesQuery.data?.length ?? null,
     programs: programsQuery.data?.length ?? null,
     rules: rulesQuery.data?.length ?? null,
