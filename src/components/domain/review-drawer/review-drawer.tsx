@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CircleX, TriangleAlert } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -44,7 +44,7 @@ export type ReviewDrawerProps = {
   comments: PlanComment[];
   meeting?: MeetingRequest | null;
   commentPending?: boolean;
-  onAddComment: (body: string) => void;
+  onAddComment: (body: string) => void | Promise<unknown>;
   approvePending?: boolean;
   approveGate?: string[] | null;
   approveUnavailable?: { requestId: string | null } | null;
@@ -128,6 +128,16 @@ export const ReviewDrawer = ({
     ? { type: 'server', message: returnError }
     : form.formState.errors['reason'];
 
+  const gateBlocked = planReviewable && (approveGate?.length ?? 0) > 0;
+
+  useEffect(() => {
+    if (open && gateBlocked) {
+      document
+        .getElementById('review-validation')
+        ?.scrollIntoView?.({ block: 'center' });
+    }
+  }, [open, gateBlocked]);
+
   const drawerSide = document.documentElement.dir === 'rtl' ? 'left' : 'right';
 
   return (
@@ -187,6 +197,20 @@ export const ReviewDrawer = ({
 
               {plan && (
                 <>
+                  <section aria-label={t('review.academic.title')}>
+                    <h2 className="text-sm font-semibold">
+                      {t('review.academic.title')}
+                    </h2>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {plan.summary ?? t('review.academic.noSummary')}
+                    </p>
+                    <p className="mt-1 text-sm font-medium tabular-nums">
+                      {t('review.academic.credits', {
+                        count: formatNumber(plan.total_credit_hours),
+                      })}
+                    </p>
+                  </section>
+
                   <section
                     aria-label={t('review.courses', { term: plan.term_code })}
                   >
@@ -206,6 +230,38 @@ export const ReviewDrawer = ({
                       ))}
                     </ul>
                   </section>
+
+                  {gateBlocked && (
+                    <section
+                      id="review-validation"
+                      aria-label={t('review.validation')}
+                    >
+                      <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+                        <CircleX
+                          className="size-4 text-destructive"
+                          aria-hidden
+                        />
+                        {t('review.validation')}
+                      </h2>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {t('review.approveFailed.body')}
+                      </p>
+                      <ul className="mt-2 space-y-1">
+                        {approveGate?.map((message) => (
+                          <li
+                            key={message}
+                            className="flex items-start gap-1.5"
+                          >
+                            <CircleX
+                              className="mt-0.5 size-4 shrink-0 text-destructive"
+                              aria-hidden
+                            />
+                            <span className="text-sm">{message}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
 
                   {plan.warnings.length > 0 && (
                     <section aria-label={t('review.warnings')}>
@@ -229,6 +285,12 @@ export const ReviewDrawer = ({
                     </section>
                   )}
 
+                  <CommentThread
+                    comments={comments}
+                    submitPending={commentPending}
+                    onSubmit={onAddComment}
+                  />
+
                   <section aria-label={t('review.meeting')}>
                     <h2 className="flex items-center gap-1.5 text-sm font-semibold">
                       {t('review.meeting')}
@@ -249,12 +311,6 @@ export const ReviewDrawer = ({
                     )}
                   </section>
 
-                  <CommentThread
-                    comments={comments}
-                    submitPending={commentPending}
-                    onSubmit={onAddComment}
-                  />
-
                   {planReviewable && (
                     <section aria-label={t('review.return.action')}>
                       <form
@@ -262,11 +318,11 @@ export const ReviewDrawer = ({
                         onSubmit={(event) => event.preventDefault()}
                       >
                         <Textarea
-                          label={t('review.return.placeholder')}
+                          label={t('review.return.label')}
                           error={mergedReasonError}
                           registration={form.register('reason')}
                           placeholder={t('review.return.placeholder')}
-                          className="min-h-24 text-sm"
+                          className="min-h-24"
                         />
                         <p className="mt-1 text-xs text-muted-foreground">
                           {t('review.return.helper', { name: student.name })}
@@ -295,29 +351,6 @@ export const ReviewDrawer = ({
                 <>
                   {!planReviewable && (
                     <Banner variant="info">{t('review.notReviewable')}</Banner>
-                  )}
-
-                  {planReviewable && approveGate && approveGate.length > 0 && (
-                    <Banner
-                      variant="destructive"
-                      title={t('review.approveFailed.title')}
-                    >
-                      <p>{t('review.approveFailed.body')}</p>
-                      <ul className="mt-2 space-y-1">
-                        {approveGate.map((message) => (
-                          <li
-                            key={message}
-                            className="flex items-start gap-1.5"
-                          >
-                            <CircleX
-                              className="mt-0.5 size-4 shrink-0 text-destructive"
-                              aria-hidden
-                            />
-                            <span>{message}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </Banner>
                   )}
 
                   {planReviewable && approveUnavailable && (
