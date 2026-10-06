@@ -108,7 +108,7 @@ describe('dean section', () => {
     renderRealRouter('/');
     await signIn(dean);
 
-    await expectLanding('Department Overview', [
+    await expectLanding('Faculty Overview', [
       ['Overview', '/dean'],
       ['Advisors', '/dean/advisors'],
       ['Analytics', '/dean/analytics'],
