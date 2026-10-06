@@ -75,7 +75,7 @@ export const RecordDocument = ({
         <MilestonesCard milestones={milestones} />
         <Card className="flex flex-col items-center justify-center gap-2 px-8">
           <ProgressRing value={completedShare} size={96} />
-          <p className="text-center text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+          <p className="text-center text-xs text-muted-foreground tabular-nums">
             {t('courseMap.summary', {
               completed: completedCount,
               total: record.prerequisite_map.length,
