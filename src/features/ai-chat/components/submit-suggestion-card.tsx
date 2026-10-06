@@ -54,7 +54,7 @@ export const SubmitSuggestionCard = ({
         <Button size="sm" className="h-11" onClick={() => setConfirmOpen(true)}>
           {t('submitCard.confirm')}
         </Button>
-        <Link to="/app/builder" className="text-sm underline">
+        <Link to="/app/builder" className="text-sm font-medium text-primary">
           {t('submitCard.review')}
         </Link>
       </div>
