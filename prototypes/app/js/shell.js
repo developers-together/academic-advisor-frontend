@@ -1,11 +1,11 @@
 /* Advisor full replica — shell (R-01, R-02, C-12, C-13) + router. */
 
 const NAV = {
-  student: { home: ['#/', '⌂', 'Home'], items: [['#/app/plan', '▤', 'My Plan'], ['#/app/record', '🎓', 'Academic Record'], ['#/app/chat', '💬', 'AI Advisor'], ['#/app/advisor', '👤', 'My Advisor']], more: [['#/app/notifications', '🔔', 'Notifications'], ['#/app/account', '⚙', 'Account']] },
-  advisor: { home: ['#/', '≡', 'Queue'], items: [['#/advisor/students', '👥', 'Students'], ['#/advisor/meetings', '📅', 'Meetings']], more: [['#/advisor/hours', '🕐', 'Office Hours'], ['#/advisor/notifications', '🔔', 'Notifications'], ['#/advisor/profile', '👤', 'Profile']] },
-  dean: { home: ['#/', '◉', 'Overview'], items: [['#/dean/advisors', '👥', 'Advisors'], ['#/dean/analytics', '📈', 'Analytics']], more: [['#/dean/notifications', '🔔', 'Notifications']] },
-  vp: { home: ['#/', '◉', 'Overview'], items: [['#/vp/faculties', '🏛', 'Faculties'], ['#/vp/trends', '📈', 'Trends']], more: [['#/vp/notifications', '🔔', 'Notifications']] },
-  admin: { home: ['#/', '◉', 'Overview'], items: [['#/admin/students', '👤', 'Students']], more: [['#/admin/operations', '▦', 'Operations'], ['#/admin/assignments', '🧩', 'Assignments'], ['#/admin/courses', '📚', 'Courses'], ['#/admin/programs', '◈', 'Programs'], ['#/admin/rules', '§', 'Rules'], ['#/admin/windows', '⏳', 'Windows'], ['#/admin/ai', '✦', 'AI Config'], ['#/admin/notifications', '🔔', 'Notifications'], ['#/admin/staff', '🧑‍💼', 'Staff']] },
+  student: { home: ['#/', 'home', 'Home'], items: [['#/app/plan', 'plan', 'My Plan'], ['#/app/record', 'cap', 'Academic Record'], ['#/app/chat', 'chat', 'AI Advisor'], ['#/app/advisor', 'user', 'My Advisor']], more: [['#/app/notifications', 'bell', 'Notifications'], ['#/app/account', 'settings', 'Account']] },
+  advisor: { home: ['#/', 'list', 'Queue'], items: [['#/advisor/students', 'users', 'Students'], ['#/advisor/meetings', 'calendar', 'Meetings']], more: [['#/advisor/hours', 'clock', 'Office Hours'], ['#/advisor/notifications', 'bell', 'Notifications'], ['#/advisor/profile', 'user', 'Profile']] },
+  dean: { home: ['#/', 'grid', 'Overview'], items: [['#/dean/advisors', 'users', 'Advisors'], ['#/dean/analytics', 'chart', 'Analytics']], more: [['#/dean/notifications', 'bell', 'Notifications']] },
+  vp: { home: ['#/', 'grid', 'Overview'], items: [['#/vp/faculties', 'building', 'Faculties'], ['#/vp/trends', 'chart', 'Trends']], more: [['#/vp/notifications', 'bell', 'Notifications']] },
+  admin: { home: ['#/', 'grid', 'Overview'], items: [['#/admin/students', 'user', 'Students']], more: [['#/admin/operations', 'grid', 'Operations'], ['#/admin/assignments', 'clipboard', 'Assignments'], ['#/admin/courses', 'book', 'Courses'], ['#/admin/programs', 'layers', 'Programs'], ['#/admin/rules', 'scale', 'Rules'], ['#/admin/windows', 'windows', 'Windows'], ['#/admin/ai', 'sparkles', 'AI Config'], ['#/admin/notifications', 'bell', 'Notifications'], ['#/admin/staff', 'staff', 'Staff']] },
 };
 
 const HOME = { student: '#/app', advisor: '#/advisor', dean: '#/dean', vp: '#/vp', admin: '#/admin' };
@@ -21,7 +21,7 @@ const Shell = {
     html += nav.items.map(link).join('');
     html += `<div class="side-section">More</div>`;
     html += nav.more.map(link).join('');
-    html += `<div style="flex:1"></div><a href="#" onclick="Store.logout(); return false;" style="color:var(--destructive)">↩<span>Sign out</span></a>`;
+    html += `<div style="flex:1"></div><a href="#" onclick="Store.logout(); return false;" style="color:var(--destructive)">${icon('logout')}<span>Sign out</span></a>`;
     return html;
   },
 
@@ -53,7 +53,7 @@ const Shell = {
       ${items.map((n) => `
         <div class="notif ${n.read ? '' : 'unread'}">
           ${n.read ? '<span style="width:7px; flex:none;"></span>' : '<span class="unread-dot"></span>'}
-          <span class="n-icon" style="background:var(--muted);">${n.icon}</span>
+          <span class="n-icon" style="background:var(--muted);">${icon(n.icon)}</span>
           <div class="col gap-1" style="flex:1;">
             <span class="n-title">${UI.esc(n.title)}</span>
             <span class="n-body">${UI.esc(n.body)}</span>
@@ -72,11 +72,11 @@ const Shell = {
     return `<div class="popover menu" id="pop-avatar" data-openable style="display:none; position:absolute; top:52px; inset-inline-end:0; z-index:60;">
       <div style="padding:10px 12px;"><p style="font-weight:600;">${UI.esc(me.name)}</p><p class="sm muted">${UI.esc(me.email || '')}</p></div>
       <div class="menu-sep"></div>
-      <a href="#/app/account">👤 Account</a>
-      <button onclick="Store.toast('Language switching ships with implementation; this prototype is English.', 'info')">🌐 Language · English</button>
-      <button onclick="Store.toast('Theme flip ships with implementation; tokens are dark-ready.', 'info')">☾ Theme · Light</button>
+      <a href="#/app/account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;vertical-align:-0.24em;" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg> Account</a>
+      <button onclick="Store.toast('Language switching ships with implementation; this prototype is English.', 'info')">${icon('globe')} Language · English</button>
+      <button onclick="Store.toast('Theme flip ships with implementation; tokens are dark-ready.', 'info')">${icon('moon')} Theme · Light</button>
       <div class="menu-sep"></div>
-      <button class="danger" onclick="Store.logout()">↩ Sign out</button>
+      <button class="danger" onclick="Store.logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;vertical-align:-0.24em;" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg> Sign out</button>
     </div>`;
   },
 
@@ -104,20 +104,20 @@ const Shell = {
       <nav aria-label="Primary" style="position:fixed; inset-inline:0; bottom:0; display:flex; border-top:1px solid var(--border); background:var(--card); padding-bottom:env(safe-area-inset-bottom); z-index:30;">
         ${slots.map(([href, glyph, label]) => `
           <a href="${href}" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0 10px; font-size:11px; font-weight:500; color:var(--muted-fg); text-decoration:none; ${href === active ? 'color:var(--crimson-700);' : ''}">
-            <span aria-hidden="true">${glyph}</span><span>${label === 'My Plan' ? 'Plan' : label === 'AI Advisor' ? 'AI' : label === 'My Advisor' ? 'Advisor' : label}</span>
+            <span aria-hidden="true">${icon(glyph)}</span><span>${label === 'My Plan' ? 'Plan' : label === 'AI Advisor' ? 'AI' : label === 'My Advisor' ? 'Advisor' : label}</span>
           </a>`).join('')}
         <button type="button" aria-haspopup="dialog" aria-expanded="${!!Shell.moreOpen}" onclick="Shell.moreOpen = !Shell.moreOpen; App.render();"
           style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0 10px; font-size:11px; font-weight:500; color:var(--muted-fg); background:none; border:none; cursor:pointer; ${Shell.moreOpen ? 'color:var(--crimson-700);' : ''}">
-          <span aria-hidden="true">⋯</span><span>More</span>
+          <span aria-hidden="true">${icon('more')}</span><span>More</span>
         </button>
       </nav>
       ${Shell.moreOpen ? `
       <div style="position:fixed; inset:0; background:rgb(15 23 42 / .45); z-index:40;" onclick="Shell.moreOpen = false; App.render();">
         <div class="col gap-2" style="position:absolute; inset-inline:0; bottom:0; background:var(--card); border-radius:16px 16px 0 0; padding:16px 16px 24px;" onclick="event.stopPropagation()">
           <div class="row between"><b>More</b><button class="icon-btn" aria-label="Close" onclick="Shell.moreOpen = false; App.render();">✕</button></div>
-          ${nav.more.map(([href, glyph, label]) => `<a class="btn outline" style="justify-content:flex-start; height:48px;" href="${href}">${glyph} ${label}</a>`).join('')}
-          <button class="btn outline" style="justify-content:flex-start; height:48px;" onclick="Store.setDark(!Store.s.dark)">${Store.s.dark ? '☀' : '☾'} Theme · ${Store.theme() === 'v5' ? 'v5' : 'v4'} · ${Store.s.dark ? 'Dark' : 'Light'}</button>
-          <button class="btn outline" style="justify-content:flex-start; height:48px; color:var(--destructive);" onclick="Store.logout()">↩ Sign out</button>
+          ${nav.more.map(([href, glyph, label]) => `<a class="btn outline" style="justify-content:flex-start; height:48px;" href="${href}">${icon(glyph)} ${label}</a>`).join('')}
+          <button class="btn outline" style="justify-content:flex-start; height:48px;" onclick="Store.setDark(!Store.s.dark)">${icon(Store.s.dark ? 'sun' : 'moon')} Theme · ${Store.theme() === 'v5' ? 'v5' : 'v4'} · ${Store.s.dark ? 'Dark' : 'Light'}</button>
+          <button class="btn outline" style="justify-content:flex-start; height:48px; color:var(--destructive);" onclick="Store.logout()">${icon('logout')} Sign out</button>
         </div>
       </div>` : ''}
     </div>`;
@@ -134,9 +134,9 @@ const Shell = {
         <div class="topbar anchor-wrap">
           <div class="crumbs">${crumbs}</div>
           <div class="row gap-1">
-            <button class="btn outline sm" style="height:36px;" title="Toggle the v5 theme (prototype control)" onclick="Store.setTheme(Store.theme() === 'v5' ? 'v4' : 'v5')">Theme · ${Store.theme() === 'v5' ? 'v5' : 'v4'}</button>
-            <button class="icon-btn" style="width:36px; height:36px;" aria-label="Toggle dark mode" title="Toggle dark mode" onclick="Store.setDark(!Store.s.dark)">${Store.s.dark ? '☀' : '☾'}</button>
-            <button class="btn outline sm" style="height:36px;" onclick="Palette.show()">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+            <button class="btn outline sm" style="height:36px;" title="Toggle the v5 theme (prototype control)" onclick="Store.setTheme(Store.theme() === 'v5' ? 'v4' : 'v5')">${icon('layers')} Theme · ${Store.theme() === 'v5' ? 'v5' : 'v4'}</button>
+            <button class="icon-btn" style="width:36px; height:36px;" aria-label="Toggle dark mode" title="Toggle dark mode" onclick="Store.setDark(!Store.s.dark)">${icon(Store.s.dark ? 'sun' : 'moon')}</button>
+            <button class="btn outline sm" style="height:36px;" onclick="Palette.show()">${icon('search', 'ic')}&nbsp; Search <span class="sm muted">⌘K</span></button>
             ${this.iconBell(unread)}
             ${this.iconAvatar()}
           </div>
@@ -151,7 +151,7 @@ const Shell = {
     </div>${UI.toastHtml()}`;
   },
 
-  iconBell(unread) { return `<button class="icon-btn" data-pop="pop-bell" aria-label="Notifications${unread ? ', ' + unread + ' unread' : ''}" style="position:relative;">🔔${unread ? `<span class="dot-count num">${unread}</span>` : ''}</button>`; },
+  iconBell(unread) { return `<button class="icon-btn" data-pop="pop-bell" aria-label="Notifications${unread ? ', ' + unread + ' unread' : ''}" style="position:relative;">${icon('bell')}${unread ? `<span class="dot-count num">${unread}</span>` : ''}</button>`; },
   iconAvatar() {
     const me = Store.me();
     const initials = me.name.split(' ').map((w) => w[0]).slice(0, 2).join('');
