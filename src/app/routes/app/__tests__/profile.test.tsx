@@ -232,8 +232,11 @@ test('renders the advisor identity, office hours, and the meetings empty state o
   expect(
     screen.getByRole('button', { name: 'Request a meeting' }),
   ).toBeInTheDocument();
+  expect(screen.getByText('No meetings yet')).toBeInTheDocument();
   expect(
-    screen.getByText('No meetings with your advisor yet.'),
+    screen.getByText(
+      'Meetings with your advisor appear here once they are scheduled.',
+    ),
   ).toBeInTheDocument();
 });
 
