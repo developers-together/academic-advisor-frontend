@@ -76,7 +76,7 @@ App.views['/dean'] = function () {
   const funnel = [['Draft', 980], ['Submitted', 640], ['Under review', 210], ['Approved', 610], ['Closed', 610]];
   const near = [...fs].sort((a, b) => a.completion - b.completion).slice(0, 4);
   return `
-    ${UI.pageHead('Overview', 'Completion, speed, and load for your school')}
+    ${UI.pageHead('Overview', 'Completion, speed, and load for your school', `<button class="btn outline sm" onclick="App.exportCsv()">Export CSV</button>`)}
     ${UI.asOfRow()}
     <div class="grid-5">
       ${UI.kpi('Completion', 62, '%', cD, cT, `vs 65% in ${Store.s.prevTerm}`)}
@@ -116,6 +116,41 @@ App.views['/dean'] = function () {
     </div>`;
 };
 
+let advisorDetail = null;
+
+App.exportCsv = function () {
+  const rows = [['Faculty', 'Caseload', 'Approved', 'Completion %', 'Median decision h', 'Aging']];
+  Store.s.governance.faculties.forEach((f) => rows.push([f.name, f.caseload, f.approved, f.completion, f.median, f.aging]));
+  const csv = rows.map((r) => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `advisor-governance-${Store.s.term}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  Store.toast('CSV exported.');
+};
+
+function advisorDetailModal() {
+  if (!advisorDetail) return '';
+  const d = advisorDetail;
+  return UI.modal(`
+    <div class="card col gap-3" style="max-width:520px; margin:10vh auto;">
+      <div class="row between"><h2>${UI.esc(d.name)}</h2><button class="icon-btn" onclick="advisorDetail=null; App.render()">✕</button></div>
+      <p class="sm muted">Aggregate view only. Student rows never appear here (PR-14).</p>
+      <div class="grid-3">
+        ${UI.kpi('Caseload', d.caseload, 'students')}
+        ${UI.kpi('Queue', d.queue, 'plans')}
+        ${UI.kpi('Median decision', d.median + ' h', '')}
+      </div>
+      <div class="grid-2">
+        ${UI.kpi('Aging', d.aging, 'plans')}
+        ${UI.kpi('Completion', d.completion + '%', '', '', '', UI.spark(d.spark))}
+      </div>
+      <button class="btn outline sm" style="align-self:flex-start;" onclick="advisorDetail=null; App.render()">Close</button>
+    </div>`);
+}
+
 App.views['/dean/advisors'] = function () {
   App.titles['/dean/advisors'] = ['Overview', 'Advisors'];
   const advisors = [];
@@ -136,7 +171,7 @@ App.views['/dean/advisors'] = function () {
         <td class="num">${a.median} h</td>
         <td class="num">${a.aging}</td>
         <td class="num"><span class="chip ${compTone(a.completion)} num">${a.completion}%</span></td>
-        <td class="num"><button class="btn ghost sm" onclick="Store.toast('Aggregate detail ships with implementation; no student rows exist (PR-14).','info')">Details</button></td>
+        <td class="num"><button class="btn ghost sm" onclick='advisorDetail = { name: "Advisor ${a.suffix} of ${short}", caseload: ${a.caseload}, queue: ${queue}, median: ${a.median}, aging: ${a.aging}, completion: ${a.completion}, spark: ${JSON.stringify(f.spark)} }; App.render();'>Details</button></td>
       </tr>`;
     }).join('');
     return `<tr class="dept-row"><td colspan="7">${f.name}</td></tr>${trs}`;
@@ -156,6 +191,7 @@ App.views['/dean/advisors'] = function () {
     ${UI.pageHead('Advisors', 'Advisor-level completion, speed, and load in your school')}
     ${UI.asOfRow()}
     <p class="sm muted">Completion = approved ÷ caseload this term. Median in hours.</p>
+    ${advisorDetailModal()}
     ${UI.tableWrap(
       ['Advisor', { label: 'Caseload', right: true }, { label: 'Queue', right: true }, { label: 'Median (h)', right: true }, { label: 'Aging', right: true }, { label: 'Completion', right: true }, ''],
       rows + footer,
@@ -199,7 +235,7 @@ App.views['/vp'] = function () {
   const [d2, t2] = dl('▲ 2 h', 'warning');
   const [d3, t3] = dl('▲ 3', 'warning');
   return `
-    ${UI.pageHead('Overview', 'University-wide direction')}
+    ${UI.pageHead('Overview', 'University-wide direction', `<button class="btn outline sm" onclick="App.exportCsv()">Export CSV</button>`)}
     ${UI.asOfRow()}
     <div class="grid-3">
       ${UI.kpi('Completion', u.completion, '%', d1, t1, `vs ${u.completion - u.d}% in ${Store.s.prevTerm}`)}
@@ -328,11 +364,11 @@ function govNotifications() {
 }
 
 App.views['/dean/notifications'] = function () {
-  App.titles['/dean/notifications'] = ['Overview', 'Notifications'];
-  return govNotifications();
+  App.titles['/dean/notifications'] = ['Notifications'];
+  return UI.notificationsView();
 };
 
 App.views['/vp/notifications'] = function () {
-  App.titles['/vp/notifications'] = ['Overview', 'Notifications'];
-  return govNotifications();
+  App.titles['/vp/notifications'] = ['Notifications'];
+  return UI.notificationsView();
 };
