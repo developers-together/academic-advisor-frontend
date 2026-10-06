@@ -1,7 +1,10 @@
 import { ArchiveX } from 'lucide-react';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/utils/cn';
+
+import { EmptyState } from '../empty-state';
 
 import { TablePagination, TablePaginationProps } from './pagination';
 
@@ -139,12 +142,15 @@ export const Table = <Entry extends { id?: number | string }>({
   columns,
   pagination,
 }: TableProps<Entry>) => {
+  const { t } = useTranslation();
   if (!data?.length) {
     return (
-      <div className="flex h-80 flex-col items-center justify-center bg-white text-gray-500">
-        <ArchiveX className="size-16" />
-        <h4>No Entries Found</h4>
-      </div>
+      <EmptyState
+        icon={ArchiveX}
+        title={t('table.emptyTitle')}
+        description={t('table.emptyBody')}
+        className="h-80 justify-center"
+      />
     );
   }
   return (
