@@ -52,6 +52,11 @@ test('the admin toggles the registration window state', async ({
   await expect(activeRow.getByText('Active')).toBeVisible();
 
   await activeRow.getByRole('button', { name: 'Deactivate' }).click();
+  const closeDialog = page.getByRole('dialog', {
+    name: 'Close registration for 2026F?',
+  });
+  await expect(closeDialog).toBeVisible();
+  await closeDialog.getByRole('button', { name: 'Close registration' }).click();
   await expect(activeRow.getByText('Inactive')).toBeVisible();
 
   await activeRow.getByRole('button', { name: 'Activate' }).click();

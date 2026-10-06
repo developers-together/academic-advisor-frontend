@@ -27,7 +27,7 @@ test('the advisor confirms a student request from availability and cancels an in
 
   const slots = dialog.getByRole('radio');
   await expect(slots.first()).toBeVisible();
-  await slots.first().click();
+  await dialog.locator('[role="radio"]:not([disabled])').first().click();
   await dialog.getByRole('button', { name: 'Confirm time' }).click();
 
   await expect(page.getByText('Scheduled (2)')).toBeVisible();
