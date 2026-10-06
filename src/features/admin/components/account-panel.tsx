@@ -367,7 +367,15 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => reactivate.mutate(user.id)}
+                  onClick={() =>
+                    reactivate.mutate(user.id, {
+                      onError: () =>
+                        addNotification({
+                          type: 'error',
+                          title: t('common:errors.saveFailed'),
+                        }),
+                    })
+                  }
                   isLoading={reactivate.isPending}
                 >
                   {t('accounts.actions.reactivate')}
