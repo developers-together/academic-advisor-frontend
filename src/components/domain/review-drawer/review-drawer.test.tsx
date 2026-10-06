@@ -216,7 +216,7 @@ test('ESC with an empty reason closes clean', async () => {
   ).not.toBeInTheDocument();
 });
 
-test('approve gate failures render as a destructive list above the footer and return stays available', () => {
+test('approve gate failures render as a destructive validation section and return stays available', () => {
   renderDrawer({
     approveGate: [
       "CS 201 is not in the student's course map.",
@@ -224,7 +224,7 @@ test('approve gate failures render as a destructive list above the footer and re
     ],
   });
 
-  expect(screen.getByText('Approval is blocked')).toBeInTheDocument();
+  expect(screen.getByText('Validation results')).toBeInTheDocument();
   expect(
     screen.getByText("CS 201 is not in the student's course map."),
   ).toBeInTheDocument();
