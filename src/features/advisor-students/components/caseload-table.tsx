@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 
 import { PlanStateChip } from '@/components/domain/plan-state-chip';
 import { Badge } from '@/components/ui/badge';
@@ -46,7 +46,17 @@ export const CaseloadTable = ({
   onActivate,
 }: CaseloadTableProps) => {
   const { t, i18n } = useTranslation('advisor');
-  const [filter, setFilter] = useState<CaseloadFilter>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filter = (searchParams.get('filter') as CaseloadFilter | null) ?? 'all';
+  const setFilter = (value: CaseloadFilter) => {
+    const next = new URLSearchParams(searchParams);
+    if (value === 'all') {
+      next.delete('filter');
+    } else {
+      next.set('filter', value);
+    }
+    setSearchParams(next, { replace: true });
+  };
 
   const unitName = (unit: OrgUnit | null) => {
     if (!unit?.name_en) return null;

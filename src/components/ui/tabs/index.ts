@@ -1,3 +1,4 @@
+export { ResponsiveTabs } from './responsive-tabs';
 export {
   Tabs,
   TabsList,

@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 
 import { ReviewDrawer } from '@/components/domain/review-drawer';
 import { ErrorState } from '@/components/ui/banner';
@@ -34,7 +35,17 @@ export const ExplorerDocument = ({
   const { t } = useTranslation('advisor');
   const queryClient = useQueryClient();
 
-  const [search, setSearch] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const search = searchParams.get('q') ?? '';
+  const setSearch = (value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (value.trim() === '') {
+      next.delete('q');
+    } else {
+      next.set('q', value);
+    }
+    setSearchParams(next, { replace: true });
+  };
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
   const caseloadQuery = useCaseload(debouncedSearch);
 

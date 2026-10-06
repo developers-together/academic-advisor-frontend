@@ -29,7 +29,15 @@
       "urgency": "Urgency",
       "term": "Submitted for {{term}}",
       "review": "Review"
-    }
+    },
+    "sort": {
+      "label": "Sort",
+      "urgent": "Urgent first",
+      "newest": "Newest first",
+      "waiting": "Longest waiting"
+    },
+    "decisionApproved": "Plan approved.",
+    "decisionReturned": "Plan returned with your reason."
   },
   "review": {
     "context": "CGPA {{cgpa}}",
@@ -329,6 +337,9 @@
     "cancelled": "Meeting cancelled.",
     "emptyTitle": "No meetings yet",
     "emptyBody": "Meetings with your advisor appear here once they are scheduled.",
-    "actionFailed": "That action did not go through. Try again."
+    "actionFailed": "That action did not go through. Try again.",
+    "requestAnother": "Request another meeting",
+    "accepted": "Meeting time accepted.",
+    "declined": "Proposal declined. Your advisor sees your note."
   }
 }

@@ -198,7 +198,7 @@ test('activating a row opens the drawer, marks the plan under review, and refetc
   expect(lina).toHaveAttribute('aria-current', 'true');
 });
 
-test('approve confirms, locks the plan, closes the drawer, invalidates both roots, and toasts nothing', async () => {
+test('approve confirms, locks the plan, closes the drawer, invalidates both roots, and confirms with a toast', async () => {
   const advisor = await createUser({ role: 'advisor' });
   const student = await seedQueueStudent(advisor, {
     name: 'Lina Majors',
@@ -252,7 +252,7 @@ test('approve confirms, locks the plan, closes the drawer, invalidates both root
     await screen.findByText('No plans are waiting for review.'),
   ).toBeInTheDocument();
   expect(caseloadReads).toBeGreaterThan(readsAfterLoad);
-  expect(document.querySelector('[role="status"]')).toBeNull();
+  expect(await screen.findByText('Plan approved.')).toBeInTheDocument();
   expect(document.querySelector('[role="alert"]')).toBeNull();
 });
 

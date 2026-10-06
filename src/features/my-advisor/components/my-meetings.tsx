@@ -100,6 +100,11 @@ export const MyMeetings = ({
                 acceptProposal.mutate(
                   { id: meeting.id, input: picked },
                   {
+                    onSuccess: () =>
+                      addNotification({
+                        type: 'success',
+                        title: t('myMeetings.accepted'),
+                      }),
                     onError: () =>
                       addNotification({
                         type: 'error',
@@ -188,6 +193,12 @@ export const MyMeetings = ({
         </ul>
       )}
 
+      {openCount > 0 && (
+        <Button variant="outline" onClick={() => setRequestOpen(true)}>
+          {t('myMeetings.requestAnother')}
+        </Button>
+      )}
+
       {requestOpen && (
         <RequestMeetingDialog onClose={() => setRequestOpen(false)} />
       )}
@@ -204,7 +215,13 @@ export const MyMeetings = ({
           declineProposal.mutate(
             { id: declineId, input: reason },
             {
-              onSuccess: () => setDeclineId(null),
+              onSuccess: () => {
+                setDeclineId(null);
+                addNotification({
+                  type: 'info',
+                  title: t('myMeetings.declined'),
+                });
+              },
               onError: () =>
                 addNotification({
                   type: 'error',

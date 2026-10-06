@@ -6,6 +6,7 @@ import { QueueTable } from '@/components/domain/queue-table';
 import { ReviewDrawer } from '@/components/domain/review-drawer';
 import { ErrorState } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { useNotifications } from '@/components/ui/notifications';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMeetingRequests } from '@/features/advisor-meetings/api/get-meeting-requests';
 import { InviteStudentDialog } from '@/features/advisor-meetings/components/invite-student-dialog';
@@ -29,6 +30,7 @@ export type QueueDocumentProps = {
 export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
   const { t } = useTranslation('advisor');
   const queryClient = useQueryClient();
+  const addNotification = useNotifications((state) => state.addNotification);
 
   const queueQuery = useAdvisorQueue();
   const meetingsQuery = useMeetingRequests();
@@ -67,7 +69,13 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
     setApproveGate(null);
     setApproveUnavailable(null);
     approveMutation.mutate(undefined, {
-      onSuccess: () => closeDrawer(),
+      onSuccess: () => {
+        addNotification({
+          type: 'success',
+          title: t('queue.decisionApproved'),
+        });
+        closeDrawer();
+      },
       onError: (error) => {
         if (!(error instanceof ApiError)) {
           return;
@@ -89,7 +97,13 @@ export const QueueDocument = ({ caseload }: QueueDocumentProps) => {
     returnMutation.mutate(
       { planId: activeId, reason },
       {
-        onSuccess: () => closeDrawer(),
+        onSuccess: () => {
+          addNotification({
+            type: 'success',
+            title: t('queue.decisionReturned'),
+          });
+          closeDrawer();
+        },
         onError: (error) => {
           if (error instanceof ApiError && error.status === 422) {
             setReturnError(error.fields['reason']?.[0] ?? error.message);

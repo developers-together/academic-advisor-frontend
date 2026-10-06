@@ -218,5 +218,8 @@
     "directionLine_studentRequest": "طلب من الطالب",
     "directionLine_advisorInvite": "لقد دعوت الطالب",
     "directionLine_advisorInviteToYou": "دعاك مرشدك"
+  },
+  "responsiveTabs": {
+    "filter": "تصفية"
   }
 }

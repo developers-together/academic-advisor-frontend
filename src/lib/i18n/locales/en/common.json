@@ -218,5 +218,8 @@
     "directionLine_studentRequest": "Requested by the student",
     "directionLine_advisorInvite": "You invited the student",
     "directionLine_advisorInviteToYou": "Your advisor invited you"
+  },
+  "responsiveTabs": {
+    "filter": "Filter"
   }
 }
