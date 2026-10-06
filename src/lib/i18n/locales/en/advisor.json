@@ -16,12 +16,14 @@
       "waiting": "Waiting"
     },
     "openReview": "Review {{name}}'s plan",
-    "waitingDays": "{{count}} day",
-    "waitingDaysOther": "{{count}} days",
     "empty": {
       "title": "No plans are waiting for review.",
       "body": "New submissions appear here."
-    }
+    },
+    "waitingDays_one": "{{count}} day",
+    "waitingDays_other": "{{count}} days",
+    "filteredEmptyTitle": "No {{filter}} plans right now",
+    "filteredEmptyBody": "That is normal. New submissions appear under All."
   },
   "review": {
     "context": "CGPA {{cgpa}}",
@@ -34,7 +36,9 @@
       "placeholder": "Write a comment for the student",
       "submit": "Add comment",
       "maxLength": "Comments are limited to 2000 characters.",
-      "required": "Write the comment before adding it."
+      "required": "Write the comment before adding it.",
+      "failed": "Your comment was not added.",
+      "failedBody": "The text is still in the box. Try again."
     },
     "approve": {
       "action": "Approve",
@@ -54,16 +58,23 @@
       "confirm": "Return plan",
       "discardTitle": "Discard the return reason?",
       "discardBody": "The text you wrote is lost.",
-      "discardConfirm": "Discard reason"
+      "discardConfirm": "Discard reason",
+      "label": "Return reason"
     },
     "approveFailed": {
       "title": "Approval is blocked",
-      "body": "The checks below failed. You can still return the plan to the student."
+      "body": "These checks failed. You can still return the plan to the student."
     },
     "notReviewable": "This plan is not waiting for review. Plans you can act on appear in the queue.",
     "requestMeeting": "Request meeting",
     "meeting": "Meeting",
-    "meetingNone": "No active meeting request."
+    "meetingNone": "No active meeting request.",
+    "academic": {
+      "title": "Academic summary",
+      "credits": "Total {{count}} credit hours",
+      "noSummary": "The student wrote no summary for this plan."
+    },
+    "validation": "Validation results"
   },
   "students": {
     "title": "Student Explorer",
@@ -94,7 +105,10 @@
       "title": "No students match \"{{search}}\".",
       "body": "Check the spelling or clear the search."
     },
-    "noPlan": "{{name}} has not created a plan this term."
+    "noPlan": "{{name}} has not created a plan this term.",
+    "filteredEmptyTitle": "No students match this filter",
+    "filteredEmptyBody": "No student in your caseload is in this state right now. Clear the filter to see everyone.",
+    "clearFilter": "Clear filter"
   },
   "meetings": {
     "title": "Meetings",
@@ -147,10 +161,12 @@
         "body": "Requests from your students appear here."
       },
       "scheduled": {
-        "title": "No upcoming meetings"
+        "title": "No upcoming meetings",
+        "body": "Confirmed meetings appear here. Invite a student from the caseload to schedule one."
       },
       "history": {
-        "title": "No past meetings"
+        "title": "No past meetings",
+        "body": "Completed, declined, and cancelled meetings appear here after they close."
       }
     },
     "actions": {
@@ -203,7 +219,8 @@
       "body": "The other party sees the cancellation.",
       "confirm": "Cancel meeting",
       "reasonLabel": "Reason"
-    }
+    },
+    "actionFailed": "That action did not go through. Try again."
   },
   "profile": {
     "title": "Profile",
@@ -303,6 +320,9 @@
       "confirm": "Cancel meeting",
       "reasonLabel": "Reason"
     },
-    "cancelled": "Meeting cancelled."
+    "cancelled": "Meeting cancelled.",
+    "emptyTitle": "No meetings yet",
+    "emptyBody": "Meetings with your advisor appear here once they are scheduled.",
+    "actionFailed": "That action did not go through. Try again."
   }
 }
