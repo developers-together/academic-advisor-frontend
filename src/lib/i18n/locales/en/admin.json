@@ -16,7 +16,7 @@
       "binding": "Student ID binding",
       "bindingBound": "Bound to student ID {{id}}.",
       "bindingPending": "The student ID binding has not completed yet. Retry the check.",
-      "bindingFailed": "The student information system has no record for this account's derived ID. Correct the student ID or retry the check.",
+      "bindingFailed": "The student information system has no record for this account’s derived ID. Correct the student ID or retry the check.",
       "assignment": "Caseload assignment",
       "dangerZone": "Danger zone"
     },
@@ -28,7 +28,7 @@
     "addStudent": "Add student",
     "addDialog": {
       "title": "Add student",
-      "description": "Create the account from the student's SIS ID, then hand over the credentials.",
+      "description": "Create the account from the student’s SIS ID, then hand over the credentials.",
       "studentId": "SIS student ID",
       "studentIdHelper": "1 to 20 digits, as registered in the SIS.",
       "name": "Display name",
@@ -93,7 +93,7 @@
       "correctBody": "This sets the student ID for this account. The ID cannot be edited again.",
       "correctConfirm": "Save student ID",
       "deleteTitle": "Delete {{name}}?",
-      "deleteBody": "This deletes the student account and removes the student from their advisor's caseload. This cannot be undone.",
+      "deleteBody": "This deletes the student account and removes the student from their advisor’s caseload. This cannot be undone.",
       "deleteConfirm": "Delete account"
     },
     "correctIdForm": {
@@ -124,7 +124,7 @@
     },
     "assignDialog": {
       "title": "Assign advisor",
-      "description": "Type the student's SIS ID and pick the advisor. Students without an account are scheduled instead.",
+      "description": "Type the student’s SIS ID and pick the advisor. Students without an account are scheduled instead.",
       "studentId": "SIS student ID",
       "studentIdHelper": "1 to 20 digits, as registered in the SIS.",
       "advisor": "Advisor",
@@ -420,7 +420,12 @@
     "activate": "Activate",
     "deactivate": "Deactivate",
     "activated": "Registration open for {{term}}.",
-    "deactivated": "Registration closed for {{term}}."
+    "deactivated": "Registration closed for {{term}}.",
+    "deactivateConfirm": {
+      "title": "Close registration for {{term}}?",
+      "body": "Students can no longer submit plans for {{term}} while the window is closed. You can reopen it.",
+      "confirm": "Close registration"
+    }
   },
   "ai": {
     "title": "AI Configuration",
