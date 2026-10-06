@@ -19,7 +19,7 @@ export const AdvisorWorkloadTable = ({
   advisors,
   className,
 }: AdvisorWorkloadTableProps) => {
-  const { t } = useTranslation('governance');
+  const { t, i18n } = useTranslation('governance');
   const sorted = [...advisors].sort((a, b) =>
     a.completion_rate === b.completion_rate
       ? a.name.localeCompare(b.name)
@@ -60,7 +60,9 @@ export const AdvisorWorkloadTable = ({
                 {advisor.name}
               </TableCell>
               <TableCell className="px-3 py-2 text-sm text-muted-foreground">
-                {advisor.unit_en ?? '—'}
+                {i18n.language.startsWith('ar')
+                  ? (advisor.unit_ar ?? advisor.unit_en ?? '—')
+                  : (advisor.unit_en ?? '—')}
               </TableCell>
               <TableCell className="px-3 py-2 text-end text-sm tabular-nums">
                 {advisor.caseload}
