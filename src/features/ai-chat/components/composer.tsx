@@ -72,7 +72,10 @@ export const Composer = ({
         <Banner
           variant="warning"
           action={
-            <Link to="/app/builder" className="text-sm underline">
+            <Link
+              to="/app/builder"
+              className="text-sm font-medium text-primary"
+            >
               {t('quota.openBuilder')}
             </Link>
           }
