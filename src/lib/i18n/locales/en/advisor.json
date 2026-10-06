@@ -23,7 +23,13 @@
     "waitingDays_one": "{{count}} day",
     "waitingDays_other": "{{count}} days",
     "filteredEmptyTitle": "No {{filter}} plans right now",
-    "filteredEmptyBody": "That is normal. New submissions appear under All."
+    "filteredEmptyBody": "That is normal. New submissions appear under All.",
+    "rail": {
+      "signal": "Signal",
+      "urgency": "Urgency",
+      "term": "Submitted for {{term}}",
+      "review": "Review"
+    }
   },
   "review": {
     "context": "CGPA {{cgpa}}",

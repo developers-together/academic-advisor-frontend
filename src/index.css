@@ -56,6 +56,18 @@
   --color-state-closed-foreground: var(--state-closed-foreground);
   --color-state-closed-border: var(--state-closed-border);
 
+  /* v5: milestone surface, interactive accent, chart series (section 26) */
+  --color-milestone: hsl(var(--milestone));
+  --color-milestone-foreground: hsl(var(--milestone-foreground));
+  --color-milestone-border: hsl(var(--milestone-border));
+  --color-accent-interactive: hsl(var(--accent-interactive));
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+  --color-chart-6: hsl(var(--chart-6));
+
   /* Semantic status (design.md 3.3) */
   --color-success: hsl(var(--success));
   --color-success-foreground: hsl(var(--success-foreground));
@@ -153,7 +165,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 20% 97%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -174,14 +186,14 @@
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 72% 51%; /* red-600, 4.8:1 with white */
+    --destructive: 0 81% 47%; /* #C62828, 5.0:1 on white */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 158 94% 27%; /* emerald-700, 5.5:1 with white */
+    --success: 149 45% 36%; /* #32845A, 4.6:1 on white */
     --success-foreground: 0 0% 100%;
-    --warning: 32 95% 44%; /* amber-600, dark foreground */
+    --warning: 40 100% 30%; /* #9A6700, 4.8:1 on white */
     --warning-foreground: 0 0% 9%;
-    --info: 201 96% 32%; /* sky-700, 5.9:1 with white */
+    --info: 211 64% 40%; /* #2563A6, 6.3:1 on white */
     --info-foreground: 0 0% 100%;
 
     --border: 214.3 31.8% 91.4%;
@@ -222,19 +234,30 @@
     --data-4-foreground: #7f1d1d;
 
     --radius: 0.5rem;
+    --radius-card: 0.375rem;
+    --milestone: 36 42% 94%;
+    --milestone-foreground: 36 27% 34%;
+    --milestone-border: 40 36% 85%;
+    --accent-interactive: 230 31% 51%;
+    --chart-1: 221 83% 53%;
+    --chart-2: 174 84% 32%;
+    --chart-3: 33 92% 44%;
+    --chart-4: 258 80% 58%;
+    --chart-5: 215 16% 47%;
+    --chart-6: 336 81% 51%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 220 16% 7%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 217 15% 11%;
     --card-foreground: 210 40% 98%;
 
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 355 60% 38%; /* crimson-600, 7.2:1 with white */
+    --primary: 353 41% 49%; /* #B24A53, 5.3:1 with white */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -246,14 +269,14 @@
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84.2% 60.2%; /* red-500 */
+    --destructive: 0 91% 71%;
     --destructive-foreground: 0 0% 9%;
 
-    --success: 160 84% 39%; /* emerald-500 */
+    --success: 158 64% 52%; /* emerald-500 */
     --success-foreground: 0 0% 9%;
-    --warning: 38 92% 50%; /* amber-500 */
+    --warning: 45 96% 56%; /* amber-500 */
     --warning-foreground: 0 0% 9%;
-    --info: 199 89% 48%; /* sky-500 */
+    --info: 199 92% 60%; /* sky-500 */
     --info-foreground: 0 0% 9%;
 
     --border: 217.2 32.6% 17.5%;
@@ -282,6 +305,18 @@
     --state-closed: #1e293b;
     --state-closed-foreground: #94a3b8;
     --state-closed-border: #334155;
+
+    --milestone: 36 20% 13%;
+    --milestone-foreground: 40 30% 78%;
+    --milestone-border: 40 20% 24%;
+    --accent-interactive: 230 40% 66%;
+    --radius-card: 0.375rem;
+    --chart-1: 96 91% 66%;
+    --chart-2: 174 42% 46%;
+    --chart-3: 43 96% 56%;
+    --chart-4: 76 84% 70%;
+    --chart-5: 215 20% 65%;
+    --chart-6: 336 84% 68%;
 
     /* Heatmap quartiles, dark */
     --data-1: #064e3b;
@@ -328,3 +363,7 @@
 .bidi-code {
   unicode-bidi: isolate;
 }
+
+/* v5 two-mode radius (section 26.2): student cards 14px, staff 6px */
+body[data-mode='student'] .card { border-radius: 14px; }
+body[data-mode='staff'] .card { border-radius: 6px; }

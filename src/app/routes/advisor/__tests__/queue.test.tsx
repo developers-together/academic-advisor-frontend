@@ -77,8 +77,8 @@ const seedQueueStudent = async (
 const rowOf = (name: string) => {
   const match = screen
     .getAllByText(name)
-    .find((element) => element.closest('tr'));
-  return match?.closest('tr') as HTMLElement;
+    .find((element) => element.closest('li'));
+  return match?.closest('li') as HTMLElement;
 };
 
 const openDrawer = async (name: string) => {
@@ -161,9 +161,7 @@ test('the queue renders oldest first with waiting days, the aging badge, and fil
     screen.getByRole('tab', { name: 'Under review (1)' }),
   ).toBeInTheDocument();
 
-  for (const head of screen.getAllByRole('columnheader')) {
-    expect(head).not.toHaveAttribute('aria-sort');
-  }
+  expect(screen.queryAllByRole('columnheader')).toHaveLength(0);
 });
 
 test('activating a row opens the drawer, marks the plan under review, and refetches the queue', async () => {

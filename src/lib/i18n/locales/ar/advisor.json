@@ -27,7 +27,13 @@
     "waitingDays_many": "{{count}} يومًا",
     "waitingDays_other": "{{count}} يوم",
     "filteredEmptyTitle": "لا توجد خطط في «{{filter}}» الآن",
-    "filteredEmptyBody": "هذا طبيعي. التقديمات الجديدة تظهر تحت «الكل»."
+    "filteredEmptyBody": "هذا طبيعي. التقديمات الجديدة تظهر تحت «الكل».",
+    "rail": {
+      "signal": "الإشارة",
+      "urgency": "الأولوية",
+      "term": "مقدمة لـ {{term}}",
+      "review": "مراجعة"
+    }
   },
   "review": {
     "context": "المعدل التراكمي {{cgpa}}",

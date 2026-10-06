@@ -47,8 +47,15 @@ export const MilestonesCard = ({
   const { t } = useTranslation('plan');
   const earned = milestones.filter((milestone) => milestone.earned).length;
 
+  const anyEarned = earned > 0;
   return (
-    <Card className={className}>
+    <Card
+      className={cn(
+        className,
+        anyEarned &&
+          'border-milestone-border bg-milestone text-milestone-foreground',
+      )}
+    >
       <CardHeader>
         <CardTitle>{t('milestones.title')}</CardTitle>
         <p className="text-xs text-muted-foreground tabular-nums">

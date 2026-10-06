@@ -224,5 +224,31 @@
       "halfway": "في منتصف الطريق",
       "map_mastered": "إتقان الخريطة"
     }
+  },
+  "pulse": {
+    "heading": "نبض أكاديمي — الخطة · الحمل · التقدم",
+    "degree": "{{share}}% من الخطة الدراسية",
+    "credits": "{{credits}} من {{min}}–{{max}} ساعة",
+    "loadLine": "{{credits}} من {{min}}–{{max}} ساعة",
+    "earnedLine": "التقدم في السجل الأكاديمي",
+    "openPlan": "افتح خطتي",
+    "openRecord": "السجل الأكاديمي",
+    "planLine": {
+      "draft": "الخطة مسودة — أكملها وتحقق منها",
+      "returned": "أُرجعت الخطة — اقرأ الملاحظات",
+      "submitted": "الخطة مُقدمة — بانتظار المراجعة",
+      "under_review": "الخطة تحت المراجعة",
+      "approved": "الخطة معتمدة — سجّل في النظام"
+    }
+  },
+  "planStatus": {
+    "approved": "معتمدة",
+    "closed": "مغلقة",
+    "draft": "مسودة",
+    "expired": "منتهية",
+    "returned": "مُرجعة",
+    "submitted": "مُقدمة",
+    "under_review": "تحت المراجعة",
+    "withdrawn": "مسحوبة"
   }
 }

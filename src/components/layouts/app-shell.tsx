@@ -416,6 +416,12 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
   const user = useUser();
   const resolvedDensity: TableDensity =
     density ?? (forRole === 'student' ? 'spacious' : 'compact');
+  React.useEffect(() => {
+    document.body.dataset.mode = forRole === 'student' ? 'student' : 'staff';
+    return () => {
+      delete document.body.dataset.mode;
+    };
+  }, [forRole]);
   const items = roleNav[forRole];
   const [paletteOpen, setPaletteOpen] = React.useState(false);
   const commandGroups = useCommandGroups(forRole);

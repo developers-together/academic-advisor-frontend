@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
+import { PulseStrip } from '@/components/domain/pulse-strip';
 import { ContentLayout } from '@/components/layouts';
 import { Banner, ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
@@ -54,6 +55,30 @@ export default function DashboardRoute() {
             )}
 
           {planQuery.data && <PlanCard plan={planQuery.data} />}
+
+          {planQuery.data && (
+            <PulseStrip
+              className="max-w-2xl"
+              planStatus={planQuery.data.status}
+              planStatusLabel={t(`planStatus.${planQuery.data.status}`)}
+              credits={planQuery.data.total_credit_hours}
+              creditsMin={12}
+              creditsMax={18}
+              earnedShare={
+                recordQuery.data?.prerequisite_map.length
+                  ? Math.round(
+                      (recordQuery.data.prerequisite_map.filter(
+                        (entry) => entry.state === 'completed',
+                      ).length /
+                        recordQuery.data.prerequisite_map.length) *
+                        100,
+                    )
+                  : 0
+              }
+              planHref={paths.app.plan.getHref()}
+              recordHref={paths.app.record.getHref()}
+            />
+          )}
 
           {planQuery.isError &&
             planQuery.error instanceof ApiError &&

@@ -224,5 +224,31 @@
       "halfway": "Halfway there",
       "map_mastered": "Map mastered"
     }
+  },
+  "pulse": {
+    "heading": "Academic pulse — plan · load · degree",
+    "degree": "{{share}}% of the curriculum",
+    "credits": "{{credits}} of {{min}}–{{max}} credits",
+    "loadLine": "{{credits}} of {{min}}–{{max}} credits",
+    "earnedLine": "Progress in the Academic Record",
+    "openPlan": "Open my plan",
+    "openRecord": "Academic Record",
+    "planLine": {
+      "draft": "Plan is a draft — finish and validate",
+      "returned": "Plan returned — read the feedback",
+      "submitted": "Plan submitted — awaiting review",
+      "under_review": "Plan under review",
+      "approved": "Plan approved — register in the SIS"
+    }
+  },
+  "planStatus": {
+    "approved": "Approved",
+    "closed": "Closed",
+    "draft": "Draft",
+    "expired": "Expired",
+    "returned": "Returned",
+    "submitted": "Submitted",
+    "under_review": "Under review",
+    "withdrawn": "Withdrawn"
   }
 }
