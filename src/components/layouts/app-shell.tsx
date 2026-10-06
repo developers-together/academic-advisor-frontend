@@ -482,7 +482,7 @@ const Topbar = ({ bell, name, onOpenPalette }: TopbarProps) => {
         className="flex h-11 items-center gap-2 rounded-md px-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
       >
         <Search className="size-5" aria-hidden />
-        <kbd className="hidden rounded border bg-background px-1.5 py-0.5 text-2xs font-medium lg:inline">
+        <kbd className="hidden rounded border bg-card px-1.5 py-0.5 text-2xs font-medium lg:inline">
           ⌘K
         </kbd>
       </button>
