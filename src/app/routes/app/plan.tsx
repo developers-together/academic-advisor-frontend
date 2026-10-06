@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 
 import { CommentThread } from '@/components/domain/comment-thread';
 import { StaleSisBanner } from '@/components/domain/stale-sis-banner';
@@ -8,6 +9,7 @@ import { ErrorState } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Link } from '@/components/ui/link';
 import { SkeletonCard } from '@/components/ui/skeleton';
+import { paths } from '@/config/paths';
 import { usePlan } from '@/features/plan/api/get-plan';
 import { usePlanComments } from '@/features/plan/api/get-plan-comments';
 import { useSeenPlan } from '@/features/plan/api/seen-plan';
@@ -30,6 +32,7 @@ const lineId = (courseCode: string) =>
 
 export default function PlanRoute() {
   const { t } = useTranslation('plan');
+  const navigate = useNavigate();
   const planQuery = usePlan();
   const academicRecord = useAcademicRecord();
   const commentsQuery = usePlanComments(planQuery.data?.id ?? null);
@@ -136,6 +139,10 @@ export default function PlanRoute() {
               className="max-w-2xl"
               title={t('myPlan.empty.title')}
               description={t('myPlan.empty.body')}
+              action={{
+                label: t('myPlan.empty.action'),
+                onClick: () => navigate(paths.app.builder.getHref()),
+              }}
             />
           )}
 
