@@ -82,8 +82,8 @@ export const OfficeLocationForm = ({
       />
 
       {failed && (
-        <Banner variant="destructive" title={t('common:errors.loadFailed')}>
-          {t('common:errors.loadFailedBody')}
+        <Banner variant="destructive" title={t('common:errors.saveFailed')}>
+          {t('common:errors.saveFailedBody')}
         </Banner>
       )}
 
