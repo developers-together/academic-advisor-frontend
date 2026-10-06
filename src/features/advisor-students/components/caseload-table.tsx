@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PlanStateChip } from '@/components/domain/plan-state-chip';
 import { Badge } from '@/components/ui/badge';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/form';
 import {
   TableBody,
@@ -15,7 +16,7 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatDate, formatNumber } from '@/lib/i18n/format';
-import type { AdvisorCaseloadStudent } from '@/types/domain';
+import type { AdvisorCaseloadStudent, OrgUnit } from '@/types/domain';
 
 type CaseloadFilter = 'all' | 'unmet' | 'aging';
 
@@ -28,11 +29,6 @@ const filterMatches = (
   filter === 'all' ||
   (filter === 'unmet' && student.has_unmet_meeting) ||
   (filter === 'aging' && student.is_aging);
-
-const unitLine = (student: AdvisorCaseloadStudent) =>
-  [student.faculty, student.school, student.department]
-    .flatMap((unit) => (unit?.name_en ? [unit.name_en] : []))
-    .join(' · ');
 
 export type CaseloadTableProps = {
   students: AdvisorCaseloadStudent[];
@@ -49,8 +45,23 @@ export const CaseloadTable = ({
   activeId,
   onActivate,
 }: CaseloadTableProps) => {
-  const { t } = useTranslation('advisor');
+  const { t, i18n } = useTranslation('advisor');
   const [filter, setFilter] = useState<CaseloadFilter>('all');
+
+  const unitName = (unit: OrgUnit | null) => {
+    if (!unit?.name_en) return null;
+    return i18n.language.startsWith('ar')
+      ? (unit.name_ar ?? unit.name_en)
+      : unit.name_en;
+  };
+  const unitLine = (student: AdvisorCaseloadStudent) =>
+    [
+      unitName(student.faculty),
+      unitName(student.school),
+      unitName(student.department),
+    ]
+      .flatMap((name) => (name ? [name] : []))
+      .join(' · ');
 
   const counts = {
     all: students.length,
@@ -191,9 +202,15 @@ export const CaseloadTable = ({
       </div>
 
       {visible.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          {t('common:table.empty')}
-        </p>
+        <EmptyState
+          compact
+          title={t('students.filteredEmptyTitle')}
+          description={t('students.filteredEmptyBody')}
+          action={{
+            label: t('students.clearFilter'),
+            onClick: () => setFilter('all'),
+          }}
+        />
       )}
     </div>
   );
@@ -206,7 +223,5 @@ const waitingLabel = (
   const days = student.submitted_at
     ? dayjs().diff(dayjs(student.submitted_at), 'day')
     : 0;
-  return days === 1
-    ? t('queue.waitingDays', { count: days })
-    : t('queue.waitingDaysOther', { count: days });
+  return t('queue.waitingDays', { count: days });
 };
