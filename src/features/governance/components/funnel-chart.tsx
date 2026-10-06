@@ -75,6 +75,7 @@ export const FunnelChart = ({
     <Card>
       <CardHeader>
         <CardTitle>{t('funnel.title')}</CardTitle>
+        <p className="text-xs text-muted-foreground">{t('funnel.question')}</p>
         <ul className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <li className="flex items-center gap-2">
             <span
