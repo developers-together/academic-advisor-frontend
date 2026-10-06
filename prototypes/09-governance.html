@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>09 · Governance: term, truth, direction — C-05, C-06, C-07, W-02</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  /* governance-only helpers (prototype chrome) */
+  button.chip { font-family: inherit; cursor: pointer; }
+  .kpi-value { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .funnel-row { display: grid; grid-template-columns: 110px 1fr 52px; gap: 8px; align-items: center; }
+  .funnel-bar { height: 16px; border-radius: 4px; border: 1px solid; }
+  .alert-row { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .alert-row:last-child { border-bottom: none; }
+  .delta-up { font-size: 12px; color: var(--warning); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .delta-down { font-size: 12px; color: var(--success); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .delta-flat { font-size: 12px; color: var(--muted-fg); white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">09 · Governance: term, truth, direction — C-05, C-06, C-07, W-02</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="overview">Dean Overview</button>
+    <button data-pane="advisors">Dean Advisors</button>
+    <button data-pane="analytics">Dean Analytics</button>
+    <button data-pane="scorecard">VP Scorecard</button>
+    <button data-pane="trends">VP Trends</button>
+    <button data-pane="alerts">Alerts</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ DEAN OVERVIEW — C-05 term + truth layer ============ -->
+<div class="pane active" data-pane="overview">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <div class="side-section">Dean · Engineering Applied School</div>
+    <a class="active">≡ Overview</a><a>👥 Advisors</a><a>📈 Analytics</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Engineering Applied School</span><span>·</span><span class="current">Overview</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">DA</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Overview</h1><p class="desc">Completion, speed, and load for your school</p></div>
+      </div>
+
+      <!-- C-05: global term control + freshness stamp on every governance pane -->
+      <div class="row wrap gap-3 sm muted">
+        <label class="row gap-2" style="white-space:nowrap;"><b style="color:var(--fg); font-weight:600;">Term</b>
+          <select class="input" style="width:auto; height:32px;"><option>2026F</option><option>2026S</option><option>2025F</option></select>
+        </label>
+        <span>·</span><span>compared with <b style="color:var(--fg);">2025F</b></span>
+        <span>·</span><span>Data as of 05 Oct, 14:00</span>
+        <button class="btn outline sm" style="height:32px;">↻ Refresh</button>
+      </div>
+
+      <!-- KPI row: value + unit + delta versus the comparison term -->
+      <div class="grid-5">
+        <div class="card col gap-1">
+          <span class="eyebrow">Completion</span>
+          <span class="kpi-value">62<span class="sm muted" style="font-weight:500;">%</span></span>
+          <span class="row gap-2 wrap"><span class="chip destructive">▼ 3 pts</span><span class="xs muted">vs 65% in 2025F</span></span>
+        </div>
+        <div class="card col gap-1">
+          <span class="eyebrow">Median decision</span>
+          <span class="kpi-value">26<span class="sm muted" style="font-weight:500;"> h median decision</span></span>
+          <span class="row gap-2 wrap"><span class="chip destructive">▲ 2 h</span><span class="xs muted">vs 24 h in 2025F</span></span>
+        </div>
+        <div class="card col gap-1">
+          <span class="eyebrow">Aging</span>
+          <span class="kpi-value">29<span class="sm muted" style="font-weight:500;"> plans aging</span></span>
+          <span class="row gap-2 wrap"><span class="chip success">▼ 3</span><span class="xs muted">was 32 in 2025F</span></span>
+        </div>
+        <div class="card col gap-1">
+          <span class="eyebrow">Caseload</span>
+          <span class="kpi-value">980<span class="sm muted" style="font-weight:500;"> plans</span></span>
+          <span class="row gap-2 wrap"><span class="chip neutral">▲ 40</span><span class="xs muted">vs 940 in 2025F</span></span>
+        </div>
+        <div class="card col gap-1">
+          <span class="eyebrow">Approved</span>
+          <span class="kpi-value">610<span class="sm muted" style="font-weight:500;"> plans</span></span>
+          <span class="row gap-2 wrap"><span class="chip success">▲ 25</span><span class="xs muted">vs 585 in 2025F</span></span>
+        </div>
+      </div>
+
+      <!-- D-17 fix: the bottleneck banner is a link through to the flagged unit -->
+      <a class="banner warning" href="#" style="color:var(--fg); align-items:center;">
+        <span class="b-icon">!</span>
+        <span style="flex:1;">Design &amp; Production has the lowest completion this term (58%, down 4 pts).</span>
+        <span style="font-weight:600; white-space:nowrap;">Open its advisors →</span>
+      </a>
+
+      <!-- funnel: where plans stall -->
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <h2>Where do plans stall this term?</h2>
+          <span class="xs muted">Term 2026F · counts in plans</span>
+        </div>
+        <div class="col gap-2">
+          <div class="funnel-row"><span class="xs muted">Draft</span><span class="funnel-bar" style="width:100%; background:var(--state-draft-bg); border-color:var(--state-draft-border);"></span><span class="num xs" style="text-align:end;">980</span></div>
+          <div class="funnel-row"><span class="xs muted">Submitted</span><span class="funnel-bar" style="width:65%; background:var(--state-submitted-bg); border-color:var(--state-submitted-border);"></span><span class="num xs" style="text-align:end;">640</span></div>
+          <div class="funnel-row"><span class="xs muted">Under review</span><span class="funnel-bar" style="width:21%; background:var(--state-review-bg); border-color:var(--state-review-border);"></span><span class="num xs" style="text-align:end;">210</span></div>
+          <div class="funnel-row"><span class="xs muted">Approved</span><span class="funnel-bar" style="width:62%; background:var(--state-approved-bg); border-color:var(--state-approved-border);"></span><span class="num xs" style="text-align:end;">610</span></div>
+          <div class="funnel-row"><span class="xs muted">Closed</span><span class="funnel-bar" style="width:62%; background:var(--muted); border-color:var(--border);"></span><span class="num xs" style="text-align:end;">610</span></div>
+        </div>
+        <p class="xs muted">Draft and Submitted are term totals. Under review is a live count. Approved and Closed are cumulative.</p>
+      </div>
+
+      <!-- sub-unit cards: quartile tints via chips, never crimson -->
+      <div class="grid-3">
+        <div class="card col gap-2">
+          <div class="row between"><h3>Computer &amp; Systems</h3><span class="chip success">▲ 2 pts</span></div>
+          <span class="kpi-value">66<span class="sm muted" style="font-weight:500;">%</span></span>
+          <span class="xs muted">Top quartile · 4 plans aging</span>
+          <a href="#" class="xs" style="font-weight:600;">Open advisors →</a>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>Mechanical Power</h3><span class="chip warning">▼ 1 pt</span></div>
+          <span class="kpi-value">63<span class="sm muted" style="font-weight:500;">%</span></span>
+          <span class="xs muted">Upper middle · 6 plans aging</span>
+          <a href="#" class="xs" style="font-weight:600;">Open advisors →</a>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>Electronics</h3><span class="chip warning">▼ 3 pts</span></div>
+          <span class="kpi-value">61<span class="sm muted" style="font-weight:500;">%</span></span>
+          <span class="xs muted">Lower middle · 8 plans aging</span>
+          <a href="#" class="xs" style="font-weight:600;">Open advisors →</a>
+        </div>
+        <div class="card col gap-2">
+          <div class="row between"><h3>Architecture</h3><span class="chip destructive">▼ 2 pts</span></div>
+          <span class="kpi-value">59<span class="sm muted" style="font-weight:500;">%</span></span>
+          <span class="xs muted">Bottom quartile · 7 plans aging</span>
+          <a href="#" class="xs" style="font-weight:600;">Open advisors →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ DEAN ADVISORS — D-22 precision: units, grouping, quartiles ============ -->
+<div class="pane" data-pane="advisors">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <div class="side-section">Dean · Engineering Applied School</div>
+    <a>≡ Overview</a><a class="active">👥 Advisors</a><a>📈 Analytics</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Engineering Applied School</span><span>·</span><span class="current">Advisors</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">DA</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Advisors</h1><p class="desc">Team detail behind the overview aggregates</p></div>
+      </div>
+
+      <div class="row wrap gap-3 sm muted">
+        <label class="row gap-2" style="white-space:nowrap;"><b style="color:var(--fg); font-weight:600;">Term</b>
+          <select class="input" style="width:auto; height:32px;"><option>2026F</option><option>2026S</option><option>2025F</option></select>
+        </label>
+        <span>·</span><span>compared with <b style="color:var(--fg);">2025F</b></span>
+        <span>·</span><span>Data as of 05 Oct, 14:00</span>
+        <button class="btn outline sm" style="height:32px;">↻ Refresh</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Advisor</th><th class="num">Caseload</th><th class="num">Queue</th>
+              <th class="num">Median decision</th><th class="num">Aging</th><th class="num">Completion</th><th style="width:90px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="7" style="background:var(--muted); font-weight:600;">Electronics Engineering <span class="xs muted" style="font-weight:500;">· 61% completion ▼ 3 pts</span></td></tr>
+            <tr tabindex="0">
+              <td><b>Nadia Sherif</b></td>
+              <td class="num">42</td><td class="num">6</td>
+              <td class="num">24 h</td><td class="num">2</td>
+              <td class="num"><span class="chip warning">68%</span></td>
+              <td class="num"><button class="btn ghost sm">Details</button></td>
+            </tr>
+            <tr tabindex="0">
+              <td><b>Omar Fathy</b></td>
+              <td class="num">38</td><td class="num">5</td>
+              <td class="num"><b style="color:var(--warning);">31 h</b></td>
+              <td class="num"><b style="color:var(--warning);">5</b></td>
+              <td class="num"><span class="chip destructive">57%</span></td>
+              <td class="num"><button class="btn ghost sm">Details</button></td>
+            </tr>
+            <tr tabindex="0">
+              <td><b>Sara Adel</b></td>
+              <td class="num">45</td><td class="num">3</td>
+              <td class="num">22 h</td><td class="num">1</td>
+              <td class="num"><span class="chip destructive">60%</span></td>
+              <td class="num"><button class="btn ghost sm">Details</button></td>
+            </tr>
+            <tr><td colspan="7" style="background:var(--muted); font-weight:600;">Computer &amp; Systems Engineering <span class="xs muted" style="font-weight:500;">· 66% completion ▲ 2 pts</span></td></tr>
+            <tr tabindex="0">
+              <td><b>Karim Mansour</b></td>
+              <td class="num">51</td><td class="num">6</td>
+              <td class="num">27 h</td><td class="num">4</td>
+              <td class="num"><span class="chip warning">62%</span></td>
+              <td class="num"><button class="btn ghost sm">Details</button></td>
+            </tr>
+            <tr tabindex="0">
+              <td><b>Lina Habib</b></td>
+              <td class="num">36</td><td class="num">3</td>
+              <td class="num">19 h</td><td class="num">0</td>
+              <td class="num"><span class="chip success">70%</span></td>
+              <td class="num"><button class="btn ghost sm">Details</button></td>
+            </tr>
+            <tr>
+              <td><b>All shown advisors</b> <span class="xs muted">average</span></td>
+              <td class="num"><b>212</b></td><td class="num"><b>23</b></td>
+              <td class="num"><b>25 h</b></td><td class="num"><b>12</b></td>
+              <td class="num"><b>63%</b></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="sm muted">Completion = approved ÷ caseload this term. Median in hours. Chips mark quartile: success top, warning middle, destructive bottom. Bold marks outliers against the team.</p>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ DEAN ANALYTICS — C-06: three metrics, straight lines, text alternative ============ -->
+<div class="pane" data-pane="analytics">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <div class="side-section">Dean · Engineering Applied School</div>
+    <a>≡ Overview</a><a>👥 Advisors</a><a class="active">📈 Analytics</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Engineering Applied School</span><span>·</span><span class="current">Analytics</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">DA</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Analytics</h1><p class="desc">Metric trend across the term, against the prior term</p></div>
+      </div>
+
+      <div class="row wrap gap-3 sm muted">
+        <label class="row gap-2" style="white-space:nowrap;"><b style="color:var(--fg); font-weight:600;">Term</b>
+          <select class="input" style="width:auto; height:32px;"><option>2026F</option><option>2026S</option><option>2025F</option></select>
+        </label>
+        <span>·</span><span>compared with <b style="color:var(--fg);">2025F</b></span>
+        <span>·</span><span>Data as of 05 Oct, 14:00</span>
+        <button class="btn outline sm" style="height:32px;">↻ Refresh</button>
+      </div>
+
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <!-- metric switcher: D-18 fix, three metrics -->
+          <div class="tabs">
+            <button class="tab active">Completion</button>
+            <button class="tab">Median decision time</button>
+            <button class="tab">Aging</button>
+          </div>
+          <div class="row gap-4">
+            <span class="swatch"><i style="background:#2563eb;"></i> 2026F (partial term)</span>
+            <span class="swatch"><i style="background:#64748b;"></i> 2025F</span>
+          </div>
+        </div>
+
+        <!-- straight-segment SVG lines, no splines -->
+        <svg viewBox="0 0 560 232" role="img" aria-label="Completion by week, 2026F against 2025F" style="width:100%; height:auto;">
+          <line x1="52" y1="95" x2="552" y2="95" stroke="#e2e8f0" />
+          <line x1="52" y1="130" x2="552" y2="130" stroke="#e2e8f0" />
+          <line x1="52" y1="165" x2="552" y2="165" stroke="#e2e8f0" />
+          <line x1="52" y1="200" x2="552" y2="200" stroke="#cbd5e1" />
+          <text x="44" y="99" text-anchor="end" font-size="10" fill="#64748b">70%</text>
+          <text x="44" y="134" text-anchor="end" font-size="10" fill="#64748b">65%</text>
+          <text x="44" y="169" text-anchor="end" font-size="10" fill="#64748b">60%</text>
+          <text x="44" y="204" text-anchor="end" font-size="10" fill="#64748b">55%</text>
+          <polyline fill="none" stroke="#64748b" stroke-width="2" points="60,179 114,172 168,165 222,158 276,151 330,144 384,137 438,137 492,130 546,130" />
+          <polyline fill="none" stroke="#2563eb" stroke-width="2" points="60,186 114,179 168,172 222,165 276,158 330,151 384,151" />
+          <circle cx="384" cy="151" r="4" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+          <text x="60" y="222" text-anchor="middle" font-size="10" fill="#64748b">W1</text>
+          <text x="114" y="222" text-anchor="middle" font-size="10" fill="#64748b">W2</text>
+          <text x="168" y="222" text-anchor="middle" font-size="10" fill="#64748b">W3</text>
+          <text x="222" y="222" text-anchor="middle" font-size="10" fill="#64748b">W4</text>
+          <text x="276" y="222" text-anchor="middle" font-size="10" fill="#64748b">W5</text>
+          <text x="330" y="222" text-anchor="middle" font-size="10" fill="#64748b">W6</text>
+          <text x="384" y="222" text-anchor="middle" font-size="10" fill="#64748b">W7</text>
+          <text x="438" y="222" text-anchor="middle" font-size="10" fill="#94a3b8">W8</text>
+          <text x="492" y="222" text-anchor="middle" font-size="10" fill="#94a3b8">W9</text>
+          <text x="546" y="222" text-anchor="middle" font-size="10" fill="#94a3b8">W10</text>
+        </svg>
+        <p class="xs muted">Weekly completion inside the term. Straight segments only, no smoothing. The hollow point marks today; weeks 8 to 10 have no data yet.</p>
+
+        <!-- department comparison: D-18 fix -->
+        <div class="row wrap gap-2">
+          <span class="section-title" style="margin:0;">Departments</span>
+          <button class="chip neutral">CSE</button>
+          <button class="chip neutral">EE</button>
+          <button class="chip info">✓ Electronics</button>
+          <button class="chip info">✓ Mechatronics</button>
+        </div>
+
+        <!-- required text alternative: D-18 fix -->
+        <p class="xs muted">Table alternative: 2024S 61% · 2024F 59% · 2025S 60% · 2025F 65% · 2026F 62% (partial term)</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ VP SCORECARD — C-07: deltas, sparklines, inline drill ============ -->
+<div class="pane" data-pane="scorecard">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <div class="side-section">VP · Academic Affairs</div>
+    <a>≡ Overview</a><a class="active">🏛 Faculties</a><a>📈 Trends</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Academic Affairs</span><span>·</span><span class="current">Faculties</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">3</span></button>
+        <button class="avatar">VP</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Faculties</h1><p class="desc">All faculties compared with 2025F · click a row to drill</p></div>
+      </div>
+
+      <div class="row wrap gap-3 sm muted">
+        <label class="row gap-2" style="white-space:nowrap;"><b style="color:var(--fg); font-weight:600;">Term</b>
+          <select class="input" style="width:auto; height:32px;"><option>2026F</option><option>2026S</option><option>2025F</option></select>
+        </label>
+        <span>·</span><span>compared with <b style="color:var(--fg);">2025F</b></span>
+        <span>·</span><span>Data as of 05 Oct, 14:00</span>
+        <button class="btn outline sm" style="height:32px;">↻ Refresh</button>
+      </div>
+
+      <!-- D-19 fix: the drill state lives in a real breadcrumb -->
+      <div class="crumbs"><span>University</span><span>›</span><span class="current">Mechanical Engineering</span></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Faculty</th><th class="num">Caseload</th><th class="num">Approved</th>
+              <th class="num">Completion</th><th class="num">Median</th><th class="num">Aging</th>
+              <th style="width:64px; text-align:center;">Last 6 terms</th><th style="width:36px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="clickable" tabindex="0">
+              <td><b>Civil Engineering</b></td>
+              <td class="num">900</td><td class="num">560</td>
+              <td class="num">62% <span class="chip success">▲ 2 pts</span></td>
+              <td class="num">27 h <span class="delta-up">▲ 1 h</span></td>
+              <td class="num">84 <span class="delta-up">▲ 6</span></td>
+              <td style="text-align:center;"><svg class="spark" width="40" height="20" viewBox="0 0 40 20" aria-hidden="true"><polyline stroke="#2563eb" points="2,14 9,13 16,12 23,11 30,10 38,7"/></svg></td>
+              <td class="num muted">▸</td>
+            </tr>
+            <tr class="clickable" tabindex="0" style="background:var(--muted);">
+              <td><b>Mechanical Engineering</b></td>
+              <td class="num"><b>820</b></td><td class="num"><b>480</b></td>
+              <td class="num"><b>58%</b> <span class="chip destructive">▼ 4 pts</span></td>
+              <td class="num">31 h <span class="delta-up">▲ 3 h</span></td>
+              <td class="num">121 <span class="delta-up">▲ 18</span></td>
+              <td style="text-align:center;"><svg class="spark" width="40" height="20" viewBox="0 0 40 20" aria-hidden="true"><polyline stroke="#2563eb" points="2,7 9,9 16,10 23,12 30,14 38,16"/></svg></td>
+              <td class="num"><b>▾</b></td>
+            </tr>
+            <tr style="background:#f8fafc;">
+              <td style="padding-left:32px;"><span class="muted">↳</span> Mechanical Power</td>
+              <td class="num">320</td><td class="num">196</td>
+              <td class="num">61% <span class="chip destructive">▼ 2 pts</span></td>
+              <td class="num">29 h <span class="delta-up">▲ 2 h</span></td>
+              <td class="num">44 <span class="delta-up">▲ 5</span></td>
+              <td></td><td></td>
+            </tr>
+            <tr style="background:#f8fafc;">
+              <td style="padding-left:32px;"><span class="muted">↳</span> Design &amp; Production</td>
+              <td class="num">260</td><td class="num">150</td>
+              <td class="num">58% <span class="chip destructive">▼ 4 pts</span></td>
+              <td class="num">33 h <span class="delta-up">▲ 4 h</span></td>
+              <td class="num">39 <span class="delta-up">▲ 7</span></td>
+              <td></td><td></td>
+            </tr>
+            <tr style="background:#f8fafc;">
+              <td style="padding-left:32px;"><span class="muted">↳</span> Mechatronics</td>
+              <td class="num">240</td><td class="num">134</td>
+              <td class="num">56% <span class="chip destructive">▼ 5 pts</span></td>
+              <td class="num">30 h <span class="delta-up">▲ 3 h</span></td>
+              <td class="num">38 <span class="delta-up">▲ 6</span></td>
+              <td></td><td></td>
+            </tr>
+            <tr class="clickable" tabindex="0">
+              <td><b>Electrical Engineering</b></td>
+              <td class="num">760</td><td class="num">494</td>
+              <td class="num">65% <span class="chip success">▲ 1 pt</span></td>
+              <td class="num">25 h <span class="delta-down">▼ 1 h</span></td>
+              <td class="num">70 <span class="delta-down">▼ 4</span></td>
+              <td style="text-align:center;"><svg class="spark" width="40" height="20" viewBox="0 0 40 20" aria-hidden="true"><polyline stroke="#2563eb" points="2,12 9,12 16,11 23,11 30,10 38,9"/></svg></td>
+              <td class="num muted">▸</td>
+            </tr>
+            <tr class="clickable" tabindex="0">
+              <td><b>Computer &amp; Systems</b></td>
+              <td class="num">980</td><td class="num">647</td>
+              <td class="num">66% <span class="chip success">▲ 3 pts</span></td>
+              <td class="num">22 h <span class="delta-down">▼ 2 h</span></td>
+              <td class="num">55 <span class="delta-down">▼ 8</span></td>
+              <td style="text-align:center;"><svg class="spark" width="40" height="20" viewBox="0 0 40 20" aria-hidden="true"><polyline stroke="#2563eb" points="2,15 9,14 16,13 23,12 30,9 38,6"/></svg></td>
+              <td class="num muted">▸</td>
+            </tr>
+            <tr class="clickable" tabindex="0">
+              <td><b>Architecture</b></td>
+              <td class="num">540</td><td class="num">324</td>
+              <td class="num">60% <span class="chip destructive">▼ 1 pt</span></td>
+              <td class="num">29 h <span class="delta-up">▲ 2 h</span></td>
+              <td class="num">63 <span class="delta-up">▲ 2</span></td>
+              <td style="text-align:center;"><svg class="spark" width="40" height="20" viewBox="0 0 40 20" aria-hidden="true"><polyline stroke="#2563eb" points="2,10 9,11 16,11 23,12 30,12 38,13"/></svg></td>
+              <td class="num muted">▸</td>
+            </tr>
+            <tr class="clickable" tabindex="0">
+              <td><b>Mining</b></td>
+              <td class="num">410</td><td class="num">259</td>
+              <td class="num">63% <span class="chip success">▲ 2 pts</span></td>
+              <td class="num">26 h <span class="delta-flat">0 h</span></td>
+              <td class="num">41 <span class="delta-down">▼ 2</span></td>
+              <td style="text-align:center;"><svg class="spark" width="40" height="20" viewBox="0 0 40 20" aria-hidden="true"><polyline stroke="#2563eb" points="2,10 9,12 16,13 23,11 30,10 38,9"/></svg></td>
+              <td class="num muted">▸</td>
+            </tr>
+            <tr class="clickable" tabindex="0">
+              <td><b>Petroleum</b></td>
+              <td class="num">380</td><td class="num">224</td>
+              <td class="num">59% <span class="chip destructive">▼ 3 pts</span></td>
+              <td class="num">30 h <span class="delta-up">▲ 4 h</span></td>
+              <td class="num">58 <span class="delta-up">▲ 5</span></td>
+              <td style="text-align:center;"><svg class="spark" width="40" height="20" viewBox="0 0 40 20" aria-hidden="true"><polyline stroke="#2563eb" points="2,8 9,9 16,11 23,12 30,14 38,15"/></svg></td>
+              <td class="num muted">▸</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="sm muted">Click a faculty to drill to its departments. Stops at Department (PR-15).</p>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ VP TRENDS — C-07/D-20: metric switcher, reference line, partial-term dash ============ -->
+<div class="pane" data-pane="trends">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <div class="side-section">VP · Academic Affairs</div>
+    <a>≡ Overview</a><a>🏛 Faculties</a><a class="active">📈 Trends</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Academic Affairs</span><span>·</span><span class="current">Trends</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">3</span></button>
+        <button class="avatar">VP</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Trends</h1><p class="desc">Six-term view across faculties, against the university average</p></div>
+      </div>
+
+      <div class="row wrap gap-3 sm muted">
+        <label class="row gap-2" style="white-space:nowrap;"><b style="color:var(--fg); font-weight:600;">Term</b>
+          <select class="input" style="width:auto; height:32px;"><option>2026F</option><option>2026S</option><option>2025F</option></select>
+        </label>
+        <span>·</span><span>compared with <b style="color:var(--fg);">2025F</b></span>
+        <span>·</span><span>Data as of 05 Oct, 14:00</span>
+        <button class="btn outline sm" style="height:32px;">↻ Refresh</button>
+      </div>
+
+      <div class="card col gap-3">
+        <div class="row between wrap gap-2">
+          <div class="tabs">
+            <button class="tab active">Completion</button>
+            <button class="tab">Median decision time</button>
+            <button class="tab">Aging</button>
+          </div>
+          <div class="row gap-4 wrap">
+            <span class="swatch"><i style="background:#d97706;"></i> Mechanical</span>
+            <span class="swatch"><i style="background:#7c3aed;"></i> Computer &amp; Systems</span>
+            <span class="swatch" style="opacity:0.45;"><i style="background:#2563eb;"></i> Civil</span>
+            <span class="swatch" style="opacity:0.45;"><i style="background:#0d9488;"></i> Electrical</span>
+            <span class="swatch" style="opacity:0.45;"><i style="background:#64748b;"></i> Architecture</span>
+            <span class="swatch"><i style="background:#0f172a; height:0; border-top:2px dashed #0f172a; border-radius:0;"></i> University average</span>
+          </div>
+        </div>
+
+        <div class="row wrap gap-2">
+          <span class="section-title" style="margin:0;">Faculties</span>
+          <button class="chip neutral">Civil</button>
+          <button class="chip neutral">Electrical</button>
+          <button class="chip info">✓ Mechanical</button>
+          <button class="chip info">✓ Computer &amp; Systems</button>
+          <button class="chip neutral">Architecture</button>
+          <span class="xs muted">Click a faculty to isolate its line; unselected lines stay ghosted.</span>
+        </div>
+
+        <!-- straight polylines, categorical palette, dashed reference line, hollow partial-term ends -->
+        <svg viewBox="0 0 640 244" role="img" aria-label="Completion by faculty, 2024S to 2026F" style="width:100%; height:auto;">
+          <line x1="52" y1="100" x2="628" y2="100" stroke="#e2e8f0" />
+          <line x1="52" y1="140" x2="628" y2="140" stroke="#e2e8f0" />
+          <line x1="52" y1="180" x2="628" y2="180" stroke="#e2e8f0" />
+          <line x1="52" y1="220" x2="628" y2="220" stroke="#cbd5e1" />
+          <text x="44" y="104" text-anchor="end" font-size="10" fill="#64748b">70%</text>
+          <text x="44" y="144" text-anchor="end" font-size="10" fill="#64748b">65%</text>
+          <text x="44" y="184" text-anchor="end" font-size="10" fill="#64748b">60%</text>
+          <text x="44" y="224" text-anchor="end" font-size="10" fill="#64748b">55%</text>
+          <polyline fill="none" stroke="#2563eb" stroke-width="2" opacity="0.18" points="60,180 172,172 284,172 396,164 508,164 620,148" />
+          <polyline fill="none" stroke="#0d9488" stroke-width="2" opacity="0.18" points="60,156 172,148 284,148 396,148 508,140 620,132" />
+          <polyline fill="none" stroke="#64748b" stroke-width="2" opacity="0.18" points="60,164 172,172 284,172 396,180 508,180 620,188" />
+          <polyline fill="none" stroke="#d97706" stroke-width="2.5" points="60,156 172,164 284,172 396,180 508,188 620,196" />
+          <polyline fill="none" stroke="#7c3aed" stroke-width="2.5" points="60,172 172,164 284,156 396,156 508,140 620,132" />
+          <polyline fill="none" stroke="#0f172a" stroke-width="1.5" stroke-dasharray="5 4" points="60,164 172,164 284,164 396,164 508,164 620,156" />
+          <line x1="620" y1="88" x2="620" y2="220" stroke="#94a3b8" stroke-dasharray="4 4" />
+          <circle cx="620" cy="196" r="4" fill="#ffffff" stroke="#d97706" stroke-width="2" />
+          <circle cx="620" cy="132" r="4" fill="#ffffff" stroke="#7c3aed" stroke-width="2" />
+          <text x="614" y="78" text-anchor="end" font-size="11" fill="#64748b">2026F · partial term</text>
+          <text x="60" y="240" text-anchor="middle" font-size="10" fill="#64748b">2024S</text>
+          <text x="172" y="240" text-anchor="middle" font-size="10" fill="#64748b">2024F</text>
+          <text x="284" y="240" text-anchor="middle" font-size="10" fill="#64748b">2025S</text>
+          <text x="396" y="240" text-anchor="middle" font-size="10" fill="#64748b">2025F</text>
+          <text x="508" y="240" text-anchor="middle" font-size="10" fill="#64748b">2026S</text>
+          <text x="616" y="240" text-anchor="middle" font-size="10" fill="#64748b">2026F</text>
+        </svg>
+
+        <!-- required text alternative: D-20 fix -->
+        <p class="xs muted">Table alternative, completion %, 2024S to 2026F: Civil 60, 61, 61, 62, 62, 64 · Electrical 63, 64, 64, 64, 65, 66 · Mechanical 63, 62, 61, 60, 59, 58 (partial) · Computer &amp; Systems 61, 62, 63, 63, 65, 66 · Architecture 62, 61, 61, 60, 60, 59 · University average 62, 62, 62, 62, 62, 63.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ ALERTS — W-02: governance alert taxonomy, per-department thresholds ============ -->
+<div class="pane" data-pane="alerts">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <div class="side-section">Dean · Engineering Applied School</div>
+    <a>≡ Overview</a><a>👥 Advisors</a><a>📈 Analytics</a>
+    <div class="side-section">More</div>
+    <a class="active">🔔 Notifications</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Engineering Applied School</span><span>·</span><span class="current">Alerts</span></div>
+      <div class="row gap-1">
+        <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+        <button class="icon-btn">🔔<span class="dot-count">2</span></button>
+        <button class="avatar">DA</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>Alerts</h1><p class="desc">Thresholds that raise notifications when breached</p></div>
+      </div>
+
+      <div class="row wrap gap-3 sm muted">
+        <label class="row gap-2" style="white-space:nowrap;"><b style="color:var(--fg); font-weight:600;">Term</b>
+          <select class="input" style="width:auto; height:32px;"><option>2026F</option><option>2026S</option><option>2025F</option></select>
+        </label>
+        <span>·</span><span>compared with <b style="color:var(--fg);">2025F</b></span>
+        <span>·</span><span>Data as of 05 Oct, 14:00</span>
+        <button class="btn outline sm" style="height:32px;">↻ Refresh</button>
+      </div>
+
+      <div class="card col gap-2">
+        <h2>Alerts and watchlists</h2>
+
+        <div class="alert-row">
+          <div class="col gap-1" style="flex:1;">
+            <span>Completion drops below 60% → notify dean</span>
+            <span class="xs muted">Every department · checked nightly</span>
+          </div>
+          <span class="chip warning">Warning</span>
+          <button class="btn ghost sm">Edit</button>
+        </div>
+        <div class="alert-row">
+          <div class="col gap-1" style="flex:1;">
+            <span>Median decision time above 48h → notify dean</span>
+            <span class="xs muted">Every department · checked nightly</span>
+          </div>
+          <span class="chip warning">Warning</span>
+          <button class="btn ghost sm">Edit</button>
+        </div>
+        <div class="alert-row">
+          <div class="col gap-1" style="flex:1;">
+            <span>Faculty aging above 120 plans → notify VP</span>
+            <span class="xs muted">Each faculty · checked nightly</span>
+          </div>
+          <span class="chip info">Info</span>
+          <button class="btn ghost sm">Edit</button>
+        </div>
+
+        <div class="menu-sep" style="margin:8px 0;"></div>
+        <span class="section-title">Recent breaches</span>
+        <div class="alert-row">
+          <span class="xs muted num" style="width:110px; flex:none;">05 Oct, 09:12</span>
+          <div class="col gap-1" style="flex:1;">
+            <span>Design &amp; Production · completion 58%, below 60%</span>
+          </div>
+          <a href="#" class="xs" style="font-weight:600;">Open advisors →</a>
+        </div>
+        <div class="alert-row">
+          <span class="xs muted num" style="width:110px; flex:none;">04 Oct, 17:40</span>
+          <div class="col gap-1" style="flex:1;">
+            <span>Mechanical Engineering · aging 121 plans, above 120</span>
+          </div>
+          <a href="#" class="xs" style="font-weight:600;">Open advisors →</a>
+        </div>
+      </div>
+      <p class="sm muted">A breach raises a notification to the named audience, tints the KPI amber on Overview, and adds sort weight (W-02).</p>
+
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
