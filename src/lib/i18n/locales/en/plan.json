@@ -21,7 +21,7 @@
       "returned": "Your advisor returned your plan with comments.",
       "approved": "Approved. Register your courses in the SIS.",
       "expired": "The registration window closed before your plan was approved.",
-      "closed": "This term's plan cycle is closed.",
+      "closed": "This term’s plan cycle is closed.",
       "withdrawn": "Your plan was withdrawn for this term.",
       "discarded": "Your previous plan was discarded."
     },
@@ -173,9 +173,7 @@
   "myAdvisor": {
     "title": "My Advisor",
     "context": "Your assigned advisor, their office hours, and your meetings.",
-    "meetingsTitle": "Meetings",
-    "meetingsEmptyTitle": "No meetings yet",
-    "meetingsEmptyBody": "Meetings with your advisor appear here once they are scheduled."
+    "meetingsTitle": "Meetings"
   },
   "account": {
     "title": "Account",
