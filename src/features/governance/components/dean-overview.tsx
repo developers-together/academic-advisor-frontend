@@ -2,18 +2,38 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router';
 
+import { Banner } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiCard } from '@/components/ui/kpi-card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUser } from '@/lib/auth';
-import type { GovernanceGrouping, GovernanceMetrics } from '@/types/domain';
+import type {
+  GovernanceGrouping,
+  GovernanceMetrics,
+  GovernanceNode,
+} from '@/types/domain';
 
 import { useGovernanceDashboard } from '../api/get-governance-dashboard';
-import { scopedNodeOf } from '../utils/governance-tree';
+import { governanceNodeName, scopedNodeOf } from '../utils/governance-tree';
 
 import { FunnelChart } from './funnel-chart';
 import { GovernanceChildGrid } from './governance-child-grid';
 import { GovernanceQueryStates } from './governance-query-states';
+
+const bottleneckOf = (node: GovernanceNode): GovernanceNode | null => {
+  const rated = node.children.filter(
+    (child) => child.metrics.completion_rate !== null,
+  );
+  if (rated.length === 0) {
+    return null;
+  }
+  return rated.reduce((worst, child) =>
+    (child.metrics.completion_rate ?? 100) <
+    (worst.metrics.completion_rate ?? 100)
+      ? child
+      : worst,
+  );
+};
 
 const CompletionCard = ({
   metrics,
@@ -82,7 +102,7 @@ const kpiCardsOf = (
 ];
 
 export const DeanOverview = () => {
-  const { t } = useTranslation('governance');
+  const { t, i18n } = useTranslation('governance');
   const user = useUser();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -124,8 +144,23 @@ export const DeanOverview = () => {
       >
         {(root) => {
           const scoped = scopedNodeOf(root, searchParams.get('node'));
+          const bottleneck = bottleneckOf(scoped);
           return (
             <div className="space-y-6">
+              {bottleneck && (
+                <Banner variant="warning" title={t('dean.bottleneck.title')}>
+                  <p>
+                    {t('dean.bottleneck.line', {
+                      name: governanceNodeName(
+                        bottleneck,
+                        i18n.language,
+                        t(`levels.${bottleneck.level}`),
+                      ),
+                      rate: bottleneck.metrics.completion_rate,
+                    })}
+                  </p>
+                </Banner>
+              )}
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
                 {kpiCardsOf(scoped.metrics, t)}
               </div>
