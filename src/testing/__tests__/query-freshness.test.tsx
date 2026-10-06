@@ -86,7 +86,7 @@ describe('settled per-family query freshness (acad-abl.13 rules 24-27)', () => {
       staleTime: 5 * minute,
     });
     expect(
-      getAdminStudentsQueryOptions({ search: '', perPage: 10 }),
+      getAdminStudentsQueryOptions({ search: '', perPage: 10, page: 1 }),
     ).toMatchObject({
       staleTime: 5 * minute,
     });
