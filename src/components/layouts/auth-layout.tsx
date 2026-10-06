@@ -53,7 +53,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
               <span className="text-lg font-semibold">{t('app.name')}</span>
             </div>
             <div className="rounded-lg border bg-card px-6 py-8">
-              <h1 className="mb-1 text-xl leading-tight font-semibold">
+              <h1 className="mb-1 text-2xl leading-tight font-semibold">
                 {title}
               </h1>
               {children}
@@ -77,7 +77,7 @@ const AuthLanguageToggle = () => {
       aria-label={t('topbar.language')}
       onClick={() => setLanguage(next)}
       className={cn(
-        'flex h-11 min-w-11 items-center justify-center rounded-md px-2 text-xs font-semibold uppercase',
+        'flex h-11 min-w-11 items-center justify-center rounded-md px-2 text-xs font-semibold tracking-wide uppercase',
         'hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden',
       )}
     >
