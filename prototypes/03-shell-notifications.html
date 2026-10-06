@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>03 · Shell, top bar, notifications — R-01, R-02</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  .anchor-wrap { position: relative; }
+  .anchor-wrap .popover { position: absolute; top: 52px; inset-inline-end: 0; z-index: 30; }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">03 · Shell, top bar, notifications — R-01, R-02, C-12, C-13</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="shell">Desktop shell</button>
+    <button data-pane="bell">Bell popover</button>
+    <button data-pane="avatar">Avatar menu</button>
+    <button data-pane="sheet">More sheet</button>
+    <button data-pane="mobile">Mobile</button>
+    <button data-pane="rtl">RTL sample</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ DESKTOP SHELL ============ -->
+<div class="pane active" data-pane="shell">
+  <div class="note" style="margin:16px 24px;"><b>R-01:</b> identity renders once, in the sidebar. The top bar carries page context
+  (breadcrumbs), search, bell, avatar. Theme and language toggles leave the top bar; they live in the avatar menu and Account.</div>
+  <div class="shell">
+    <aside class="side">
+      <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+      <a class="active">⌂ Home</a><a>▤ My Plan</a><a>🎓 Academic Record</a>
+      <a>💬 AI Advisor</a><a>👤 My Advisor</a>
+      <div class="side-section">More</div>
+      <a>🔔 Notifications</a><a>⚙ Account</a>
+      <div style="flex:1"></div>
+      <a style="color:var(--destructive);">↩ Sign out</a>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="crumbs"><span>Home</span></div>
+        <div class="row gap-1">
+          <button class="btn outline sm" style="height:36px;">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+          <button class="icon-btn">🔔<span class="dot-count">3</span></button>
+          <button class="avatar">SS</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="page-head">
+          <div><h1>Home</h1><p class="desc">Term 2026F</p></div>
+        </div>
+        <div class="grid-2">
+          <div class="card col gap-2"><h2>Plan health</h2><p class="sm muted">Your plan for 2026F is a draft. 6 of 12–18 credits planned.</p><a href="01-plan-health.html">See prototype 01</a></div>
+          <div class="card col gap-2"><h2>Where you stand</h2><p class="sm muted">CGPA 3.2 · 60 credits remaining. Full detail lives in Academic Record — this line links, it never restates the page.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BELL POPOVER ============ -->
+<div class="pane" data-pane="bell">
+  <div class="note" style="margin:16px 24px;"><b>R-02:</b> the bell opens recent items with per-item actions. Read model: dot plus title
+  weight in the info channel; the crimson border retires. The Home digest page-section is removed; one action banner carries the urgent item.</div>
+  <div class="content" style="max-width: 640px; margin: 0 auto;">
+    <div class="anchor-wrap">
+      <button class="icon-btn" style="border:1px solid var(--border);">🔔<span class="dot-count">3</span></button>
+      <div class="popover col" style="display:block; width: 420px; overflow:hidden;">
+        <div class="row between" style="padding:12px 16px; border-bottom:1px solid var(--border);">
+          <h3>Notifications</h3>
+          <button class="btn ghost sm">Mark all as read</button>
+        </div>
+        <div class="notif unread">
+          <span class="unread-dot"></span>
+          <span class="n-icon" style="background:var(--state-returned-bg); color:var(--state-returned-fg);">↩</span>
+          <div class="col gap-1" style="flex:1;">
+            <span class="n-title">Plan returned</span>
+            <span class="n-body">Amr Advisor returned your plan with feedback.</span>
+            <div class="row gap-2" style="margin-top:4px;">
+              <button class="btn primary sm">Review plan</button>
+              <button class="btn ghost sm">Dismiss</button>
+            </div>
+          </div>
+          <span class="n-time">20:20</span>
+        </div>
+        <div class="notif unread">
+          <span class="unread-dot"></span>
+          <span class="n-icon" style="background:var(--info-bg); color:var(--info);">🕐</span>
+          <div class="col gap-1" style="flex:1;">
+            <span class="n-title">Meeting proposal from Amr Advisor</span>
+            <span class="n-body">Two times proposed for Sun 12 Oct. Pick one to confirm.</span>
+            <div class="row gap-2" style="margin-top:4px;">
+              <button class="btn primary sm">Pick a time</button>
+            </div>
+          </div>
+          <span class="n-time">16:02</span>
+        </div>
+        <div class="notif unread">
+          <span class="unread-dot"></span>
+          <span class="n-icon" style="background:var(--success-bg); color:var(--success);">✓</span>
+          <div class="col gap-1" style="flex:1;">
+            <span class="n-title">Registration window opened</span>
+            <span class="n-body">Registration for 2026F is open until 16 Oct.</span>
+            <div class="row gap-2" style="margin-top:4px;">
+              <button class="btn outline sm">Open my plan</button>
+            </div>
+          </div>
+          <span class="n-time">Fri</span>
+        </div>
+        <div class="notif">
+          <span style="width:7px; flex:none;"></span>
+          <span class="n-icon" style="background:var(--muted); color:var(--muted-fg);">✓</span>
+          <div class="col gap-1" style="flex:1;">
+            <span class="n-title">Plan approved</span>
+            <span class="n-body">2025F plan approved. Registered in the SIS.</span>
+          </div>
+          <span class="n-time">03 Oct</span>
+        </div>
+        <div style="padding:10px 16px; border-top:1px solid var(--border); text-align:center;">
+          <a href="#">View all notifications</a>
+        </div>
+      </div>
+    </div>
+    <div class="card col gap-2" style="margin-top:24px;">
+      <h3>Home, after R-02</h3>
+      <p class="sm muted">The digest card is gone. In its place, at most one banner, driven by plan state:</p>
+      <div class="banner warning"><span class="b-icon">!</span>
+        <div class="row between" style="flex:1; gap:8px; flex-wrap:wrap;">
+          <span class="sm"><b>Your plan was returned.</b> Read the feedback and resubmit.</span>
+          <button class="btn primary sm">Review plan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ AVATAR MENU ============ -->
+<div class="pane" data-pane="avatar">
+  <div class="note" style="margin:16px 24px;"><b>R-01:</b> language and theme quick toggles move here;
+  Account keeps the full rows. One control, two homes, no third copy.</div>
+  <div class="content" style="max-width: 480px; margin: 0 auto;">
+    <div class="anchor-wrap">
+      <button class="avatar" style="width:40px; height:40px;">SS</button>
+      <div class="popover menu" style="display:block; position:absolute; top:52px; inset-inline-end:0;">
+        <div style="padding:10px 12px;">
+          <p style="font-weight:600;">Sara Student</p>
+          <p class="sm muted">student@ejust.edu.eg</p>
+        </div>
+        <div class="menu-sep"></div>
+        <a>👤 Account</a>
+        <a>🔔 Notifications</a>
+        <div class="menu-sep"></div>
+        <button>🌐 Language · English <span class="sm muted" style="margin-inline-start:auto;">العربية</span></button>
+        <button>☾ Theme · Light <span class="sm muted" style="margin-inline-start:auto;">Dark</span></button>
+        <div class="menu-sep"></div>
+        <button class="danger">↩ Sign out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MORE SHEET ============ -->
+<div class="pane" data-pane="sheet">
+  <div class="note" style="margin:16px 24px;"><b>DS-IA-02 / DS-N-03:</b> the More sheet is the single home for
+  secondary areas on mobile. The bottom nav always renders five real slots; the devtools button moves out of the way.</div>
+  <div class="phone" style="margin-top:16px;">
+    <div class="m-top"><b>More</b><button class="icon-btn">✕</button></div>
+    <div class="m-body" style="padding:8px;">
+      <a class="btn outline" style="justify-content:flex-start; height:48px;">🎓 Academic Record</a>
+      <a class="btn outline" style="justify-content:flex-start; height:48px;">🔔 Notifications</a>
+      <a class="btn outline" style="justify-content:flex-start; height:48px;">⚙ Account</a>
+      <div class="menu-sep" style="margin:8px 0;"></div>
+      <a class="btn outline" style="justify-content:flex-start; height:48px;">🌐 Language · العربية</a>
+      <a class="btn outline" style="justify-content:flex-start; height:48px;">☾ Theme · Dark</a>
+      <a class="btn outline" style="justify-content:flex-start; height:48px; color:var(--destructive);">↩ Sign out</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MOBILE ============ -->
+<div class="pane" data-pane="mobile">
+  <div class="phone" style="margin-top:16px;">
+    <div class="m-top">
+      <b>Home</b>
+      <div class="row gap-1">
+        <button class="icon-btn">🔔<span class="dot-count">3</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="m-body">
+      <div class="banner warning" style="padding:10px 12px;"><span class="b-icon">!</span>
+        <div class="col gap-1"><span class="sm" style="font-weight:600;">Your plan was returned.</span>
+        <button class="btn primary sm" style="align-self:flex-start;">Review plan</button></div>
+      </div>
+      <div class="card col gap-1" style="padding:14px;"><h3>Plan health</h3><p class="sm muted">6 of 12–18 credits · draft</p></div>
+      <div class="card col gap-1" style="padding:14px;"><h3>Where you stand</h3><p class="sm muted">CGPA 3.2 · 60 credits remaining</p></div>
+      <div class="card col gap-1" style="padding:14px;"><h3>Next meeting</h3><p class="sm muted">Sun 12 Oct, 10:00 · Building 3, Room 2140</p></div>
+    </div>
+    <div class="m-nav">
+      <a class="active">⌂<span>Home</span></a>
+      <a>▤<span>Plan</span></a>
+      <a>💬<span>AI</span></a>
+      <a>👤<span>Advisor</span></a>
+      <a>⋯<span>More</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RTL ============ -->
+<div class="pane" data-pane="rtl">
+  <div class="note" style="margin:16px 24px;"><b>DS-L:</b> same shell, mirrored. Cairo carries Arabic;
+  the sidebar sits inline-end; breadcrumbs flow right to left.</div>
+  <div class="shell" dir="rtl" lang="ar" style="font-family:'Cairo', sans-serif;">
+    <aside class="side">
+      <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+      <a class="active">الرئيسية</a><a>خطتي</a><a>سجلّي الأكاديمي</a>
+      <a>المستشار الذكي</a><a>مرشدي</a>
+      <div class="side-section">المزيد</div>
+      <a>الإشعارات</a><a>الحساب</a>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="crumbs"><span class="current">خطتي</span><span>·</span><span>فصل 2026F</span></div>
+        <div class="row gap-1">
+          <button class="btn outline sm" style="height:36px;">⌕&nbsp; بحث <span class="sm muted">⌘K</span></button>
+          <button class="icon-btn">🔔<span class="dot-count">٣</span></button>
+          <button class="avatar">سس</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="page-head">
+          <div><h1>خطتي</h1><p class="desc">فصل 2026F · خطة رسمية واحدة لكل فصل</p></div>
+          <span class="chip draft"><span class="dot"></span> مسودة</span>
+        </div>
+        <div class="card col gap-2"><h2>صحة الخطة</h2>
+          <p class="sm muted">تم التخطيط لـ ٦ من ١٢–١٨ ساعة معتمدة.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
