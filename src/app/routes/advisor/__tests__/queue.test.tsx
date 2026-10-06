@@ -378,7 +378,7 @@ test('ESC with a drafted reason survives through the discard confirm and empty c
   );
 });
 
-test('approve gate 422s render the destructive list and return stays available', async () => {
+test('approve gate 422s render the validation list in the drawer body and return stays available', async () => {
   const advisor = await createUser({ role: 'advisor' });
   await seedQueueStudent(advisor, {
     name: 'Lina Majors',
@@ -423,7 +423,7 @@ test('approve gate 422s render the destructive list and return stays available',
     ).getByRole('button', { name: 'Approve plan' }),
   );
 
-  expect(await screen.findByText('Approval is blocked')).toBeInTheDocument();
+  expect(await screen.findByText('Validation results')).toBeInTheDocument();
   expect(
     screen.getByText(
       'The course load is above the allowed limit for the term.',
