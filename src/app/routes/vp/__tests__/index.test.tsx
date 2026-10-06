@@ -223,7 +223,7 @@ test('export downloads governance-{term}.csv, shows the busy state, and toasts t
   clickSpy.mockRestore();
 });
 
-test('a 403 export renders the denied panel', async () => {
+test('a 403 export flags the denial and keeps the scorecard', async () => {
   seedGovernanceTree(universityTree());
 
   server.use(
@@ -240,9 +240,11 @@ test('a 403 export renders the denied panel', async () => {
 
   await user.click(await screen.findByRole('button', { name: 'Export CSV' }));
 
+  // A denied export keeps the scorecard on screen (design.md DP-10).
   expect(
-    await screen.findByText('This area is for Vice Presidents.'),
+    await screen.findByText('You do not have access to this content.'),
   ).toBeInTheDocument();
+  await vpSeesScorecard();
 });
 
 test('a 403 scorecard read renders the VP permission panel', async () => {
