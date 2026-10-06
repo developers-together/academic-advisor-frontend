@@ -83,7 +83,7 @@ const Shell = {
   layout(active, crumbs, viewHtml) {
     const me = Store.me();
     const unread = this.unread();
-    document.body.className = (Store.theme() === 'v5' ? 'v5 ' : '') + 'r-' + me.role;
+    document.body.className = (Store.theme() === 'v5' ? 'v5 ' : '') + (Store.s.dark ? 'dark ' : '') + 'r-' + me.role;
     return `<div class="shell">
       <aside class="side">${this.sideLinks(active)}</aside>
       <div class="main">
@@ -91,7 +91,8 @@ const Shell = {
           <div class="crumbs">${crumbs}</div>
           <div class="row gap-1">
             <button class="btn outline sm" style="height:36px;" title="Toggle the v5 theme (prototype control)" onclick="Store.setTheme(Store.theme() === 'v5' ? 'v4' : 'v5')">Theme · ${Store.theme() === 'v5' ? 'v5' : 'v4'}</button>
-            <button class="btn outline sm" style="height:36px;" onclick="Store.toast('Command palette ships with implementation (acad-bug).', 'info')">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
+            <button class="icon-btn" style="width:36px; height:36px;" title="Toggle dark mode" onclick="Store.setDark(!Store.s.dark)">${Store.s.dark ? '☀' : '☾'}</button>
+            <button class="btn outline sm" style="height:36px;" onclick="Palette.show()">⌕&nbsp; Search <span class="sm muted">⌘K</span></button>
             ${this.iconBell(unread)}
             ${this.iconAvatar()}
           </div>
@@ -153,7 +154,12 @@ const App = {
   render() {
     const root = document.getElementById('root');
     const me = Store.me();
-    if (!me) { root.innerHTML = Auth.view(); Auth.after(); return; }
+    if (!me) {
+      document.body.className = Store.s.dark ? 'dark' : '';
+      root.innerHTML = Auth.view();
+      Auth.after();
+      return;
+    }
     let route = this.current();
     const role = me.role;
     if (route === '/') route = HOME[role].slice(1);
@@ -173,8 +179,11 @@ const App = {
         `<a class="btn outline" href="${HOME[role]}">Go to your dashboard</a>`)}`);
       return;
     }
-    const trail = this.titles[route] || [view.title || 'Advisor'];
-    root.innerHTML = Shell.layout(route, UI.crumb(trail), view());
+    const html = view();
+    const trail = this.titles[route] || ['Advisor'];
+    root.innerHTML = Shell.layout(route, UI.crumb(trail), html) + Palette.view();
+    const input = document.getElementById('palette-input');
+    if (input && Palette.open) input.focus();
   },
 };
 
