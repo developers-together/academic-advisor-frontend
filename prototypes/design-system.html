@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Advisor Design System — living reference (v5.0)</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  body { background: var(--bg); }
+  .sw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .sw { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); }
+  .sw i { display: block; height: 48px; }
+  .sw div { padding: 6px 8px; font-size: 11px; line-height: 1.4; }
+  .sw code { font-size: 10px; }
+  .sec { margin-top: 32px; }
+  .sec > h2 { border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 14px; }
+  .type-row { display: flex; align-items: baseline; gap: 16px; padding: 8px 0; border-bottom: 1px dashed var(--border); }
+  .type-row .t-label { width: 210px; flex: none; font-size: 11px; color: var(--muted-fg); }
+  .dark-demo { background: #101216; border-radius: 10px; padding: 16px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .dark-demo .chip { border: 1px solid; }
+  body.v5 .demo-card { border-radius: 14px; }
+  .demo-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+</style>
+</head>
+<body class="v5">
+
+<div class="proto-bar">
+  <span class="p-title">Advisor Design System — living reference v5.0</span>
+  <a style="color:#fbbf24; font-size:12px; font-weight:600; cursor:pointer;" onclick="document.body.classList.toggle('v5')">Toggle v4/v5 tokens</a>
+  <a style="color:#a5b4fc; font-size:12px;" href="index.html">← hub</a>
+</div>
+
+<div class="content" style="max-width: 960px; margin: 0 auto;">
+
+  <div class="page-head"><div><h1>Advisor Design System</h1>
+    <p class="desc">Complete edition v5.0 · the document is DESIGN-SYSTEM.md · this page renders its tokens and components</p></div></div>
+
+  <!-- COLORS -->
+  <div class="sec">
+    <h2>1 · Color — brand, neutrals, status (light)</h2>
+    <div class="sw-grid">
+      <div class="sw"><i style="background:#8B0000"></i><div>primary<br /><code>#8B0000</code></div></div>
+      <div class="sw"><i style="background:#9B2731"></i><div>primary hover<br /><code>#9B2731</code></div></div>
+      <div class="sw"><i style="background:#F6F7F9; border-bottom:1px solid var(--border)"></i><div>canvas<br /><code>#F6F7F9</code></div></div>
+      <div class="sw"><i style="background:#FFFFFF; border-bottom:1px solid var(--border)"></i><div>surface<br /><code>#FFFFFF</code></div></div>
+      <div class="sw"><i style="background:#1A1D21"></i><div>body text<br /><code>#1A1D21</code></div></div>
+      <div class="sw"><i style="background:#64748B"></i><div>secondary text<br /><code>#64748B</code></div></div>
+      <div class="sw"><i style="background:#E2E8F0"></i><div>border<br /><code>#E2E8F0</code></div></div>
+      <div class="sw"><i style="background:#F5F0E8"></i><div>cream · milestones only<br /><code>#F5F0E8</code></div></div>
+      <div class="sw"><i style="background:#32845A"></i><div>success<br /><code>#32845A</code></div></div>
+      <div class="sw"><i style="background:#9A6700"></i><div>warning<br /><code>#9A6700</code></div></div>
+      <div class="sw"><i style="background:#2563A6"></i><div>info<br /><code>#2563A6</code></div></div>
+      <div class="sw"><i style="background:#C62828"></i><div>destructive<br /><code>#C62828</code></div></div>
+      <div class="sw"><i style="background:#5A67A8"></i><div>accent · interactive only<br /><code>#5A67A8</code></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>2 · Dark pairs</h2>
+    <div class="dark-demo">
+      <span class="chip" style="background:#191C22; color:#F1F5F9; border-color:#334155;">surface #191C22</span>
+      <span class="chip" style="background:#B24A53; color:#fff; border:none;">primary #B24A53</span>
+      <span class="chip" style="background:#101216; color:#34D399; border-color:#334155;">success #34D399</span>
+      <span class="chip" style="background:#101216; color:#FBBF24; border-color:#334155;">warning #FBBF24</span>
+      <span class="chip" style="background:#101216; color:#38BDF8; border-color:#334155;">info #38BDF8</span>
+      <span class="chip" style="background:#101216; color:#F87171; border-color:#334155;">destructive #F87171</span>
+    </div>
+  </div>
+
+  <!-- CHART PALETTE -->
+  <div class="sec">
+    <h2>3 · Data-viz palette (crimson = reference line only)</h2>
+    <div class="row gap-2 wrap">
+      <span class="swatch"><i style="background:#2563EB"></i> series 1</span>
+      <span class="swatch"><i style="background:#0D9488"></i> series 2</span>
+      <span class="swatch"><i style="background:#D97706"></i> series 3</span>
+      <span class="swatch"><i style="background:#7C3AED"></i> series 4</span>
+      <span class="swatch"><i style="background:#64748B"></i> series 5</span>
+      <span class="swatch"><i style="background:#DB2777"></i> series 6</span>
+      <span class="swatch"><i style="background:#8B0000"></i> university average</span>
+    </div>
+    <svg width="100%" height="70" viewBox="0 0 600 70" style="margin-top:10px; background:var(--card); border:1px solid var(--border); border-radius:8px;">
+      <polyline points="20,50 140,40 260,44 380,28 500,30 580,22" fill="none" stroke="#2563EB" stroke-width="2"/>
+      <polyline points="20,60 140,55 260,52 380,50 500,46 580,48" fill="none" stroke="#D97706" stroke-width="2"/>
+      <line x1="20" y1="38" x2="580" y2="38" stroke="#8B0000" stroke-width="2" stroke-dasharray="6 4"/>
+    </svg>
+  </div>
+
+  <!-- TYPE SCALE -->
+  <div class="sec">
+    <h2>4 · Type scale (Inter · Cairo under RTL)</h2>
+    <div class="demo-card" style="padding:16px 20px;">
+      <div class="type-row"><span class="t-label">display / page title · 24/600</span><span style="font-size:24px; font-weight:600; letter-spacing:-0.01em;">My Plan</span></div>
+      <div class="type-row"><span class="t-label">section title · 18/600</span><span style="font-size:18px; font-weight:600;">Plan health</span></div>
+      <div class="type-row"><span class="t-label">card title · 16/600</span><span style="font-size:16px; font-weight:600;">Advisor comments</span></div>
+      <div class="type-row"><span class="t-label">body · 14 (16 inputs)</span><span style="font-size:14px;">One official plan per term.</span></div>
+      <div class="type-row"><span class="t-label">metadata · 12</span><span style="font-size:12px; color:var(--muted-fg);">Submitted 30 Sep · waiting 5 days</span></div>
+      <div class="type-row" style="border:none;"><span class="t-label">caption / eyebrow · 11 caps</span><span class="eyebrow">Academic pulse</span></div>
+    </div>
+  </div>
+
+  <!-- BUTTONS / CHIPS / BANNERS -->
+  <div class="sec">
+    <h2>5 · Controls, chips, banners</h2>
+    <div class="demo-card col gap-3" style="padding:20px;">
+      <div class="row gap-2 wrap">
+        <button class="btn primary">Primary · one per view</button>
+        <button class="btn outline">Outline</button>
+        <button class="btn ghost">Ghost</button>
+        <button class="btn destructive">Delete course</button>
+        <button class="btn primary" disabled>Disabled</button>
+      </div>
+      <div class="row gap-2 wrap">
+        <span class="chip draft"><span class="dot"></span> Draft</span>
+        <span class="chip submitted"><span class="dot"></span> Submitted</span>
+        <span class="chip review"><span class="dot"></span> Under review</span>
+        <span class="chip returned"><span class="dot"></span> Returned</span>
+        <span class="chip approved"><span class="dot"></span> Approved</span>
+        <span class="chip info"><span class="dot"></span> Requested</span>
+        <span class="chip warning"><span class="dot"></span> Awaiting response</span>
+        <span class="chip success"><span class="dot"></span> Confirmed</span>
+        <span class="chip destructive"><span class="dot"></span> Cancelled</span>
+        <span class="chip neutral"><span class="dot"></span> Closed</span>
+      </div>
+      <div class="col gap-2">
+        <div class="banner info"><span class="b-icon">i</span><div class="col gap-1"><span class="b-title">Not validated yet</span><p class="sm">Validation runs the university checks. Run it now or at submit time.</p></div></div>
+        <div class="banner destructive"><span class="b-icon">✕</span><div class="col gap-1"><span class="b-title">2 checks fail</span><p class="sm">MATH 205 repeats MATH 101. The repeat rule blocks it this term.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGNATURES -->
+  <div class="sec">
+    <h2>6 · Signature elements</h2>
+    <div class="demo-card col gap-2" style="padding:20px;">
+      <span class="eyebrow">Academic pulse strip · student</span>
+      <div class="pulse">
+        <span style="flex:1 1 0; background:var(--crimson-700);"></span>
+        <span style="flex:2 1 0; background:var(--warning);"></span>
+        <span style="flex:4 1 0; background:var(--success);"></span>
+      </div>
+      <div class="row between xs muted num"><span>Plan returned · fix and resubmit</span><span>6 of 12–18 credits</span><span>96 earned · 40%</span></div>
+    </div>
+    <div class="rail-row" style="margin-top:12px;">
+      <div class="col"><span class="sm" style="font-weight:600;">Lina Majors</span><span class="xs muted num">20210433</span></div>
+      <div><span class="chip submitted"><span class="dot"></span> Submitted</span></div>
+      <div class="col"><span class="xs muted">Signal</span><span class="sm">Resubmitted after fixes</span></div>
+      <div class="col"><span class="xs muted">Urgency</span><span class="sm num" style="color:var(--warning); font-weight:600;">5 days · aging</span></div>
+      <div class="col gap-1" style="align-items:flex-end;"><button class="btn primary sm">Review</button><span class="xs muted">Approve and Return live in review</span></div>
+    </div>
+  </div>
+
+  <!-- STATES -->
+  <div class="sec">
+    <h2>7 · State gallery (mandatory)</h2>
+    <div class="grid-2">
+      <div class="demo-card col gap-2" style="padding:16px;">
+        <span class="eyebrow">Loading · skeleton</span>
+        <div class="skeleton" style="height:14px; width:60%;"></div>
+        <div class="skeleton" style="height:14px; width:100%;"></div>
+        <div class="skeleton" style="height:14px; width:80%;"></div>
+      </div>
+      <div class="demo-card col gap-2" style="padding:16px;">
+        <span class="eyebrow">Empty · what / normal / next step</span>
+        <p class="sm" style="font-weight:600;">No meetings yet</p>
+        <p class="sm muted">Meetings with your advisor appear here once they are scheduled.</p>
+        <button class="btn outline sm" style="align-self:flex-start;">Request a meeting</button>
+      </div>
+      <div class="demo-card col gap-2" style="padding:16px;">
+        <span class="eyebrow">Saving → saved</span>
+        <div class="row gap-2"><button class="btn outline sm" disabled>Saving…</button><span class="chip success">Saved · just now</span></div>
+        <p class="xs muted" role="status">All edits save themselves; navigation asks when dirty.</p>
+      </div>
+      <div class="demo-card col gap-2" style="padding:16px;">
+        <span class="eyebrow">Stale</span>
+        <div class="banner warning" style="padding:10px 12px;"><span class="b-icon">!</span><div class="row between" style="flex:1; gap:8px;"><span class="sm">SIS data as of 05 Oct, 14:00.</span><button class="btn outline sm">⟳ Refresh</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RADIUS / DENSITY -->
+  <div class="sec">
+    <h2>8 · Two-mode radius (toggle the skin in the bar)</h2>
+    <div class="row gap-3 wrap">
+      <div class="demo-card col gap-1" style="padding:16px; flex:1; min-width:220px;">
+        <span class="eyebrow">Student · 14px bento</span>
+        <p class="sm muted">Spacious cards, phone-first surfaces.</p>
+      </div>
+      <div class="demo-card col gap-1" style="padding:12px 16px; flex:1; min-width:220px; border-radius:6px;">
+        <span class="eyebrow">Staff · 6px precision</span>
+        <p class="sm muted">Dense tables, drawers, decision surfaces.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="sm muted" style="margin: 24px 0 48px;">Full specification: <b>DESIGN-SYSTEM.md</b> at the repo root. This page renders the same values the document defines.</p>
+</div>
+</body>
+</html>
