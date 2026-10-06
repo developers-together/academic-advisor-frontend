@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>05 · My Advisor, complete — C-04</title>
+<link rel="stylesheet" href="assets/proto.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="assets/proto.js" defer></script>
+<style>
+  .slot { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:999px; padding:8px 14px; cursor:pointer; font-size:13px; font-weight:500; background:var(--card); }
+  .slot input { margin:0; accent-color:var(--crimson-700); }
+  .slot.sel, .slot:has(input:checked) { border-color:var(--crimson-700); background:var(--crimson-50); color:var(--crimson-700); }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <span class="p-title">05 · My Advisor, complete — C-04, D-02</span>
+  <div class="proto-tabs" data-proto-tabs="#stage">
+    <button class="active" data-pane="upcoming">Upcoming</button>
+    <button data-pane="past">Past</button>
+  </div>
+  <a href="index.html">← hub</a>
+</div>
+
+<div id="stage">
+
+<!-- ============ UPCOMING ============ -->
+<div class="pane active" data-pane="upcoming">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Home</a><a>▤ My Plan</a><a>🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a class="active">👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Home</span><span>·</span><span class="current">My Advisor</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>My Advisor</h1><p class="desc">Your advisor and your meetings in one place</p></div>
+      </div>
+
+      <!-- canonical advisor identity: this page owns it (Home links here) -->
+      <div class="card col gap-3">
+        <div class="row gap-3 wrap" style="align-items:flex-start;">
+          <span class="avatar" style="width:48px; height:48px; font-size:16px;">AA</span>
+          <div class="col gap-1" style="flex:1; min-width:200px;">
+            <h2>Amr Advisor</h2>
+            <p class="sm muted">Senior Academic Advisor · CSE</p>
+          </div>
+          <button class="btn primary">Request a meeting</button>
+        </div>
+        <div class="grid-3 sm">
+          <div class="col gap-1"><span class="eyebrow">Office</span><span>Building 3, Room 2140</span></div>
+          <div class="col gap-1"><span class="eyebrow">Office hours</span><span>Sun 10:00–12:00 · Tue 13:00–15:00</span></div>
+          <div class="col gap-1"><span class="eyebrow">Availability</span><span><span class="chip success" style="margin-top:2px;">Next open slot: Sun 12 Oct, 10:00</span></span></div>
+        </div>
+      </div>
+
+      <!-- confirmed meeting: place and duration stated once, on the card -->
+      <div class="card col gap-2" style="border-inline-start:3px solid var(--success-border);">
+        <div class="row gap-2 wrap">
+          <h3>Course selection meeting</h3>
+          <span class="chip success"><span class="dot"></span> Confirmed</span>
+        </div>
+        <p class="sm"><b>Sun 12 Oct · 10:00–10:30</b> (30 min) · Building 3, Room 2140</p>
+        <p class="xs muted">Requested by you · reason: Course selection</p>
+        <div class="row gap-2">
+          <button class="btn outline sm">Reschedule</button>
+          <button class="btn ghost sm">Cancel</button>
+        </div>
+      </div>
+
+      <!-- proposal awaiting the student -->
+      <div class="card col gap-2">
+        <div class="row gap-2 wrap">
+          <h3>Meeting proposal</h3>
+          <span class="chip info"><span class="dot"></span> Awaiting your response</span>
+        </div>
+        <p class="sm muted">Amr Advisor proposes two times. Pick one, or ask for a different time.</p>
+        <div class="row wrap gap-2">
+          <label class="slot sel"><input type="radio" name="proposal" checked /> Sun 12 Oct · 10:00</label>
+          <label class="slot"><input type="radio" name="proposal" /> Mon 13 Oct · 11:00</label>
+        </div>
+        <div class="row wrap gap-2">
+          <button class="btn primary sm">Confirm time</button>
+          <button class="btn ghost sm">Propose another</button>
+          <button class="btn ghost sm">Decline</button>
+        </div>
+      </div>
+
+      <div class="note"><b>What changes (C-04, D-02):</b> Request a meeting is the page primary, so the
+      entry point finally exists. The card carries the full identity: office, hours, next open slot.
+      Confirmed cards carry place and duration. There is no Message action; free-form messaging does
+      not exist (PR-05).</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ PAST ============ -->
+<div class="pane" data-pane="past">
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="brand-mark">A</span> Advisor</div>
+    <a>⌂ Home</a><a>▤ My Plan</a><a>🎓 Academic Record</a>
+    <a>💬 AI Advisor</a><a class="active">👤 My Advisor</a>
+    <div class="side-section">More</div>
+    <a>🔔 Notifications</a><a>⚙ Account</a>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs"><span>Home</span><span>·</span><span class="current">My Advisor</span></div>
+      <div class="row gap-1">
+        <button class="icon-btn">⌕</button>
+        <button class="icon-btn">🔔<span class="dot-count">1</span></button>
+        <button class="avatar">SS</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page-head">
+        <div><h1>My Advisor</h1><p class="desc">Your advisor and your meetings in one place</p></div>
+      </div>
+
+      <div class="card col gap-3">
+        <div class="row gap-3 wrap" style="align-items:flex-start;">
+          <span class="avatar" style="width:48px; height:48px; font-size:16px;">AA</span>
+          <div class="col gap-1" style="flex:1; min-width:200px;">
+            <h2>Amr Advisor</h2>
+            <p class="sm muted">Senior Academic Advisor · CSE</p>
+          </div>
+          <button class="btn primary">Request a meeting</button>
+        </div>
+        <div class="grid-3 sm">
+          <div class="col gap-1"><span class="eyebrow">Office</span><span>Building 3, Room 2140</span></div>
+          <div class="col gap-1"><span class="eyebrow">Office hours</span><span>Sun 10:00–12:00 · Tue 13:00–15:00</span></div>
+          <div class="col gap-1"><span class="eyebrow">Availability</span><span><span class="chip success" style="margin-top:2px;">Next open slot: Sun 12 Oct, 10:00</span></span></div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Reason</th><th>Outcome</th></tr></thead>
+          <tbody>
+            <tr><td>Sun 28 Sep · 10:00</td><td>Course selection</td><td><span class="chip success">Completed</span></td></tr>
+            <tr><td>Tue 16 Sep · 13:00</td><td>Plan review</td><td><span class="chip neutral">Cancelled</span> <span class="xs muted">by you</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="sm muted">Past meetings keep the date, the reason, and the outcome.</p>
+
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /stage -->
+</body>
+</html>
