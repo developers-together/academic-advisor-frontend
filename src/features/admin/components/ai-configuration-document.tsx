@@ -120,6 +120,11 @@ export const AiConfigurationDocument = () => {
                     type: 'success',
                     title: t('ai.saved'),
                   }),
+                onError: () =>
+                  addNotification({
+                    type: 'error',
+                    title: t('common:errors.saveFailed'),
+                  }),
               },
             )
           }
