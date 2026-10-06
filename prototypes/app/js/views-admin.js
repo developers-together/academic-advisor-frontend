@@ -160,7 +160,7 @@ App.views['/admin/students'] = function () {
       <td>${adminBindingChip(u.binding)}</td>
       <td>${u.status === 'active' ? '<span class="chip success">Active</span>' : '<span class="chip neutral">Suspended</span>'}</td>
       <td>${adminAssignCell(u)}</td>
-      <td class="num"><button class="btn ghost sm" onclick="openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
+      <td class="num"><button class="btn ghost sm" id="row-menu-${key}" onclick="App._returnFocusId = 'row-menu-${key}'; openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
     </tr>`;
   }).join('');
   const modal = showAddStudent ? UI.modal(`
@@ -269,7 +269,7 @@ App.views['/admin/courses'] = function () {
       <td class="num">${c.credits}</td>
       <td>${UI.esc(c.program)}</td>
       <td class="num">${UI.esc(c.updated)}</td>
-      <td class="num"><button class="btn ghost sm" onclick="openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
+      <td class="num"><button class="btn ghost sm" id="row-menu-${key}" onclick="App._returnFocusId = 'row-menu-${key}'; openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
     </tr>`;
   }).join('');
   const modal = confirmDeleteCourse ? UI.modal(`
@@ -346,7 +346,7 @@ App.views['/admin/programs'] = function () {
       <td><code>${UI.esc(p.code)}</code></td>
       <td>${UI.esc(p.title)}</td>
       <td class="num">${p.courses}</td>
-      <td class="num"><button class="btn outline sm" onclick="App.adminProgramFilter='${p.code}'; App.go('#/admin/courses');">View courses</button> <button class="btn ghost sm" onclick="openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
+      <td class="num"><button class="btn outline sm" onclick="App.adminProgramFilter='${p.code}'; App.go('#/admin/courses');">View courses</button> <button class="btn ghost sm" id="row-menu-${key}" onclick="App._returnFocusId = 'row-menu-${key}'; openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
     </tr>`;
   }).join('');
   return `
@@ -369,7 +369,7 @@ App.views['/admin/rules'] = function () {
       <td style="white-space:nowrap;">${UI.esc(r.title)}</td>
       <td class="sm">${UI.esc(r.body)}</td>
       <td class="num">${r.updated || '—'}</td>
-      <td class="num"><button class="btn ghost sm" onclick="openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
+      <td class="num"><button class="btn ghost sm" id="row-menu-${key}" onclick="App._returnFocusId = 'row-menu-${key}'; openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
     </tr>`;
   }).join('');
   const modal = confirmDeleteRule ? UI.modal(`
@@ -477,7 +477,7 @@ App.views['/admin/staff'] = function () {
       <td>${UI.esc(s.name)}</td>
       <td><span class="chip info">${UI.esc(s.role)}</span></td>
       <td class="sm">${UI.esc(s.email)}</td>
-      <td class="num"><button class="btn ghost sm" onclick="openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
+      <td class="num"><button class="btn ghost sm" id="row-menu-${key}" onclick="App._returnFocusId = 'row-menu-${key}'; openMenuId = openMenuId === '${key}' ? null : '${key}'; App.render();">⋯</button>${menu}</td>
     </tr>`;
   }).join('');
   const victim = Store.s.admin.staff.find((x) => x.email === confirmDeleteStaff);
