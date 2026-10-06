@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { Badge } from '@/components/ui/badge';
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/form';
 import { formatDateTime } from '@/lib/i18n/format';
@@ -15,7 +16,7 @@ import { cn } from '@/utils/cn';
 export type CommentThreadProps = {
   comments: PlanComment[];
   submitPending?: boolean;
-  onSubmit?: (body: string) => void;
+  onSubmit?: (body: string) => void | Promise<unknown>;
   unreadAfter?: string | null;
   title?: string;
   emptyText?: string;
@@ -57,10 +58,16 @@ export const CommentThread = ({
     mode: 'onBlur',
     defaultValues: { body: '' },
   });
+  const [postFailed, setPostFailed] = useState(false);
 
-  const submit = form.handleSubmit((values) => {
-    onSubmit?.(values.body.trim());
-    form.reset({ body: '' });
+  const submit = form.handleSubmit(async (values) => {
+    setPostFailed(false);
+    try {
+      await onSubmit?.(values.body.trim());
+      form.reset({ body: '' });
+    } catch {
+      setPostFailed(true);
+    }
   });
 
   return (
@@ -108,12 +115,19 @@ export const CommentThread = ({
             void submit();
           }}
         >
+          {postFailed && (
+            <Banner variant="destructive" title={t('review.comments.failed')}>
+              <p className="text-sm text-muted-foreground">
+                {t('review.comments.failedBody')}
+              </p>
+            </Banner>
+          )}
           <Textarea
             label={t('review.comments.placeholder')}
             error={form.formState.errors['body']}
             registration={form.register('body')}
             placeholder={t('review.comments.placeholder')}
-            className="min-h-20 text-sm"
+            className="min-h-20"
           />
           <Button
             type="submit"
