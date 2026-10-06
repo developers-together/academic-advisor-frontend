@@ -66,7 +66,7 @@ export const ConfirmMeetingDialog = ({
             setFailed(t('meetings.confirmDialog.conflict'));
             return;
           }
-          setFailed(t('common:errors.loadFailed'));
+          setFailed(t('common:errors.sendFailed'));
         },
       },
     );
