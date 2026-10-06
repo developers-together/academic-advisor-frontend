@@ -88,7 +88,7 @@ const meetingStatuses: Record<MeetingStatus, StatusPresentation> = {
   },
   completed: {
     labelKey: 'statusChip.meeting.completed',
-    tone: 'neutral',
+    tone: 'success',
     icon: Check,
   },
   declined: {
