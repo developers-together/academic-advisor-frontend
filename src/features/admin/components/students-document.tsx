@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ErrorState } from '@/components/ui/banner';
+import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
@@ -24,13 +25,20 @@ export const StudentsDocument = ({ onAddStudent }: StudentsDocumentProps) => {
   const { t } = useTranslation('admin');
 
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
   const studentsQuery = useAdminStudents({
     search: debouncedSearch,
     perPage: STUDENTS_PER_PAGE,
+    page,
   });
 
   const [activeId, setActiveId] = useState<number | null>(null);
+
+  const changeSearch = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   const activeStudent =
     studentsQuery.data?.items.find((student) => student.id === activeId) ??
@@ -103,13 +111,72 @@ export const StudentsDocument = ({ onAddStudent }: StudentsDocumentProps) => {
       <StudentsTable
         students={students}
         search={search}
-        onSearchChange={setSearch}
+        onSearchChange={changeSearch}
         activeId={activeId}
         onActivate={(student) => setActiveId(student.id)}
+      />
+      <StudentsPager
+        page={page}
+        onPage={setPage}
+        count={students.length}
+        perPage={STUDENTS_PER_PAGE}
+        total={studentsQuery.data.meta?.total ?? null}
       />
       {activeStudent && (
         <AccountPanel user={activeStudent} onClose={() => setActiveId(null)} />
       )}
     </>
+  );
+};
+
+const StudentsPager = ({
+  page,
+  onPage,
+  count,
+  perPage,
+  total,
+}: {
+  page: number;
+  onPage: (page: number) => void;
+  count: number;
+  perPage: number;
+  total: number | null;
+}) => {
+  const { t } = useTranslation();
+  if (total === null || total <= count) {
+    return null;
+  }
+  const offset = (page - 1) * perPage;
+  return (
+    <nav
+      aria-label={t('table.navLabel')}
+      className="flex flex-wrap items-center justify-between gap-2 pt-3 text-sm"
+    >
+      <p className="text-muted-foreground tabular-nums">
+        {t('table.pageInfo', {
+          from: offset + 1,
+          to: offset + count,
+          total,
+        })}
+      </p>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={page <= 1}
+          onClick={() => onPage(page - 1)}
+        >
+          {t('table.previousLabel')}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={offset + count >= total}
+          onClick={() => onPage(page + 1)}
+        >
+          {t('table.nextLabel')}
+        </Button>
+      </div>
+    </nav>
   );
 };
