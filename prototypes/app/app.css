@@ -1,0 +1,48 @@
+/* Advisor full replica — additions on top of ../assets/proto.css */
+
+.anchor-wrap { position: relative; }
+
+.overlay { position: fixed; inset: 0; background: rgb(15 23 42 / 0.45); z-index: 80; }
+#req-mtg { position: fixed; inset: 0; z-index: 80; }
+.toast {
+  position: fixed; bottom: 24px; inset-inline-end: 24px; z-index: 90;
+  background: var(--fg); color: #fff; border-radius: var(--radius);
+  padding: 10px 16px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-pop);
+}
+.toast-destructive { background: var(--destructive); }
+.toast-info { background: var(--info); }
+
+tr:focus-within, tr[tabindex]:focus { outline: 2px solid var(--crimson-500); outline-offset: -2px; }
+kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 6px; font-size: 11px; background: var(--card); font-family: inherit; }
+.row-actions { display: inline-flex; gap: 6px; }
+/* Actions stay visible: discoverability beats hover-only (C-02 amendment). */
+tr.pinned { outline: 2px solid var(--crimson-500); outline-offset: -2px; }
+.dept-row td { background: var(--muted); font-weight: 600; font-size: 12px; }
+
+/* ===== v5 theme layer (Crimson Modern x Signal Operations) ===== */
+body.v5 {
+  --bg: #F6F7F9;
+  --warning: #9A6700;
+  --info: #2563A6;
+  --destructive: #C62828;
+}
+/* two-mode radius: student bento 14, staff precision 6 */
+body.v5.r-student .card { border-radius: 14px; }
+body.v5.r-advisor .card, body.v5.r-admin .card,
+body.v5.r-dean .card, body.v5.r-vp .card { border-radius: 6px; }
+body.v5.r-student .table-wrap { border-radius: 14px; }
+
+/* signature: academic pulse strip */
+.pulse { display: flex; height: 10px; border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+.pulse span { display: block; height: 100%; }
+
+/* signature: staff decision rail */
+.rail-row {
+  display: grid; grid-template-columns: 1.2fr 0.9fr 1.3fr 1fr auto; gap: 12px;
+  align-items: center; background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 12px 16px;
+}
+@media (max-width: 900px) { .rail-row { grid-template-columns: 1fr 1fr; } }
+
+/* signature: cream milestone surface */
+.cream-card { background: #F5F0E8; border-color: #E8DFC9; }
