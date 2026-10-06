@@ -46,3 +46,28 @@ body.v5.r-student .table-wrap { border-radius: 14px; }
 
 /* signature: cream milestone surface */
 .cream-card { background: #F5F0E8; border-color: #E8DFC9; }
+
+/* ===== dark mode (contract 2.1 dark pairs) ===== */
+body.dark { --bg:#101216; --card:#191C22; --fg:#F1F5F9; --muted:#1E2530; --muted-fg:#94A3B8; --border:#334155; --crimson-700:#B24A53; --crimson-600:#C25A5F; }
+body.dark body, body.dark { background: var(--bg); }
+body.dark .btn.outline { background: var(--card); }
+body.dark .btn.primary { background: var(--crimson-700); }
+body.dark .chip.draft { background:#1E293B; color:#CBD5E1; border-color:#475569; }
+body.dark .chip.submitted { background:#172554; color:#93C5FD; border-color:#1E40AF; }
+body.dark .chip.review { background:#451A03; color:#FCD34D; border-color:#92400E; }
+body.dark .chip.returned { background:#431407; color:#FDBA74; border-color:#92400E; }
+body.dark .chip.approved { background:#022C22; color:#6EE7B7; border-color:#047857; }
+body.dark .chip.info { background:#172554; color:#93C5FD; border-color:#1E40AF; }
+body.dark .chip.success { background:#022C22; color:#6EE7B7; border-color:#047857; }
+body.dark .chip.warning { background:#451A03; color:#FCD34D; border-color:#92400E; }
+body.dark .chip.destructive { background:#450A0A; color:#FCA5A5; border-color:#B91C1C; }
+body.dark .chip.neutral { background:#1E2530; color:#94A3B8; border-color:#334155; }
+body.dark .banner.info { background:#17255422; border-color:#1E40AF; }
+body.dark .banner.warning { background:#451A0322; border-color:#92400E; }
+body.dark .banner.destructive { background:#450A0A22; border-color:#B91C1C; }
+body.dark .banner.success { background:#022C2222; border-color:#047857; }
+body.dark .side, body.dark .topbar, body.dark .table-wrap, body.dark .popover, body.dark .phone .m-nav, body.dark .phone .m-top { background: var(--card); }
+body.dark .skeleton { background: linear-gradient(90deg, #1E2530 25%, #263041 50%, #1E2530 75%); background-size: 200% 100%; }
+body.dark .meter { background: #263041; }
+body.dark .note { background:#3a1418; border-color:#7a2e35; color:#f2b8bd; }
+body.dark .cream-card { background:#26221A; border-color:#4A422F; }
