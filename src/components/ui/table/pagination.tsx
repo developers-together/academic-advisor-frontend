@@ -1,23 +1,23 @@
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DotsHorizontalIcon,
-} from '@radix-ui/react-icons';
+import { ChevronLeft, ChevronRight, Ellipsis } from 'lucide-react';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ButtonProps, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/utils/cn';
 
 import { Link } from '../link';
 
-const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
-  <nav
-    role="navigation"
-    aria-label="pagination"
-    className={cn('mx-auto flex w-full justify-center', className)}
-    {...props}
-  />
-);
+const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => {
+  const { t } = useTranslation();
+  return (
+    <nav
+      role="navigation"
+      aria-label={t('table.navLabel')}
+      className={cn('mx-auto flex w-full justify-center', className)}
+      {...props}
+    />
+  );
+};
 Pagination.displayName = 'Pagination';
 
 const PaginationContent = React.forwardRef<
@@ -73,48 +73,57 @@ PaginationLink.displayName = 'PaginationLink';
 const PaginationPrevious = ({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to previous page"
-    size="default"
-    className={cn('gap-1 ps-2.5', className)}
-    {...props}
-  >
-    <ChevronLeftIcon className="size-4 rtl:rotate-180" />
-    <span>Previous</span>
-  </PaginationLink>
-);
+}: React.ComponentProps<typeof PaginationLink>) => {
+  const { t } = useTranslation();
+  return (
+    <PaginationLink
+      aria-label={t('table.previous')}
+      size="default"
+      className={cn('gap-1 ps-2.5', className)}
+      {...props}
+    >
+      <ChevronLeft className="size-4 rtl:rotate-180" aria-hidden />
+      <span>{t('table.previousLabel')}</span>
+    </PaginationLink>
+  );
+};
 PaginationPrevious.displayName = 'PaginationPrevious';
 
 const PaginationNext = ({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to next page"
-    size="default"
-    className={cn('gap-1 pe-2.5', className)}
-    {...props}
-  >
-    <span>Next</span>
-    <ChevronRightIcon className="size-4 rtl:rotate-180" />
-  </PaginationLink>
-);
+}: React.ComponentProps<typeof PaginationLink>) => {
+  const { t } = useTranslation();
+  return (
+    <PaginationLink
+      aria-label={t('table.next')}
+      size="default"
+      className={cn('gap-1 pe-2.5', className)}
+      {...props}
+    >
+      <span>{t('table.nextLabel')}</span>
+      <ChevronRight className="size-4 rtl:rotate-180" aria-hidden />
+    </PaginationLink>
+  );
+};
 PaginationNext.displayName = 'PaginationNext';
 
 const PaginationEllipsis = ({
   className,
   ...props
-}: React.ComponentProps<'span'>) => (
-  <span
-    aria-hidden
-    className={cn('flex size-9 items-center justify-center', className)}
-    {...props}
-  >
-    <DotsHorizontalIcon className="size-4" />
-    <span className="sr-only">More pages</span>
-  </span>
-);
+}: React.ComponentProps<'span'>) => {
+  const { t } = useTranslation();
+  return (
+    <span
+      aria-hidden
+      className={cn('flex size-9 items-center justify-center', className)}
+      {...props}
+    >
+      <Ellipsis className="size-4" />
+      <span className="sr-only">{t('table.morePages')}</span>
+    </span>
+  );
+};
 PaginationEllipsis.displayName = 'PaginationEllipsis';
 
 export {
@@ -160,7 +169,7 @@ export const TablePagination = ({
             </PaginationLink>
           </PaginationItem>
         )}
-        <PaginationItem className="rounded-sm bg-gray-200">
+        <PaginationItem className="rounded-sm bg-muted">
           <PaginationLink href={createHref(currentPage)}>
             {currentPage}
           </PaginationLink>
