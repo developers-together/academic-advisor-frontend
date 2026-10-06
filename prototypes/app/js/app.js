@@ -82,6 +82,47 @@ Auth.uiRequestMeeting = function () {
   document.getElementById('req-mtg').style.display = 'none';
   Store.toast('Request sent to your advisor.');
 };
+/* dialog accessibility: autofocus, Tab trap, Esc close (section 8) */
+document.addEventListener('keydown', (event) => {
+  const overlay = document.querySelector('.overlay, #req-mtg');
+  if (!overlay) return;
+  const focusables = () => [...overlay.querySelectorAll('button, input, select, textarea, a[href]')]
+    .filter((el) => !el.disabled && el.offsetParent !== null);
+  if (event.key === 'Escape') {
+    const close = overlay.querySelector('[data-close]')
+      || [...overlay.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Cancel');
+    if (close) close.click();
+    return;
+  }
+  if (event.key === 'Tab') {
+    const list = focusables();
+    if (!list.length) return;
+    const first = list[0];
+    const last = list[list.length - 1];
+    if (!overlay.contains(document.activeElement)) { event.preventDefault(); first.focus(); }
+    else if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+}, true);
+
+/* render override: overlay autofocus + focus return to the trigger */
+const _baseRender = App.render.bind(App);
+App.render = function () {
+  const hadOverlay = !!document.querySelector('.overlay, #req-mtg');
+  _baseRender();
+  const overlay = document.querySelector('.overlay, #req-mtg');
+  if (overlay && !hadOverlay) {
+    const target = overlay.querySelector('[data-autofocus]')
+      || overlay.querySelector('button, input, select, a[href]');
+    if (target) target.focus();
+  }
+  if (!overlay && hadOverlay) {
+    const back = document.getElementById(App._returnFocusId || '');
+    if (back) back.focus();
+    App._returnFocusId = null;
+  }
+};
+
 Store.onChange(() => {
   if (Store.me()) App.render();
   else { document.getElementById('root').innerHTML = Auth.view(); Auth.after(); }
