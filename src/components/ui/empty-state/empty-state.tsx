@@ -34,14 +34,11 @@ export const EmptyState = ({
         className={cn('text-muted-foreground', compact ? 'size-5' : 'size-6')}
         aria-hidden
       />
-      <p
-        className={cn(
-          'font-medium',
-          compact ? 'text-sm' : 'text-lg font-medium',
-        )}
-      >
-        {title}
-      </p>
+      {compact ? (
+        <p className="text-sm font-medium">{title}</p>
+      ) : (
+        <h2 className="text-lg font-semibold">{title}</h2>
+      )}
       {description && (
         <p className="max-w-prose text-sm text-muted-foreground">
           {description}
