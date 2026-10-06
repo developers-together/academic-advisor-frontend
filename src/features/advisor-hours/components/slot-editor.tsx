@@ -99,7 +99,7 @@ export const SlotEditor = ({
                       updateRow(index, { day: event.target.value })
                     }
                     className={cn(
-                      'mt-1 block h-9 rounded-md border border-input bg-transparent px-2 text-sm shadow-xs',
+                      'mt-1 block min-h-11 rounded-md border border-input bg-transparent px-2 text-base shadow-xs sm:text-sm [@media(pointer:fine)_and_(min-width:1024px)]:min-h-9',
                       'focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden',
                     )}
                   >
@@ -117,7 +117,7 @@ export const SlotEditor = ({
                   onChange={(event) =>
                     updateRow(index, { from: event.target.value })
                   }
-                  className="w-28 text-sm"
+                  className="w-28"
                   id={`slot-from-${index}`}
                 />
                 <Input
@@ -127,7 +127,7 @@ export const SlotEditor = ({
                   onChange={(event) =>
                     updateRow(index, { to: event.target.value })
                   }
-                  className="w-28 text-sm"
+                  className="w-28"
                   id={`slot-to-${index}`}
                 />
                 <Button
