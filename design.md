@@ -996,9 +996,71 @@ badges for invented actions, no confetti.
 **DS-C-14:** interactive cards may elevate with `shadow-xs` on hover only; rest state stays flat
 (material honesty, DP-04).
 
+
+## 26. v5 design direction: Crimson Modern x Signal Operations (v5.0)
+
+> Status: canonical, merged 2026-10-06 by design-director decision (ChatGPT review loop,
+> verdict "MERGE"). **Precedence: where this section conflicts with section 6 or Appendix
+> B, this section wins.** Everything they do not conflict with carries over unchanged.
+> Rollback: git tag `design-v4-final` restores the pre-merge contract
+> (`git checkout design-v4-final -- design.md`); the prototype's Theme v4/v5 toggle is
+> the atomic visual-layer flag.
+
+### 26.1 Token layer
+
+Light: canvas `#F6F7F9`, surface `#FFFFFF`, primary crimson `#8B0000` (brand and primary
+action only, never decoration, never a data series), body `#1A1D21`, secondary
+interactive accent `#5A67A8` (the only accent allowed on interactive elements;
+decorative accent use is banned), success `#32845A`, warning `#9A6700`, info `#2563A6`,
+destructive `#C62828`, milestone surface cream `#F5F0E8` (earned moments only).
+
+Dark: canvas `#101216`, surface `#191C22`, primary `#B24A53`, success `#34D399`,
+warning `#FBBF24`, info `#38BDF8`, destructive `#F87171` (all >= 7:1 as text on
+canvas). Dark parity is required for every component and state in section 7, not only
+core surfaces.
+
+Chart categorical palette (crimson excluded): `#2563EB`, `#0D9488`, `#D97706`,
+`#7C3AED`, `#64748B`, `#DB2777`. Crimson renders only the university-average reference
+line and "the answer" emphasis. **DS-C-15 (MUST):** every chart ships palette +
+question title + text alternative + reference-line rules as one contract.
+
+### 26.2 Two-mode radius and density
+
+Student-facing surfaces: cards 14px, comfortable bento spacing. Staff surfaces (queue,
+caseload, admin, governance): 6px, compact density. Typography, navigation anatomy,
+state system, and token names are identical across modes; only radius, density, and the
+two signature elements differ. **DS-C-16 (MUST):** explicit focus, selected, disabled,
+and error tokens exist for both modes, with visible 3:1 focus indicators.
+
+### 26.3 Signature: academic pulse strip (student)
+
+One 3-segment band per page maximum: plan state (fixed minimum width, colored by
+state), credit load (proportional to the 12-18 window), degree progress (proportional).
+Segments carry persistent text labels and exact values; color never carries the value
+alone (DS-C-08 holds). It replaces repeated KPI restatements (say-it-once, R-06).
+
+### 26.4 Signature: decision rail (staff)
+
+Fixed field order: student (name + id) -> state chip -> signal (what changed) ->
+urgency (waiting vs threshold) -> ONE primary next action. Approve and Return live in
+the review surface, never on the rail (DP-03). States: default, selected, aging,
+blocked. Collapses to a two-column grid under 900px; RTL mirrors via logical
+properties only; reduced-motion carries no additional animation.
+
+### 26.5 Carried contract lines (from the review loop)
+
+Form validation/error/success anatomy under both themes and RTL (section 18 anatomy
+rules hold); dataviz accessibility per DS-C-15; Arabic linguistic and wrapping QA at
+production content lengths (DS-L rules hold); a final cross-surface token audit with
+zero legacy raw values before implementation closes.
+
 ## Changelog
 
 - v1.0 (2026-09-30): initial version. Tokens, states, components, rules, and the skill system.
+- v5.0 (2026-10-06): the v5 design direction merged as section 26, superseding section 6
+  where they conflict. Crimson Modern x Signal Operations hybrid: two-mode radius,
+  academic pulse strip, decision rail, AA-corrected accent and warning, formal chart
+  palette, cream milestone surface, dark pairs. Rollback: tag `design-v4-final`.
 - v1.1 (2026-10-01): correction pass from wayfinder ticket flags. Lifecycle reset to 8 settled states
   plus discarded; SubmitSuggestionCard; dean rail reduced; queue aging via server flag.
 - v3.0 (2026-10-05): interactive course map with chain highlighting and a detail panel,
