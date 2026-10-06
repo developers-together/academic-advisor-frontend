@@ -7,6 +7,12 @@ let queueFilter = 'all';
 let caseloadSearch = '';
 let caseloadFilter = 'all';
 let hoursSavedAt = '';
+let triageOn = false;
+let triageIndex = 0;
+let hoursDraft = null;
+
+/* Keyboard triage on the queue (C-02). Registers once; acts only while triage is on. */
+if (!App._triageWired) { App._triageWired = true; window.addEventListener('keydown', (event) => { if (!triageOn || !App.queueRows || !App.queueRows.length) return; const rows = App.queueRows; if (['j','k','a','r','Enter','Escape'].includes(event.key) === false && event.key.toLowerCase() !== 'j') return; const tag = (document.activeElement && document.activeElement.tagName) || ''; if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return; if (event.key === 'j' || event.key === 'J') { event.preventDefault(); triageIndex = Math.min(rows.length - 1, triageIndex + 1); App.render(); } else if (event.key === 'k' || event.key === 'K') { event.preventDefault(); triageIndex = Math.max(0, triageIndex - 1); App.render(); } else if (event.key === 'Enter') { const r = rows[triageIndex]; if (r) { App.reviewStudent = r.id; App.go('#/advisor/review'); } } else if (event.key === 'a' || event.key === 'A') { const r = rows[triageIndex]; if (r) { Store.approvePlan(r.id); Store.toast('Plan approved.'); App.render(); } } else if (event.key === 'r' || event.key === 'R') { const r = rows[triageIndex]; if (r) { App.returnTarget = r.id; App.go('#/advisor/return'); } } else if (event.key === 'Escape') { triageOn = false; App.render(); } }); }
 
 function stateChip(status) {
   return UI.chip(status === 'under_review' ? 'review' : status);
@@ -69,6 +75,7 @@ App.views['/advisor'] = function () {
   const summary = next
     ? `<p class="sm muted">Next up: ${UI.esc(next.user.name)}, waiting ${dayWord(next.plan.waitingDays)}</p>`
     : `<p class="sm muted">No plan is aging. The queue sits inside the threshold.</p>`;
+  App.queueRows = shown;
   return `
     ${UI.pageHead('Queue', 'Plans waiting on your decision',
       `<label class="row gap-2 sm muted" style="white-space:nowrap;">Sort
@@ -78,17 +85,20 @@ App.views['/advisor'] = function () {
           <option value="updated"${queueSort === 'updated' ? ' selected' : ''}>Last updated</option>
           <option value="oldest"${queueSort === 'oldest' ? ' selected' : ''}>Oldest first</option>
         </select>
-      </label>`)}
+      </label>
+      <button class="btn outline sm" onclick="triageOn=!triageOn; triageIndex=0; App.render();">Triage mode</button>`)}
     <div class="row between wrap gap-2">
       <div class="tabs">
         ${tabs.map(([key, label, count]) => `<button class="tab ${queueFilter === key ? 'active' : ''}" onclick="queueFilter='${key}'; App.render();">${label} <span class="count">(${count})</span></button>`).join('')}
       </div>
       ${summary}
     </div>
+    ${triageOn ? `
+    <div class="banner info"><span class="b-icon">⌨</span><div class="row between" style="flex:1; gap:8px; flex-wrap:wrap;"><span class="row gap-3 sm"><span><kbd>J</kbd>/<kbd>K</kbd> move</span><span><kbd>Enter</kbd> review</span><span><kbd>A</kbd> approve</span><span><kbd>R</kbd> return</span><span><kbd>Esc</kbd> exit</span></span><button class="btn outline sm" onclick="triageOn=false; App.render();">Exit triage</button></div></div>` : ''}
     ${shown.length ? (Store.theme() === 'v5' ? `
     <div class="col gap-2">
-      ${shown.map((r) => `
-      <div class="rail-row" tabindex="0">
+      ${shown.map((r, i) => `
+      <div class="rail-row" tabindex="0"${triageOn && i === triageIndex ? ' style="outline:2px solid var(--crimson-500); outline-offset:-2px;"' : ''}>
         <div class="col"><span class="sm" style="font-weight:600;">${UI.esc(r.user.name)}</span><span class="xs muted num">${r.user.studentId || '—'}</span></div>
         <div>${stateChip(r.plan.status)}</div>
         <div class="col"><span class="xs muted">Signal</span><span class="sm">${r.plan.note ? `“${UI.esc(r.plan.note)}”` : 'Awaiting first decision'}</span></div>
@@ -101,7 +111,7 @@ App.views['/advisor'] = function () {
     </div>` : UI.tableWrap(
       ['Student', 'State', { label: 'Waiting', right: true }, { label: 'Last update', right: true }, 'Note', ''],
       shown.map((r, i) => `
-        <tr${i === 0 ? ' class="pinned"' : ''} tabindex="0">
+        <tr${(triageOn ? i === triageIndex : i === 0) ? ' class="pinned"' : ''} tabindex="0">
           <td><b>${UI.esc(r.user.name)}</b><div class="xs muted num">${r.user.studentId || '—'}</div></td>
           <td>${stateChip(r.plan.status)}</td>
           <td class="num">${r.plan.aging ? `<b style="color:var(--warning);">${dayWord(r.plan.waitingDays)}</b> <span class="chip warning sm" style="margin-inline-start:4px;">Aging</span>` : `${dayWord(r.plan.waitingDays)}`}</td>
@@ -300,12 +310,13 @@ App.views['/advisor/meetings'] = function () {
 App.views['/advisor/hours'] = function () {
   App.titles['/advisor/hours'] = ['Office Hours'];
   const me = Store.me();
+  if (!hoursDraft) hoursDraft = Store.user(2).hours.map((r) => [...r]);
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const hourRow = ([d, f, t]) => `<div class="row gap-2 wrap">
+  const hourRow = ([d, f, t], i) => `<div class="row gap-2 wrap">
     <select class="input" style="width:130px;" aria-label="Day">${days.map((x) => `<option${x === d ? ' selected' : ''}>${x}</option>`).join('')}</select>
     <input class="input" type="time" style="width:110px;" value="${f}" aria-label="From" />
     <input class="input" type="time" style="width:110px;" value="${t}" aria-label="To" />
-    <button class="btn ghost sm" type="button" onclick="Store.toast('Remove applies when you publish (simulated).', 'info')">Remove</button>
+    <button class="btn ghost sm" type="button"${hoursDraft.length === 1 ? ' disabled' : ''} onclick="hoursDraft.splice(${i},1); App.render(); document.getElementById('dirty-bar').style.display='flex';">Remove</button>
   </div>`;
   return `
     ${UI.pageHead('Office Hours', 'Availability and profile · where students find you, and when they can book')}
@@ -314,8 +325,8 @@ App.views['/advisor/hours'] = function () {
       <div class="row between" style="flex:1; gap:8px; flex-wrap:wrap;">
         <span class="b-title">You have unsaved changes</span>
         <div class="row gap-2">
-          <button class="btn ghost sm" onclick="App.render()">Discard</button>
-          <button class="btn primary sm" onclick="hoursSavedAt = 'just now'; Store.toast('Published. Students see these hours from tomorrow.');">Save now</button>
+          <button class="btn ghost sm" onclick="hoursDraft = null; App.render();">Discard</button>
+          <button class="btn primary sm" onclick="hoursSavedAt = 'just now'; Store.user(2).hours = hoursDraft.map((r) => [...r]); Store.toast('Published. Students see these hours from tomorrow.');">Save now</button>
         </div>
       </div>
     </div>
@@ -335,7 +346,8 @@ App.views['/advisor/hours'] = function () {
       <div class="row between wrap gap-2"><h2>Weekly hours</h2><span class="chip neutral">30-minute slots</span></div>
       <form data-dirty="dirty-bar" oninput="document.getElementById('dirty-bar').style.display='flex'" onsubmit="return false;">
         <div class="col gap-2">
-          ${me.hours.map(hourRow).join('')}
+          ${hoursDraft.map(hourRow).join('')}
+          <button class="btn outline sm" type="button" style="align-self:flex-start;"${hoursDraft.length >= 5 ? ' disabled' : ''} onclick="hoursDraft.push(['Monday','09:00','11:00']); App.render(); document.getElementById('dirty-bar').style.display='flex';">+ Add a row (max 5)</button>
           <div class="row gap-2 wrap" style="background:var(--destructive-bg); border:1px solid var(--destructive-border); border-radius:var(--radius-sm); padding:8px;">
             <select class="input" style="width:130px; background:var(--card);" aria-label="Day"><option>Wednesday</option></select>
             <input class="input" type="time" style="width:110px; background:var(--card);" value="16:00" aria-label="From" />
@@ -350,7 +362,7 @@ App.views['/advisor/hours'] = function () {
     <div class="card col gap-2" style="max-width:560px;">
       <h2>Publish</h2>
       <div class="row wrap gap-2">
-        <button class="btn primary" onclick="hoursSavedAt = 'just now'; Store.toast('Published. Students see these hours from tomorrow.');">Publish hours</button>
+        <button class="btn primary" onclick="hoursSavedAt = 'just now'; Store.user(2).hours = hoursDraft.map((r) => [...r]); Store.toast('Published. Students see these hours from tomorrow.');">Publish hours</button>
         <button class="btn outline" onclick="Store.toast('Confirm dialog: Clear hours? This prototype skips the dialog.', 'info')">Clear hours</button>
       </div>
       <p class="hint">Confirm dialog: Clear hours?</p>
@@ -369,21 +381,5 @@ App.views['/advisor/profile'] = function () {
 
 App.views['/advisor/notifications'] = function () {
   App.titles['/advisor/notifications'] = ['Notifications'];
-  const items = Store.notifsFor();
-  return `
-    ${UI.pageHead('Notifications', 'Everything that needs you, in one list',
-      `<button class="btn outline sm" onclick="Store.markAllRead()">Mark all as read</button>`)}
-    <div class="card col" style="padding:0; overflow:hidden;">
-      ${items.map((n) => `
-        <div class="notif ${n.read ? '' : 'unread'}">
-          ${n.read ? '<span style="width:7px; flex:none;"></span>' : '<span class="unread-dot"></span>'}
-          <span class="n-icon" style="background:var(--muted);">${n.icon}</span>
-          <div class="col gap-1" style="flex:1;">
-            <span class="n-title">${UI.esc(n.title)}</span>
-            <span class="n-body">${UI.esc(n.body)}</span>
-            ${n.action ? `<div class="row gap-2" style="margin-top:4px;"><a class="btn outline sm" href="${n.action.route}" onclick="Store.markRead(${n.id})">${n.action.label}</a></div>` : ''}
-          </div>
-          <span class="n-time">${n.time}</span>
-        </div>`).join('')}
-    </div>`;
+  return UI.notificationsView();
 };
