@@ -29,7 +29,7 @@ test('authenticate as the seeded dean', async ({ page }) => {
   await login(page, 'dean@ejust.edu.eg', '/dean');
   await page.context().storageState({ path: DEAN_AUTH_FILE });
   await expect(
-    page.getByRole('heading', { name: 'Department Overview' }),
+    page.getByRole('heading', { name: 'Faculty Overview' }),
   ).toBeVisible();
 });
 
