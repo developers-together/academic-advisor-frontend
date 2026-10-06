@@ -163,6 +163,11 @@ export const adminHandlers = [
     await networkDelay();
     const url = new URL(request.url);
     const search = (url.searchParams.get('search') ?? '').trim().toLowerCase();
+    const page = Math.max(1, Number(url.searchParams.get('page') ?? '1') || 1);
+    const perPage = Math.max(
+      1,
+      Number(url.searchParams.get('per_page') ?? '50') || 50,
+    );
     const students = db.user
       .findMany({ where: { role: { equals: 'student' } } })
       .filter(
@@ -174,7 +179,19 @@ export const adminHandlers = [
       )
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((student) => sanitizeUser(student));
-    return HttpResponse.json({ data: students });
+    const start = (page - 1) * perPage;
+    const slice = students.slice(start, start + perPage);
+    return HttpResponse.json({
+      data: slice,
+      meta: {
+        current_page: page,
+        per_page: perPage,
+        total: students.length,
+      },
+      links: {
+        next: start + perPage < students.length ? `?page=${page + 1}` : null,
+      },
+    });
   }),
 
   http.post(`${env.API_URL}/admin/students`, async ({ request }) => {
