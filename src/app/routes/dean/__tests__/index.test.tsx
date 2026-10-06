@@ -501,9 +501,12 @@ test('a 403 export renders the dean denied panel', async () => {
 
   await user.click(await screen.findByRole('button', { name: 'Export CSV' }));
 
+  // A denied export keeps the aggregates on screen and flags the denial
+  // instead of replacing the page (design.md DP-10).
   expect(
-    await screen.findByText('This area is for Deans.'),
+    await screen.findByText('You do not have access to this content.'),
   ).toBeInTheDocument();
+  await deanSeesFaculty();
 });
 
 test('the overview carries no mutation affordances', async () => {
