@@ -96,7 +96,7 @@ export const MilestonesCard = ({
                     className={cn(
                       'mt-0.5 block text-xs',
                       milestone.earned
-                        ? 'text-success'
+                        ? 'text-success-emphasis'
                         : 'text-muted-foreground',
                     )}
                   >

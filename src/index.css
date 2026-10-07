@@ -71,6 +71,7 @@
   /* Semantic status (design.md 3.3) */
   --color-success: hsl(var(--success));
   --color-success-foreground: hsl(var(--success-foreground));
+  --color-success-emphasis: hsl(var(--success-emphasis));
   --color-warning: hsl(var(--warning));
   --color-warning-foreground: hsl(var(--warning-foreground));
   --color-info: hsl(var(--info));
@@ -202,6 +203,7 @@
 
     --success: 149 45% 36%; /* #32845A, 4.6:1 on white */
     --success-foreground: 0 0% 100%;
+    --success-emphasis: 163 94% 24%; /* emerald-700 #047857, 4.9:1 on success tints */
     --warning: 40 100% 30%; /* #9A6700, 4.8:1 on white */
     --warning-foreground: 0 0% 9%;
     --info: 211 64% 40%; /* #2563A6, 6.3:1 on white */
@@ -285,6 +287,7 @@
 
     --success: 158 64% 52%; /* emerald-500 */
     --success-foreground: 0 0% 9%;
+    --success-emphasis: 158 64% 52%;
     --warning: 45 96% 56%; /* amber-500 */
     --warning-foreground: 0 0% 9%;
     --info: 199 92% 60%; /* sky-500 */

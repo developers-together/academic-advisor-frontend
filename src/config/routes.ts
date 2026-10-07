@@ -457,8 +457,10 @@ const admin: RoleRouteDefinition[] = [
     role: 'admin',
     labelKey: 'nav.notifications',
     icon: Bell,
-    nav: 'more',
+    nav: 'group',
+    groupKey: 'nav.operations',
     command: true,
+    parent: 'admin.operations',
   },
   {
     id: 'admin.students',
