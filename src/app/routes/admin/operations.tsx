@@ -33,6 +33,11 @@ const tasks = [
     hintKey: 'operations.items.registrationWindows',
   },
   {
+    to: paths.admin.academics.getHref(),
+    labelKey: 'nav.academics',
+    hintKey: 'operations.items.academics',
+  },
+  {
     to: paths.admin.notifications.getHref(),
     labelKey: 'nav.notifications',
     hintKey: 'operations.items.notifications',

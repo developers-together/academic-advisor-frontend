@@ -177,6 +177,10 @@ export const paths = {
       path: 'registration-windows',
       getHref: () => '/admin/registration-windows',
     },
+    academics: {
+      path: 'academics',
+      getHref: () => '/admin/academics',
+    },
     aiConfiguration: {
       path: 'ai-configuration',
       getHref: () => '/admin/ai-configuration',

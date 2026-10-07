@@ -33,7 +33,7 @@ export const PlanLine = ({
       {lineTitle && (
         <span className="min-w-0 flex-1 truncate text-sm">{lineTitle}</span>
       )}
-      <span className="text-xs tabular-nums text-muted-foreground">
+      <span className="text-xs text-muted-foreground tabular-nums">
         {t('builder.line.credits', { credits: course.credits })}
       </span>
       {course.reason && (

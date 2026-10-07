@@ -77,3 +77,29 @@ Lower priority; recorded so they reach backend triage. Each was accepted or work
 - Governance: the dean 403 lacks a stable error key; an advisor-performance endpoint would unlock the parked scoreboard detail; a trends series endpoint would unlock the trends chart. (acad-abl.17)
 - Admin: no audit/system-log endpoint (M5 ships deferred); password reset needs a staff id but there is no staff list; a rule enable field exists only if wanted; riders for `search-matches-email` and `rows.{n}` 422 keys. (acad-abl.18)
 - Chat: a quota read endpoint would let the UI show remaining turns; v1 ships with the count invisible until exhaustion. (acad-abl.15, acad-abl.20 item 9)
+
+## SIS integration interim assumptions (2026-10-07)
+
+The backend branch `ticket/acad-42g` (handoff doc: "frontend integration after the SIS integration
+spec") was not pushed while this pass shipped, so the frontend followed the handoff document, not
+`openapi.json`. Bead acad-tmu.6 reconciles every assumption below against the contract when the
+branch lands. The handoff document remains the map; openapi.json wins every conflict.
+
+- Registration: `POST /api/register` takes `national_id` (14 digits, required); the 422 key
+  `verification.national_id_mismatch` renders on the verify-email screen.
+- Planned courses: `{course_code, title, credits, reason}`; the PATCH route and AI
+  `plan.update_course` tool are gone from the UI. `CurrentEnrollment` keeps `group`/`section`
+  until the contract says otherwise.
+- Academic record: attempts carry `{course_code, name, credits, year, semester, level, grade}`;
+  the `staleness` block is gone and `RecordFreshness` shows `last_synced_at` with a retry.
+- Plan rules: `active_course.<code>` routes to a plan line; `allowance_missing` and
+  `allowance_outside` render as plan messages; server words render verbatim.
+- Admin imports: `POST /api/admin/imports/{dataset}` answers
+  `{imported, skipped, errors: string[]}` with row text inside each message; the error list caps at
+  20 visible rows. Current term: `{code, kind, opens, closes, starts}` with `kind` a free string on
+  the type and a fall/spring/summer select in the form.
+- Term kinds and the exact import report field names need contract confirmation.
+
+Test-environment note: jsdom multipart uploads reach MSW handlers as an empty form body, so
+integration tests stub the import endpoints with `server.use` (the assignments import test
+established the pattern).

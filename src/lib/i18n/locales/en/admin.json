@@ -449,8 +449,61 @@
       "programs": "Program structure behind degree progress.",
       "rules": "Prerequisite and eligibility rules the validator applies.",
       "registrationWindows": "Open, close, and annotate registration periods.",
+      "academics": "Registrar imports, the current term, and the SIS mirror.",
       "notifications": "Notification categories and triggers.",
       "aiConfiguration": "What the AI advisor may do for students."
+    }
+  },
+  "academics": {
+    "title": "Academics data",
+    "context": "Import the registrar files the plan and AI build on, set the current term, and reset the SIS mirror.",
+    "currentTerm": {
+      "title": "Current term",
+      "context": "The term plans are built for. It drives the registration window and the credit allowance.",
+      "code": "Term code",
+      "kind": "Term kind",
+      "kind_fall": "Fall",
+      "kind_spring": "Spring",
+      "kind_summer": "Summer",
+      "opens": "Window opens",
+      "closes": "Window closes",
+      "starts": "Term starts",
+      "save": "Save term",
+      "saved": "Current term saved."
+    },
+    "imports": {
+      "title": "Registrar imports",
+      "context": "Upload one file per dataset. Blank rows are skipped and one bad row never fails the file.",
+      "statistics": "Statistics",
+      "statisticsHint": "Grade history per course and academic year: mean and mode grades.",
+      "active-courses": "Active courses",
+      "active-coursesHint": "What runs this term: capacities, coordinator, and the online flag.",
+      "credit-allowances": "Credit allowances",
+      "credit-allowancesHint": "Per-student minimum and maximum credit hours for each term kind.",
+      "curricula": "Curricula",
+      "curriculaHint": "The course map source: programs, levels, and required courses.",
+      "fileLabel": "CSV or XLSX up to 2 MB.",
+      "upload": "Import file",
+      "confirmTitle": "Import this file?",
+      "confirmBody": "Rows already in the system are skipped. The report lists every rejected row.",
+      "summary": "Imported {{imported}}. Skipped {{skipped}}. Rejected {{errors}}.",
+      "reportTitle": "Rejected rows",
+      "reportRow": "Row {{n}}",
+      "reportMore": "{{count}} more rows not shown.",
+      "success": "{{dataset}} import finished.",
+      "errors": {
+        "fileType": "Choose a CSV or XLSX file.",
+        "fileSize": "Files are limited to 2048 KB.",
+        "fileRequired": "Choose a file first."
+      }
+    },
+    "sisRevoke": {
+      "title": "SIS mirror",
+      "context": "One reset clears every imported mirror table. The next admin import rebuilds them.",
+      "revoke": "Revoke mirror",
+      "confirmTitle": "Revoke the SIS mirror?",
+      "confirmBody": "Plans and the AI advisor read from the mirror. Revoke only for a full re-import.",
+      "revoked": "SIS mirror revoked."
     }
   }
 }

@@ -40,7 +40,7 @@ export const BuilderLine = ({
           )}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 sm:mt-0 sm:flex-nowrap sm:gap-3">
-          <span className="text-xs tabular-nums text-muted-foreground">
+          <span className="text-xs text-muted-foreground tabular-nums">
             {t('builder.line.credits', { credits: course.credits })}
           </span>
           <Button

@@ -619,9 +619,14 @@ validation → confirmation.
   **Courses** (M3: metadata CRUD), **Programs** (M4: structure CRUD), **Rules** (M5: prerequisite and
   eligibility rules editor), **Registration Windows** (M6: window state and period metadata),
   **Notifications** (M7: configuration), **AI Configuration** (M8: AI product configuration — no
-  infrastructure settings).
-- Destructive actions follow PR-17. Scope stays fixed (PR-18): no org management, SIS sync
-  management, audit logs, support center, system health.
+  infrastructure settings), **Academics** (M9: registrar imports for statistics, active courses,
+  credit allowances, and curricula; the current-term form; the SIS mirror revoke).
+- The Academics screen follows the SIS integration contract (backend ticket/acad-42g): every import
+  answers an imported/skipped/rejected report; rejected-row lists scroll and cap at 20 rows with a
+  "N more" note, because registrar files with hundreds of bad rows are a normal case.
+- Destructive actions follow PR-17. Scope stays fixed (PR-18): no org management, audit logs,
+  support center, system health. SIS data administration moved into admin scope with the SIS
+  integration; the SIS itself stays read-only (PR-16).
 
 ## 14. AI UX
 

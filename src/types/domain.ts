@@ -415,6 +415,23 @@ export type ImportSummary = {
   scheduled: number;
 };
 
+export type AcademicsImportDataset =
+  'statistics' | 'active-courses' | 'credit-allowances' | 'curricula';
+
+export type AcademicsImportReport = {
+  imported: number;
+  skipped: number;
+  errors: string[];
+};
+
+export type CurrentTerm = {
+  code: string;
+  kind: string;
+  opens: string;
+  closes: string;
+  starts: string;
+};
+
 export type StaffMember = Omit<User, 'role'> & {
   role: StaffRole;
   students_count: number;

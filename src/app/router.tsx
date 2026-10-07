@@ -59,6 +59,7 @@ const loaders: Record<string, () => Promise<{ default: unknown }>> = {
   'admin.rules': () => import('./routes/admin/rules'),
   'admin.registration-windows': () =>
     import('./routes/admin/registration-windows'),
+  'admin.academics': () => import('./routes/admin/academics'),
   'admin.ai-configuration': () => import('./routes/admin/ai-configuration'),
   'admin.notifications': () => import('./routes/admin/notifications'),
 };

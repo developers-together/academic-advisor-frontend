@@ -4,7 +4,7 @@ import { env } from '@/config/env';
 import type { ImportSummary, UniversityRule } from '@/types/domain';
 
 import { db } from '../db';
-import { requireAuth, sanitizeUser } from '../mock-auth';
+import { CURRENT_TERM, requireAuth, sanitizeUser } from '../mock-auth';
 import { getScenario, deniesPermission, injectsErrors } from '../scenarios';
 import { hash, networkDelay } from '../utils';
 
@@ -13,6 +13,23 @@ const unauthorised = () =>
     { message: 'This action is unauthorized.' },
     { status: 403 },
   );
+
+const ACADEMICS_DATASETS = new Set([
+  'statistics',
+  'active-courses',
+  'credit-allowances',
+  'curricula',
+]);
+
+const TERM_KINDS = new Set(['fall', 'spring', 'summer']);
+
+let currentTermState = {
+  code: CURRENT_TERM,
+  kind: 'fall',
+  opens: '2026-09-20',
+  closes: '2026-10-01',
+  starts: '2026-10-10',
+};
 
 const requireAdmin = (request: Request) => {
   const user = requireAuth(request);
@@ -1267,6 +1284,115 @@ export const adminHandlers = [
           ...data,
         });
     return HttpResponse.json({ data: updated });
+  }),
+
+  http.post(
+    `${env.API_URL}/admin/imports/:dataset`,
+    async ({ request, params }) => {
+      await networkDelay();
+      if (deniesPermission()) {
+        return unauthorised();
+      }
+      requireAdmin(request);
+      if (injectsErrors()) {
+        return HttpResponse.json(
+          { message: 'The server encountered an error.' },
+          { status: 500 },
+        );
+      }
+      const dataset = String(params.dataset);
+      if (!ACADEMICS_DATASETS.has(dataset)) {
+        return HttpResponse.json(
+          { message: 'Unknown import dataset.' },
+          { status: 404 },
+        );
+      }
+      const form = await request.formData();
+      const raw = form.get('file') as File | null;
+      const file =
+        raw && typeof raw.name === 'string' && typeof raw.size === 'number'
+          ? raw
+          : new File([String(raw ?? '')], 'import.csv', { type: 'text/csv' });
+      if (!file.size) {
+        return invalid({ file: ['Choose a CSV or XLSX file first.'] });
+      }
+      if (file.size > MAX_FILE_BYTES) {
+        return invalid({ file: ['Files are limited to 2048 KB.'] });
+      }
+      const extension = file.name
+        .slice(file.name.lastIndexOf('.'))
+        .toLowerCase();
+      if (!['.csv', '.xlsx'].includes(extension)) {
+        return invalid({ file: ['Files must be CSV or XLSX.'] });
+      }
+      const errorCount = file.name.includes('rejected') ? 23 : 0;
+      const report = {
+        imported: errorCount > 0 ? 4 : 128,
+        skipped: 3,
+        errors: Array.from(
+          { length: errorCount },
+          (_, index) =>
+            `Row ${index + 1}: the value does not match the expected format.`,
+        ),
+      };
+      return HttpResponse.json({ data: report });
+    },
+  ),
+
+  http.get(`${env.API_URL}/admin/current-term`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return unauthorised();
+    }
+    requireAdmin(request);
+    return HttpResponse.json({ data: currentTermState });
+  }),
+
+  http.put(`${env.API_URL}/admin/current-term`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return unauthorised();
+    }
+    requireAdmin(request);
+    const body = (await request.json()) as Record<string, unknown>;
+    const errors: Record<string, string[]> = {};
+    if (typeof body.code !== 'string' || !body.code.trim()) {
+      errors.code = ['The term code is required.'];
+    }
+    if (typeof body.kind !== 'string' || !TERM_KINDS.has(body.kind)) {
+      errors.kind = ['Choose a term kind.'];
+    }
+    for (const field of ['opens', 'closes', 'starts'] as const) {
+      if (typeof body[field] !== 'string' || !body[field]) {
+        errors[field] = ['Pick a date.'];
+      }
+    }
+    if (Object.keys(errors).length > 0) {
+      return invalid(errors);
+    }
+    currentTermState = {
+      code: String(body.code),
+      kind: String(body.kind),
+      opens: String(body.opens),
+      closes: String(body.closes),
+      starts: String(body.starts),
+    };
+    return HttpResponse.json({ data: currentTermState });
+  }),
+
+  http.post(`${env.API_URL}/admin/sis/revoke`, async ({ request }) => {
+    await networkDelay();
+    if (deniesPermission()) {
+      return unauthorised();
+    }
+    requireAdmin(request);
+    if (injectsErrors()) {
+      return HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      );
+    }
+    return new HttpResponse(null, { status: 204 });
   }),
 ];
 

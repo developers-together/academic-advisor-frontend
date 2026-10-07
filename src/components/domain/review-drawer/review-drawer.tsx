@@ -223,7 +223,7 @@ export const ReviewDrawer = ({
                           <span className="bidi-code font-mono text-sm font-semibold">
                             {course.course_code}
                           </span>
-                          <span className="ms-auto text-xs tabular-nums text-muted-foreground">
+                          <span className="ms-auto text-xs text-muted-foreground tabular-nums">
                             {t('plan:builder.line.credits', {
                               credits: course.credits,
                             })}
