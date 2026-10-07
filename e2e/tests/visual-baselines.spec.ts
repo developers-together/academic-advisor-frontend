@@ -37,6 +37,11 @@ for (const width of WIDTHS) {
         await page.emulateMedia({ reducedMotion: 'reduce' });
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
         await page.evaluate(() => document.fonts.ready);
+        await page.waitForFunction(
+          () => document.querySelectorAll('.animate-pulse').length === 0,
+          undefined,
+          { timeout: 15000 },
+        );
         await expect(page).toHaveScreenshot(snapshotName(url, width, 'light'), {
           fullPage: true,
           animations: 'disabled',
@@ -60,6 +65,11 @@ for (const { url, auth } of PAGES) {
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
+      await page.waitForFunction(
+        () => document.querySelectorAll('.animate-pulse').length === 0,
+        undefined,
+        { timeout: 15000 },
+      );
       await expect(page).toHaveScreenshot(snapshotName(url, 1440, 'dark'), {
         fullPage: true,
         animations: 'disabled',
@@ -80,6 +90,11 @@ for (const { url, auth } of PAGES) {
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
+      await page.waitForFunction(
+        () => document.querySelectorAll('.animate-pulse').length === 0,
+        undefined,
+        { timeout: 15000 },
+      );
       await expect(page).toHaveScreenshot(snapshotName(url, 1440, 'ar'), {
         fullPage: true,
         animations: 'disabled',
