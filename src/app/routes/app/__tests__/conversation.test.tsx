@@ -213,8 +213,8 @@ test('an applied plan edit renders a localized system row with the isolated cour
         if (row) {
           const courses = JSON.parse(row.courses as string) as Array<{
             course_code: string;
-            group: string;
-            section: string;
+            title: string | null;
+            credits: number;
             reason: string | null;
           }>;
           db.plan.update({
@@ -223,8 +223,8 @@ test('an applied plan edit renders a localized system row with the isolated cour
               courses: JSON.stringify(
                 courses.concat({
                   course_code: 'CS 301',
-                  group: 'G1',
-                  section: '01',
+                  title: null,
+                  credits: 3,
                   reason: null,
                 }),
               ),
@@ -257,7 +257,7 @@ test('an applied plan edit renders a localized system row with the isolated cour
     status: 'draft',
     term_code: '2026F',
     courses: JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
     ]),
     warnings: JSON.stringify([]),
     total_credit_hours: 0,

@@ -13,8 +13,8 @@ const seedPlan = async (
     status: 'draft',
     term_code: CURRENT_TERM,
     courses: JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
-      { course_code: 'MATH 201', group: 'G2', section: '03', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+      { course_code: 'MATH 201', title: null, credits: 4, reason: null },
     ]),
     warnings: JSON.stringify([]),
     total_credit_hours: 0,

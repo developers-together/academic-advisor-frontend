@@ -41,8 +41,8 @@ const courseMap = [
 ];
 
 const planCourses = [
-  { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
-  { course_code: 'CS 301', group: 'G2', section: '02', reason: null },
+  { course_code: 'CS 201', title: null, credits: 3, reason: null },
+  { course_code: 'CS 301', title: null, credits: 3, reason: null },
 ];
 
 const seedAdvisor = async () =>

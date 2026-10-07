@@ -39,8 +39,8 @@ export type PlanStatus =
 
 export type PlannedCourse = {
   course_code: string;
-  group: string;
-  section: string;
+  title: string | null;
+  credits: number;
   reason: string | null;
 };
 

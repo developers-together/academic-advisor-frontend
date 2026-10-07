@@ -2,7 +2,6 @@ import { Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
-import { OFFERED_GROUPS, OFFERED_SECTIONS } from '@/config/plan-offerings';
 import type { PlannedCourse } from '@/types/domain';
 import { cn } from '@/utils/cn';
 
@@ -11,8 +10,6 @@ export type BuilderLineProps = {
   title: string | null;
   disabled?: boolean;
   errors?: string[];
-  onGroupChange: (group: string) => void;
-  onSectionChange: (section: string) => void;
   onRemove: () => void;
   className?: string;
 };
@@ -22,15 +19,12 @@ export const BuilderLine = ({
   title,
   disabled = false,
   errors = [],
-  onGroupChange,
-  onSectionChange,
   onRemove,
   className,
 }: BuilderLineProps) => {
   const { t } = useTranslation('plan');
 
-  const selectClass =
-    'min-h-11 rounded-md border border-input bg-transparent px-2 text-base focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm [@media(pointer:fine)_and_(min-width:1024px)]:min-h-9';
+  const lineTitle = course.title ?? title;
 
   return (
     <div className={cn('py-3', className)}>
@@ -39,43 +33,16 @@ export const BuilderLine = ({
           <span className="bidi-code font-mono text-sm font-semibold">
             {course.course_code}
           </span>
-          {title && (
+          {lineTitle && (
             <span className="mt-0.5 block text-sm sm:mt-0 sm:min-w-0 sm:truncate">
-              {title}
+              {lineTitle}
             </span>
           )}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 sm:mt-0 sm:flex-nowrap sm:gap-3">
-          <select
-            aria-label={t('builder.line.groupAria', {
-              code: course.course_code,
-            })}
-            value={course.group}
-            disabled={disabled}
-            onChange={(event) => onGroupChange(event.target.value)}
-            className={cn(selectClass, 'flex-1 sm:flex-none')}
-          >
-            {OFFERED_GROUPS.map((group) => (
-              <option key={group} value={group}>
-                {group}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label={t('builder.line.sectionAria', {
-              code: course.course_code,
-            })}
-            value={course.section}
-            disabled={disabled}
-            onChange={(event) => onSectionChange(event.target.value)}
-            className={cn(selectClass, 'flex-1 sm:flex-none')}
-          >
-            {OFFERED_SECTIONS.map((section) => (
-              <option key={section} value={section}>
-                {section}
-              </option>
-            ))}
-          </select>
+          <span className="text-xs tabular-nums text-muted-foreground">
+            {t('builder.line.credits', { credits: course.credits })}
+          </span>
           <Button
             variant="ghost"
             size="icon"

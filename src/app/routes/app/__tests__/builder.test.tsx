@@ -96,7 +96,7 @@ test('adding a course posts it and shows the returned plan row without a refetch
   seedDraftPlan(
     user.id as number,
     JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
     ]),
   );
   seedAcademicRecord(user.id as number);
@@ -135,8 +135,8 @@ test('the picker lists map entries minus plan members with their map state', asy
   seedDraftPlan(
     user.id as number,
     JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
-      { course_code: 'MATH 201', group: 'G2', section: '03', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+      { course_code: 'MATH 201', title: null, credits: 4, reason: null },
     ]),
   );
   seedAcademicRecord(user.id as number);
@@ -176,7 +176,7 @@ test('an empty picker search names the query', async () => {
   seedDraftPlan(
     user.id as number,
     JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
     ]),
   );
   seedAcademicRecord(user.id as number);
@@ -197,12 +197,12 @@ test('an empty picker search names the query', async () => {
   ).toBeInTheDocument();
 });
 
-test('group and section edits patch inline and remove is one click without a dialog', async () => {
+test('remove is one click without a dialog', async () => {
   const user = await createUser({ advisor_id: 2 });
   seedDraftPlan(
     user.id as number,
     JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
     ]),
   );
   seedAcademicRecord(user.id as number);
@@ -213,25 +213,8 @@ test('group and section edits patch inline and remove is one click without a dia
     url: '/app/builder',
   });
 
-  const groupSelect = await screen.findByRole('combobox', {
-    name: 'Group for CS 201',
-  });
-  await userEvent.selectOptions(groupSelect, 'G2');
-
-  await waitFor(() => expect(groupSelect).toHaveValue('G2'));
-  expect(
-    JSON.parse(
-      db.plan.findFirst({ where: { userId: { equals: user.id as number } } })
-        ?.courses ?? '[]',
-    )[0],
-  ).toMatchObject({ course_code: 'CS 201', group: 'G2' });
-
-  const sectionSelect = screen.getByRole('combobox', {
-    name: 'Section for CS 201',
-  });
-  await userEvent.selectOptions(sectionSelect, '03');
-  await waitFor(() => expect(sectionSelect).toHaveValue('03'));
-
+  expect(await screen.findByText('CS 201')).toBeInTheDocument();
+  expect(screen.getByText('3 credits')).toBeInTheDocument();
   expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
   await userEvent.click(screen.getByRole('button', { name: 'Remove CS 201' }));
@@ -254,9 +237,9 @@ test('a failed submit renders each server message under its line plus the groupe
   seedDraftPlan(
     user.id as number,
     JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
-      { course_code: 'CS 301', group: 'G1', section: '01', reason: null },
-      { course_code: 'CS 999', group: 'G2', section: '02', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+      { course_code: 'CS 301', title: null, credits: 3, reason: null },
+      { course_code: 'CS 999', title: null, credits: 3, reason: null },
     ]),
   );
   seedAcademicRecord(user.id as number);
@@ -322,10 +305,7 @@ test('a failed submit renders each server message under its line plus the groupe
     ),
   ).toBeInTheDocument();
 
-  await userEvent.selectOptions(
-    screen.getByRole('combobox', { name: 'Group for CS 201' }),
-    'G2',
-  );
+  await userEvent.click(screen.getByRole('button', { name: 'Remove CS 999' }));
 
   await waitFor(() =>
     expect(screen.getByRole('button', { name: /submit plan/i })).toBeEnabled(),
@@ -340,7 +320,8 @@ test('the window 422 renders the closed-window banner at the submit gate and the
   seedDraftPlan(
     user.id as number,
     JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+      { course_code: 'MATH 201', title: null, credits: 4, reason: null },
     ]),
   );
   seedAcademicRecord(user.id as number);
@@ -384,15 +365,14 @@ test('the window 422 renders the closed-window banner at the submit gate and the
     screen.queryByRole('button', { name: /submit plan/i }),
   ).not.toBeInTheDocument();
 
-  const groupSelect = screen.getByRole('combobox', {
-    name: 'Group for CS 201',
-  });
-  await userEvent.selectOptions(groupSelect, 'G2');
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Remove MATH 201' }),
+  );
 
-  await waitFor(() => expect(groupSelect).toHaveValue('G2'));
   expect(
-    screen.getByRole('button', { name: /submit plan/i }),
+    await screen.findByRole('button', { name: /submit plan/i }),
   ).toBeInTheDocument();
+  expect(screen.getByText('CS 201')).toBeInTheDocument();
 });
 
 test('a 503 submit renders the destructive retry banner and the builder stays editable', async () => {
@@ -400,7 +380,7 @@ test('a 503 submit renders the destructive retry banner and the builder stays ed
   seedDraftPlan(
     user.id as number,
     JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
     ]),
   );
   seedAcademicRecord(user.id as number);
@@ -437,11 +417,11 @@ test('a 503 submit renders the destructive retry banner and the builder stays ed
   expect(screen.getByRole('alert')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
 
-  const groupSelect = screen.getByRole('combobox', {
-    name: 'Group for CS 201',
-  });
-  await userEvent.selectOptions(groupSelect, 'G2');
-  await waitFor(() => expect(groupSelect).toHaveValue('G2'));
+  await userEvent.click(
+    await screen.findByRole('combobox', { name: /add a course/i }),
+  );
+  await userEvent.click(await screen.findByRole('option', { name: /CS 301/ }));
+  expect(await screen.findByText('CS 301')).toBeInTheDocument();
 });
 
 test('the builder flow is operable with the keyboard alone', async () => {
@@ -470,12 +450,6 @@ test('the builder flow is operable with the keyboard alone', async () => {
 
   expect(await screen.findByText('MATH 201')).toBeInTheDocument();
 
-  const groupSelect = screen.getByRole('combobox', {
-    name: 'Group for MATH 201',
-  });
-  await userEvent.selectOptions(groupSelect, 'G3');
-  await waitFor(() => expect(groupSelect).toHaveValue('G3'));
-
   const remove = screen.getByRole('button', { name: 'Remove MATH 201' });
   remove.focus();
   await userEvent.keyboard('{Enter}');
@@ -501,8 +475,8 @@ test('the builder renders no reason field or AI note anywhere', async () => {
     JSON.stringify([
       {
         course_code: 'CS 201',
-        group: 'G1',
-        section: '01',
+        title: null,
+        credits: 3,
         reason: 'The AI advisor suggested this course for your goal.',
       },
     ]),
@@ -580,7 +554,7 @@ test('discarding a plan confirms once and the plan leaves the draft builder', as
   seedDraftPlan(
     user.id as number,
     JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
     ]),
   );
   seedAcademicRecord(user.id as number);

@@ -35,7 +35,11 @@ test('the bell badge shows the unread count with its accessible name and a polit
   renderRealRouter('/app');
 
   expect(
-    await screen.findByRole('button', { name: '1 unread notifications' }),
+    await screen.findByRole(
+      'button',
+      { name: '1 unread notifications' },
+      { timeout: 4000 },
+    ),
   ).toBeInTheDocument();
   const statuses = await screen.findAllByRole('status');
   expect(

@@ -262,8 +262,8 @@ const seedQueue = () => {
     status: 'submitted',
     term_code: CURRENT_TERM,
     courses: JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
-      { course_code: 'MATH 201', group: 'G2', section: '03', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+      { course_code: 'MATH 201', title: null, credits: 4, reason: null },
     ]),
     warnings: JSON.stringify([]),
     total_credit_hours: 0,
@@ -274,7 +274,7 @@ const seedQueue = () => {
     status: 'submitted',
     term_code: CURRENT_TERM,
     courses: JSON.stringify([
-      { course_code: 'CS 201', group: 'G2', section: '02', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
     ]),
     warnings: JSON.stringify([]),
     total_credit_hours: 0,
@@ -285,7 +285,7 @@ const seedQueue = () => {
     status: 'under_review',
     term_code: CURRENT_TERM,
     courses: JSON.stringify([
-      { course_code: 'CS 201', group: 'G1', section: '03', reason: null },
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
     ]),
     warnings: JSON.stringify([
       'CS 201 sits outside the usual plan for this level.',
@@ -783,8 +783,8 @@ const seeds: Record<Scenario, () => void> = {
       status: 'draft',
       term_code: CURRENT_TERM,
       courses: JSON.stringify([
-        { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
-        { course_code: 'MATH 201', group: 'G2', section: '03', reason: null },
+        { course_code: 'CS 201', title: null, credits: 3, reason: null },
+        { course_code: 'MATH 201', title: null, credits: 4, reason: null },
       ]),
       warnings: JSON.stringify([]),
       total_credit_hours: 0,
@@ -828,7 +828,7 @@ const seeds: Record<Scenario, () => void> = {
       status: 'draft',
       term_code: CURRENT_TERM,
       courses: JSON.stringify([
-        { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+        { course_code: 'CS 201', title: null, credits: 3, reason: null },
       ]),
       warnings: JSON.stringify([]),
       total_credit_hours: 0,
@@ -843,7 +843,7 @@ const seeds: Record<Scenario, () => void> = {
       status: 'draft',
       term_code: CURRENT_TERM,
       courses: JSON.stringify([
-        { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+        { course_code: 'CS 201', title: null, credits: 3, reason: null },
       ]),
       warnings: JSON.stringify([]),
       total_credit_hours: 0,

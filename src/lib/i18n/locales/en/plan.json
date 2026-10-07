@@ -80,10 +80,7 @@
       "locked": "Locked"
     },
     "line": {
-      "group": "Group",
-      "section": "Section",
-      "groupAria": "Group for {{code}}",
-      "sectionAria": "Section for {{code}}",
+      "credits": "{{credits}} credits",
       "remove": "Remove {{code}}",
       "prerequisites": "Prerequisites",
       "prereqCaption": "The check result shows after submit.",

@@ -18,6 +18,8 @@ export const PlanLine = ({
 }: PlanLineProps) => {
   const { t } = useTranslation('plan');
 
+  const lineTitle = course.title ?? title;
+
   return (
     <div
       className={cn(
@@ -28,14 +30,11 @@ export const PlanLine = ({
       <span className="bidi-code font-mono text-sm font-semibold">
         {course.course_code}
       </span>
-      {title && (
-        <span className="min-w-0 flex-1 truncate text-sm">{title}</span>
+      {lineTitle && (
+        <span className="min-w-0 flex-1 truncate text-sm">{lineTitle}</span>
       )}
-      <span className="text-xs text-muted-foreground">
-        {t('builder.line.group')} {course.group}
-      </span>
-      <span className="text-xs text-muted-foreground">
-        {t('builder.line.section')} {course.section}
+      <span className="text-xs tabular-nums text-muted-foreground">
+        {t('builder.line.credits', { credits: course.credits })}
       </span>
       {course.reason && (
         <span className="w-full text-xs text-muted-foreground">

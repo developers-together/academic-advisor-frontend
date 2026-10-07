@@ -15,8 +15,8 @@ const plan: Plan = {
   term_code: '2026F',
   summary: null,
   courses: [
-    { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
-    { course_code: 'MATH 201', group: 'G2', section: '03', reason: null },
+    { course_code: 'CS 201', title: null, credits: 3, reason: null },
+    { course_code: 'MATH 201', title: null, credits: 4, reason: null },
   ],
   total_credit_hours: 0,
   warnings: ['CS 201 sits outside the usual plan for this level.'],

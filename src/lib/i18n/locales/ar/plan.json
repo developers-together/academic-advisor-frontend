@@ -80,10 +80,7 @@
       "locked": "مقفل"
     },
     "line": {
-      "group": "المجموعة",
-      "section": "الشعبة",
-      "groupAria": "مجموعة {{code}}",
-      "sectionAria": "شعبة {{code}}",
+      "credits": "{{credits}} ساعة",
       "remove": "إزالة {{code}}",
       "prerequisites": "المتطلبات السابقة",
       "prereqCaption": "تظهر نتيجة التحقق بعد التقديم.",

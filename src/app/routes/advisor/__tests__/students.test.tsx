@@ -78,7 +78,7 @@ const seedExplorerStudent = async (
       status: status ?? 'submitted',
       term_code: CURRENT_TERM,
       courses: JSON.stringify([
-        { course_code: 'CS 201', group: 'G1', section: '01', reason: null },
+        { course_code: 'CS 201', title: null, credits: 3, reason: null },
       ]),
       warnings: JSON.stringify([]),
       total_credit_hours: 0,

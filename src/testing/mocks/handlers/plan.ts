@@ -1,12 +1,6 @@
 import { HttpResponse, http } from 'msw';
 
 import { env } from '@/config/env';
-import {
-  DEFAULT_GROUP,
-  DEFAULT_SECTION,
-  isOfferedGroup,
-  isOfferedSection,
-} from '@/config/plan-offerings';
 import type {
   Plan,
   PlanComment,
@@ -50,11 +44,24 @@ const parsePlan = (row: {
 const planOf = (userId: number) =>
   db.plan.findFirst({ where: { userId: { equals: userId as number } } });
 
-const invalidBody = (errors: Record<string, string[]>) =>
-  HttpResponse.json(
-    { message: 'The given data was invalid.', errors },
-    { status: 422 },
-  );
+const CATALOG_CREDITS: Record<string, number> = {
+  'CS 101': 3,
+  'CS 201': 3,
+  'CS 301': 3,
+  'MATH 201': 4,
+};
+
+const catalogCredits = (courseCode: string) => CATALOG_CREDITS[courseCode] ?? 3;
+
+const catalogTitle = (userId: number, courseCode: string) => {
+  const record = db.academicRecord.findFirst({
+    where: { userId: { equals: userId as number } },
+  });
+  const map: PrerequisiteMapEntry[] = record
+    ? JSON.parse(record.prerequisite_map)
+    : [];
+  return map.find((entry) => entry.course_code === courseCode)?.title ?? null;
+};
 
 const parseCourseCode = (raw: string) => decodeURIComponent(raw);
 
@@ -169,8 +176,8 @@ export const planHandlers = [
         courses: JSON.stringify(
           courses.concat({
             course_code: courseCode,
-            group: DEFAULT_GROUP,
-            section: DEFAULT_SECTION,
+            title: catalogTitle(user.id as number, courseCode),
+            credits: catalogCredits(courseCode),
             reason: null,
           }),
         ),
@@ -181,69 +188,6 @@ export const planHandlers = [
     }
     return HttpResponse.json({ data: parsePlan(updated) });
   }),
-
-  http.patch(
-    `${env.API_URL}/plan/courses/:courseCode`,
-    async ({ request, params }) => {
-      await networkDelay();
-      const user = requireAuth(request);
-      const row = planOf(user.id as number);
-      if (!row) {
-        return HttpResponse.json(
-          { message: 'No plan found.' },
-          { status: 404 },
-        );
-      }
-      const courseCode = parseCourseCode(String(params.courseCode));
-      const courses = JSON.parse(row.courses) as PlannedCourse[];
-      if (!courses.some((course) => course.course_code === courseCode)) {
-        return HttpResponse.json(
-          { message: 'No plan course found.' },
-          { status: 404 },
-        );
-      }
-      const body = (await request.json()) as {
-        group?: unknown;
-        section?: unknown;
-      };
-      const errors: Record<string, string[]> = {};
-      if (body.group !== undefined && !isOfferedGroup(body.group)) {
-        errors.group = ['The selected group is not offered.'];
-      }
-      if (body.section !== undefined && !isOfferedSection(body.section)) {
-        errors.section = ['The selected section is not offered.'];
-      }
-      if (Object.keys(errors).length > 0) {
-        return invalidBody(errors);
-      }
-      const next = courses.map((course) =>
-        course.course_code === courseCode
-          ? {
-              ...course,
-              group:
-                body.group !== undefined && isOfferedGroup(body.group)
-                  ? body.group
-                  : course.group,
-              section:
-                body.section !== undefined && isOfferedSection(body.section)
-                  ? body.section
-                  : course.section,
-            }
-          : course,
-      );
-      const updated = db.plan.update({
-        where: { id: { equals: row.id as number } },
-        data: { courses: JSON.stringify(next) },
-      });
-      if (!updated) {
-        return HttpResponse.json(
-          { message: 'No plan found.' },
-          { status: 404 },
-        );
-      }
-      return HttpResponse.json({ data: parsePlan(updated) });
-    },
-  ),
 
   http.delete(
     `${env.API_URL}/plan/courses/:courseCode`,

@@ -19,7 +19,6 @@ import { useRemovePlanCourse } from '../api/remove-plan-course';
 import { parseSubmitFailure } from '../api/submit-failure';
 import type { SubmitFailure } from '../api/submit-failure';
 import { useSubmitPlan } from '../api/submit-plan';
-import { useUpdatePlanCourse } from '../api/update-plan-course';
 
 import { BuilderLine } from './builder-line';
 import { CoursePicker } from './course-picker';
@@ -37,7 +36,6 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
   const { t } = useTranslation('plan');
   const academicRecord = useAcademicRecord();
   const addCourse = useAddPlanCourse();
-  const updateCourse = useUpdatePlanCourse();
   const removeCourse = useRemovePlanCourse();
   const submitPlanMutation = useSubmitPlan();
   const discardPlanMutation = useDiscardPlan();
@@ -78,7 +76,6 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
 
   const pending =
     addCourse.isPending ||
-    updateCourse.isPending ||
     removeCourse.isPending ||
     submitPlanMutation.isPending;
 
@@ -170,11 +167,8 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
             <ul className="divide-y">
               {plan.courses.map((course) => {
                 const linePending =
-                  (updateCourse.isPending &&
-                    updateCourse.variables?.courseCode ===
-                      course.course_code) ||
-                  (removeCourse.isPending &&
-                    removeCourse.variables?.courseCode === course.course_code);
+                  removeCourse.isPending &&
+                  removeCourse.variables?.courseCode === course.course_code;
                 return (
                   <li
                     key={course.course_code}
@@ -187,32 +181,6 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
                       title={titles.get(course.course_code) ?? null}
                       disabled={linePending}
                       errors={failure?.lineErrors[course.course_code] ?? []}
-                      onGroupChange={(group) => {
-                        clearResults();
-                        updateCourse.mutate(
-                          {
-                            courseCode: course.course_code,
-                            group,
-                          },
-                          {
-                            onError: (error) =>
-                              setLineError(describeLineError(error)),
-                          },
-                        );
-                      }}
-                      onSectionChange={(section) => {
-                        clearResults();
-                        updateCourse.mutate(
-                          {
-                            courseCode: course.course_code,
-                            section,
-                          },
-                          {
-                            onError: (error) =>
-                              setLineError(describeLineError(error)),
-                          },
-                        );
-                      }}
                       onRemove={() => {
                         clearResults();
                         removeCourse.mutate(
