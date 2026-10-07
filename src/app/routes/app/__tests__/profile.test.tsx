@@ -1,5 +1,5 @@
 import { db } from '@/testing/mocks/db';
-import { CURRENT_TERM, STALE_STALENESS } from '@/testing/mocks/mock-auth';
+import { CURRENT_TERM } from '@/testing/mocks/mock-auth';
 import { server } from '@/testing/mocks/server';
 import {
   createUser,
@@ -41,12 +41,6 @@ const fourStateMap = [
   },
 ];
 
-const FRESH_STALENESS = {
-  identity: false,
-  academic_record: false,
-  course_catalog: false,
-};
-
 const seedRecord = (
   userId: number,
   overrides: Record<string, unknown> = {},
@@ -59,8 +53,11 @@ const seedRecord = (
     history: JSON.stringify([
       {
         course_code: 'CS 101',
-        title: 'Introduction to Programming',
-        term_code: '2025F',
+        name: 'Introduction to Programming',
+        credits: 3,
+        year: 2025,
+        semester: 'Fall',
+        level: 1,
         grade: 'A',
       },
     ]),
@@ -74,7 +71,6 @@ const seedRecord = (
     ]),
     prerequisite_map: JSON.stringify(fourStateMap),
     last_synced_at: '2026-10-01T12:00:00.000Z',
-    staleness: JSON.stringify(FRESH_STALENESS),
     ...overrides,
   });
 };
@@ -155,17 +151,19 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   expect(screen.getAllByText('EE 210').length).toBeGreaterThanOrEqual(1);
   expect(screen.getByText('Group G1, Section 01')).toBeInTheDocument();
 
-  expect(screen.getByText('2025F')).toBeInTheDocument();
-  expect(screen.getByText('A')).toBeInTheDocument();
+  const historyTable = screen.getByRole('table');
+  expect(historyTable).toHaveTextContent('2025 · Fall');
+  expect(historyTable).toHaveTextContent('A');
+  expect(historyTable).toHaveTextContent('Introduction to Programming');
 
   expect(screen.queryAllByRole('textbox')).toHaveLength(0);
   expect(screen.queryAllByRole('combobox')).toHaveLength(0);
   expect(screen.queryAllByRole('spinbutton')).toHaveLength(0);
 });
 
-test('shows one stale banner listing the stale datasets and retries the record only', async () => {
+test('labels the record with its as-of time and retries the record only', async () => {
   const user = await createUser({ advisor_id: 2 });
-  seedRecord(user.id as number, { staleness: JSON.stringify(STALE_STALENESS) });
+  seedRecord(user.id as number, { last_synced_at: '2026-09-01T12:00:00.000Z' });
   const reads = trackRequests();
 
   await renderApp(<RecordRoute />, {
@@ -174,12 +172,7 @@ test('shows one stale banner listing the stale datasets and retries the record o
     url: '/app/record',
   });
 
-  const banners = await screen.findAllByRole('status');
-  expect(banners).toHaveLength(1);
-  expect(banners[0]).toHaveTextContent(/Data as of/);
-  expect(banners[0]).toHaveTextContent('academic record');
-  expect(banners[0]).toHaveTextContent('course catalog');
-  expect(banners[0]).not.toHaveTextContent('identity');
+  expect(await screen.findByText(/Data as of/)).toBeInTheDocument();
 
   reads.startRecording();
   await userEvent.click(screen.getByRole('button', { name: /retry/i }));
@@ -211,7 +204,14 @@ test('renders compact empty states for empty sections and the retry copy for an 
     screen.getByText('Your course map is not available yet.'),
   ).toBeInTheDocument();
 
-  await userEvent.click(screen.getByRole('button', { name: /retry/i }));
+  const emptyMapCopy = screen.getByText(
+    'Your course map is not available yet.',
+  );
+  await userEvent.click(
+    within(emptyMapCopy.parentElement as HTMLElement).getByRole('button', {
+      name: /retry/i,
+    }),
+  );
 
   await waitFor(() => expect(reads.reads).toBe(2));
 });

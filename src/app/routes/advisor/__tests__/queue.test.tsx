@@ -17,12 +17,6 @@ import {
 } from '@/testing/test-utils';
 import type { MockUser } from '@/testing/test-utils';
 
-const staleness = {
-  identity: false,
-  academic_record: false,
-  course_catalog: false,
-};
-
 const courseMap = [
   {
     course_code: 'CS 201',
@@ -58,7 +52,6 @@ const seedQueueStudent = async (
     current_enrollments: JSON.stringify([]),
     prerequisite_map: JSON.stringify(courseMap),
     last_synced_at: '2026-10-01T12:00:00.000Z',
-    staleness: JSON.stringify(staleness),
   });
   db.plan.create({
     userId: student.id as number,

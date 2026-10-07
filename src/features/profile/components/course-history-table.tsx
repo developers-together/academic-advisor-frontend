@@ -32,22 +32,36 @@ export const CourseHistoryTable = ({ history }: CourseHistoryTableProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead>{t('profile.history.course')}</TableHead>
+                <TableHead>{t('profile.history.credits')}</TableHead>
                 <TableHead>{t('profile.history.term')}</TableHead>
+                <TableHead>{t('profile.history.level')}</TableHead>
                 <TableHead>{t('profile.history.grade')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {history.map((attempt) => (
-                <TableRow key={`${attempt.course_code}-${attempt.term_code}`}>
+                <TableRow
+                  key={`${attempt.course_code}-${attempt.year}-${attempt.semester}`}
+                >
                   <TableCell>
                     <span className="text-sm">
                       <span className="bidi-code">{attempt.course_code}</span>
-                      {attempt.title ? ` ${attempt.title}` : ''}
+                      {attempt.name ? ` ${attempt.name}` : ''}
                     </span>
                   </TableCell>
                   <TableCell>
                     <span className="text-sm tabular-nums">
-                      {attempt.term_code}
+                      {attempt.credits}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm tabular-nums">
+                      {attempt.year} · {attempt.semester}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm tabular-nums">
+                      {attempt.level}
                     </span>
                   </TableCell>
                   <TableCell>

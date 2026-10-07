@@ -19,12 +19,6 @@ import type { MockUser } from '@/testing/test-utils';
 
 import PlanRoute from '../plan';
 
-const staleness = {
-  identity: false,
-  academic_record: false,
-  course_catalog: false,
-};
-
 const courseMap = [
   {
     course_code: 'CS 201',
@@ -52,7 +46,6 @@ type PlanSeed = {
   status?: string;
   returnReason?: string | null;
   decidedAt?: string | null;
-  stale?: boolean;
 };
 
 const seedPlan = async (
@@ -91,11 +84,6 @@ const seedStudentWithPlan = async (seed: PlanSeed = {}) => {
     current_enrollments: JSON.stringify([]),
     prerequisite_map: JSON.stringify(courseMap),
     last_synced_at: '2026-10-01T12:00:00.000Z',
-    staleness: JSON.stringify(
-      seed.stale
-        ? { identity: false, academic_record: true, course_catalog: false }
-        : staleness,
-    ),
   });
   const plan = await seedPlan(user.id as number, seed);
   return { user: user as MockUser, advisor, plan };
@@ -335,19 +323,16 @@ test('each comment carries its author and absolute 24h time, and students get no
   ).not.toBeInTheDocument();
 });
 
-test('a stale academic record shows the stale banner above the document', async () => {
-  const { user } = await seedStudentWithPlan({ stale: true });
+test('the plan page labels the record data with its as-of time', async () => {
+  const { user } = await seedStudentWithPlan();
 
   await renderApp(<PlanRoute />, { user, path: '/app/plan', url: '/app/plan' });
 
   expect(await screen.findByText(/Data as of/)).toBeInTheDocument();
-  expect(
-    screen.getByText(/These datasets are not current: academic record./),
-  ).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
 });
 
-test('non-action states show their notice line with no controls', async () => {
+test('a submitted plan shows its notice line with no plan controls', async () => {
   const { user } = await seedStudentWithPlan({ status: 'submitted' });
 
   await renderApp(<PlanRoute />, { user, path: '/app/plan', url: '/app/plan' });
@@ -355,22 +340,23 @@ test('non-action states show their notice line with no controls', async () => {
   expect(
     await screen.findByText('Waiting for your advisor.'),
   ).toBeInTheDocument();
-  expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  expect(
+    screen.getAllByRole('button').map((button) => button.textContent),
+  ).toEqual(['Retry']);
   expect(screen.queryByRole('menuitem')).not.toBeInTheDocument();
+});
 
-  const { user: approvedUser } = await seedStudentWithPlan({
-    status: 'approved',
-  });
-  await renderApp(<PlanRoute />, {
-    user: approvedUser,
-    path: '/app/plan',
-    url: '/app/plan',
-  });
+test('an approved plan shows its notice line with no plan controls', async () => {
+  const { user } = await seedStudentWithPlan({ status: 'approved' });
+
+  await renderApp(<PlanRoute />, { user, path: '/app/plan', url: '/app/plan' });
 
   expect(
     await screen.findByText('Approved. Register your courses in the SIS.'),
   ).toBeInTheDocument();
-  expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  expect(
+    screen.getAllByRole('button').map((button) => button.textContent),
+  ).toEqual(['Retry']);
 });
 
 test('the window 422 renders the closed-window banner at the CTA instead of the submit button', async () => {
@@ -500,5 +486,9 @@ test('a 503 submit renders the destructive retry banner at the CTA', async () =>
   ).toBeInTheDocument();
   expect(screen.getByRole('alert')).toBeInTheDocument();
   expect(screen.getByText('Request reference: req-503')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+  expect(
+    within(screen.getByRole('alert')).getByRole('button', {
+      name: /retry/i,
+    }),
+  ).toBeInTheDocument();
 });

@@ -100,13 +100,15 @@ export type AcademicRecord = {
   current_enrollments: CurrentEnrollment[];
   prerequisite_map: PrerequisiteMapEntry[];
   last_synced_at: string | null;
-  staleness: Staleness;
 };
 
 export type CourseAttempt = {
   course_code: string;
-  title: string | null;
-  term_code: string;
+  name: string | null;
+  credits: number;
+  year: number;
+  semester: string;
+  level: number;
   grade: string;
 };
 
@@ -125,12 +127,6 @@ export type PrerequisiteMapEntry = {
   title: string | null;
   state: PrerequisiteMapState;
   prerequisites: string[];
-};
-
-export type Staleness = {
-  identity: boolean;
-  academic_record: boolean;
-  course_catalog: boolean;
 };
 
 export type AdvisorProfile = {

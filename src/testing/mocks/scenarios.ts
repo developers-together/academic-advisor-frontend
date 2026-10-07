@@ -12,7 +12,7 @@ import type {
 import { governanceTrends } from '../governance-tree';
 
 import { db } from './db';
-import { CURRENT_TERM, FRESH_STALENESS, STALE_STALENESS } from './mock-auth';
+import { CURRENT_TERM } from './mock-auth';
 import { hash } from './utils';
 
 export const scenarios = [
@@ -165,19 +165,25 @@ const prerequisiteMap = [
 const history = [
   {
     course_code: 'CS 101',
-    title: 'Introduction to Programming',
-    term_code: '2025F',
+    name: 'Introduction to Programming',
+    credits: 3,
+    year: 2025,
+    semester: 'Fall',
+    level: 1,
     grade: 'A',
   },
   {
     course_code: 'MATH 101',
-    title: 'Calculus I',
-    term_code: '2025F',
+    name: 'Calculus I',
+    credits: 4,
+    year: 2025,
+    semester: 'Fall',
+    level: 1,
     grade: 'B+',
   },
 ];
 
-const seedAcademicRecord = (staleness = FRESH_STALENESS) => {
+const seedAcademicRecord = (lastSyncedAt = '2026-10-01T12:00:00.000Z') => {
   db.academicRecord.create({
     userId: 1,
     cgpa: 3.2,
@@ -193,8 +199,7 @@ const seedAcademicRecord = (staleness = FRESH_STALENESS) => {
       },
     ]),
     prerequisite_map: JSON.stringify(prerequisiteMap),
-    last_synced_at: '2026-10-01T12:00:00.000Z',
-    staleness: JSON.stringify(staleness),
+    last_synced_at: lastSyncedAt,
   });
 };
 
@@ -242,7 +247,6 @@ const seedQueue = () => {
         current_enrollments: JSON.stringify([]),
         prerequisite_map: JSON.stringify(queueCourseMap),
         last_synced_at: '2026-10-01T12:00:00.000Z',
-        staleness: JSON.stringify(FRESH_STALENESS),
       });
     } else {
       db.academicRecord.create({
@@ -253,7 +257,6 @@ const seedQueue = () => {
         current_enrollments: JSON.stringify([]),
         prerequisite_map: JSON.stringify(queueCourseMap),
         last_synced_at: '2026-10-01T12:00:00.000Z',
-        staleness: JSON.stringify(FRESH_STALENESS),
       });
     }
   }
@@ -833,7 +836,7 @@ const seeds: Record<Scenario, () => void> = {
       warnings: JSON.stringify([]),
       total_credit_hours: 0,
     });
-    seedAcademicRecord(STALE_STALENESS);
+    seedAcademicRecord('2026-09-01T12:00:00.000Z');
   },
 
   'registration-closed': () => {

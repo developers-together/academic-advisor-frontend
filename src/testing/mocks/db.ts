@@ -51,8 +51,6 @@ const models = {
     current_enrollments: String,
     prerequisite_map: String,
     last_synced_at: nullableString,
-
-    staleness: String,
   },
   advisorProfile: {
     advisorId: primaryKey(() => nextId()),

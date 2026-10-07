@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { StaleSisBanner } from '@/components/domain/stale-sis-banner';
+import { RecordFreshness } from '@/components/domain/record-freshness';
 import { Card, CardBody, CardHeader, CardTitle } from '@/components/ui/card';
 import { KpiCard } from '@/components/ui/kpi-card';
 import { usePlan } from '@/features/plan/api/get-plan';
@@ -37,8 +37,7 @@ export const RecordDocument = ({
 
   return (
     <div className="space-y-6">
-      <StaleSisBanner
-        staleness={record.staleness}
+      <RecordFreshness
         lastSyncedAt={record.last_synced_at}
         onRetry={onRetryRecord}
         isRetrying={isRetryingRecord}

@@ -161,7 +161,9 @@
       "title": "Course history",
       "empty": "No finished courses yet.",
       "course": "Course",
+      "credits": "Credits",
       "term": "Term",
+      "level": "Level",
       "grade": "Grade"
     }
   },

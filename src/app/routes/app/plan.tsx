@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { CommentThread } from '@/components/domain/comment-thread';
-import { StaleSisBanner } from '@/components/domain/stale-sis-banner';
+import { RecordFreshness } from '@/components/domain/record-freshness';
 import { ContentLayout } from '@/components/layouts';
 import { ErrorState } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -149,9 +149,8 @@ export default function PlanRoute() {
         {plan && (
           <>
             {academicRecord.data && (
-              <StaleSisBanner
+              <RecordFreshness
                 className="max-w-2xl"
-                staleness={academicRecord.data.staleness}
                 lastSyncedAt={academicRecord.data.last_synced_at}
                 onRetry={() => void academicRecord.refetch()}
                 isRetrying={academicRecord.isRefetching}

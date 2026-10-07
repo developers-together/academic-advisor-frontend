@@ -50,17 +50,4 @@ export const verifyCredentials = ({
   return user;
 };
 
-// The stale-sis scenario stamps these onto the academic record seed.
-export const STALE_STALENESS = {
-  identity: false,
-  academic_record: true,
-  course_catalog: true,
-};
-
-export const FRESH_STALENESS = {
-  identity: false,
-  academic_record: false,
-  course_catalog: false,
-};
-
 export const CURRENT_TERM = '2026F';

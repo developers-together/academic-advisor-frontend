@@ -431,7 +431,7 @@ state × surface matrix.
 | saving / saved / updating | Button state + polite live region; the plan and meeting editors show all three |
 | error | Inline under fields; page errors as destructive Banner with Retry; transient as toast. States what failed, whether anything was saved, whether it is temporary, and what to do |
 | permission denied | Calm panel with role reminder and a way back; route-scoped nav prevents most cases |
-| stale SIS | StaleDataBanner above affected content with as-of time + retry; content stays visible |
+| stale SIS | RecordFreshness line above the record with as-of time + retry; content stays visible. The SIS integration removed per-dataset staleness flags; refresh is lazy |
 | offline | Banner: reads are cached, writes queue or disable with explanation |
 | conflict | Explicit conflict banner with the two versions and resolution actions (meeting slots, plan edits) |
 | window closed | WindowClosedBanner replaces the submit CTA area; builder stays readable |
@@ -466,7 +466,7 @@ Domain: plan-state-chip, plan-card, plan-line, validation-panel, comment-thread,
 submit-suggestion-card, prereq-map, status-chip (meeting/account/data), meeting-request-card,
 slot-picker, availability-editor, queue-table, review-drawer (review workspace), caseload-table,
 advisor-workload-table, scoreboard-table, funnel-chart, trend-chart, faculty-scorecard, drilldown-table,
-notification-center, stale-sis-banner, window-closed-banner, advisor-card, course-card (AI).
+notification-center, record-freshness, window-closed-banner, advisor-card, course-card (AI).
 
 **DS-CP-05 (MUST):** new components enter through section 24 governance: reuse check, spec added to
 this section, story + test, then build. Never build a second variation of an existing component.
@@ -499,7 +499,7 @@ no per-feature one-offs.
 ### 8.4 Domain component specs (v2 changes and additions)
 
 Carried from v1.1 with their specs: PlanStateChip, PlanCard, PlanLine (now with per-line credits),
-ValidationPanel, CommentThread, SeenButton, SubmitSuggestionCard, PrereqMap, StaleDataBanner,
+ValidationPanel, CommentThread, SeenButton, SubmitSuggestionCard, PrereqMap, RecordFreshness,
 WindowClosedBanner, QueueTable, NotificationCenter.
 
 New and changed:

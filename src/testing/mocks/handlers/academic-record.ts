@@ -41,7 +41,6 @@ export const academicRecordHandlers = [
       current_enrollments: JSON.parse(row.current_enrollments),
       prerequisite_map: JSON.parse(row.prerequisite_map),
       last_synced_at: row.last_synced_at,
-      staleness: JSON.parse(row.staleness),
     } as unknown as AcademicRecord;
     return HttpResponse.json({ data: record });
   }),
