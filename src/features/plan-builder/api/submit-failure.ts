@@ -7,7 +7,11 @@ export type SubmitFailure = {
   total: number;
 };
 
-const LINE_GROUPS = ['map_membership', 'prerequisite_chain'] as const;
+const LINE_GROUPS = [
+  'active_course',
+  'map_membership',
+  'prerequisite_chain',
+] as const;
 
 const isLineGroup = (group: string): group is (typeof LINE_GROUPS)[number] =>
   (LINE_GROUPS as readonly string[]).includes(group);

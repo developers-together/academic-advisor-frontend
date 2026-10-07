@@ -308,6 +308,45 @@ test('a failed submit renders each server message under its line plus the groupe
   ).not.toBeInTheDocument();
 });
 
+test('an inactive course shows its message under the line and the plan keeps other lines clean', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedDraftPlan(
+    user.id as number,
+    JSON.stringify([
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+      { course_code: 'EE 210', title: null, credits: 3, reason: null },
+    ]),
+  );
+  seedAcademicRecord(user.id as number);
+
+  await renderApp(<BuilderRoute />, {
+    user,
+    path: '/app/builder',
+    url: '/app/builder',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: /submit plan/i }),
+  );
+
+  expect(
+    await screen.findByText('Resolve 1 issue to submit.'),
+  ).toBeInTheDocument();
+
+  const ee210Line = screen.getByText('EE 210').closest('li');
+  expect(ee210Line).not.toBeNull();
+  expect(
+    within(ee210Line as HTMLElement).getByText(
+      'EE 210 is not offered this term. Pick a course from the active list.',
+    ),
+  ).toBeInTheDocument();
+
+  const cs201Line = screen.getByText('CS 201').closest('li');
+  expect(
+    within(cs201Line as HTMLElement).queryByRole('status'),
+  ).not.toBeInTheDocument();
+});
+
 test('the window 422 renders the closed-window banner at the submit gate and the builder stays editable', async () => {
   const user = await createUser({ advisor_id: 2 });
   seedDraftPlan(

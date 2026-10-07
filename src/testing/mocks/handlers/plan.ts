@@ -51,6 +51,8 @@ const CATALOG_CREDITS: Record<string, number> = {
   'MATH 201': 4,
 };
 
+const INACTIVE_COURSES = new Set(['EE 210', 'PHYS 101']);
+
 const catalogCredits = (courseCode: string) => CATALOG_CREDITS[courseCode] ?? 3;
 
 const catalogTitle = (userId: number, courseCode: string) => {
@@ -337,7 +339,14 @@ export const planHandlers = [
       ? JSON.parse(record.prerequisite_map)
       : [];
     const errors: Record<string, string[]> = {};
+    let totalCredits = 0;
     for (const course of courses) {
+      totalCredits += course.credits ?? 0;
+      if (INACTIVE_COURSES.has(course.course_code)) {
+        errors[`active_course.${course.course_code}`] = [
+          `${course.course_code} is not offered this term. Pick a course from the active list.`,
+        ];
+      }
       const entry = map.find(
         (candidate) => candidate.course_code === course.course_code,
       );
@@ -350,6 +359,11 @@ export const planHandlers = [
           `${course.course_code} requires ${entry.prerequisites.join(', ')} first. Complete the missing prerequisites or pick an eligible course.`,
         ];
       }
+    }
+    if (totalCredits > 18) {
+      errors.allowance_outside = [
+        'Your plan is outside the allowed credit range for this term.',
+      ];
     }
     if (Object.keys(errors).length > 0) {
       return HttpResponse.json(
