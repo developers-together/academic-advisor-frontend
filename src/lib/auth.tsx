@@ -77,6 +77,10 @@ export const registerInputSchema = z
         'auth:errors.universityEmail',
       ),
     studentId: z.string().min(1, 'auth:errors.studentIdRequired'),
+    nationalId: z
+      .string()
+      .min(1, 'auth:errors.nationalIdRequired')
+      .regex(/^\d{14}$/, 'auth:errors.nationalIdInvalid'),
     password: z.string().min(8, 'auth:errors.passwordMin'),
     passwordConfirmation: z.string().min(1, 'auth:errors.passwordConfirmation'),
     language_preference: z.enum(['en', 'ar']),
@@ -98,6 +102,7 @@ const registerWithEmailAndPassword = async (
     password: data.password,
     password_confirmation: data.passwordConfirmation,
     student_id: data.studentId,
+    national_id: data.nationalId,
     language_preference: data.language_preference satisfies LanguagePreference,
   });
   return { kind: 'pending-verification', email: data.email };

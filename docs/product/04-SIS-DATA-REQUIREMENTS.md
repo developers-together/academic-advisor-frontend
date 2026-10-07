@@ -59,7 +59,9 @@ by **student ID** at sign-up, and every piece of academic data we hold is keyed 
 | `enrollment_status` | enum | active / suspended / graduated / withdrawn — we must not plan for inactive students |
 | `cohort_year` | int | Admission year — used for AI context only |
 
-*Explicitly not needed:* email, phone, national ID, photo, address (§4).
+*Explicitly not needed:* email, phone, photo, address (§4). The National ID moved out of this list in
+the SIS integration spec (backend `ticket/acad-42g`): registration collects it to bind the account to
+the SIS record, and it is never returned by any endpoint.
 
 ### B. Catalog & offerings domain
 
@@ -189,7 +191,9 @@ expose them, no problem** — Advisor's admin enters them manually as a fallback
 ## 4. Explicitly NOT needed (please don't build or expose for us)
 
 - **Any write access** to the SIS — registration, grades, records: never
-- Student emails, phone numbers, addresses, national IDs, photos — Advisor accounts are in-system
+- Student emails, phone numbers, addresses, photos — Advisor accounts are in-system. The National ID
+  is the one identity field we hold, collected at registration to bind the SIS record (never displayed,
+  never returned by the API)
 - Attendance, financial/billing, scholarship, disciplinary, housing, HR data
 - Section meeting times / timetables — we do no clash checking
 - SSO / identity federation — no user login flows touch the SIS

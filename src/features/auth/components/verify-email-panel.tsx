@@ -42,8 +42,8 @@ export const VerifyEmailPanel = () => {
   }
 
   if (query.isError) {
-    const status = (query.error as { status?: number }).status ?? 0;
-    if (status === 503) {
+    const error = query.error as { status?: number; key?: string };
+    if (error.status === 503) {
       return (
         <div className="space-y-4 text-sm">
           <p className="font-medium">{t('verify.unavailableTitle')}</p>
@@ -53,6 +53,12 @@ export const VerifyEmailPanel = () => {
           </Button>
         </div>
       );
+    }
+    if (
+      error.status === 422 &&
+      error.key === 'verification.national_id_mismatch'
+    ) {
+      return <MismatchState />;
     }
     return <InvalidState />;
   }
@@ -79,6 +85,22 @@ export const VerifyEmailPanel = () => {
       <p className="text-muted-foreground">{t('verify.readyBody')}</p>
       <Button asChild className="h-11">
         <Link to={paths.auth.login.getHref()}>{t('verify.readyAction')}</Link>
+      </Button>
+    </div>
+  );
+};
+
+const MismatchState = () => {
+  const { t } = useTranslation('auth');
+
+  return (
+    <div className="space-y-4 text-sm">
+      <p className="font-medium">{t('verify.mismatchTitle')}</p>
+      <p className="text-muted-foreground">{t('verify.mismatchBody')}</p>
+      <Button asChild variant="outline" className="h-11">
+        <Link to={paths.auth.signup.getHref()}>
+          {t('verify.invalidAction')}
+        </Link>
       </Button>
     </div>
   );

@@ -19,6 +19,7 @@ type RegisterBody = {
   password?: string;
   password_confirmation?: string;
   student_id?: string;
+  national_id?: string;
   language_preference?: string;
 };
 
@@ -54,6 +55,17 @@ export const authHandlers = [
     ) {
       errors.student_id = ['This student ID is already registered.'];
     }
+    if (!body.national_id) {
+      errors.national_id = ['The national id field is required.'];
+    } else if (!/^\d{14}$/.test(body.national_id)) {
+      errors.national_id = ['The national id must be 14 digits.'];
+    } else if (
+      db.user.findFirst({
+        where: { national_id: { equals: body.national_id } },
+      })
+    ) {
+      errors.national_id = ['This National ID is already registered.'];
+    }
 
     if (Object.keys(errors).length > 0) {
       return HttpResponse.json(
@@ -72,6 +84,7 @@ export const authHandlers = [
       role: 'student',
       language_preference: body.language_preference === 'ar' ? 'ar' : 'en',
       student_id: body.student_id ?? undefined,
+      national_id: body.national_id ?? undefined,
     });
 
     return HttpResponse.json(

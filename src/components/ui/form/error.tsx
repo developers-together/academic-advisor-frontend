@@ -5,7 +5,7 @@ export type ErrorProps = {
   id?: string;
 };
 
-const DICTIONARY_KEY = /^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$/i;
+const DICTIONARY_KEY = /^[a-z][a-z0-9]*(?::[a-z0-9-]+)?(\.[a-z0-9-]+)+$/i;
 
 export const Error = ({ errorMessage, id }: ErrorProps) => {
   const { t } = useTranslation();

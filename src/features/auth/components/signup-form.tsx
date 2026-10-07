@@ -30,6 +30,7 @@ export const SignupForm = ({ onRegistered }: SignupFormProps) => {
     defaultValues: {
       email: '',
       studentId: '',
+      nationalId: '',
       password: '',
       passwordConfirmation: '',
       language_preference: language,
@@ -57,6 +58,7 @@ export const SignupForm = ({ onRegistered }: SignupFormProps) => {
           > = {
             email: 'email',
             student_id: 'studentId',
+            national_id: 'nationalId',
             password: 'password',
             password_confirmation: 'passwordConfirmation',
           };
@@ -107,6 +109,20 @@ export const SignupForm = ({ onRegistered }: SignupFormProps) => {
         />
         <p className="text-xs text-muted-foreground">
           {t('signup.studentIdHelper')}
+        </p>
+      </div>
+
+      <div className="space-y-1">
+        <Input
+          inputMode="numeric"
+          label={t('signup.nationalId')}
+          autoComplete="off"
+          error={form.formState.errors.nationalId}
+          registration={form.register('nationalId')}
+          className="h-11 text-base"
+        />
+        <p className="text-xs text-muted-foreground">
+          {t('signup.nationalIdHelper')}
         </p>
       </div>
 

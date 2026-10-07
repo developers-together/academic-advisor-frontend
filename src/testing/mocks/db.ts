@@ -18,6 +18,7 @@ const models = {
     role: String,
     language_preference: nullableString,
     student_id: nullableString,
+    national_id: nullableString,
     advisor_id: nullableNumber,
     email_verified_at: nullableString,
     pending_admin_at: nullableString,
