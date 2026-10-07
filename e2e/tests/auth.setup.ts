@@ -29,14 +29,18 @@ test('authenticate as the seeded dean', async ({ page }) => {
   await login(page, 'dean@ejust.edu.eg', '/dean');
   await page.context().storageState({ path: DEAN_AUTH_FILE });
   await expect(
-    page.getByRole('heading', { name: 'Faculty Overview' }),
+    page.getByRole('heading', {
+      name: 'How is advising running in your faculty?',
+    }),
   ).toBeVisible();
 });
 
 test('authenticate as the seeded vp', async ({ page }) => {
   await login(page, 'vp@ejust.edu.eg', '/vp');
   await page.context().storageState({ path: VP_AUTH_FILE });
-  await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'How do faculties compare this term?' }),
+  ).toBeVisible();
 });
 
 test('authenticate as the seeded admin', async ({ page }) => {

@@ -12,7 +12,9 @@ test.describe('dean governance', () => {
     await switchScenario(request, 'happy');
 
     await page.goto('/dean/advisors');
-    await expect(page.getByRole('heading', { name: 'Advisors' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Which advisors need attention?' }),
+    ).toBeVisible();
 
     const table = page.getByRole('table');
     await expect(table).toBeVisible();
@@ -24,7 +26,9 @@ test.describe('dean governance', () => {
 
     await page.goto('/dean/analytics');
     await expect(
-      page.getByRole('heading', { name: 'Analytics' }),
+      page.getByRole('heading', {
+        name: 'Where are trends heading in your area?',
+      }),
     ).toBeVisible();
     await expect(
       page.getByText('Completion rate by term').first(),
@@ -46,7 +50,7 @@ test.describe('vp governance', () => {
 
     await page.goto('/vp/faculties');
     await expect(
-      page.getByRole('heading', { name: 'Faculties' }),
+      page.getByRole('heading', { name: 'How does each faculty perform?' }),
     ).toBeVisible();
 
     const table = page.getByRole('table');
@@ -63,7 +67,11 @@ test.describe('vp governance', () => {
     expect(bodyText).not.toContain('Samir');
 
     await page.goto('/vp/trends');
-    await expect(page.getByRole('heading', { name: 'Trends' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', {
+        name: 'Which faculties move differently over time?',
+      }),
+    ).toBeVisible();
     await expect(
       page.getByText('Completion rate by faculty, by term').first(),
     ).toBeVisible();

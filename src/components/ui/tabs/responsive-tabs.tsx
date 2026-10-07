@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/utils/cn';
 
 import { Tabs, TabsList, TabsTrigger } from './tabs';
@@ -34,6 +35,7 @@ export const ResponsiveTabs = ({
 }: ResponsiveTabsProps) => {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
+  const isWide = !useMediaQuery('(max-width: 767.98px)');
   const active = options.find((option) => option.value === value);
 
   const select = (next: string) => {
@@ -43,62 +45,67 @@ export const ResponsiveTabs = ({
 
   return (
     <div className={className}>
-      <Tabs value={value} onValueChange={select} className="hidden md:block">
-        <TabsList aria-label={ariaLabel}>
-          {options.map((option) => (
-            <TabsTrigger key={option.value} value={option.value}>
-              {option.label}{' '}
-              {option.count !== undefined && (
+      {isWide && (
+        <Tabs value={value} onValueChange={select}>
+          <TabsList aria-label={ariaLabel}>
+            {options.map((option) => (
+              <TabsTrigger key={option.value} value={option.value}>
+                {option.label}{' '}
+                {option.count !== undefined && (
+                  <span className="text-muted-foreground tabular-nums">
+                    ({option.count})
+                  </span>
+                )}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      )}
+
+      {!isWide && (
+        <button
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-label={ariaLabel}
+          onClick={() => setOpen(true)}
+          className="flex h-11 w-full items-center justify-between gap-2 rounded-md border bg-card px-3 text-sm font-medium hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+        >
+          <span className="flex min-w-0 items-center gap-2">
+            <Filter
+              className="size-4 shrink-0 text-muted-foreground"
+              aria-hidden
+            />
+            <span className="truncate">
+              {active?.label ?? options[0]?.label}
+              {active?.count !== undefined && (
                 <span className="text-muted-foreground tabular-nums">
-                  ({option.count})
+                  {' '}
+                  ({active.count})
                 </span>
               )}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
-      <button
-        type="button"
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-label={ariaLabel}
-        onClick={() => setOpen(true)}
-        className="flex h-11 w-full items-center justify-between gap-2 rounded-md border bg-card px-3 text-sm font-medium hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden md:hidden"
-      >
-        <span className="flex min-w-0 items-center gap-2">
-          <Filter
-            className="size-4 shrink-0 text-muted-foreground"
-            aria-hidden
-          />
-          <span className="truncate">
-            {active?.label ?? options[0]?.label}
-            {active?.count !== undefined && (
-              <span className="text-muted-foreground tabular-nums">
-                {' '}
-                ({active.count})
-              </span>
-            )}
+            </span>
           </span>
-        </span>
-        <span className="shrink-0 text-2xs text-muted-foreground">
-          {t('responsiveTabs.filter')}
-        </span>
-      </button>
+          <span className="shrink-0 text-2xs text-muted-foreground">
+            {t('responsiveTabs.filter')}
+          </span>
+        </button>
+      )}
 
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent side="bottom" className="rounded-t-lg p-4 pb-8">
-          <DrawerTitle className="mb-2 text-start text-base font-semibold">
-            {ariaLabel}
-          </DrawerTitle>
-          <ul
-            role="radiogroup"
-            aria-label={ariaLabel}
-            className="flex flex-col"
-          >
-            {options.map((option) => (
-              <li key={option.value}>
+      {!isWide && (
+        <Drawer open={open} onOpenChange={setOpen}>
+          <DrawerContent side="bottom" className="rounded-t-lg p-4 pb-8">
+            <DrawerTitle className="mb-2 text-start text-base font-semibold">
+              {ariaLabel}
+            </DrawerTitle>
+            <div
+              role="radiogroup"
+              aria-label={ariaLabel}
+              className="flex flex-col"
+            >
+              {options.map((option) => (
                 <button
+                  key={option.value}
                   type="button"
                   role="radio"
                   aria-checked={option.value === value}
@@ -109,18 +116,16 @@ export const ResponsiveTabs = ({
                       'bg-accent text-accent-foreground',
                   )}
                 >
-                  <span>{option.label}</span>
-                  {option.count !== undefined && (
-                    <span className="text-muted-foreground tabular-nums">
-                      ({option.count})
-                    </span>
-                  )}
+                  <span>
+                    {option.label}
+                    {option.count !== undefined ? ` (${option.count})` : ''}
+                  </span>
                 </button>
-              </li>
-            ))}
-          </ul>
-        </DrawerContent>
-      </Drawer>
+              ))}
+            </div>
+          </DrawerContent>
+        </Drawer>
+      )}
     </div>
   );
 };

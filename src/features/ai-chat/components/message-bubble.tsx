@@ -21,7 +21,7 @@ const AssistantBubble = ({
   content: string;
   streaming?: boolean;
 }) => (
-  <div className="max-w-prose rounded-lg border border-s-2 border-border border-s-crimson-950 bg-card p-1 dark:border-s-crimson-400">
+  <div className="max-w-prose rounded-lg border border-border bg-card p-1">
     <MDPreview value={content} />
     {streaming && (
       <span
