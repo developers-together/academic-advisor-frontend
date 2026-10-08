@@ -14,6 +14,7 @@ import {
 
 const seedRule = (
   overrides: Partial<{
+    faculty: string | null;
     title_en: string;
     title_ar: string;
     body_en: string;
@@ -30,6 +31,57 @@ const seedRule = (
 
 beforeEach(() => {
   db.rule.deleteMany({ where: {} });
+});
+
+test('a student with a faculty sees global rules, their faculty rules, and no other faculty rules', async () => {
+  const student = await createUser({ faculty: 'ENG' });
+  seedRule({ title_en: 'Global rule', title_ar: 'قاعدة عامة' });
+  seedRule({
+    faculty: 'ENG',
+    title_en: 'Engineering rule',
+    title_ar: 'قاعدة الهندسة',
+  });
+  seedRule({
+    faculty: 'SCI',
+    title_en: 'Science rule',
+    title_ar: 'قاعدة العلوم',
+  });
+
+  await renderApp(<StudentRulesRoute />, {
+    user: student,
+    path: '/app/rules',
+    url: '/app/rules',
+  });
+
+  expect(await screen.findByText('Global rule')).toBeInTheDocument();
+  expect(await screen.findByText('Engineering rule')).toBeInTheDocument();
+  expect(await screen.findByText('قاعدة الهندسة')).toBeInTheDocument();
+  expect(screen.queryByText('Science rule')).not.toBeInTheDocument();
+  expect(
+    screen.getByText('Showing university-wide rules and ENG rules.'),
+  ).toBeInTheDocument();
+});
+
+test('a student without a faculty sees the global rules and the global scope line', async () => {
+  const student = await createUser();
+  seedRule({ title_en: 'Global rule', title_ar: 'قاعدة عامة' });
+  seedRule({
+    faculty: 'SCI',
+    title_en: 'Science rule',
+    title_ar: 'قاعدة العلوم',
+  });
+
+  await renderApp(<StudentRulesRoute />, {
+    user: student,
+    path: '/app/rules',
+    url: '/app/rules',
+  });
+
+  expect(await screen.findByText('Global rule')).toBeInTheDocument();
+  expect(screen.queryByText('Science rule')).not.toBeInTheDocument();
+  expect(
+    screen.getByText('Showing university-wide rules.'),
+  ).toBeInTheDocument();
 });
 
 test('the rules page lists rules with bilingual titles and rendered markdown bodies', async () => {
@@ -88,6 +140,28 @@ test('shows the empty state when no rules exist', async () => {
       'Rules appear here once the administration publishes them.',
     ),
   ).toBeInTheDocument();
+});
+
+test('the scope line renders in Arabic when the language is Arabic', async () => {
+  await i18n.changeLanguage('ar');
+  try {
+    const student = await createUser({ faculty: 'ENG' });
+    seedRule({ title_en: 'Global rule', title_ar: 'قاعدة عامة' });
+
+    await renderApp(<StudentRulesRoute />, {
+      user: student,
+      path: '/app/rules',
+      url: '/app/rules',
+    });
+
+    expect(
+      await screen.findByText(
+        'تُعرض القواعد على مستوى الجامعة وقواعد كلية ENG.',
+      ),
+    ).toBeInTheDocument();
+  } finally {
+    await i18n.changeLanguage('en');
+  }
 });
 
 test('the rules page copy renders in Arabic when the language is Arabic', async () => {
