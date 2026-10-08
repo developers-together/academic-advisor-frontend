@@ -314,6 +314,7 @@ export type GovernanceNode = {
 
 export type UniversityRule = {
   id: number;
+  faculty: string | null;
   title_en: string;
   title_ar: string;
   body_en: string;
@@ -324,10 +325,11 @@ export type UniversityRule = {
 
 export type UniversityRuleSummary = Pick<
   UniversityRule,
-  'id' | 'title_en' | 'title_ar' | 'body_en' | 'body_ar'
+  'id' | 'faculty' | 'title_en' | 'title_ar' | 'body_en' | 'body_ar'
 >;
 
 export type UniversityRuleInput = {
+  faculty: string | null;
   title_en: string;
   title_ar: string;
   body_en: string;

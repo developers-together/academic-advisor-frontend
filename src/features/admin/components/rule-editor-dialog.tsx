@@ -16,13 +16,14 @@ import {
 } from '@/components/ui/dialog';
 import { Input, Textarea } from '@/components/ui/form';
 import { ApiError } from '@/lib/api-error';
-import type { UniversityRule } from '@/types/domain';
+import type { UniversityRule, UniversityRuleInput } from '@/types/domain';
 
 import { useCreateRule } from '../api/create-rule';
 import { useDeleteRule } from '../api/delete-rule';
 import { useUpdateRule } from '../api/update-rule';
 
 const ruleSchema = z.object({
+  faculty: z.string().trim().max(255),
   title_en: z.string().trim().min(1).max(255),
   title_ar: z.string().trim().min(1).max(255),
   body_en: z.string().trim().min(1),
@@ -32,6 +33,7 @@ const ruleSchema = z.object({
 type RuleValues = z.infer<typeof ruleSchema>;
 
 const FIELD_KEYS: Record<string, keyof RuleValues> = {
+  faculty: 'faculty',
   title_en: 'title_en',
   title_ar: 'title_ar',
   body_en: 'body_en',
@@ -55,6 +57,7 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
     resolver: zodResolver(ruleSchema),
     mode: 'onBlur',
     defaultValues: {
+      faculty: rule?.faculty ?? '',
       title_en: rule?.title_en ?? '',
       title_ar: rule?.title_ar ?? '',
       body_en: rule?.body_en ?? '',
@@ -64,6 +67,7 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
 
   useEffect(() => {
     form.reset({
+      faculty: rule?.faculty ?? '',
       title_en: rule?.title_en ?? '',
       title_ar: rule?.title_ar ?? '',
       body_en: rule?.body_en ?? '',
@@ -83,16 +87,20 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
   };
 
   const submit = form.handleSubmit((values) => {
+    const input: UniversityRuleInput = {
+      ...values,
+      faculty: values.faculty || null,
+    };
     if (rule) {
       updateRule.mutate(
-        { ruleId: rule.id, input: values },
+        { ruleId: rule.id, input },
         {
           onSuccess: onClose,
           onError: mergeServerErrors,
         },
       );
     } else {
-      createRule.mutate(values, {
+      createRule.mutate(input, {
         onSuccess: onClose,
         onError: mergeServerErrors,
       });
@@ -158,6 +166,16 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
               rows={4}
               dir="rtl"
             />
+            <div>
+              <Input
+                label={t('rules.editor.faculty')}
+                error={form.formState.errors.faculty}
+                registration={form.register('faculty')}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t('rules.editor.facultyHelper')}
+              </p>
+            </div>
 
             <DialogFooter>
               {rule && (

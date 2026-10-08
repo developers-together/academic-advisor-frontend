@@ -148,6 +148,7 @@ const models = {
   },
   rule: {
     id: primaryKey(() => nextId()),
+    faculty: nullableString,
     title_en: String,
     title_ar: String,
     body_en: String,

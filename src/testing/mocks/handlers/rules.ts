@@ -16,12 +16,14 @@ const unauthorised = () =>
 
 const ruleOf = (row: {
   id: unknown;
+  faculty?: string | null;
   title_en: string;
   title_ar: string;
   body_en: string;
   body_ar: string;
 }): UniversityRuleSummary => ({
   id: row.id as number,
+  faculty: row.faculty ?? null,
   title_en: row.title_en,
   title_ar: row.title_ar,
   body_en: row.body_en,

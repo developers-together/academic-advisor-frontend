@@ -737,6 +737,7 @@ export const adminHandlers = [
     }
     const now = new Date().toISOString();
     const created = db.rule.create({
+      faculty: ruleFacultyOf(body) as unknown as string,
       title_en: String(body.title_en).trim(),
       title_ar: String(body.title_ar).trim(),
       body_en: String(body.body_en).trim(),
@@ -766,6 +767,7 @@ export const adminHandlers = [
       const updated = db.rule.update({
         where: { id: { equals: row.id as number } },
         data: {
+          faculty: ruleFacultyOf(body) as unknown as string,
           title_en: String(body.title_en).trim(),
           title_ar: String(body.title_ar).trim(),
           body_en: String(body.body_en).trim(),
@@ -1446,8 +1448,14 @@ const scheduleAssignment = (studentId: string, advisorId: number) => {
   return pendingAssignmentOf(created);
 };
 
+const ruleFacultyOf = (body: Record<string, unknown>) =>
+  typeof body.faculty === 'string' && body.faculty.trim()
+    ? body.faculty.trim()
+    : (null as unknown as string);
+
 const ruleOf = (row: {
   id: unknown;
+  faculty?: string | null;
   title_en: string;
   title_ar: string;
   body_en: string;
@@ -1456,6 +1464,7 @@ const ruleOf = (row: {
   updated_at: string;
 }): UniversityRule => ({
   id: row.id as number,
+  faculty: row.faculty ?? null,
   title_en: row.title_en,
   title_ar: row.title_ar,
   body_en: row.body_en,
