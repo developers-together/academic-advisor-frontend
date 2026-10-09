@@ -249,11 +249,8 @@ export const Transcript = ({ conversationId }: TranscriptProps) => {
           <SubmitSuggestionCard conversationId={conversationId} />
         )
       )}
-      {!hasUserMessages && conversation.goal_suggestions && (
-        <PromptCards
-          suggestions={conversation.goal_suggestions}
-          onPick={setDraft}
-        />
+      {!hasUserMessages && (
+        <PromptCards onPick={(text) => send(text, () => setDraft(text))} />
       )}
       <Composer
         value={draft}

@@ -57,7 +57,6 @@ const seedConversation = (
   );
   return db.planConversation.create({
     userId,
-    goal: 'maintain',
     messages: JSON.stringify([]),
     ...values,
   });
@@ -81,7 +80,7 @@ const typeMessage = async (message: string) => {
 const CONSTITUTION =
   'The AI advisor explains and drafts. Your advisor approves. Only you can submit.';
 
-test('an empty conversation shows its goal suggestions as prompt cards and the constitution line once', async () => {
+test('an empty conversation shows the suggested prompts and the constitution line once', async () => {
   const user = await createUser();
   const conversation = seedConversation(user.id as number);
   await renderChat(`/app/chat/${conversation.id as number}`, user);
@@ -98,6 +97,35 @@ test('an empty conversation shows its goal suggestions as prompt cards and the c
     ),
   ).toBeInTheDocument();
   expect(screen.getAllByText(CONSTITUTION)).toHaveLength(1);
+});
+
+test('clicking a suggested prompt sends it as the first turn like typing', async () => {
+  const user = await createUser();
+  const conversation = seedConversation(user.id as number);
+  await renderChat(`/app/chat/${conversation.id as number}`, user);
+
+  await userEvent.click(
+    await screen.findByRole('button', {
+      name: 'Help me keep my current level steady this term.',
+    }),
+  );
+
+  expect(
+    screen.getAllByText('Your AI advisor is replying.').length,
+  ).toBeGreaterThan(0);
+  expect(
+    await screen.findByText(/credit range stays inside 12 to 18/),
+  ).toBeInTheDocument();
+  await waitFor(() => {
+    expect(
+      screen.queryByRole('button', {
+        name: 'Help me keep my current level steady this term.',
+      }),
+    ).not.toBeInTheDocument();
+  });
+  expect(
+    screen.getByText('Help me keep my current level steady this term.'),
+  ).toBeInTheDocument();
 });
 
 test('the transcript renders assistant bodies as markdown and user bodies as plain text', async () => {

@@ -474,7 +474,6 @@ const seedConversations = () => {
   db.planConversation.create({
     id: 1,
     userId: 1,
-    goal: 'maintain',
     title: 'Keeping my schedule steady',
     messages: JSON.stringify([
       {

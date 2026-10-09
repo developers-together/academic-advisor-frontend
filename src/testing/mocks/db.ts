@@ -121,7 +121,6 @@ const models = {
   planConversation: {
     id: primaryKey(() => nextId()),
     userId: Number,
-    goal: String,
     title: nullableString,
     submission_confirmed_at: nullableString,
     messages: String,

@@ -1,12 +1,7 @@
 import { HttpResponse, http } from 'msw';
 
 import { env } from '@/config/env';
-import type {
-  GoalSuggestions,
-  PlanConversation,
-  PlanConversationMessage,
-  PlanGoal,
-} from '@/types/domain';
+import type { PlanConversation, PlanConversationMessage } from '@/types/domain';
 
 import { db } from '../db';
 import { requireAuth } from '../mock-auth';
@@ -16,7 +11,6 @@ import { networkDelay } from '../utils';
 type ConversationRow = {
   id: number;
   userId: number;
-  goal: string;
   title: string | null;
   submission_confirmed_at: string | null;
   messages: string;
@@ -26,31 +20,18 @@ type ConversationRow = {
 
 type StoredMessage = PlanConversationMessage;
 
-const GOALS: PlanGoal[] = ['maintain', 'improve', 'excel'];
-
-const goalSuggestions = (): GoalSuggestions => ({
-  maintain: 'Help me keep my current level steady this term.',
-  improve: 'My standing slipped last term and I want it back up.',
-  excel: 'I want to aim higher than passing. What would excellence look like?',
-});
-
 const parseMessages = (row: ConversationRow): StoredMessage[] =>
   JSON.parse(row.messages) as StoredMessage[];
 
 const toConversation = (row: ConversationRow): PlanConversation => {
   const messages = parseMessages(row);
-  const lastUserMessage = [...messages]
-    .reverse()
-    .find((message) => message.role === 'user');
   return {
     id: row.id,
-    goal: row.goal as PlanGoal,
     title: row.title ?? null,
     submission_confirmed_at: row.submission_confirmed_at ?? null,
     created_at: row.createdAt,
     updated_at: row.updatedAt,
     messages,
-    ...(lastUserMessage ? {} : { goal_suggestions: goalSuggestions() }),
   };
 };
 
@@ -118,7 +99,10 @@ const appendMessage = (
   row: ConversationRow,
   message: Omit<StoredMessage, 'id' | 'created_at'>,
 ) => {
-  const messages = parseMessages(row);
+  const current = db.planConversation.findFirst({
+    where: { id: { equals: row.id } },
+  }) as ConversationRow | null;
+  const messages = current ? parseMessages(current) : [];
   const next: StoredMessage = {
     id: messages.length + 1,
     created_at: new Date().toISOString(),
@@ -186,7 +170,6 @@ export const planConversationHandlers = [
     return HttpResponse.json({
       data: rows.map((row) => ({
         id: row.id,
-        goal: row.goal,
         title: row.title ?? null,
         submission_confirmed_at: row.submission_confirmed_at ?? null,
         created_at: row.createdAt,
@@ -198,25 +181,40 @@ export const planConversationHandlers = [
   http.post(`${env.API_URL}/plan-conversations`, async ({ request }) => {
     await networkDelay();
     const user = requireAuth(request);
-    const body = (await request.json()) as { goal?: unknown };
+    const body = (await request.json()) as { first_message?: unknown };
     if (
-      body.goal !== undefined &&
-      (typeof body.goal !== 'string' || !GOALS.includes(body.goal as PlanGoal))
+      body.first_message !== undefined &&
+      (typeof body.first_message !== 'string' ||
+        body.first_message.length > 10000)
     ) {
       return HttpResponse.json(
         {
           message: 'The given data was invalid.',
-          errors: { goal: ['Pick one of the three goals.'] },
+          errors: { first_message: ['Write a message first.'] },
         },
         { status: 422 },
       );
     }
     const row = db.planConversation.create({
       userId: user.id as number,
-      goal: typeof body.goal === 'string' ? body.goal : '',
       messages: JSON.stringify([]),
     }) as ConversationRow;
-    return HttpResponse.json({ data: toConversation(row) }, { status: 201 });
+    if (typeof body.first_message === 'string' && body.first_message !== '') {
+      appendMessage(row, { role: 'user', content: body.first_message });
+      const reply =
+        'Here is how I read your message against your record. Your map leaves CS 301 eligible once CS 201 is done, and the credit range stays inside 12 to 18 with either choice. Want me to adjust the plan?';
+      appendMessage(row, { role: 'assistant', content: reply });
+      db.planConversation.update({
+        where: { id: { equals: row.id } },
+        data: {
+          title: `${body.first_message.split(/\s+/).slice(0, 5).join(' ')}...`,
+        },
+      });
+    }
+    const stored = db.planConversation.findFirst({
+      where: { id: { equals: row.id } },
+    }) as ConversationRow;
+    return HttpResponse.json({ data: toConversation(stored) }, { status: 201 });
   }),
 
   http.get(
@@ -301,7 +299,7 @@ export const planConversationHandlers = [
         });
       }
       const reply =
-        'Here is how I read your goal against your record. Your map leaves CS 301 eligible once CS 201 is done, and the credit range stays inside 12 to 18 with either choice. Want me to adjust the plan?';
+        'Here is how I read your message against your record. Your map leaves CS 301 eligible once CS 201 is done, and the credit range stays inside 12 to 18 with either choice. Want me to adjust the plan?';
       const frames = [
         ...tokenFrames(id, reply),
         {

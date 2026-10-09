@@ -41,7 +41,6 @@ const seedConversation = async (
   );
   return db.planConversation.create({
     userId,
-    goal: 'maintain',
     messages: JSON.stringify([]),
     ...values,
   });
@@ -59,18 +58,16 @@ test('the empty conversation list renders the settled empty state with the new c
   ).toBeGreaterThan(0);
 });
 
-test('the conversation list shows each conversation with its title, goal, and updated time', async () => {
+test('the conversation list shows each conversation with its title and updated time', async () => {
   await renderChat('/app/chat', async (userId) => {
     await seedConversation(userId, {
       id: 1,
       title: 'Keeping my schedule steady',
-      goal: 'maintain',
       updatedAt: '2026-10-02T14:30:00.000Z',
     });
     await seedConversation(userId, {
       id: 2,
       title: null,
-      goal: 'excel',
       updatedAt: '2026-10-01T09:00:00.000Z',
     });
   });
@@ -78,18 +75,17 @@ test('the conversation list shows each conversation with its title, goal, and up
   expect(
     await screen.findByText('Keeping my schedule steady'),
   ).toBeInTheDocument();
-  expect(screen.getByText('Maintain my level')).toBeInTheDocument();
   expect(
     screen.getByText(formatDateTime('2026-10-02T14:30:00.000Z')),
   ).toBeInTheDocument();
 
   const untitled = screen
-    .getAllByRole('link', { name: /Aim for excellence/ })
+    .getAllByRole('link', { name: /Untitled conversation/ })
     .find((link) => link.getAttribute('href') === '/app/chat/2');
-  expect(untitled).toHaveTextContent(/^Aim for excellence/);
+  expect(untitled).toHaveTextContent(/^Untitled conversation/);
 });
 
-test('starting a conversation creates it without a goal and lands on the composer view', async () => {
+test('starting a conversation lands on the composer view with the suggested prompts', async () => {
   await renderChat('/app/chat');
 
   await screen.findByText('No conversations yet.');

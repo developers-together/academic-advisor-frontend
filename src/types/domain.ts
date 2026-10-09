@@ -64,8 +64,6 @@ export type PlanComment = {
   created_at: string;
 };
 
-export type PlanGoal = 'maintain' | 'improve' | 'excel';
-
 export type PlanMessageRole = 'user' | 'assistant';
 
 export type PlanConversationMessage = {
@@ -75,21 +73,13 @@ export type PlanConversationMessage = {
   created_at: string;
 };
 
-export type GoalSuggestions = {
-  maintain: string;
-  improve: string;
-  excel: string;
-};
-
 export type PlanConversation = {
   id: number;
-  goal: PlanGoal;
   title: string | null;
   submission_confirmed_at: string | null;
   created_at: string;
   updated_at: string;
   messages?: PlanConversationMessage[];
-  goal_suggestions?: GoalSuggestions;
 };
 
 export type AcademicRecord = {

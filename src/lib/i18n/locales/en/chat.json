@@ -5,17 +5,13 @@
   "promptCards": {
     "groupLabel": "Suggested starters"
   },
-  "goals": {
-    "maintain": "Maintain my level",
-    "improve": "Improve my standing",
-    "excel": "Aim for excellence"
-  },
   "list": {
     "empty": {
       "title": "No conversations yet.",
       "body": "Start one and your AI advisor will help you plan."
     },
     "back": "All conversations",
+    "untitled": "Untitled conversation",
     "missing": {
       "title": "This conversation is gone.",
       "body": "It may have been removed. Pick another conversation or start a new one."

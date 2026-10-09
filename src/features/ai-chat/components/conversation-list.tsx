@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 
-import { Badge } from '@/components/ui/badge';
 import { ErrorState } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Link } from '@/components/ui/link';
@@ -17,9 +16,6 @@ export type ConversationListProps = {
   className?: string;
 };
 
-const conversationTitle = (conversation: PlanConversation, goalLabel: string) =>
-  conversation.title ?? goalLabel;
-
 const ConversationItem = ({
   conversation,
   active,
@@ -28,7 +24,6 @@ const ConversationItem = ({
   active: boolean;
 }) => {
   const { t } = useTranslation('chat');
-  const goalLabel = t(`goals.${conversation.goal}`);
   return (
     <li>
       <Link
@@ -42,10 +37,9 @@ const ConversationItem = ({
         )}
       >
         <span className="block truncate text-sm font-medium text-foreground">
-          {conversationTitle(conversation, goalLabel)}
+          {conversation.title ?? t('list.untitled')}
         </span>
         <span className="mt-1.5 flex items-center gap-2">
-          <Badge size="sm">{goalLabel}</Badge>
           <span className="text-2xs text-muted-foreground">
             {formatDateTime(conversation.updated_at)}
           </span>
