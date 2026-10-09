@@ -46,7 +46,7 @@ export const MyMeetings = ({
   const [declineId, setDeclineId] = useState<number | null>(null);
   const [cancelId, setCancelId] = useState<number | null>(null);
 
-  const advisorName = advisorQuery.data?.advisor.name;
+  const advisorName = advisorQuery.data?.advisor?.name;
 
   const actionsFor = (meeting: MeetingRequest) => {
     if (meeting.status === 'awaiting_response') {

@@ -106,10 +106,15 @@ export const advisorHandlers = [
       ? db.user.findFirst({ where: { id: { equals: advisorId as number } } })
       : null;
     if (!advisor) {
-      return HttpResponse.json(
-        { message: 'No advisor is assigned to you yet.' },
-        { status: 404 },
-      );
+      return HttpResponse.json({
+        data: {
+          advisor: null,
+          availability_window: {
+            rows: [],
+          },
+          office_location: null,
+        },
+      });
     }
     const profile = db.advisorProfile.findFirst({
       where: { advisorId: { equals: advisor.id as number } },

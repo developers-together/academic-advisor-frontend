@@ -18,31 +18,25 @@ export const AdvisorCard = () => {
       <CardBody>
         {advisorQuery.isPending && <SkeletonText lines={2} />}
 
-        {advisorQuery.isError &&
-          advisorQuery.error instanceof ApiError &&
-          advisorQuery.error.status === 404 && (
-            <p className="text-sm text-muted-foreground">
-              {t('profile.advisor.none')}
-            </p>
-          )}
+        {advisorQuery.isError && (
+          <ErrorState
+            compact
+            onRetry={() => void advisorQuery.refetch()}
+            requestId={
+              advisorQuery.error instanceof ApiError
+                ? advisorQuery.error.requestId
+                : null
+            }
+          />
+        )}
 
-        {advisorQuery.isError &&
-          !(
-            advisorQuery.error instanceof ApiError &&
-            advisorQuery.error.status === 404
-          ) && (
-            <ErrorState
-              compact
-              onRetry={() => void advisorQuery.refetch()}
-              requestId={
-                advisorQuery.error instanceof ApiError
-                  ? advisorQuery.error.requestId
-                  : null
-              }
-            />
-          )}
+        {advisorQuery.data && advisorQuery.data.advisor === null && (
+          <p className="text-sm text-muted-foreground">
+            {t('profile.advisor.none')}
+          </p>
+        )}
 
-        {advisorQuery.data && (
+        {advisorQuery.data && advisorQuery.data.advisor !== null && (
           <div className="space-y-3">
             <p className="text-sm font-medium">
               {advisorQuery.data.advisor.name}

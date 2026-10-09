@@ -130,7 +130,7 @@ export type PrerequisiteMapEntry = {
 };
 
 export type AdvisorProfile = {
-  advisor: UserSummary;
+  advisor: UserSummary | null;
   availability_window: { rows: AvailabilityWindowRow[] };
   office_location: string | null;
 };
