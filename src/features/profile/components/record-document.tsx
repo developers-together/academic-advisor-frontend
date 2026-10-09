@@ -56,32 +56,19 @@ export const RecordDocument = ({
         </Card>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <KpiCard
-          label={t('profile.cgpa.label')}
-          value={
-            record.cgpa === null ? (
-              <span className="text-base font-normal text-muted-foreground">
-                {t('profile.unavailable')}
-              </span>
-            ) : (
-              String(record.cgpa)
-            )
-          }
-          context={t('profile.cgpa.context')}
-        />
-        <KpiCard
-          label={t('profile.remaining.label')}
-          value={
-            record.remaining_requirements ?? (
-              <span className="text-base font-normal text-muted-foreground">
-                {t('profile.unavailable')}
-              </span>
-            )
-          }
-          context={t('profile.remaining.context')}
-        />
-      </div>
+      <KpiCard
+        label={t('profile.cgpa.label')}
+        value={
+          record.cgpa === null ? (
+            <span className="text-base font-normal text-muted-foreground">
+              {t('profile.unavailable')}
+            </span>
+          ) : (
+            String(record.cgpa)
+          )
+        }
+        context={t('profile.cgpa.context')}
+      />
 
       <Card>
         <CardHeader>

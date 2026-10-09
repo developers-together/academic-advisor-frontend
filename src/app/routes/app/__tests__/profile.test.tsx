@@ -49,7 +49,6 @@ const seedRecord = (
     userId,
     cgpa: 3.2,
     curriculum_year_level: 2,
-    remaining_requirements: '60 credit hours',
     history: JSON.stringify([
       {
         course_code: 'CS 101',
@@ -138,7 +137,8 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   });
 
   expect(await screen.findByText('3.2')).toBeInTheDocument();
-  expect(screen.getByText('60 credit hours')).toBeInTheDocument();
+  expect(screen.queryByText('Remaining requirements')).not.toBeInTheDocument();
+  expect(screen.queryByText('60 credit hours')).not.toBeInTheDocument();
 
   expect(screen.getByRole('group', { name: 'Course map' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /CS 101/ })).toBeInTheDocument();

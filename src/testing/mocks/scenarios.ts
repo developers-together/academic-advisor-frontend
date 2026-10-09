@@ -188,7 +188,6 @@ const seedAcademicRecord = (lastSyncedAt = '2026-10-01T12:00:00.000Z') => {
     userId: 1,
     cgpa: 3.2,
     curriculum_year_level: 2,
-    remaining_requirements: '60 credit hours',
     history: JSON.stringify(history),
     current_enrollments: JSON.stringify([
       {
@@ -242,7 +241,6 @@ const seedQueue = () => {
         userId: student.id,
         cgpa: student.cgpa,
         curriculum_year_level: 3,
-        remaining_requirements: '40 credit hours',
         history: JSON.stringify([]),
         current_enrollments: JSON.stringify([]),
         prerequisite_map: JSON.stringify(queueCourseMap),
@@ -252,7 +250,6 @@ const seedQueue = () => {
       db.academicRecord.create({
         userId: student.id,
         curriculum_year_level: 3,
-        remaining_requirements: '40 credit hours',
         history: JSON.stringify([]),
         current_enrollments: JSON.stringify([]),
         prerequisite_map: JSON.stringify(queueCourseMap),

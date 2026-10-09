@@ -79,7 +79,6 @@ const seedStudentWithPlan = async (seed: PlanSeed = {}) => {
     userId: user.id as number,
     cgpa: 3.2,
     curriculum_year_level: 2,
-    remaining_requirements: '60 credit hours',
     history: JSON.stringify([]),
     current_enrollments: JSON.stringify([]),
     prerequisite_map: JSON.stringify(courseMap),

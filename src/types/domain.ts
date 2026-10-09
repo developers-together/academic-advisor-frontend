@@ -85,7 +85,6 @@ export type PlanConversation = {
 export type AcademicRecord = {
   cgpa: number | null;
   curriculum_year_level: number | null;
-  remaining_requirements: string | null;
   history: CourseAttempt[];
   current_enrollments: CurrentEnrollment[];
   prerequisite_map: PrerequisiteMapEntry[];

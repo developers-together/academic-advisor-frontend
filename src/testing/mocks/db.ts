@@ -45,7 +45,6 @@ const models = {
     userId: primaryKey(() => nextId()),
     cgpa: nullableNumber,
     curriculum_year_level: Number,
-    remaining_requirements: nullableString,
 
     history: String,
     current_enrollments: String,

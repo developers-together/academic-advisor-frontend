@@ -127,10 +127,6 @@
       "label": "CGPA",
       "context": "On a 4.0 scale, from the SIS"
     },
-    "remaining": {
-      "label": "Remaining requirements",
-      "context": "As reported by the SIS"
-    },
     "advisor": {
       "title": "Your advisor",
       "none": "You have no assigned advisor yet. The administration office assigns advisors.",

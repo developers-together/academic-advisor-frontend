@@ -60,7 +60,6 @@ const seedAcademicRecord = (userId: number) => {
     userId,
     cgpa: 3.2,
     curriculum_year_level: 2,
-    remaining_requirements: '60 credit hours',
     history: JSON.stringify([]),
     current_enrollments: JSON.stringify([]),
     prerequisite_map: JSON.stringify(prerequisiteMap),

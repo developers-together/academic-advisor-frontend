@@ -36,7 +36,6 @@ export const academicRecordHandlers = [
     const record = {
       cgpa: row.cgpa,
       curriculum_year_level: row.curriculum_year_level,
-      remaining_requirements: row.remaining_requirements,
       history: JSON.parse(row.history),
       current_enrollments: JSON.parse(row.current_enrollments),
       prerequisite_map: JSON.parse(row.prerequisite_map),
