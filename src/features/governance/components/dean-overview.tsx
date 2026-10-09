@@ -4,20 +4,16 @@ import { useLocation, useSearchParams } from 'react-router';
 
 import { Banner } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
-import { KpiCard } from '@/components/ui/kpi-card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUser } from '@/lib/auth';
-import type {
-  GovernanceGrouping,
-  GovernanceMetrics,
-  GovernanceNode,
-} from '@/types/domain';
+import type { GovernanceGrouping, GovernanceNode } from '@/types/domain';
 
 import { useGovernanceDashboard } from '../api/get-governance-dashboard';
 import { governanceNodeName, scopedNodeOf } from '../utils/governance-tree';
 
 import { FunnelChart } from './funnel-chart';
 import { GovernanceChildGrid } from './governance-child-grid';
+import { GovernanceKpiCards } from './governance-kpi-cards';
 import { GovernanceQueryStates } from './governance-query-states';
 
 const bottleneckOf = (node: GovernanceNode): GovernanceNode | null => {
@@ -34,72 +30,6 @@ const bottleneckOf = (node: GovernanceNode): GovernanceNode | null => {
       : worst,
   );
 };
-
-const CompletionCard = ({
-  metrics,
-  t,
-}: {
-  metrics: GovernanceMetrics;
-  t: (key: string) => string;
-}) => {
-  const rate = metrics.completion_rate;
-  return (
-    <KpiCard
-      label={t('kpi.completion')}
-      value={rate === null ? '—' : `${rate}%`}
-      context={
-        rate === null
-          ? t('kpi.completionNone')
-          : metrics.completion_is_final
-            ? t('kpi.completionFinal')
-            : t('kpi.completionLive')
-      }
-    />
-  );
-};
-
-const MedianCard = ({
-  metrics,
-  t,
-}: {
-  metrics: GovernanceMetrics;
-  t: (key: string, values?: Record<string, unknown>) => string;
-}) => {
-  const hours = metrics.median_decision_hours;
-  return (
-    <KpiCard
-      label={t('kpi.median')}
-      value={hours === null ? '—' : t('kpi.medianHours', { value: hours })}
-      context={hours === null ? t('kpi.medianNone') : t('kpi.medianContext')}
-    />
-  );
-};
-
-const kpiCardsOf = (
-  metrics: GovernanceMetrics,
-  t: (key: string, values?: Record<string, unknown>) => string,
-) => [
-  <CompletionCard key="completion" metrics={metrics} t={t} />,
-  <MedianCard key="median" metrics={metrics} t={t} />,
-  <KpiCard
-    key="aging"
-    label={t('kpi.aging')}
-    value={metrics.aging_count}
-    context={t('kpi.agingContext')}
-  />,
-  <KpiCard
-    key="caseload"
-    label={t('kpi.caseload')}
-    value={metrics.caseload}
-    context={t('kpi.caseloadContext')}
-  />,
-  <KpiCard
-    key="approved"
-    label={t('kpi.approved')}
-    value={metrics.approved}
-    context={t('kpi.approvedContext')}
-  />,
-];
 
 export const DeanOverview = () => {
   const { t, i18n } = useTranslation('governance');
@@ -161,9 +91,7 @@ export const DeanOverview = () => {
                   </p>
                 </Banner>
               )}
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-                {kpiCardsOf(scoped.metrics, t)}
-              </div>
+              <GovernanceKpiCards metrics={scoped.metrics} />
               <FunnelChart
                 funnel={scoped.metrics.funnel}
                 term={scoped.term_code}
