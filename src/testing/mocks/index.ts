@@ -3,7 +3,6 @@ import { env } from '@/config/env';
 export const enableMocking = async () => {
   if (import.meta.env.DEV && env.ENABLE_API_MOCKING) {
     const { worker } = await import('./browser');
-    const { initializeDb } = await import('./db');
     const { setScenario, scenarios } = await import('./scenarios');
 
     const url = new URL(window.location.href);
@@ -27,7 +26,6 @@ export const enableMocking = async () => {
 
     setScenario(scenario ?? 'happy');
 
-    await initializeDb();
     return worker.start({
       onUnhandledRequest: 'bypass',
     });

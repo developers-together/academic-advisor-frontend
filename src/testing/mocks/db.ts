@@ -157,42 +157,6 @@ const models = {
 
 export const db = factory(models);
 
-const dbFilePath = 'mocked-db.json';
-
-export const loadDb = async () => {
-  if (typeof window === 'undefined') {
-    const { readFile, writeFile } = await import('fs/promises');
-    try {
-      const data = await readFile(dbFilePath, 'utf8');
-      return JSON.parse(data);
-    } catch (error: any) {
-      if (error?.code === 'ENOENT') {
-        const emptyDB = {};
-        await writeFile(dbFilePath, JSON.stringify(emptyDB, null, 2));
-        return emptyDB;
-      } else {
-        console.error('Error loading mocked DB:', error);
-        return null;
-      }
-    }
-  }
-  return Object.assign(
-    JSON.parse(window.localStorage.getItem('msw-db') || '{}'),
-  );
-};
-
-export const initializeDb = async () => {
-  const database = await loadDb();
-  Object.entries(db).forEach(([key, model]) => {
-    const dataEntries = database[key];
-    if (dataEntries) {
-      dataEntries?.forEach((entry: Record<string, any>) => {
-        model.create(entry);
-      });
-    }
-  });
-};
-
 export const resetDb = () => {
   window.localStorage.clear();
 };
