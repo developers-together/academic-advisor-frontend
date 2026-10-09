@@ -114,7 +114,7 @@ export const createAppRouter = (queryClient: QueryClient) => {
     };
   });
 
-  const hydrateFallback = (
+  const hydrateFallbackElement = (
     <div
       role="status"
       className="flex min-h-dvh items-center justify-center bg-background"
@@ -124,11 +124,11 @@ export const createAppRouter = (queryClient: QueryClient) => {
   );
 
   return createBrowserRouter([
-    ...topLevel.map((route) => ({ ...route, hydrateFallback })),
-    ...sections.map((section) => ({ ...section, hydrateFallback })),
+    ...topLevel.map((route) => ({ ...route, hydrateFallbackElement })),
+    ...sections.map((section) => ({ ...section, hydrateFallbackElement })),
     {
       path: '*',
-      hydrateFallback,
+      hydrateFallbackElement,
       lazy: () => import('./routes/not-found').then(convert(queryClient)),
     },
   ]);

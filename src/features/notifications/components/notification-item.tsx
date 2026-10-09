@@ -56,16 +56,24 @@ export const NotificationItem = ({
         type="button"
         onClick={() => onOpen(notification)}
         className={cn(
-          'flex w-full items-start gap-3 rounded-lg border bg-card p-3 text-start transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden',
-          isUnread && 'border-s-2 border-s-primary',
+          'flex w-full items-start gap-4 rounded-xl border border-transparent bg-card p-4 text-start transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden',
+          isUnread && 'border-s border-s-primary bg-primary/5',
         )}
       >
-        <span className="mt-0.5 shrink-0 text-muted-foreground">
-          <Icon className="size-5" aria-hidden />
+        <span
+          className={cn(
+            'grid size-11 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground',
+            isUnread && 'bg-primary/10 text-primary-text',
+          )}
+        >
+          <Icon
+            className={cn('size-5', isUnread && 'stroke-2.5 fill-current/15')}
+            aria-hidden
+          />
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium">{title}</span>
+            <span className="text-sm font-medium">{title}</span>
             {isUnread && (
               <>
                 <span

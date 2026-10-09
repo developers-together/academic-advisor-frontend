@@ -14,7 +14,7 @@ export const ToolEventRow = ({ toolEvent }: ToolEventRowProps) => {
     <li className="flex gap-3">
       <span
         aria-hidden
-        className="flex size-6 shrink-0 items-center justify-center rounded-full bg-crimson-100"
+        className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10"
       >
         <ListPlus className="size-3.5 text-crimson-800" />
       </span>
@@ -33,7 +33,7 @@ export const ToolEventRow = ({ toolEvent }: ToolEventRowProps) => {
         )}
         <Link
           to="/app/builder"
-          className="mt-1 inline-block text-xs font-medium text-primary"
+          className="mt-1 inline-block text-xs font-medium text-primary-text"
         >
           {t('toolRow.openBuilder')}
         </Link>

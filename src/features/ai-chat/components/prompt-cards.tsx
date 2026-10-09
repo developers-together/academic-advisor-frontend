@@ -1,3 +1,4 @@
+import { ArrowUpRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import type { GoalSuggestions, PlanGoal } from '@/types/domain';
@@ -20,7 +21,7 @@ export const PromptCards = ({
   return (
     <div
       role="group"
-      aria-label={t('goalDialog.title')}
+      aria-label={t('promptLabel')}
       className={cn('grid gap-2 sm:grid-cols-3', className)}
     >
       {GOALS.map((goal) => (
@@ -28,8 +29,12 @@ export const PromptCards = ({
           key={goal}
           type="button"
           onClick={() => onPick(suggestions[goal])}
-          className="rounded-lg border border-border bg-card p-3 text-start text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden"
+          className="group rounded-2xl border border-border bg-muted/30 p-4 text-start text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden"
         >
+          <ArrowUpRight
+            className="mb-3 size-5 text-primary-text transition-transform group-hover:-translate-y-0.5 rtl:-scale-x-100"
+            aria-hidden
+          />
           {suggestions[goal]}
         </button>
       ))}

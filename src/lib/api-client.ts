@@ -24,10 +24,19 @@ api.interceptors.request.use(authRequestInterceptor);
 
 api.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  (error: unknown) => {
     const apiError = toApiError(error);
 
-    if (apiError.status === 401 && tokenStorage.get()) {
+    const token = tokenStorage.get();
+    const authorization = Axios.isAxiosError(error)
+      ? error.config?.headers.Authorization
+      : undefined;
+
+    if (
+      apiError.status === 401 &&
+      token &&
+      authorization === `Bearer ${token}`
+    ) {
       tokenStorage.clear();
       const redirectTo = `${window.location.pathname}${window.location.search}`;
       const params = new URLSearchParams({ reason: 'expired' });

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PlanStateChip } from '@/components/domain/plan-state-chip';
@@ -63,6 +63,7 @@ export const QueueTable = ({
   className,
 }: QueueTableProps) => {
   const { t } = useTranslation('advisor');
+  const panelId = useId();
   const [filter, setFilter] = useState<QueueFilter>('all');
   const [sort, setSort] = useState<QueueSort>('urgent');
 
@@ -82,6 +83,7 @@ export const QueueTable = ({
     <div className={className}>
       <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
         <ResponsiveTabs
+          panelId={panelId}
           value={filter}
           onValueChange={(value) => setFilter(value as QueueFilter)}
           aria-label={t('queue.title')}
@@ -108,7 +110,11 @@ export const QueueTable = ({
           </select>
         </label>
       </div>
-      <ul className="mt-3 list-none space-y-2 p-0">
+      <ul
+        id={panelId}
+        aria-label={t('queue.title')}
+        className="mt-3 list-none space-y-2 p-0"
+      >
         {visible.length === 0 ? (
           <li>
             <EmptyState

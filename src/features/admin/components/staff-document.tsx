@@ -5,7 +5,7 @@ import { AsyncSurface } from '@/components/ui/async-surface';
 import { ConfirmDialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/components/ui/notifications';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ApiError } from '@/lib/api-error';
 import type { StaffMember, StaffRole } from '@/types/domain';
 
@@ -117,46 +117,51 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
             </TabsTrigger>
           ))}
         </TabsList>
+
+        {FILTERS.map(
+          (value) =>
+            value !== filter && <TabsContent key={value} value={value} />,
+        )}
+        <TabsContent value={filter}>
+          {staff.length === 0 ? (
+            <EmptyState
+              compact
+              title={
+                filter === 'all'
+                  ? t('staff.empty.noRows')
+                  : t('staff.empty.filteredTitle')
+              }
+              description={
+                filter === 'all'
+                  ? t('staff.empty.noRowsBody')
+                  : t('staff.empty.filteredBody')
+              }
+              action={
+                filter === 'all'
+                  ? {
+                      label: t('staff.addStaff'),
+                      onClick: onAddStaff,
+                    }
+                  : undefined
+              }
+              className="max-w-xl"
+            />
+          ) : (
+            <StaffTable
+              staff={staff}
+              onEdit={setEditing}
+              onResetPassword={(member) => {
+                setConfirmError(null);
+                setConfirmTarget({ kind: 'reset', staff: member });
+              }}
+              onDelete={(member) => {
+                setConfirmError(null);
+                setConfirmTarget({ kind: 'delete', staff: member });
+              }}
+            />
+          )}
+        </TabsContent>
       </Tabs>
-
-      {staff.length === 0 ? (
-        <EmptyState
-          compact
-          title={
-            filter === 'all'
-              ? t('staff.empty.noRows')
-              : t('staff.empty.filteredTitle')
-          }
-          description={
-            filter === 'all'
-              ? t('staff.empty.noRowsBody')
-              : t('staff.empty.filteredBody')
-          }
-          action={
-            filter === 'all'
-              ? {
-                  label: t('staff.addStaff'),
-                  onClick: onAddStaff,
-                }
-              : undefined
-          }
-          className="max-w-xl"
-        />
-      ) : (
-        <StaffTable
-          staff={staff}
-          onEdit={setEditing}
-          onResetPassword={(member) => {
-            setConfirmError(null);
-            setConfirmTarget({ kind: 'reset', staff: member });
-          }}
-          onDelete={(member) => {
-            setConfirmError(null);
-            setConfirmTarget({ kind: 'delete', staff: member });
-          }}
-        />
-      )}
-
       {editing && (
         <EditStaffDialog staff={editing} onClose={() => setEditing(null)} />
       )}

@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
-import { PulseStrip } from '@/components/domain/pulse-strip';
 import { ContentLayout } from '@/components/layouts';
 import { Banner, ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,10 @@ import { SkeletonCard, SkeletonText } from '@/components/ui/skeleton';
 import { StatusChip } from '@/components/ui/status-chip';
 import { paths } from '@/config/paths';
 import { useMyMeetingRequests } from '@/features/my-advisor/api/get-my-meeting-requests';
+import { deepLinkHref } from '@/features/notifications/api/deep-link';
 import { useNotifications } from '@/features/notifications/api/get-notifications';
+import { useReadNotification } from '@/features/notifications/api/read-notification';
+import { NotificationItem } from '@/features/notifications/components/notification-item';
 import { useCreatePlan } from '@/features/plan/api/create-plan';
 import { usePlan } from '@/features/plan/api/get-plan';
 import { PlanCard } from '@/features/plan/components/plan-card';
@@ -37,12 +40,18 @@ export default function DashboardRoute() {
           : undefined
       }
     >
-      <div className="space-y-6">
+      <div className="grid items-start gap-6 lg:grid-cols-3">
         {!user.data?.advisor_id && (
-          <Banner variant="warning">{t('noAdvisor.banner')}</Banner>
+          <Banner variant="warning" className="lg:col-span-3">
+            {t('noAdvisor.banner')}
+          </Banner>
         )}
 
-        <section aria-busy={planQuery.isPending} aria-label={t('myPlan.title')}>
+        <section
+          className="space-y-4 lg:col-span-2"
+          aria-busy={planQuery.isPending}
+          aria-label={t('myPlan.title')}
+        >
           {planQuery.isPending && <SkeletonCard className="max-w-xl" />}
 
           {planQuery.isError &&
@@ -55,30 +64,6 @@ export default function DashboardRoute() {
             )}
 
           {planQuery.data && <PlanCard plan={planQuery.data} />}
-
-          {planQuery.data && (
-            <PulseStrip
-              className="max-w-2xl"
-              planStatus={planQuery.data.status}
-              planStatusLabel={t(`planStatus.${planQuery.data.status}`)}
-              credits={planQuery.data.total_credit_hours}
-              creditsMin={12}
-              creditsMax={18}
-              earnedShare={
-                recordQuery.data?.prerequisite_map.length
-                  ? Math.round(
-                      (recordQuery.data.prerequisite_map.filter(
-                        (entry) => entry.state === 'completed',
-                      ).length /
-                        recordQuery.data.prerequisite_map.length) *
-                        100,
-                    )
-                  : 0
-              }
-              planHref={paths.app.plan.getHref()}
-              recordHref={paths.app.record.getHref()}
-            />
-          )}
 
           {planQuery.isError &&
             planQuery.error instanceof ApiError &&
@@ -115,7 +100,7 @@ export default function DashboardRoute() {
           />
         </section>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:col-span-3">
           <section aria-label={t('home.meetingTitle')}>
             <Card className="h-full">
               <CardHeader>
@@ -134,7 +119,7 @@ export default function DashboardRoute() {
 
         <section
           aria-label={t('home.notificationsTitle')}
-          className="max-w-2xl"
+          className="lg:col-span-2"
         >
           <Card>
             <CardHeader>
@@ -146,9 +131,9 @@ export default function DashboardRoute() {
           </Card>
         </section>
 
-        <section aria-label={t('home.aiTitle')} className="max-w-2xl">
-          <Card className="border-primary/30">
-            <CardBody className="flex flex-wrap items-center justify-between gap-3">
+        <section aria-label={t('home.aiTitle')} className="h-full">
+          <Card className="h-full">
+            <CardBody className="flex flex-wrap items-center justify-between gap-4 pt-6">
               <div>
                 <p className="text-sm font-semibold">{t('home.aiTitle')}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
@@ -206,6 +191,12 @@ const ProgressStrip = ({
         }
         context={t('profile.cgpa.context')}
       />
+      <Link
+        to={paths.app.record.getHref()}
+        className="mt-3 inline-flex min-h-11 items-center rounded-md text-sm font-medium text-primary-text focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        {t('pulse.openRecord')}
+      </Link>
     </div>
   );
 };
@@ -214,6 +205,7 @@ const NextMeeting = () => {
   const { t } = useTranslation('plan');
   const navigate = useNavigate();
   const meetingsQuery = useMyMeetingRequests();
+  const [currentTime] = useState(() => Date.now());
 
   if (meetingsQuery.isPending) {
     return <SkeletonText lines={2} />;
@@ -224,10 +216,25 @@ const NextMeeting = () => {
   }
 
   const meetings = meetingsQuery.data ?? [];
-  const confirmed = meetings.find(
-    (meeting) =>
-      meeting.status === 'confirmed' && meeting.selected_slot_id !== null,
-  );
+  const confirmed = meetings
+    .filter((meeting) => {
+      const slot = meeting.slots.find(
+        (entry) => entry.id === meeting.selected_slot_id,
+      );
+      return (
+        meeting.status === 'confirmed' &&
+        slot &&
+        new Date(slot.starts_at).getTime() >= currentTime
+      );
+    })
+    .sort((first, second) => {
+      const startsAt = (meeting: typeof first) =>
+        new Date(
+          meeting.slots.find((entry) => entry.id === meeting.selected_slot_id)!
+            .starts_at,
+        ).getTime();
+      return startsAt(first) - startsAt(second);
+    })[0];
   const awaiting = meetings.find(
     (meeting) => meeting.status === 'awaiting_response',
   );
@@ -270,13 +277,20 @@ const NextMeeting = () => {
   }
 
   return (
-    <p className="text-sm text-muted-foreground">{t('home.meetingNone')}</p>
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">{t('home.meetingNone')}</p>
+      <Button asChild variant="outline">
+        <Link to={paths.app.advisor.getHref()}>{t('myAdvisor.title')}</Link>
+      </Button>
+    </div>
   );
 };
 
 const NotificationsDigest = () => {
   const { t } = useTranslation('plan');
   const notificationsQuery = useNotifications();
+  const readNotification = useReadNotification();
+  const navigate = useNavigate();
 
   if (notificationsQuery.isPending) {
     return <SkeletonText lines={2} />;
@@ -301,24 +315,28 @@ const NotificationsDigest = () => {
 
   return (
     <div className="space-y-3">
+      {readNotification.isError && (
+        <Banner variant="destructive">
+          {t('common:errors.saveFailedBody')}
+        </Banner>
+      )}
       <ul className="space-y-2">
         {unread.map((notification) => (
-          <li key={notification.id} className="rounded-md border p-3">
-            <p className="text-sm font-medium">{notification.title}</p>
-            {notification.body && (
-              <p className="mt-0.5 text-sm text-muted-foreground">
-                {notification.body}
-              </p>
-            )}
-            <p className="mt-1 text-xs text-muted-foreground tabular-nums">
-              {formatDateTime(notification.created_at)}
-            </p>
-          </li>
+          <NotificationItem
+            key={notification.id}
+            notification={notification}
+            onOpen={(entry) => {
+              const target = deepLinkHref(entry.deep_link, 'student');
+              readNotification.mutate(entry.id, {
+                onSuccess: () => navigate(target),
+              });
+            }}
+          />
         ))}
       </ul>
       <Link
         to={paths.app.notifications.getHref()}
-        className="inline-flex text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+        className="inline-flex min-h-11 items-center text-sm font-medium text-primary-text underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
       >
         {t('home.notificationsViewAll')}
       </Link>

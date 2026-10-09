@@ -154,7 +154,7 @@
   "commandPalette": {
     "open": "بحث",
     "label": "لوحة الأوامر",
-    "placeholder": "ابحث في الصفحات والأشخاص والإجراءات",
+    "placeholder": "ابحث عن الصفحات والإجراءات",
     "noResults": "لا توجد نتائج لـ \"{{query}}\"",
     "sections": {
       "pages": "الصفحات",
@@ -222,5 +222,19 @@
   },
   "responsiveTabs": {
     "filter": "تصفية"
+  },
+  "experience": {
+    "authIntro": "يبدأ فصلك الدراسي القادم بخطة واضحة.",
+    "authImage": "طلاب جامعيون يناقشون خطتهم الدراسية في مساحة للدراسة داخل الجامعة.",
+    "authCaption": "خطوتك القادمة تبدأ هنا.",
+    "authCaptionBody": "مقرراتك ومرشدك وخطوتك القادمة. معًا في مكان واحد.",
+    "expandSidebar": "توسيع القائمة الجانبية",
+    "collapseSidebar": "طي القائمة الجانبية",
+    "workspace": "مساحة عملك",
+    "searchHint": "الصفحات والإجراءات والاختصارات",
+    "searchPages": "استكشف الصفحات",
+    "searchActions": "إجراءات سريعة",
+    "searchDescription": "ابحث عن صفحة أو نفّذ إجراءً في مساحة عملك.",
+    "sidebarSettings": "التفضيلات"
   }
 }

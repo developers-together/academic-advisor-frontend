@@ -25,13 +25,18 @@ import { ToolEventRow } from '@/features/ai-chat/components/tool-event-row';
 import { TypingIndicator } from '@/features/ai-chat/components/typing-indicator';
 import { useTranscriptFollow } from '@/features/ai-chat/hooks/use-transcript-follow';
 import { useTurnStreamStore } from '@/features/ai-chat/stores/turn-stream-store';
+import { useScrollableTabIndex } from '@/hooks/use-scrollable-tab-index';
 import { ApiError } from '@/lib/api-error';
 
 export type TranscriptProps = {
   conversationId: number;
+  initialDraft?: string;
 };
 
-export const Transcript = ({ conversationId }: TranscriptProps) => {
+export const Transcript = ({
+  conversationId,
+  initialDraft = '',
+}: TranscriptProps) => {
   const { t } = useTranslation('chat');
   const { t: tCommon } = useTranslation();
   const navigate = useNavigate();
@@ -51,7 +56,7 @@ export const Transcript = ({ conversationId }: TranscriptProps) => {
     (state) => state.submitSuggested[String(conversationId)] ?? false,
   );
   const quotaExhausted = useTurnStreamStore((state) => state.quotaExhausted);
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState(initialDraft);
   const {
     containerRef,
     pinned,
@@ -60,6 +65,7 @@ export const Transcript = ({ conversationId }: TranscriptProps) => {
     jumpToLatest,
     handleScroll,
   } = useTranscriptFollow();
+  const { ref: scrollRef, tabIndex } = useScrollableTabIndex(containerRef);
 
   const error = conversationQuery.error;
 
@@ -132,10 +138,13 @@ export const Transcript = ({ conversationId }: TranscriptProps) => {
       </Link>
       <div className="relative">
         <div
-          ref={containerRef}
+          ref={scrollRef}
           onScroll={handleScroll}
           data-testid="transcript-scroll"
-          className="max-h-[70dvh] overflow-y-auto"
+          role="group"
+          aria-label={t('transcript.label')}
+          tabIndex={tabIndex}
+          className="max-h-[70dvh] overflow-y-auto focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
         >
           <ul aria-label={t('transcript.label')} className="space-y-4">
             {messages.map((message) => (

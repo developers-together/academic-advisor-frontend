@@ -31,7 +31,7 @@ test('the admin index lands on the operational overview', async () => {
     await screen.findByRole('heading', { name: 'Overview' }),
   ).toBeInTheDocument();
   expect(
-    await screen.findByRole('button', { name: /Users/ }),
+    await screen.findByRole('link', { name: /Users/ }),
   ).toBeInTheDocument();
 });
 

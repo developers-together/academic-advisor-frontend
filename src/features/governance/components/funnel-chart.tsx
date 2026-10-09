@@ -131,23 +131,25 @@ export const FunnelChart = ({
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <table className="sr-only">
-          <caption>{t('funnel.title')}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{t('funnel.table.state')}</th>
-              <th scope="col">{t('funnel.table.plans')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr key={entry.key}>
-                <th scope="row">{entry.label}</th>
-                <td className="tabular-nums">{entry.count}</td>
+        <div className="sr-only">
+          <table>
+            <caption>{t('funnel.title')}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t('funnel.table.state')}</th>
+                <th scope="col">{t('funnel.table.plans')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={entry.key}>
+                  <th scope="row">{entry.label}</th>
+                  <td className="tabular-nums">{entry.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </CardBody>
     </Card>
   );

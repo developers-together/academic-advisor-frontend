@@ -5,7 +5,7 @@ import { useLocation, useSearchParams } from 'react-router';
 import { Banner } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KpiCard } from '@/components/ui/kpi-card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useUser } from '@/lib/auth';
 import type {
   GovernanceGrouping,
@@ -135,47 +135,56 @@ export const DeanOverview = () => {
           <TabsTrigger value="units">{t('view.units')}</TabsTrigger>
           <TabsTrigger value="advisor">{t('view.advisor')}</TabsTrigger>
         </TabsList>
+        {['units', 'advisor'].map(
+          (value) =>
+            value !== grouping && <TabsContent key={value} value={value} />,
+        )}
+        <TabsContent value={grouping}>
+          <GovernanceQueryStates
+            query={dashboard}
+            audience="dean"
+            emptyTitle={t('dean.empty.title')}
+            emptyBody={t('dean.empty.body')}
+          >
+            {(root) => {
+              const scoped = scopedNodeOf(root, searchParams.get('node'));
+              const bottleneck = bottleneckOf(scoped);
+              return (
+                <div className="space-y-6">
+                  {bottleneck && (
+                    <Banner
+                      variant="warning"
+                      title={t('dean.bottleneck.title')}
+                    >
+                      <p>
+                        {t('dean.bottleneck.line', {
+                          name: governanceNodeName(
+                            bottleneck,
+                            i18n.language,
+                            t(`levels.${bottleneck.level}`),
+                          ),
+                          rate: bottleneck.metrics.completion_rate,
+                        })}
+                      </p>
+                    </Banner>
+                  )}
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+                    {kpiCardsOf(scoped.metrics, t)}
+                  </div>
+                  <FunnelChart
+                    funnel={scoped.metrics.funnel}
+                    term={scoped.term_code}
+                  />
+                  <GovernanceChildGrid
+                    node={scoped}
+                    buildHref={(code) => `${location.pathname}?node=${code}`}
+                  />
+                </div>
+              );
+            }}
+          </GovernanceQueryStates>
+        </TabsContent>
       </Tabs>
-      <GovernanceQueryStates
-        query={dashboard}
-        audience="dean"
-        emptyTitle={t('dean.empty.title')}
-        emptyBody={t('dean.empty.body')}
-      >
-        {(root) => {
-          const scoped = scopedNodeOf(root, searchParams.get('node'));
-          const bottleneck = bottleneckOf(scoped);
-          return (
-            <div className="space-y-6">
-              {bottleneck && (
-                <Banner variant="warning" title={t('dean.bottleneck.title')}>
-                  <p>
-                    {t('dean.bottleneck.line', {
-                      name: governanceNodeName(
-                        bottleneck,
-                        i18n.language,
-                        t(`levels.${bottleneck.level}`),
-                      ),
-                      rate: bottleneck.metrics.completion_rate,
-                    })}
-                  </p>
-                </Banner>
-              )}
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-                {kpiCardsOf(scoped.metrics, t)}
-              </div>
-              <FunnelChart
-                funnel={scoped.metrics.funnel}
-                term={scoped.term_code}
-              />
-              <GovernanceChildGrid
-                node={scoped}
-                buildHref={(code) => `${location.pathname}?node=${code}`}
-              />
-            </div>
-          );
-        }}
-      </GovernanceQueryStates>
     </div>
   );
 };

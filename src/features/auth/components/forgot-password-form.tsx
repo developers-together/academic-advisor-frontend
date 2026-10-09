@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { z } from 'zod';
 
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/form';
 import { paths } from '@/config/paths';
@@ -24,6 +25,7 @@ export const ForgotPasswordForm = () => {
   const { t } = useTranslation('auth');
   const [sentTo, setSentTo] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState(false);
+  const [sendError, setSendError] = React.useState<string | null>(null);
 
   const form = useForm<z.input<typeof forgotSchema>>({
     resolver,
@@ -33,6 +35,7 @@ export const ForgotPasswordForm = () => {
 
   const send = async (email: string) => {
     setPending(true);
+    setSendError(null);
     try {
       await api.post('/forgot-password', { email });
       setSentTo(email);
@@ -43,7 +46,11 @@ export const ForgotPasswordForm = () => {
         const message = error.fields.email?.[0];
         if (message) {
           form.setError('email', { message });
+        } else {
+          setSendError(t('common:errors.sendFailedBody'));
         }
+      } else {
+        setSendError(t('common:errors.sendFailedBody'));
       }
     } finally {
       setPending(false);
@@ -53,6 +60,7 @@ export const ForgotPasswordForm = () => {
   if (sentTo) {
     return (
       <div className="space-y-4 text-sm">
+        {sendError && <Banner variant="destructive">{sendError}</Banner>}
         <p className="text-muted-foreground">
           {t('forgot.sent.body', { email: sentTo })}
         </p>
@@ -70,7 +78,7 @@ export const ForgotPasswordForm = () => {
           </Button>
           <Link
             to={paths.auth.login.getHref()}
-            className="inline-flex h-11 items-center justify-center text-primary underline-offset-4 hover:underline"
+            className="inline-flex h-11 items-center justify-center text-primary-text underline underline-offset-4 hover:decoration-2"
           >
             {t('forgot.sent.backToSignIn')}
           </Link>
@@ -93,6 +101,7 @@ export const ForgotPasswordForm = () => {
       noValidate
     >
       <p className="text-sm text-muted-foreground">{t('forgot.context')}</p>
+      {sendError && <Banner variant="destructive">{sendError}</Banner>}
       <Input
         type="email"
         label={t('forgot.email')}

@@ -71,7 +71,7 @@ export const VerifyEmailPanel = () => {
         <p className="text-muted-foreground">{t('verify.heldBody')}</p>
         <Link
           to={paths.auth.login.getHref()}
-          className="inline-flex h-11 items-center text-primary underline-offset-4 hover:underline"
+          className="inline-flex h-11 items-center text-primary-text underline underline-offset-4 hover:decoration-2"
         >
           {t('verify.readyAction')}
         </Link>

@@ -67,7 +67,9 @@ test('the rail holds no rules entry and the rules page stays reachable by deep l
   expect(await screen.findByText('Course load rule')).toBeInTheDocument();
   expect(window.location.pathname).toBe('/app/rules');
 
-  const rail = within(await screen.findByRole('navigation'));
+  const rail = within(
+    await screen.findByRole('navigation', { name: 'Student' }),
+  );
   expect(rail.queryByRole('link', { name: 'Rules' })).not.toBeInTheDocument();
 });
 

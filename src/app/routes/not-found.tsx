@@ -21,7 +21,7 @@ export default function NotFoundRoute() {
           </p>
           <Link
             to={backHref}
-            className="mt-4 inline-flex h-11 items-center rounded-md px-4 text-sm font-medium text-primary underline-offset-4 hover:underline"
+            className="mt-4 inline-flex h-11 items-center rounded-md px-4 text-sm font-medium text-primary-text underline-offset-4 hover:underline"
           >
             {role
               ? t('errors.notFoundAction')

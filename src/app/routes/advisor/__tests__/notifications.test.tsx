@@ -81,7 +81,9 @@ test('renders each item with its title, body, absolute time, and unread dot', as
     ),
   ).toBeInTheDocument();
   expect(screen.getByText('Caseload student added')).toBeInTheDocument();
-  expect(screen.getAllByText('Unread')).toHaveLength(1);
+  expect(screen.getAllByText('Unread', { selector: '.sr-only' })).toHaveLength(
+    1,
+  );
 });
 
 test('opening an unread item marks it read and clears its unread dot', async () => {
@@ -90,7 +92,9 @@ test('opening an unread item marks it read and clears its unread dot', async () 
 
   await renderNotifications(advisor, '/advisor/notifications');
 
-  expect(await screen.findByText('Unread')).toBeInTheDocument();
+  expect(
+    await screen.findByText('Unread', { selector: '.sr-only' }),
+  ).toBeInTheDocument();
   expect(screen.getByText('1 unread')).toBeInTheDocument();
 
   await userEvent.click(screen.getByRole('button', { name: /Plan returned/ }));
@@ -102,7 +106,9 @@ test('opening an unread item marks it read and clears its unread dot', async () 
     ).not.toBeNull(),
   );
   await waitFor(() =>
-    expect(screen.queryByText('Unread')).not.toBeInTheDocument(),
+    expect(
+      screen.queryByText('Unread', { selector: '.sr-only' }),
+    ).not.toBeInTheDocument(),
   );
   expect(screen.queryByText('1 unread')).not.toBeInTheDocument();
 });
@@ -130,12 +136,16 @@ test('a failed mark-read restores the unread state with no flicker', async () =>
     url: '/advisor/notifications',
   });
 
-  expect(await screen.findByText('Unread')).toBeInTheDocument();
+  expect(
+    await screen.findByText('Unread', { selector: '.sr-only' }),
+  ).toBeInTheDocument();
 
   await userEvent.click(screen.getByRole('button', { name: /Plan returned/ }));
 
   await waitFor(() => expect(readAttempts).toBe(1));
-  expect(await screen.findByText('Unread')).toBeInTheDocument();
+  expect(
+    await screen.findByText('Unread', { selector: '.sr-only' }),
+  ).toBeInTheDocument();
   expect(screen.getByText('1 unread')).toBeInTheDocument();
 });
 
@@ -159,14 +169,20 @@ test('mark all as read empties the badge in one call', async () => {
   await renderNotifications(advisor, '/advisor/notifications');
 
   expect(await screen.findByText('2 unread')).toBeInTheDocument();
-  expect(screen.getAllByText('Unread')).toHaveLength(2);
+  expect(screen.getAllByText('Unread', { selector: '.sr-only' })).toHaveLength(
+    2,
+  );
 
   await userEvent.click(
     screen.getByRole('button', { name: 'Mark all as read' }),
   );
 
   await waitFor(() => expect(readAllCalls).toBe(1));
-  await waitFor(() => expect(screen.queryAllByText('Unread')).toHaveLength(0));
+  await waitFor(() =>
+    expect(
+      screen.queryAllByText('Unread', { selector: '.sr-only' }),
+    ).toHaveLength(0),
+  );
   expect(screen.queryByText('2 unread')).not.toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Mark all as read' }),

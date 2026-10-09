@@ -68,7 +68,8 @@ test('keeps a four-level trail collapsed behind one toggle until expanded', asyn
     />,
   );
 
-  expect(screen.getAllByRole('link')).toHaveLength(1);
+  expect(screen.getAllByRole('link')).toHaveLength(2);
+  expect(screen.getByRole('link', { name: 'Course' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
     'href',
     '/app',

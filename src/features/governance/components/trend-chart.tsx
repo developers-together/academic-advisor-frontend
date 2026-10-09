@@ -24,15 +24,10 @@ export type TrendChartProps = {
   className?: string;
 };
 
-const SERIES_COLORS = [
-  '#8B0000',
-  '#2563EB',
-  '#0D9488',
-  '#D97706',
-  '#64748B',
-  '#7C3AED',
-  '#B24A53',
-];
+const SERIES_COLORS = Array.from(
+  { length: 6 },
+  (_, index) => `var(--color-chart-${index + 1})`,
+);
 
 export const TrendChart = ({
   title,
@@ -54,20 +49,35 @@ export const TrendChart = ({
   });
 
   return (
-    <figure className={className}>
+    <figure className={`min-w-0 ${className ?? ''}`}>
       <figcaption>
         <p className="text-sm font-semibold">{title}</p>
         <p className="text-xs text-muted-foreground">{question}</p>
       </figcaption>
-      <div className="mt-3 h-64">
+      <div className="mt-3 h-64 min-w-0 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={rows}
             margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
           >
-            <XAxis dataKey="term" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} unit={unit} width={44} />
-            <Tooltip wrapperClassName="tabular-nums" />
+            <XAxis
+              dataKey="term"
+              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: 'var(--color-muted-foreground)' }}
+              unit={unit}
+              width={44}
+            />
+            <Tooltip
+              wrapperClassName="tabular-nums"
+              contentStyle={{
+                background: 'var(--color-popover)',
+                color: 'var(--color-popover-foreground)',
+                borderColor: 'var(--color-border)',
+                borderRadius: 'var(--radius)',
+              }}
+            />
             <Legend />
             {series.map((line, index) => (
               <Line
@@ -83,31 +93,33 @@ export const TrendChart = ({
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <table className="sr-only">
-        <caption>{title}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{t('trend.term')}</th>
-            {series.map((line) => (
-              <th key={line.key} scope="col">
-                {line.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.term as string}>
-              <th scope="row">{row.term}</th>
+      <div className="sr-only">
+        <table>
+          <caption>{title}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{t('trends.term')}</th>
               {series.map((line) => (
-                <td key={line.key} className="tabular-nums">
-                  {row[line.key] ?? '—'}
-                </td>
+                <th key={line.key} scope="col">
+                  {line.label}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.term as string}>
+                <th scope="row">{row.term}</th>
+                {series.map((line) => (
+                  <td key={line.key} className="tabular-nums">
+                    {row[line.key] ?? '—'}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 };

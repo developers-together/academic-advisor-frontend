@@ -74,7 +74,7 @@ export const Composer = ({
           action={
             <Link
               to="/app/builder"
-              className="text-sm font-medium text-primary"
+              className="text-sm font-medium text-primary-text"
             >
               {t('quota.openBuilder')}
             </Link>
@@ -83,7 +83,7 @@ export const Composer = ({
           {t('quota.banner')}
         </Banner>
       )}
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-2 rounded-2xl border bg-card p-3 shadow-sm focus-within:ring-2 focus-within:ring-ring">
         <textarea
           ref={textareaRef}
           rows={1}
@@ -93,14 +93,24 @@ export const Composer = ({
           aria-label={t('composer.placeholder')}
           disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
-          className="w-full resize-none rounded-md border border-input bg-transparent px-3 py-2.5 text-base placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+          onKeyDown={(event) => {
+            if (
+              event.key === 'Enter' &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing
+            ) {
+              event.preventDefault();
+              if (!disabled && value.trim()) send();
+            }
+          }}
+          className="w-full resize-none rounded-xl border-0 bg-transparent px-3 py-2.5 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
         />
         {replying ? (
           <Button
             type="button"
             variant="outline"
             size="icon"
-            className="size-11 shrink-0"
+            className="size-11 shrink-0 rounded-xl"
             aria-label={t('composer.stop')}
             onClick={onStop}
           >
@@ -110,7 +120,7 @@ export const Composer = ({
           <Button
             type="button"
             size="icon"
-            className="size-11 shrink-0"
+            className="size-11 shrink-0 rounded-xl"
             aria-label={t('composer.send')}
             disabled={quotaExhausted || value.trim().length === 0}
             onClick={send}

@@ -22,5 +22,8 @@
     "meeting_declined": "تم رفض الاجتماع",
     "meeting_cancelled": "تم إلغاء الاجتماع",
     "meeting_completed": "تم الاجتماع"
-  }
+  },
+  "all": "الكل",
+  "viewAll": "عرض جميع الإشعارات",
+  "caughtUp": "قرأت جميع الإشعارات."
 }

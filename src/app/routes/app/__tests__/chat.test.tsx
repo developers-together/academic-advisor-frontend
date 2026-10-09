@@ -59,7 +59,7 @@ test('the empty conversation list renders the settled empty state with the new c
   ).toBeGreaterThan(0);
 });
 
-test('the conversation list shows each conversation with its title, goal, and updated time', async () => {
+test('the conversation list shows each conversation with its title and updated time', async () => {
   await renderChat('/app/chat', async (userId) => {
     await seedConversation(userId, {
       id: 1,
@@ -78,44 +78,40 @@ test('the conversation list shows each conversation with its title, goal, and up
   expect(
     await screen.findByText('Keeping my schedule steady'),
   ).toBeInTheDocument();
-  expect(screen.getByText('Maintain my level')).toBeInTheDocument();
+  expect(screen.queryByText('Maintain my level')).not.toBeInTheDocument();
   expect(
     screen.getByText(formatDateTime('2026-10-02T14:30:00.000Z')),
   ).toBeInTheDocument();
 
   const untitled = screen
-    .getAllByRole('link', { name: /Aim for excellence/ })
+    .getAllByRole('link', { name: /New conversation/ })
     .find((link) => link.getAttribute('href') === '/app/chat/2');
-  expect(untitled).toHaveTextContent(/^Aim for excellence/);
+  expect(untitled).toHaveTextContent(/^New conversation/);
 });
 
-test('starting a conversation requires a goal pick and navigates to the new transcript', async () => {
+test('starting a conversation opens the transcript directly with the default request goal', async () => {
   await renderChat('/app/chat');
-
   await screen.findByText('No conversations yet.');
   await userEvent.click(
     screen.getAllByRole('button', { name: 'New conversation' })[0],
   );
-
+  expect(await screen.findByRole('textbox')).toBeInTheDocument();
   expect(
-    await screen.findByText('What do you want from this conversation?'),
-  ).toBeInTheDocument();
-  expect(screen.getByText('Maintain my level')).toBeInTheDocument();
-  expect(screen.getByText('Improve my standing')).toBeInTheDocument();
-  expect(screen.getByText('Aim for excellence')).toBeInTheDocument();
+    screen.queryByText('What do you want from this conversation?'),
+  ).not.toBeInTheDocument();
+  const conversations = db.planConversation.getAll();
+  expect(conversations).toHaveLength(1);
+  expect(conversations[0].goal).toBe('maintain');
+});
 
-  const start = screen.getByRole('button', { name: 'Start' });
-  expect(start).toBeDisabled();
-
+test('a starter prompt becomes a draft and never sends without the student', async () => {
+  await renderChat('/app/chat');
   await userEvent.click(
-    screen.getByRole('button', { name: 'Improve my standing' }),
+    await screen.findByRole('button', { name: 'Explain my prerequisites' }),
   );
-  expect(start).toBeEnabled();
-
-  await userEvent.click(start);
-  expect(
-    await screen.findByText(
-      'My standing slipped last term and I want it back up.',
-    ),
-  ).toBeInTheDocument();
+  expect(await screen.findByRole('textbox')).toHaveValue(
+    'Explain my prerequisites',
+  );
+  const [conversation] = db.planConversation.getAll();
+  expect(JSON.parse(conversation.messages as string)).toEqual([]);
 });

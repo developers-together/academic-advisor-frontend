@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 import { AppProvider } from '@/app/provider';
 import { AppRouter } from '@/app/router';
+import { routeTable } from '@/config/routes';
 import {
   createUser,
   loginAsUser,
@@ -77,7 +78,7 @@ describe('command palette', () => {
     ).toBeInTheDocument();
   });
 
-  test('the topbar search button opens the palette', async () => {
+  test('the sidebar search button opens the palette', async () => {
     await loginAsUser(await student());
     renderRealRouter('/app');
     await screen.findByRole('link', { name: 'Home' });
@@ -88,7 +89,7 @@ describe('command palette', () => {
   });
 });
 
-describe('mobile bottom navigation', () => {
+describe('mobile sidebar navigation', () => {
   const matchDesktop = () => ({
     matches: false,
     media: '',
@@ -100,7 +101,7 @@ describe('mobile bottom navigation', () => {
     dispatchEvent: vi.fn(),
   });
 
-  test('the student bottom bar shows the four slots and the More sheet', async () => {
+  test('the mobile rail expands, exposes every page, and closes after navigation', async () => {
     const user = userEvent.setup();
     window.matchMedia = vi.fn().mockImplementation(
       (query: string) =>
@@ -109,43 +110,60 @@ describe('mobile bottom navigation', () => {
           matches: query.includes('max-width: 767px'),
         }) as MediaQueryList,
     );
-
     try {
       await loginAsUser(await student());
       renderRealRouter('/app');
-
-      const navigations = await screen.findAllByRole('navigation', {
+      const sidebar = await screen.findByRole('navigation', {
         name: 'Student',
       });
-      const bottomNav = navigations.find(
-        (element) =>
-          within(element).queryByRole('button', { name: 'More' }) !== null,
-      );
-      if (!bottomNav) throw new Error('bottom nav missing');
-      for (const name of ['Home', 'My Plan', 'AI Advisor', 'My Advisor']) {
-        expect(
-          within(bottomNav).getByRole('link', { name }),
-        ).toBeInTheDocument();
+      for (const name of [
+        'Home',
+        'My Plan',
+        'AI Advisor',
+        'My Advisor',
+        'Academic Record',
+        'Account',
+      ]) {
+        expect(within(sidebar).getByRole('link', { name })).toBeInTheDocument();
       }
-
-      await user.click(within(bottomNav).getByRole('button', { name: 'More' }));
-
-      const dialog = await screen.findByRole('dialog');
+      expect(screen.queryByRole('banner')).not.toBeInTheDocument();
+      await user.click(
+        within(sidebar).getByRole('button', { name: 'Expand sidebar' }),
+      );
+      const expandedSidebar = screen.getByRole('navigation', {
+        name: 'Student',
+      });
       expect(
-        within(dialog).getByRole('link', { name: 'Academic Record' }),
-      ).toBeInTheDocument();
+        within(expandedSidebar).getByRole('button', {
+          name: 'Collapse sidebar',
+        }),
+      ).toHaveAttribute('aria-expanded', 'true');
+      await user.click(
+        within(expandedSidebar).getByRole('link', { name: 'Account' }),
+      );
+      await waitFor(() =>
+        expect(window.location.pathname).toBe('/app/account'),
+      );
       expect(
-        within(dialog).getByRole('link', { name: 'Notifications' }),
-      ).toBeInTheDocument();
-      expect(
-        within(dialog).getByRole('link', { name: 'Account' }),
-      ).toBeInTheDocument();
-
-      await user.click(within(dialog).getByRole('link', { name: 'Account' }));
-
-      expect(await screen.findByText(/sign out/i)).toBeInTheDocument();
+        within(screen.getByRole('navigation', { name: 'Student' })).getByRole(
+          'button',
+          { name: 'Expand sidebar' },
+        ),
+      ).toHaveAttribute('aria-expanded', 'false');
     } finally {
       vi.restoreAllMocks();
     }
   });
+});
+
+test('routes are unique and legacy links redirect to their current pages', () => {
+  expect(new Set(routeTable.map((route) => route.path)).size).toBe(
+    routeTable.length,
+  );
+  expect(
+    routeTable.find((route) => route.path === '/app/profile')?.redirectTo,
+  ).toBe('/app/account');
+  expect(
+    routeTable.find((route) => route.path === '/admin/settings')?.redirectTo,
+  ).toBe('/admin');
 });

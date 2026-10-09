@@ -25,8 +25,8 @@
   },
   "transcript": {
     "none": {
-      "title": "No conversation open.",
-      "body": "Pick a conversation from the list or start a new one."
+      "title": "What will you plan next?",
+      "body": "Explore your courses, understand your options, and shape your next semester."
     },
     "typing": "Your AI advisor is replying.",
     "jumpToLatest": "Jump to latest",
@@ -74,5 +74,11 @@
   "errors": {
     "messageRequired": "Write a message first.",
     "messageTooLong": "Messages are limited to 10000 characters."
+  },
+  "promptLabel": "Explore a starting point",
+  "starters": {
+    "courses": "Explain my prerequisites",
+    "load": "Review my course load",
+    "plan": "Help me build my plan"
   }
 }

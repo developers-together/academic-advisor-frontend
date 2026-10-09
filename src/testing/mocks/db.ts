@@ -196,5 +196,8 @@ export const initializeDb = async () => {
 };
 
 export const resetDb = () => {
+  for (const model of Object.values(db)) {
+    model.deleteMany({ where: {} });
+  }
   window.localStorage.clear();
 };

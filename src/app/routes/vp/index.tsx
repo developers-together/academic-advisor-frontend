@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { KpiCard } from '@/components/ui/kpi-card';
 import { paths } from '@/config/paths';
 import { useGovernanceDashboard } from '@/features/governance/api/get-governance-dashboard';
+import { GovernanceChildGrid } from '@/features/governance/components/governance-child-grid';
 import { GovernanceTableSkeleton } from '@/features/governance/components/governance-children-table';
 import { GovernancePage } from '@/features/governance/components/governance-page';
 import { GovernanceQueryStates } from '@/features/governance/components/governance-query-states';
@@ -73,6 +74,12 @@ export default function VpOverviewRoute() {
         {(root) => (
           <div className="space-y-6">
             <VpOverviewCards metrics={root.metrics} />
+            {root.children.length > 0 && (
+              <GovernanceChildGrid
+                node={root}
+                buildHref={(code) => paths.vp.drilldown.getHref(code)}
+              />
+            )}
             <div>
               <Button onClick={() => navigate(paths.vp.faculties.getHref())}>
                 {t('vpOverview.compareCta')}

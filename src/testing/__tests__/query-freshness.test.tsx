@@ -23,11 +23,12 @@ import { queryConfig } from '@/lib/react-query';
 const minute = 60 * 1000;
 
 describe('settled per-family query freshness (acad-abl.13 rules 24-27)', () => {
-  test('global defaults are 60 seconds stale, no focus refetch, no retry', () => {
+  test('global defaults are 60 seconds stale, no focus refetch, bounded recovery', () => {
     expect(queryConfig.queries).toMatchObject({
       staleTime: minute,
       refetchOnWindowFocus: false,
-      retry: false,
+      retry: expect.any(Function),
+      retryDelay: 500,
     });
   });
 

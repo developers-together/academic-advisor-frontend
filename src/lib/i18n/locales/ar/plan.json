@@ -31,7 +31,11 @@
       "action": "ابدأ خطتك"
     },
     "courseCount_one": "مقرر واحد مخطط",
-    "courseCount_other": "{{count}} مقررات مخططة"
+    "courseCount_other": "{{count}} مقررات مخططة",
+    "courseCount_zero": "لا توجد مقررات مخططة",
+    "courseCount_two": "مقرران مخططان",
+    "courseCount_few": "{{count}} مقررات مخططة",
+    "courseCount_many": "{{count}} مقررًا مخططًا"
   },
   "myPlan": {
     "title": "خطتي",
@@ -208,7 +212,8 @@
     "empty": {
       "title": "خريطة مقرراتك غير متاحة بعد.",
       "body": "تظهر بمجرد يبلغك نظام معلومات الطلاب بخطة دراستك."
-    }
+    },
+    "unlocks": "يفتح المقررات"
   },
   "progressRing": {
     "label": "{{percent}} بالمئة من الخطة الدراسية المرسومة مكتمل"

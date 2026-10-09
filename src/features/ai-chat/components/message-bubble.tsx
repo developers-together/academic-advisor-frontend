@@ -1,3 +1,4 @@
+import { Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Avatar } from '@/components/ui/avatar';
@@ -21,7 +22,7 @@ const AssistantBubble = ({
   content: string;
   streaming?: boolean;
 }) => (
-  <div className="max-w-prose rounded-lg border border-border bg-card p-1">
+  <div className="max-w-prose p-1">
     <MDPreview value={content} />
     {streaming && (
       <span
@@ -33,7 +34,7 @@ const AssistantBubble = ({
 );
 
 const UserBubble = ({ content }: { content: string }) => (
-  <div className="max-w-prose rounded-lg border border-border bg-muted p-3">
+  <div className="max-w-prose rounded-2xl rounded-se-md bg-primary/8 px-4 py-3">
     <p className="text-sm whitespace-pre-wrap">{content}</p>
   </div>
 );
@@ -50,7 +51,9 @@ export const MessageBubble = ({
 
   const mark =
     messageRole === 'assistant' ? (
-      <Avatar name="AI" size="sm" aria-hidden />
+      <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-text">
+        <Sparkles className="size-4" aria-hidden />
+      </span>
     ) : (
       <Avatar
         name={user?.name ?? '?'}
@@ -61,9 +64,15 @@ export const MessageBubble = ({
     );
 
   return (
-    <li className={cn('flex gap-3', className)}>
+    <li
+      className={cn(
+        'flex gap-3',
+        messageRole === 'user' && 'ms-auto max-w-[90%] flex-row-reverse',
+        className,
+      )}
+    >
       {mark}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0">
         {messageRole === 'assistant' ? (
           <AssistantBubble content={content} streaming={streaming} />
         ) : (

@@ -330,7 +330,9 @@
     "title": "Overview",
     "context": "Jump into the operational task you came for.",
     "windowActive": "Registration open for {{term}}",
-    "windowNone": "No active registration window."
+    "windowNone": "No active registration window.",
+    "search": "Find an operation",
+    "studentCount": "{{count}} students"
   },
   "users": {
     "title": "Users",

@@ -96,7 +96,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
                   : t('login.passwordReveal')
               }
               onClick={() => setShowPassword((value) => !value)}
-              className="absolute inset-e-2 top-6 flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+              className="absolute inset-e-1 top-6 flex size-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
             >
               {showPassword ? (
                 <EyeOff className="size-4" aria-hidden />
@@ -119,14 +119,14 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
       <div className="mt-4 flex flex-col gap-2 text-sm">
         <Link
           to={paths.auth.forgotPassword.getHref()}
-          className="text-primary underline-offset-4 hover:underline"
+          className="text-primary-text underline underline-offset-4 hover:decoration-2"
         >
           {t('login.forgot')}
         </Link>
-        <span className="text-muted-foreground">
+        <span className="flex flex-col gap-3 text-muted-foreground">
           <Link
             to={paths.auth.signup.getHref()}
-            className="text-primary underline-offset-4 hover:underline"
+            className="text-primary-text underline underline-offset-4 hover:decoration-2"
           >
             {t('login.signup')}
           </Link>{' '}

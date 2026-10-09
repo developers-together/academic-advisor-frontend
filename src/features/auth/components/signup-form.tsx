@@ -192,7 +192,7 @@ export const SignupForm = ({ onRegistered }: SignupFormProps) => {
       <p className="text-sm">
         <Link
           to={paths.auth.login.getHref()}
-          className="text-primary underline-offset-4 hover:underline"
+          className="text-primary-text underline underline-offset-4 hover:decoration-2"
         >
           {t('registered.backToSignIn')}
         </Link>

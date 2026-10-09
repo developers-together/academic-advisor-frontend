@@ -1,6 +1,6 @@
+import { MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Badge } from '@/components/ui/badge';
 import { ErrorState } from '@/components/ui/banner';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Link } from '@/components/ui/link';
@@ -28,16 +28,16 @@ const ConversationItem = ({
   active: boolean;
 }) => {
   const { t } = useTranslation('chat');
-  const goalLabel = t(`goals.${conversation.goal}`);
+  const goalLabel = t('newConversation');
   return (
     <li>
       <Link
         to={paths.app.conversation.getHref(conversation.id)}
         aria-current={active ? 'true' : undefined}
         className={cn(
-          'block rounded-lg border p-3 transition-colors',
+          'block rounded-xl border p-3 transition-colors',
           active
-            ? 'border-crimson-300 bg-crimson-100'
+            ? 'border-primary/30 bg-primary/5'
             : 'border-transparent hover:bg-accent',
         )}
       >
@@ -45,7 +45,7 @@ const ConversationItem = ({
           {conversationTitle(conversation, goalLabel)}
         </span>
         <span className="mt-1.5 flex items-center gap-2">
-          <Badge size="sm">{goalLabel}</Badge>
+          <MessageSquare className="size-3.5" aria-hidden />
           <span className="text-2xs text-muted-foreground">
             {formatDateTime(conversation.updated_at)}
           </span>
@@ -94,7 +94,11 @@ export const ConversationList = ({
         className={className}
         title={t('list.empty.title')}
         description={t('list.empty.body')}
-        action={{ label: t('newConversation'), onClick: onNewConversation }}
+        action={
+          activeId !== null
+            ? { label: t('newConversation'), onClick: onNewConversation }
+            : undefined
+        }
       />
     );
   }

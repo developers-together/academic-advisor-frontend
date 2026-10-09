@@ -30,7 +30,7 @@ const DrawerOverlay = React.forwardRef<
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 const drawerVariants = cva(
-  'fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=closed]:animate-out data-[state=open]:duration-300 data-[state=open]:animate-in',
+  'fixed z-50 max-h-dvh overflow-y-auto gap-4 bg-card p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=closed]:animate-out data-[state=open]:duration-300 data-[state=open]:animate-in',
   {
     variants: {
       side: {
@@ -51,31 +51,38 @@ const drawerVariants = cva(
 type DrawerContentProps = React.ComponentPropsWithoutRef<
   typeof DrawerPrimitive.Content
 > &
-  VariantProps<typeof drawerVariants>;
+  VariantProps<typeof drawerVariants> & { showClose?: boolean };
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   DrawerContentProps
->(({ side = 'right', className, children, ...props }, ref) => {
-  const { t } = useTranslation();
+>(
+  (
+    { side = 'right', className, children, showClose = true, ...props },
+    ref,
+  ) => {
+    const { t } = useTranslation();
 
-  return (
-    <DrawerPortal>
-      <DrawerOverlay />
-      <DrawerPrimitive.Content
-        ref={ref}
-        className={cn(drawerVariants({ side }), className)}
-        {...props}
-      >
-        {children}
-        <DrawerPrimitive.Close className="absolute inset-e-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary">
-          <X className="size-4" aria-hidden />
-          <span className="sr-only">{t('actions.close')}</span>
-        </DrawerPrimitive.Close>
-      </DrawerPrimitive.Content>
-    </DrawerPortal>
-  );
-});
+    return (
+      <DrawerPortal>
+        <DrawerOverlay />
+        <DrawerPrimitive.Content
+          ref={ref}
+          className={cn(drawerVariants({ side }), className)}
+          {...props}
+        >
+          {children}
+          {showClose && (
+            <DrawerPrimitive.Close className="absolute inset-e-2 top-2 flex size-11 items-center justify-center rounded-md text-muted-foreground opacity-70 ring-offset-background transition-opacity hover:bg-accent hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary">
+              <X className="size-4" aria-hidden />
+              <span className="sr-only">{t('actions.close')}</span>
+            </DrawerPrimitive.Close>
+          )}
+        </DrawerPrimitive.Content>
+      </DrawerPortal>
+    );
+  },
+);
 DrawerContent.displayName = DrawerPrimitive.Content.displayName;
 
 const DrawerHeader = ({
@@ -83,10 +90,7 @@ const DrawerHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn(
-      'flex flex-col space-y-2 text-center sm:text-start',
-      className,
-    )}
+    className={cn('flex flex-col space-y-2 pe-10 text-start', className)}
     {...props}
   />
 );

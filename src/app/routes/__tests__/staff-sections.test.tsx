@@ -11,14 +11,23 @@ import StudentShellRoute from '@/app/routes/app/shell';
 import DeanShellRoute from '@/app/routes/dean/shell';
 import VpShellRoute from '@/app/routes/vp/shell';
 import { useTableDensity } from '@/components/layouts';
-import { createUser, loginAsUser, type MockUser } from '@/testing/test-utils';
+import {
+  createUser,
+  loginAsUser,
+  type MockUser,
+  waitForLoadingToFinish,
+} from '@/testing/test-utils';
 import type { UserRole } from '@/types/domain';
 
-const renderRealRouter = (url: string) => {
+const renderRealRouter = async (url: string) => {
   window.history.pushState({}, '', url);
-  return rtlRender(<AppRouter />, {
+  const view = rtlRender(<AppRouter />, {
     wrapper: ({ children }) => <AppProvider>{children}</AppProvider>,
   });
+  if (screen.queryAllByText(/loading/i).length > 0) {
+    await waitForLoadingToFinish();
+  }
+  return view;
 };
 
 const staffUser = (role: Exclude<UserRole, 'student'>): Promise<MockUser> =>
@@ -36,9 +45,17 @@ const signIn = async (user: MockUser) => {
   );
   await userEvent.type(screen.getByLabelText(/^password/i), user.password);
   await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+  if (screen.queryAllByText(/loading/i).length > 0) {
+    await waitForLoadingToFinish();
+  }
 };
 
-const rail = () => within(screen.getByRole('navigation'));
+const rail = () =>
+  within(
+    screen.getByRole('navigation', {
+      name: /^(Advisor|Dean|Vice President|Administrator)$/,
+    }),
+  );
 
 const expectLanding = async (
   heading: string,
@@ -50,6 +67,12 @@ const expectLanding = async (
   for (const [name, href] of links) {
     expect(rail().getByRole('link', { name })).toHaveAttribute('href', href);
   }
+  expect(
+    rail().queryByRole('link', { name: 'Notifications' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: /unread notifications/i }),
+  ).toBeInTheDocument();
   expect(screen.getByRole('main')).toHaveClass('p-4', 'md:p-6');
 };
 
@@ -57,7 +80,7 @@ describe('advisor section', () => {
   test('sign-in lands on the queue with the staff rail and compact shell', async () => {
     const advisor = await staffUser('advisor');
 
-    renderRealRouter('/');
+    await renderRealRouter('/');
     await signIn(advisor);
 
     await expectLanding('Queue', [
@@ -66,7 +89,6 @@ describe('advisor section', () => {
       ['Meetings', '/advisor/meetings'],
       ['Office Hours', '/advisor/hours'],
       ['Profile', '/advisor/profile'],
-      ['Notifications', '/advisor/notifications'],
     ]);
     expect(
       await screen.findByText('No plans are waiting for review.'),
@@ -91,7 +113,7 @@ describe('advisor section', () => {
     async (url, title, empty) => {
       await loginAsUser(await staffUser('advisor'));
 
-      renderRealRouter(url);
+      await renderRealRouter(url);
 
       expect(
         await screen.findByRole('heading', { name: title }),
@@ -105,14 +127,13 @@ describe('dean section', () => {
   test('sign-in lands on the overview with the staff rail and compact shell', async () => {
     const dean = await staffUser('dean');
 
-    renderRealRouter('/');
+    await renderRealRouter('/');
     await signIn(dean);
 
     await expectLanding('How is advising running in your faculty?', [
       ['Overview', '/dean'],
       ['Advisors', '/dean/advisors'],
       ['Analytics', '/dean/analytics'],
-      ['Notifications', '/dean/notifications'],
     ]);
     expect(
       await screen.findByText('No overview data yet.'),
@@ -122,7 +143,7 @@ describe('dean section', () => {
   test('renders the notifications slot with its honest empty state', async () => {
     await loginAsUser(await staffUser('dean'));
 
-    renderRealRouter('/dean/notifications');
+    await renderRealRouter('/dean/notifications');
 
     expect(
       await screen.findByRole('heading', { name: 'Notifications' }),
@@ -137,14 +158,13 @@ describe('vp section', () => {
   test('sign-in lands on the overview with the staff rail and compact shell', async () => {
     const vp = await staffUser('vp');
 
-    renderRealRouter('/');
+    await renderRealRouter('/');
     await signIn(vp);
 
     await expectLanding('How do faculties compare this term?', [
       ['Overview', '/vp'],
       ['Faculties', '/vp/faculties'],
       ['Trends', '/vp/trends'],
-      ['Notifications', '/vp/notifications'],
     ]);
     expect(
       await screen.findByText('No overview data yet.'),
@@ -154,7 +174,7 @@ describe('vp section', () => {
   test('renders the faculties scorecard with its honest empty state', async () => {
     await loginAsUser(await staffUser('vp'));
 
-    renderRealRouter('/vp/faculties');
+    await renderRealRouter('/vp/faculties');
 
     expect(
       await screen.findByRole('heading', {
@@ -169,7 +189,7 @@ describe('vp section', () => {
   test('renders the drilldown slot with its honest empty state', async () => {
     await loginAsUser(await staffUser('vp'));
 
-    renderRealRouter('/vp/drilldown');
+    await renderRealRouter('/vp/drilldown');
 
     expect(
       await screen.findByRole('heading', { name: 'Drill-down' }),
@@ -184,7 +204,7 @@ describe('admin section', () => {
   test('sign-in lands on the overview with the operations rail', async () => {
     const admin = await staffUser('admin');
 
-    renderRealRouter('/');
+    await renderRealRouter('/');
     await signIn(admin);
 
     await expectLanding('Overview', [
@@ -196,7 +216,6 @@ describe('admin section', () => {
       ['Rules', '/admin/rules'],
       ['Registration Windows', '/admin/registration-windows'],
       ['AI Configuration', '/admin/ai-configuration'],
-      ['Notifications', '/admin/notifications'],
     ]);
     expect(
       await screen.findByText(/Jump into the operational task/),
@@ -212,7 +231,7 @@ describe('admin section', () => {
     async (url, title, empty) => {
       await loginAsUser(await staffUser('admin'));
 
-      renderRealRouter(url);
+      await renderRealRouter(url);
 
       expect(
         await screen.findByRole('heading', { name: title }),
@@ -231,7 +250,7 @@ describe('admin section', () => {
       }),
     );
 
-    renderRealRouter('/admin/staff');
+    await renderRealRouter('/admin/staff');
 
     expect(
       await screen.findByRole('heading', { name: 'Users' }),
@@ -257,7 +276,7 @@ describe('cross-role hits', () => {
     async (url, audience) => {
       await loginAsUser(await createUser());
 
-      renderRealRouter(url);
+      await renderRealRouter(url);
 
       expect(
         await screen.findByText(`This area is for ${audience}`),
@@ -317,4 +336,26 @@ describe('staff shell density', () => {
 
     expect(await screen.findByText('density: spacious')).toBeInTheDocument();
   });
+});
+
+test('the admin overview search keeps matching operation links', async () => {
+  await loginAsUser(await staffUser('admin'));
+  await renderRealRouter('/admin');
+  const input = await screen.findByRole('textbox', {
+    name: 'Find an operation',
+  });
+  await userEvent.type(input, 'courses');
+  const main = within(screen.getByRole('main'));
+  expect(main.getByRole('link', { name: /courses/i })).toHaveAttribute(
+    'href',
+    '/admin/courses',
+  );
+  expect(
+    main.queryByRole('link', { name: /assignments/i }),
+  ).not.toBeInTheDocument();
+  await userEvent.clear(input);
+  expect(main.getByRole('link', { name: /assignments/i })).toHaveAttribute(
+    'href',
+    '/admin/assignments',
+  );
 });

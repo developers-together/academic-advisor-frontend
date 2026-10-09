@@ -20,6 +20,7 @@ export type ResponsiveTabsProps = {
   options: ResponsiveTabOption[];
   'aria-label': string;
   className?: string;
+  panelId?: string;
 };
 
 /**
@@ -32,6 +33,7 @@ export const ResponsiveTabs = ({
   options,
   'aria-label': ariaLabel,
   className,
+  panelId,
 }: ResponsiveTabsProps) => {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
@@ -49,7 +51,12 @@ export const ResponsiveTabs = ({
         <Tabs value={value} onValueChange={select}>
           <TabsList aria-label={ariaLabel}>
             {options.map((option) => (
-              <TabsTrigger key={option.value} value={option.value}>
+              <TabsTrigger
+                key={option.value}
+                value={option.value}
+                aria-controls={panelId}
+                id={panelId ? `${panelId}-${option.value}` : undefined}
+              >
                 {option.label}{' '}
                 {option.count !== undefined && (
                   <span className="text-muted-foreground tabular-nums">

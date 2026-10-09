@@ -154,7 +154,7 @@
   "commandPalette": {
     "open": "Search",
     "label": "Command palette",
-    "placeholder": "Search pages, people, and actions",
+    "placeholder": "Search pages and actions",
     "noResults": "No results for \"{{query}}\"",
     "sections": {
       "pages": "Pages",
@@ -222,5 +222,19 @@
   },
   "responsiveTabs": {
     "filter": "Filter"
+  },
+  "experience": {
+    "authIntro": "Your next semester starts with a clear plan.",
+    "authImage": "University students discuss their course plan in a campus study space.",
+    "authCaption": "Make room for what comes next.",
+    "authCaptionBody": "Your courses, your advisor, and your next step. Together in one place.",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "workspace": "Your workspace",
+    "searchHint": "Pages, actions, and shortcuts",
+    "searchPages": "Explore pages",
+    "searchActions": "Quick actions",
+    "searchDescription": "Find a page or run an action in your workspace.",
+    "sidebarSettings": "Preferences"
   }
 }

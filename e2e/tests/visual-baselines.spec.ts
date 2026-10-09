@@ -59,7 +59,10 @@ for (const { url, auth } of PAGES) {
     test('captures the dark baseline', async ({ page, request }) => {
       await switchScenario(request, 'happy');
       await page.addInitScript(() => {
-        window.localStorage.setItem('advaisor.theme', 'dark');
+        window.localStorage.setItem(
+          'advaisor.theme',
+          JSON.stringify({ state: { theme: 'dark' }, version: 0 }),
+        );
       });
       await page.goto(url);
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -70,6 +73,7 @@ for (const { url, auth } of PAGES) {
         undefined,
         { timeout: 15000 },
       );
+      await expect(page.locator('html')).toHaveClass(/dark/);
       await expect(page).toHaveScreenshot(snapshotName(url, 1440, 'dark'), {
         fullPage: true,
         animations: 'disabled',
@@ -84,7 +88,13 @@ for (const { url, auth } of PAGES) {
     test('captures the arabic baseline', async ({ page, request }) => {
       await switchScenario(request, 'happy');
       await page.addInitScript(() => {
-        window.localStorage.setItem('advaisor.language', 'ar');
+        window.localStorage.setItem(
+          'advaisor.language',
+          JSON.stringify({
+            state: { language: 'ar', languageTouched: true },
+            version: 0,
+          }),
+        );
       });
       await page.goto(url);
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -95,6 +105,8 @@ for (const { url, auth } of PAGES) {
         undefined,
         { timeout: 15000 },
       );
+      await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
       await expect(page).toHaveScreenshot(snapshotName(url, 1440, 'ar'), {
         fullPage: true,
         animations: 'disabled',

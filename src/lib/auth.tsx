@@ -33,6 +33,9 @@ export const sanitizeRedirectTo = (
 };
 
 const getUser = async (): Promise<User> => {
+  if (!tokenStorage.get()) {
+    return null as unknown as User;
+  }
   try {
     const user = await unwrap<User>(api.get('/me'));
     seedLanguageFromProfile(user.language_preference);

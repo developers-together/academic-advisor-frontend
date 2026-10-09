@@ -1,10 +1,15 @@
+import { ArrowUpRight, Search } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 import { Badge } from '@/components/ui/badge';
 import { ErrorState } from '@/components/ui/banner';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Input } from '@/components/ui/form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { paths } from '@/config/paths';
+import { routeTable } from '@/config/routes';
 import { ApiError } from '@/lib/api-error';
 import { PermissionDenied } from '@/lib/authorization';
 
@@ -55,7 +60,7 @@ const OVERVIEW_LINKS = [
 export const AdminOverviewDocument = () => {
   const { t } = useTranslation('admin');
   const { t: tNav } = useTranslation();
-  const navigate = useNavigate();
+  const [search, setSearch] = useState('');
   const studentsQuery = useAdminStudents({ search: '', perPage: 50, page: 1 });
   const coursesQuery = useAdminCourses();
   const programsQuery = useAdminPrograms();
@@ -113,41 +118,90 @@ export const AdminOverviewDocument = () => {
     rules: rulesQuery.data?.length ?? null,
   };
 
+  const links = OVERVIEW_LINKS.filter((link) =>
+    tNav(link.labelKey)
+      .toLocaleLowerCase()
+      .includes(search.trim().toLocaleLowerCase()),
+  );
+
   return (
-    <ul className="grid gap-3 sm:grid-cols-2">
-      {OVERVIEW_LINKS.map((link) => (
-        <li key={link.labelKey}>
-          <button
-            type="button"
-            onClick={() => navigate(link.to())}
-            className="flex w-full items-center justify-between rounded-lg border bg-card p-4 text-start transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
-          >
-            <span>
-              <span className="block text-sm font-medium">
-                {tNav(link.labelKey)}
-              </span>
-              {link.countOf === null &&
-                link.labelKey === 'nav.registrationWindows' && (
-                  <span className="mt-1 block text-xs text-muted-foreground">
-                    {activeWindow
-                      ? t('overview.windowActive', {
-                          term: activeWindow.term_code,
-                        })
-                      : t('overview.windowNone')}
+    <div className="space-y-5">
+      <div className="relative max-w-md">
+        <Search
+          className="pointer-events-none absolute inset-s-3 top-3 size-5 text-muted-foreground"
+          aria-hidden
+        />
+        <Input
+          aria-label={t('overview.search')}
+          placeholder={t('overview.search')}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          className="h-11 bg-card ps-11"
+        />
+      </div>
+      {links.length === 0 ? (
+        <EmptyState
+          title={tNav('commandPalette.noResults', { query: search })}
+          action={{
+            label: tNav('actions.clearSearch'),
+            onClick: () => setSearch(''),
+          }}
+        />
+      ) : (
+        <ul className="divide-y overflow-hidden rounded-lg border bg-card">
+          {links.map((link) => {
+            const Icon = routeTable.find(
+              (route) => route.path === link.to(),
+            )?.icon;
+            return (
+              <li key={link.labelKey}>
+                <Link
+                  to={link.to()}
+                  className="group flex min-h-20 items-center gap-4 p-4 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset sm:px-6"
+                >
+                  {Icon && (
+                    <Icon
+                      className="size-5 shrink-0 text-muted-foreground group-hover:text-foreground"
+                      aria-hidden
+                    />
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold">
+                      {tNav(link.labelKey)}
+                    </span>
+                    {link.labelKey === 'nav.registrationWindows' && (
+                      <span className="mt-1 block text-sm text-muted-foreground">
+                        {activeWindow
+                          ? t('overview.windowActive', {
+                              term: activeWindow.term_code,
+                            })
+                          : t('overview.windowNone')}
+                      </span>
+                    )}
                   </span>
-                )}
-            </span>
-            {link.countOf !== null && (
-              <span className="text-2xl font-bold tabular-nums">
-                {counts[link.countOf] ?? '—'}
-              </span>
-            )}
-            {link.labelKey === 'nav.registrationWindows' && activeWindow && (
-              <Badge variant="success">{t('windows.active')}</Badge>
-            )}
-          </button>
-        </li>
-      ))}
-    </ul>
+                  {link.countOf !== null && (
+                    <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+                      {link.countOf === 'students'
+                        ? t('overview.studentCount', {
+                            count: counts.students ?? 0,
+                          })
+                        : (counts[link.countOf] ?? '—')}
+                    </span>
+                  )}
+                  {link.labelKey === 'nav.registrationWindows' &&
+                    activeWindow && (
+                      <Badge variant="success">{t('windows.active')}</Badge>
+                    )}
+                  <ArrowUpRight
+                    className="size-4 shrink-0 text-muted-foreground rtl:-scale-x-100"
+                    aria-hidden
+                  />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 };

@@ -1,6 +1,7 @@
 # Advisor design system
 
-> **Status:** v2.0, 2026-10-04. This document is the canonical UI/UX implementation contract for the
+> **Current visual contract:** section 28, 2026-10-09, replaces conflicting historical layout and radius rules.
+> **Status:** v2.0 foundation, 2026-10-04. This document is the canonical UI/UX implementation contract for the
 > Advisor frontend. It restructures v1.1 into the 25-section contract and implements the agreed v2
 > product specification: role information architecture, mobile navigation, the permission-aware
 > command palette, breadcrumbs and page headers, the unified meeting and availability UX, per-role UX
@@ -1031,10 +1032,10 @@ question title + text alternative + reference-line rules as one contract.
 
 ### 26.2 Two-mode radius and density
 
-Student-facing surfaces: cards 14px, comfortable bento spacing. Staff surfaces (queue,
-caseload, admin, governance): 6px, compact density. Typography, navigation anatomy,
-state system, and token names are identical across modes; only radius, density, and the
-two signature elements differ. **DS-C-16 (MUST):** explicit focus, selected, disabled,
+Section 28 replaces the two-mode radius rule: both roles use 14px cards.
+Student surfaces keep comfortable density. Staff surfaces keep compact density.
+Typography, navigation anatomy, state tokens, and card radius remain shared.
+Density and the two signature elements distinguish the roles. **DS-C-16 (MUST):** explicit focus, selected, disabled,
 and error tokens exist for both modes, with visible 3:1 focus indicators.
 
 ### 26.3 Signature: academic pulse strip (student)
@@ -1074,3 +1075,188 @@ zero legacy raw values before implementation closes.
   mobile bottom navigation, command palette, breadcrumbs and page headers, unified meeting and
   availability UX, per-role UX sections, Admin operational scope, VP dean-identity rule (PR-15),
   categorized notifications, credits on plan surfaces, Advisor naming. Product name is Advisor.
+
+## 27. Frontend review refinement (2026-10-09)
+
+The user keeps crimson and replaces the dated layout. These rules take precedence over conflicting navigation placement rules.
+
+- DS-N-07: The sidebar notification bell supplies the persistent notification entry. Section 28 defines its placement. Notification routes remain accessible through direct links.
+- DS-N-08: The sidebar shows product identity and role context. Section 28 replaces the topbar rule. Expanded labels wrap when necessary.
+- DS-Q-02: Overview interactions open actual workflows. The admin overview provides operation search and direct links. Student plan summaries show up to three planned courses with codes, available titles, and credits.
+- DS-Q-03: Student overview notifications open their related workflow and mark the notification as read. The next meeting excludes past slots and selects the earliest future slot.
+- DS-C-17: Shared cards use the common radius in section 28. Dialog and drawer close controls have 44px targets. Reduced motion disables animations and smooth scroll. Color, background, border, and opacity transitions remain at 150ms.
+- DS-D-01: A course count is not degree credit progress. The student overview omits this derived progress measure and displays the SIS CGPA instead.
+
+- DS-C-18: Primary action fills and primary text use separate semantic tokens. Primary text uses a lighter crimson tone in dark mode for contrast.
+- DS-Q-04: The VP overview exposes real faculty comparisons through the existing interactive grid. Faculty links open the corresponding aggregate drill-down.
+
+- DS-C-19: Light success emphasis uses HSL 163 94% 20%. This maintains text contrast on earned milestone surfaces.
+- DS-C-20: Unread notification rows use a 1px crimson border on the logical start edge. The unread dot includes a screen reader label.
+- DS-C-21: Staff, caseload, meeting, and dean tabs include matching content panels. Each tab uses the same value as its panel.
+- DS-C-22: Governance trend figures and chart containers use a zero minimum width. Charts fit their available width and retain the accessible data table.
+- DS-C-23: Tinted warning surfaces use warning text. Light warning uses HSL 40 100% 27% for text contrast. Warning foreground is reserved for solid warning fills.
+- DS-C-24: Markdown uses inverted typography in dark mode. The dark utility variant follows the root dark class. Active conversation backgrounds use semantic primary tints.
+- DS-C-25: Table scroll containers and chat transcripts accept keyboard focus when their content overflows. Resize and content changes update focus eligibility. Focused containers show the shared focus ring.
+
+
+## 28. Reference-led workspace contract (2026-10-09)
+
+This section records the implemented visual system and the user decisions in `PRODUCT.md`.
+Product authority remains in `docs/product/`. Domain permissions and academic rules remain unchanged.
+This section takes precedence over conflicting placement, shape, and chat entry rules throughout this document.
+It supersedes topbars, mobile bottom navigation, the mobile More sheet, and the staff 6px card rule.
+Sections 4, 5, 8, 20, 24, 25, Appendix A, and section 26 retain their other applicable rules.
+Rule IDs remain stable. The definitions below replace the earlier definitions of DS-N-01 through DS-N-03.
+The implementation uses `design.md` and `DESIGN.md` as the same filesystem file.
+
+### 28.1 Overview
+
+Advisor puts academic tasks inside one sidebar workspace.
+The user retains crimson and selects rounded surfaces, a neutral canvas, and photographic authentication.
+The workspace separates global controls from the page breadcrumb, title, and academic workflow.
+The references guide composition and interaction. They do not change role permissions or academic functions.
+
+| Reference | Applied pattern |
+| --- | --- |
+| HRPlatform 25339477 | Authentication form beside a large photograph |
+| Untitled | Sidebar identity, navigation, controls, and account area |
+| Cosmos | Grouped search with prominent input and icon results |
+| Uniswap | Compact breadcrumb trail with the current page |
+| Brainwave | Notification date groups, All/Unread filters, and quiet row separation |
+
+### 28.2 Colors
+
+`src/index.css` owns the crimson ramp and semantic light/dark pairs.
+Components use semantic tokens for surfaces, text, primary actions, primary text, borders, focus, and status.
+Primary text and primary fills use separate tokens, as required by DS-C-18.
+Crimson marks primary actions, active navigation, unread notifications, and the selected course path.
+Status icons and labels explain the state independently of color.
+Chart palette rules in DS-C-15 remain applicable.
+Toasts combine a status tint, matching border, status icon, and ordinary readable text.
+Do not copy reference colors over the semantic theme pairs.
+
+### 28.3 Typography
+
+English uses Inter Variable. Arabic uses Cairo Variable with the existing system fallbacks.
+Page headings use clear weight and size differences. Secondary text uses the semantic muted foreground.
+Numbers retain tabular alignment where comparison requires it.
+Course codes retain bidirectional isolation inside Arabic text.
+Arabic layout uses logical placement and readable RTL text.
+
+### 28.4 Layout
+
+The sidebar replaces the topbar and bottom navigation at every viewport width.
+The page retains its breadcrumb, title, description, and workflow actions.
+The sidebar owns product identity, role context, search, navigation, notifications, language, theme, and the account menu.
+Role routes continue to control navigation visibility. Secondary groups remain inside the sidebar.
+
+| Layout value | Implemented size |
+| --- | --- |
+| Expanded sidebar | 260px |
+| Collapsed sidebar | 64px |
+| Desktop edge gap | 12px |
+| Mobile edge gap | 6px |
+| Desktop content reservation, expanded | 284px |
+| Desktop content reservation, collapsed | 88px |
+| Mobile content reservation | 76px |
+| Mobile breakpoint | Below 768px |
+| Authentication window maximum width | 1120px |
+
+- DS-N-01: One role route table drives sidebar navigation at every viewport width. The shell renders no topbar or bottom navigation.
+- DS-N-02: Sidebar links expose accessible labels and the active page. Expanded links show labels. Collapsed links show tooltips on hover and focus.
+- DS-N-03: Mobile keeps the narrow rail. Expansion opens the shared modal Drawer with a focus trap, scroll lock, and inert main content.
+
+Escape closes the mobile sidebar. Closure returns focus to its toggle. Route selection also closes the modal sidebar.
+Desktop collapse persists in local storage. Collapsed tooltips use a portal to avoid sidebar clipping.
+Authentication uses two equal columns above the mobile breakpoint.
+Below that breakpoint, authentication hides the photograph and shows one form column.
+Student and staff density remain distinct. Shared card corners remain identical.
+Chat shows conversation history beside the conversation canvas. Below 1024px, these areas use one column.
+An active conversation hides history below 768px; the welcome view retains it.
+
+### 28.5 Elevation & Depth
+
+The workspace uses a neutral canvas, white or dark surfaces, thin borders, and small shadows.
+The floating sidebar has a subtle shadow. Authentication uses a broad, low-opacity shadow.
+Search and mobile navigation use modal overlays. Tooltips sit outside the sidebar through a portal.
+The selected course node uses a crimson ring and glow.
+Motion leaves node positions stable. Active prerequisite paths show flow with a 1.2-second cycle.
+Reduced motion removes path animation, movement transitions, and smooth scroll.
+Reduced motion retains short color, background, border, and opacity transitions under DS-C-17.
+
+### 28.6 Shapes
+
+Shared cards use 14px corners for students and staff. This replaces section 26.2's staff 6px corners.
+Shared buttons and inputs use 12px corners. Authentication fields use their observed 0.85rem corners.
+The sidebar uses 24px corners. The desktop authentication window uses 32px corners and clips its inset photograph separately.
+The mobile authentication window uses 24px corners.
+Chat panels use 24px corners. Notifications and the composer use rounded containers with clear boundaries.
+Touch controls retain 44px minimum targets. Fine-pointer desktop controls may use the existing compact sizes.
+
+### 28.7 Components
+
+#### Authentication
+
+`src/components/layouts/auth-layout.tsx` pairs the form with `/advisor-study.png`.
+The form panel contains identity, heading, help text, fields, and language/theme controls.
+The photograph uses a lower gradient for caption contrast.
+Authentication retains existing validation, redirects, and account workflows.
+
+#### Navigation, breadcrumb, and search
+
+`src/components/layouts/app-shell.tsx` defines the shared sidebar and mobile modal behavior.
+Active links use a crimson tint, stronger text, and a filled icon treatment.
+`src/components/ui/breadcrumb/breadcrumb.tsx` includes the current page with `aria-current="page"`.
+Long trails collapse middle ancestors behind an accessible expansion control. Separators remain decorative and mirror in RTL.
+`src/components/ui/command-palette/command-palette.tsx` supplies grouped page and action results.
+Sidebar search and Cmd+K/Ctrl+K open the command palette. Arrow keys navigate, Enter selects, and Escape closes.
+Search filters the supplied role entries. Record search requires an existing endpoint; this redesign does not establish one.
+
+#### Notifications and toasts
+
+`src/features/notifications/components/notification-center.tsx` groups notifications by their localized date.
+All/Unread controls filter the list. Mark all read retains its pending, disabled, and error states.
+`notification-item.tsx` retains the unread border, dot, and screen reader label from DS-C-20.
+Rows show a category icon, title, body, and timestamp. Selection opens the related workflow and marks unread items as read.
+`src/components/ui/notifications/notification.tsx` defines tinted info, success, warning, and error toasts.
+Errors remain until dismissal. Other toasts dismiss after five seconds and pause during hover or focus.
+Warning and error toasts use alerts. Info and success toasts use status announcements.
+
+#### Course map
+
+`src/features/profile/components/course-map.tsx` lays out stable course nodes and prerequisite paths on a dotted canvas.
+Hover and focus preview the prerequisite chain. A click pins selection. The detail panel explains requirements and unlocked courses.
+Nodes retain readable text without opacity dimming. Completed, planned, eligible, and locked states use distinct icons and labels.
+Zoom supports 80%, 100%, and 125%, with a reset control.
+RTL mirrors node and path geometry and restores RTL text inside each node.
+The accessible text list retains course states and prerequisites.
+
+#### AI conversation
+
+`src/features/ai-chat/components/chat-document.tsx` provides conversation history, a welcome view, and starter cards.
+New conversations use the internal `maintain` goal. The entry flow has no blocking goal dialog, model controls, or voice recording.
+Starter cards create a conversation and place editable text in the composer. They do not send a message automatically.
+`src/features/ai-chat/components/composer.tsx` sends on Enter and adds a new line on Shift+Enter.
+Input method composition prevents Enter from sending. Failed sends restore the draft. Quota and reply states retain their controls.
+Academic tool results and the explicit submission confirmation flow remain governed by section 14 and product rules.
+
+#### Data states
+
+Loading, empty, permission, retry, and error states remain part of each workflow.
+`src/lib/react-query.ts` allows one read retry after 500ms for ApiError network failures, 408, 429, or server errors.
+Authorization errors receive no automatic retry. This read policy does not change mutation behavior.
+
+### 28.8 Do's and Don'ts
+
+- Do use the shared sidebar for global controls at every width.
+- Do preserve English, Arabic, RTL, light/dark themes, visible focus, and reduced motion.
+- Do use actual academic milestones and the existing status system.
+- Do keep course nodes stable and provide focus or touch access to previews.
+- Do retain existing plan, meeting, account, and permission workflows.
+- Do not restore topbars, bottom navigation, or the staff 6px card mode.
+- Do not introduce points, streaks, leaderboards, invented rewards, or confetti.
+- Do not add model controls, voice recording, or a blocking chat goal screen.
+- Do not infer production API validation or completed quality gates from this source record.
+
+`index.html` records the visual contract, candidate seed `0f139a13`, and the FINISH requirement.
+This section documents source evidence. The finish review and validation report provide their own results.

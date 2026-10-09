@@ -13,10 +13,8 @@ export type KpiCardProps = {
 export const KpiCard = ({ label, value, context, className }: KpiCardProps) => {
   return (
     <Card className={cn('p-4 lg:p-6', className)}>
-      <p className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="mt-2 text-2xl leading-tight font-bold wrap-break-word tabular-nums">
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="mt-2 text-3xl leading-tight font-semibold tracking-tight wrap-break-word tabular-nums">
         {value}
       </p>
       {context && (

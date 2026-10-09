@@ -36,7 +36,7 @@ export const RecordFreshness = ({
       <Button
         variant="ghost"
         size="sm"
-        className="h-8 text-xs text-muted-foreground"
+        className="h-11 text-xs text-muted-foreground"
         onClick={onRetry}
         isLoading={isRetrying}
         disabled={isRetrying}

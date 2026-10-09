@@ -1,4 +1,9 @@
-import { render as rtlRender, screen, waitFor } from '@testing-library/react';
+import {
+  render as rtlRender,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { AppProvider } from '@/app/provider';
@@ -50,12 +55,13 @@ test('the bell badge shows the unread count with its accessible name and a polit
     screen.getByRole('button', { name: '1 unread notifications' }),
   );
 
-  await waitFor(() =>
-    expect(window.location.pathname).toBe('/app/notifications'),
-  );
+  expect(await screen.findByRole('dialog')).toBeInTheDocument();
+  expect(window.location.pathname).toBe('/app');
 
   await userEvent.click(
-    await screen.findByRole('button', { name: /Plan returned/ }),
+    within(screen.getByRole('dialog')).getByRole('button', {
+      name: /Plan returned/,
+    }),
   );
 
   expect(

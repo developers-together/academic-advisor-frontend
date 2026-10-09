@@ -62,7 +62,9 @@ test('caps the comment length with the inline message', async () => {
   const onSubmit = vi.fn();
   render(<CommentThread comments={[]} onSubmit={onSubmit} />);
 
-  await userEvent.type(screen.getByRole('textbox'), 'x'.repeat(2001));
+  const user = userEvent.setup();
+  await user.click(screen.getByRole('textbox'));
+  await user.paste('x'.repeat(2001));
   await userEvent.click(screen.getByRole('button', { name: 'Add comment' }));
 
   expect(

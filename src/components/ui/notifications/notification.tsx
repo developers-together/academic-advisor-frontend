@@ -34,21 +34,33 @@ export const Notification = ({
 }: NotificationProps) => {
   const { t } = useTranslation();
 
+  const [paused, setPaused] = React.useState(false);
+
   React.useEffect(() => {
+    if (paused || type === 'error') return;
     const timer = window.setTimeout(() => onDismiss(id), 5000);
     return () => window.clearTimeout(timer);
-  }, [id, onDismiss]);
+  }, [id, onDismiss, paused, type]);
 
   return (
     <div
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget))
+          setPaused(false);
+      }}
       role={type === 'error' || type === 'warning' ? 'alert' : 'status'}
       className={cn(
-        'pointer-events-auto w-full max-w-sm animate-fade-in rounded-lg border bg-card shadow-lg',
+        'pointer-events-auto w-full max-w-sm animate-fade-in rounded-2xl border bg-card shadow-xl',
         tints[type],
       )}
     >
       <div className="flex items-start p-4">
-        <div className="shrink-0">{icons[type]}</div>
+        <div className="grid size-10 shrink-0 place-items-center rounded-full bg-card ring-1 ring-border">
+          {icons[type]}
+        </div>
         <div className="ms-3 w-0 flex-1 pt-0.5">
           <p className="text-sm font-medium text-foreground">{title}</p>
           {message && (
@@ -59,7 +71,7 @@ export const Notification = ({
           <button
             type="button"
             aria-label={t('actions.close')}
-            className="inline-flex rounded-md text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+            className="inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
             onClick={() => {
               onDismiss(id);
             }}

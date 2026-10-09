@@ -89,7 +89,7 @@ export const PlanCard = ({ plan }: PlanCardProps) => {
   const context = contextLineFor(plan.status, null);
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader className="flex-row items-start justify-between gap-3">
         <div>
           <CardTitle>{t('termContext', { term: plan.term_code })}</CardTitle>
@@ -103,6 +103,30 @@ export const PlanCard = ({ plan }: PlanCardProps) => {
         <p className="text-sm text-muted-foreground">
           {t('dashboard.courseCount', { count: plan.courses.length })}
         </p>
+        {plan.courses.length > 0 && (
+          <ul className="mt-4 divide-y">
+            {plan.courses.slice(0, 3).map((course) => (
+              <li
+                key={course.course_code}
+                className="flex items-start justify-between gap-4 py-3"
+              >
+                <div className="min-w-0">
+                  <span className="bidi-code text-sm font-semibold">
+                    {course.course_code}
+                  </span>
+                  {course.title && (
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {course.title}
+                    </p>
+                  )}
+                </div>
+                <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+                  {t('builder.line.credits', { credits: course.credits })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </CardBody>
       {cta.kind === 'link' && (
         <CardFooter className="pt-0">

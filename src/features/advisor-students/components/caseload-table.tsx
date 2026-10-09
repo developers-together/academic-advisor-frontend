@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { formatDate, formatNumber } from '@/lib/i18n/format';
 import type { AdvisorCaseloadStudent, OrgUnit } from '@/types/domain';
 
@@ -105,123 +105,134 @@ export const CaseloadTable = ({
             </TabsTrigger>
           ))}
         </TabsList>
-      </Tabs>
 
-      <div className="overflow-hidden rounded-lg border bg-card">
-        <TableElement>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              {(
-                [
-                  'student',
-                  'email',
-                  'unit',
-                  'level',
-                  'state',
-                  'submitted',
-                  'waiting',
-                  'cgpa',
-                ] as const
-              ).map((key) => (
-                <TableHead
-                  key={key}
-                  className={`sticky top-0 z-10 bg-card px-3 py-2 text-2xs font-medium tracking-wide uppercase${key === 'waiting' || key === 'cgpa' ? ' text-end' : ''}`}
-                >
-                  {t(`students.columns.${key}`)}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {visible.map((student) => (
-              <TableRow
-                key={student.id}
-                aria-current={student.id === activeId ? 'true' : undefined}
-                data-state={student.id === activeId ? 'selected' : undefined}
-                className="border-border"
-              >
-                <TableCell className="px-3 py-2">
-                  <button
-                    type="button"
-                    id={`explorer-row-${student.id}`}
-                    aria-label={t('students.openReview', {
-                      name: student.name,
-                    })}
-                    onClick={() => onActivate(student)}
-                    className="rounded-sm text-start focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+        {CASELOAD_FILTERS.map(
+          (value) =>
+            value !== filter && <TabsContent key={value} value={value} />,
+        )}
+        <TabsContent value={filter}>
+          <div className="overflow-hidden rounded-lg border bg-card">
+            <TableElement>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  {(
+                    [
+                      'student',
+                      'email',
+                      'unit',
+                      'level',
+                      'state',
+                      'submitted',
+                      'waiting',
+                      'cgpa',
+                    ] as const
+                  ).map((key) => (
+                    <TableHead
+                      key={key}
+                      className={`sticky top-0 z-10 bg-card px-3 py-2 text-2xs font-medium tracking-wide uppercase${key === 'waiting' || key === 'cgpa' ? ' text-end' : ''}`}
+                    >
+                      {t(`students.columns.${key}`)}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {visible.map((student) => (
+                  <TableRow
+                    key={student.id}
+                    aria-current={student.id === activeId ? 'true' : undefined}
+                    data-state={
+                      student.id === activeId ? 'selected' : undefined
+                    }
+                    className="border-border"
                   >
-                    <span className="block text-sm font-medium text-foreground">
-                      {student.name}
-                    </span>
-                    {student.student_id && (
-                      <span className="block text-2xs text-muted-foreground">
-                        {student.student_id}
-                      </span>
-                    )}
-                  </button>
-                </TableCell>
-                <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
-                  {student.sis_email}
-                </TableCell>
-                <TableCell className="px-3 py-2 text-sm text-muted-foreground">
-                  {unitLine(student) || '-'}
-                </TableCell>
-                <TableCell className="px-3 py-2 text-sm tabular-nums">
-                  {student.curriculum_year_level ?? '-'}
-                </TableCell>
-                <TableCell className="px-3 py-2">
-                  {student.plan_state ? (
-                    <PlanStateChip status={student.plan_state} variant="dot" />
-                  ) : (
-                    <span className="text-sm text-muted-foreground">-</span>
-                  )}
-                </TableCell>
-                <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
-                  {student.submitted_at
-                    ? formatDate(student.submitted_at)
-                    : '-'}
-                </TableCell>
-                <TableCell className="px-3 py-2 text-end">
-                  {student.submitted_at ? (
-                    <span className="inline-flex items-center gap-2">
-                      <span className="text-sm tabular-nums">
-                        {waitingLabel(student, t)}
-                      </span>
-                      {student.is_aging && (
-                        <Badge variant="warning" dot size="sm">
-                          {t('badges.aging', { ns: 'common' })}
-                        </Badge>
+                    <TableCell className="px-3 py-2">
+                      <button
+                        type="button"
+                        id={`explorer-row-${student.id}`}
+                        aria-label={t('students.openReview', {
+                          name: student.name,
+                        })}
+                        onClick={() => onActivate(student)}
+                        className="rounded-sm text-start focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                      >
+                        <span className="block text-sm font-medium text-foreground">
+                          {student.name}
+                        </span>
+                        {student.student_id && (
+                          <span className="block text-2xs text-muted-foreground">
+                            {student.student_id}
+                          </span>
+                        )}
+                      </button>
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
+                      {student.sis_email}
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-sm text-muted-foreground">
+                      {unitLine(student) || '-'}
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-sm tabular-nums">
+                      {student.curriculum_year_level ?? '-'}
+                    </TableCell>
+                    <TableCell className="px-3 py-2">
+                      {student.plan_state ? (
+                        <PlanStateChip
+                          status={student.plan_state}
+                          variant="dot"
+                        />
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
                       )}
-                      {student.has_unmet_meeting && (
-                        <Badge variant="info" dot size="sm">
-                          {t('badges.meetingNotMet', { ns: 'common' })}
-                        </Badge>
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-2xs text-muted-foreground">
+                      {student.submitted_at
+                        ? formatDate(student.submitted_at)
+                        : '-'}
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-end">
+                      {student.submitted_at ? (
+                        <span className="inline-flex items-center gap-2">
+                          <span className="text-sm tabular-nums">
+                            {waitingLabel(student, t)}
+                          </span>
+                          {student.is_aging && (
+                            <Badge variant="warning" dot size="sm">
+                              {t('badges.aging', { ns: 'common' })}
+                            </Badge>
+                          )}
+                          {student.has_unmet_meeting && (
+                            <Badge variant="info" dot size="sm">
+                              {t('badges.meetingNotMet', { ns: 'common' })}
+                            </Badge>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
                       )}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">-</span>
-                  )}
-                </TableCell>
-                <TableCell className="px-3 py-2 text-end text-sm tabular-nums">
-                  {student.cgpa === null ? '-' : formatNumber(student.cgpa)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </TableElement>
-      </div>
+                    </TableCell>
+                    <TableCell className="px-3 py-2 text-end text-sm tabular-nums">
+                      {student.cgpa === null ? '-' : formatNumber(student.cgpa)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </TableElement>
+          </div>
 
-      {visible.length === 0 && (
-        <EmptyState
-          compact
-          title={t('students.filteredEmptyTitle')}
-          description={t('students.filteredEmptyBody')}
-          action={{
-            label: t('students.clearFilter'),
-            onClick: () => setFilter('all'),
-          }}
-        />
-      )}
+          {visible.length === 0 && (
+            <EmptyState
+              compact
+              title={t('students.filteredEmptyTitle')}
+              description={t('students.filteredEmptyBody')}
+              action={{
+                label: t('students.clearFilter'),
+                onClick: () => setFilter('all'),
+              }}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

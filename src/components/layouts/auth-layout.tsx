@@ -36,31 +36,58 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
   return (
     <>
       <Head title={title} />
-      <div className="flex min-h-dvh flex-col bg-background">
-        <header className="flex items-center justify-end gap-1 p-3">
-          <AuthLanguageToggle />
-          <AuthThemeToggle />
-        </header>
-        <main className="flex flex-1 flex-col items-center justify-center px-4 py-8">
-          <div className="w-full max-w-md">
-            <div className="mb-6 flex items-center justify-center gap-2">
-              <span
-                aria-hidden
-                className="flex size-10 items-center justify-center rounded-full bg-primary text-base font-bold text-primary-foreground"
-              >
+      <main className="auth-stage">
+        <div className="auth-window">
+          <section className="auth-form-panel">
+            <a href="/login" className="auth-brand" aria-label={t('app.name')}>
+              <span aria-hidden className="auth-brand-symbol">
                 A
               </span>
-              <span className="text-lg font-semibold">{t('app.name')}</span>
-            </div>
-            <div className="rounded-lg border bg-card px-6 py-8">
-              <h1 className="mb-1 text-2xl leading-tight font-semibold">
+              {t('app.name')}
+            </a>
+            <div className="auth-form-content">
+              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 {title}
               </h1>
+              <p className="mt-3 mb-8 text-sm leading-relaxed text-muted-foreground">
+                {t('experience.authIntro')}
+              </p>
               {children}
             </div>
-          </div>
-        </main>
-      </div>
+            <div className="mt-8 flex items-center justify-between gap-4">
+              <span className="text-xs text-muted-foreground">
+                {t('app.tagline')}
+              </span>
+              <div className="flex items-center gap-1">
+                <AuthLanguageToggle />
+                <AuthThemeToggle />
+              </div>
+            </div>
+          </section>
+          <figure
+            className="auth-visual"
+            aria-label={t('experience.authImage')}
+          >
+            <img
+              src="/advisor-study.png"
+              alt={t('experience.authImage')}
+              className="absolute inset-0 size-full object-cover"
+            />
+            <div className="auth-visual-caption">
+              <span
+                className="mb-3 block size-3 rounded-full bg-white"
+                aria-hidden
+              />
+              <p className="max-w-xs text-3xl leading-tight font-medium tracking-tight">
+                {t('experience.authCaption')}
+              </p>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed">
+                {t('experience.authCaptionBody')}
+              </p>
+            </div>
+          </figure>
+        </div>
+      </main>
     </>
   );
 };

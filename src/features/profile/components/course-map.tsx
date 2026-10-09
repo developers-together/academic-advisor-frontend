@@ -1,5 +1,13 @@
-import { Lock, Minus, Plus, RotateCcw } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import {
+  CalendarDays,
+  CircleCheck,
+  Lock,
+  Minus,
+  Plus,
+  RotateCcw,
+  Unlock,
+} from 'lucide-react';
+import { useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
@@ -12,8 +20,8 @@ import type {
 import { cn } from '@/utils/cn';
 
 const NODE_WIDTH = 168;
-const NODE_HEIGHT = 62;
-const NODE_GAP = 14;
+const NODE_HEIGHT = 82;
+const NODE_GAP = 24;
 const COLUMN_GAP = 56;
 
 const ZOOM_STEPS = [0.8, 1, 1.25];
@@ -113,25 +121,25 @@ const layoutOf = (entries: PrerequisiteMapEntry[]): Layout => {
   };
 };
 
-const nodeStateClasses: Record<
-  PrerequisiteMapState,
-  { box: string; dot: string }
-> = {
+const stateIcons = {
+  completed: CircleCheck,
+  planned: CalendarDays,
+  eligible: Unlock,
+  locked: Lock,
+};
+
+const nodeStateClasses: Record<PrerequisiteMapState, { box: string }> = {
   completed: {
     box: 'border-success/60 bg-success/10 hover:border-success',
-    dot: 'bg-success',
   },
   planned: {
     box: 'border-info/60 bg-info/10 hover:border-info',
-    dot: 'bg-info',
   },
   eligible: {
     box: 'border-warning/60 bg-warning/10 hover:border-warning',
-    dot: 'bg-warning',
   },
   locked: {
     box: 'border-border bg-muted hover:border-muted-foreground/40',
-    dot: 'bg-muted-foreground',
   },
 };
 
@@ -148,17 +156,25 @@ export const CourseMap = ({
   isRetrying = false,
   className,
 }: CourseMapProps) => {
-  const { t } = useTranslation('plan');
+  const { t, i18n } = useTranslation('plan');
+  const isRtl = i18n.dir() === 'rtl';
   const [selected, setSelected] = useState<string | null>(null);
   const [zoomIndex, setZoomIndex] = useState(1);
+  const [preview, setPreview] = useState<string | null>(null);
+  const activeCode = preview ?? selected;
+  const markerId = useId();
 
   const layout = useMemo(() => layoutOf(entries), [entries]);
   const entryByCode = useMemo(
     () => new Map(entries.map((entry) => [entry.course_code, entry])),
     [entries],
   );
-  const selectedNode = selected ? (layout.byCode.get(selected) ?? null) : null;
-  const chain = selected ? chainOf(selected, entryByCode) : new Set<string>();
+  const selectedNode = activeCode
+    ? (layout.byCode.get(activeCode) ?? null)
+    : null;
+  const chain = activeCode
+    ? chainOf(activeCode, entryByCode)
+    : new Set<string>();
 
   if (entries.length === 0) {
     return (
@@ -235,134 +251,166 @@ export const CourseMap = ({
         </div>
       </div>
 
+      <div
+        className="mb-4 flex flex-wrap gap-4"
+        aria-label={t('courseMap.title')}
+      >
+        {(['completed', 'planned', 'eligible', 'locked'] as const).map(
+          (state) => {
+            const Icon = stateIcons[state];
+            return (
+              <span
+                key={state}
+                className="flex items-center gap-2 text-xs text-muted-foreground"
+              >
+                <Icon className="size-4" aria-hidden />
+                {stateLabel(state)}
+              </span>
+            );
+          },
+        )}
+      </div>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
         <div
           role="group"
           aria-label={t('courseMap.title')}
-          className="overflow-auto rounded-lg border bg-muted/30 p-4"
+          className="course-map-canvas overflow-auto rounded-2xl border p-6"
         >
           <div
-            className="relative motion-safe:transition-transform motion-safe:duration-300"
+            dir="ltr"
             style={{
-              width: layout.width,
-              height: layout.height,
-              transform: `scale(${ZOOM_STEPS[zoomIndex]})`,
-              transformOrigin: 'top left',
+              width: layout.width * ZOOM_STEPS[zoomIndex],
+              height: layout.height * ZOOM_STEPS[zoomIndex],
             }}
           >
-            <svg
-              aria-hidden
-              className="pointer-events-none absolute inset-0"
-              width={layout.width}
-              height={layout.height}
+            <div
+              className="relative motion-safe:transition-transform motion-safe:duration-300"
+              style={{
+                width: layout.width,
+                height: layout.height,
+                transform: `scale(${ZOOM_STEPS[zoomIndex]})`,
+                transformOrigin: 'top left',
+              }}
             >
-              {layout.nodes.flatMap((node) =>
-                node.entry.prerequisites.map((prerequisite) => {
-                  const from = layout.byCode.get(prerequisite);
-                  if (!from) return null;
-                  const x1 = from.x + NODE_WIDTH;
-                  const y1 = from.y + NODE_HEIGHT / 2;
-                  const x2 = node.x;
-                  const y2 = node.y + NODE_HEIGHT / 2;
-                  const mid = (x1 + x2) / 2;
-                  const active =
-                    selected !== null &&
-                    (node.entry.course_code === selected ||
-                      (chain.has(node.entry.course_code) &&
-                        (prerequisite === selected ||
-                          chain.has(prerequisite))));
-                  return (
-                    <path
-                      key={`${prerequisite}-${node.entry.course_code}`}
-                      d={`M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}`}
-                      fill="none"
-                      strokeWidth={active ? 2.5 : 1.5}
-                      markerEnd="url(#course-map-arrow)"
-                      className={cn(
-                        'transition-opacity motion-safe:duration-200',
-                        selected === null
-                          ? 'stroke-border'
-                          : active
-                            ? 'stroke-primary'
-                            : 'stroke-border opacity-30',
-                      )}
-                    />
-                  );
-                }),
-              )}
-              <defs>
-                <marker
-                  id="course-map-arrow"
-                  viewBox="0 0 10 10"
-                  refX="9"
-                  refY="5"
-                  markerWidth="6"
-                  markerHeight="6"
-                  orient="auto-start-reverse"
-                >
-                  <path d="M 0 0 L 10 5 L 0 10 z" className="fill-border" />
-                </marker>
-              </defs>
-            </svg>
-
-            {layout.nodes.map((node) => {
-              const isSelected = selected === node.entry.course_code;
-              const inChain = chain.has(node.entry.course_code);
-              const isUnrelated =
-                selected !== null &&
-                !isSelected &&
-                !inChain &&
-                !chainOf(node.entry.course_code, entryByCode).has(selected);
-              const styles = nodeStateClasses[node.entry.state];
-              return (
-                <button
-                  key={node.entry.course_code}
-                  type="button"
-                  onClick={() =>
-                    setSelected(isSelected ? null : node.entry.course_code)
-                  }
-                  aria-pressed={isSelected}
-                  style={{
-                    position: 'absolute',
-                    left: node.x,
-                    top: node.y,
-                    width: NODE_WIDTH,
-                    minHeight: NODE_HEIGHT,
-                  }}
-                  className={cn(
-                    'rounded-lg border p-2 text-start transition-all hover:shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden motion-safe:duration-200',
-                    styles.box,
-                    isSelected && 'ring-2 ring-primary',
-                    isUnrelated && 'opacity-35',
-                  )}
-                >
-                  <span className="flex items-center gap-1.5">
-                    <span
-                      aria-hidden
-                      className={cn('size-2 shrink-0 rounded-full', styles.dot)}
-                    />
-                    <span className="bidi-code truncate text-xs font-semibold">
-                      {node.entry.course_code}
-                    </span>
-                    {node.entry.state === 'locked' && (
-                      <Lock
-                        className="ms-auto size-3 shrink-0 text-muted-foreground"
-                        aria-hidden
+              <svg
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                width={layout.width}
+                height={layout.height}
+              >
+                {layout.nodes.flatMap((node) =>
+                  node.entry.prerequisites.map((prerequisite) => {
+                    const from = layout.byCode.get(prerequisite);
+                    if (!from) return null;
+                    const x1 = isRtl
+                      ? layout.width - from.x - NODE_WIDTH
+                      : from.x + NODE_WIDTH;
+                    const y1 = from.y + NODE_HEIGHT / 2;
+                    const x2 = isRtl ? layout.width - node.x : node.x;
+                    const y2 = node.y + NODE_HEIGHT / 2;
+                    const mid = (x1 + x2) / 2;
+                    const active =
+                      activeCode !== null &&
+                      (node.entry.course_code === activeCode ||
+                        (chain.has(node.entry.course_code) &&
+                          (prerequisite === activeCode ||
+                            chain.has(prerequisite))));
+                    return (
+                      <path
+                        key={`${prerequisite}-${node.entry.course_code}`}
+                        d={`M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}`}
+                        fill="none"
+                        strokeWidth={active ? 2.5 : 1.5}
+                        markerEnd={`url(#${markerId})`}
+                        className={cn(
+                          'transition-opacity motion-safe:duration-200',
+                          activeCode === null
+                            ? 'stroke-border'
+                            : active
+                              ? 'course-map-flow stroke-primary'
+                              : 'stroke-border opacity-30',
+                        )}
                       />
+                    );
+                  }),
+                )}
+                <defs>
+                  <marker
+                    id={markerId}
+                    viewBox="0 0 10 10"
+                    refX="9"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" className="fill-border" />
+                  </marker>
+                </defs>
+              </svg>
+
+              {layout.nodes.map((node) => {
+                const isSelected = activeCode === node.entry.course_code;
+                const inChain = chain.has(node.entry.course_code);
+                const isUnrelated =
+                  activeCode !== null &&
+                  !isSelected &&
+                  !inChain &&
+                  !chainOf(node.entry.course_code, entryByCode).has(activeCode);
+                const styles = nodeStateClasses[node.entry.state];
+                const StatusIcon = stateIcons[node.entry.state];
+                return (
+                  <button
+                    dir={i18n.dir()}
+                    key={node.entry.course_code}
+                    type="button"
+                    onClick={() =>
+                      setSelected(
+                        selected === node.entry.course_code
+                          ? null
+                          : node.entry.course_code,
+                      )
+                    }
+                    onMouseEnter={() => setPreview(node.entry.course_code)}
+                    onMouseLeave={() => setPreview(null)}
+                    onFocus={() => setPreview(node.entry.course_code)}
+                    onBlur={() => setPreview(null)}
+                    aria-pressed={selected === node.entry.course_code}
+                    aria-label={`${node.entry.course_code} ${node.entry.title ?? ''}, ${stateLabel(node.entry.state)}`}
+                    title={node.entry.title ?? node.entry.course_code}
+                    style={{
+                      position: 'absolute',
+                      left: isRtl ? layout.width - node.x - NODE_WIDTH : node.x,
+                      top: node.y,
+                      width: NODE_WIDTH,
+                      minHeight: NODE_HEIGHT,
+                    }}
+                    className={cn(
+                      'course-map-node rounded-xl border p-3 text-start transition-all hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden motion-safe:duration-200',
+                      styles.box,
+                      isSelected && 'course-map-selected ring-2 ring-primary',
+                      isUnrelated && 'border-border bg-card',
                     )}
-                  </span>
-                  <span className="mt-0.5 line-clamp-2 block text-2xs leading-tight text-muted-foreground">
-                    {node.entry.title ?? ''}
-                  </span>
-                </button>
-              );
-            })}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <StatusIcon className="size-4 shrink-0" aria-hidden />
+                      <span className="bidi-code truncate text-xs font-semibold">
+                        {node.entry.course_code}
+                      </span>
+                    </span>
+                    <span className="mt-0.5 line-clamp-2 block text-2xs leading-tight text-muted-foreground">
+                      {node.entry.title ?? ''}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
         <div
           aria-live="polite"
-          className="self-start rounded-lg border bg-card p-4"
+          className="self-start rounded-2xl border bg-card p-5"
         >
           {selectedNode ? (
             <div className="space-y-3">
@@ -390,7 +438,7 @@ export const CourseMap = ({
                         <button
                           type="button"
                           onClick={() => setSelected(prerequisite)}
-                          className="bidi-code rounded-full border bg-muted px-2 py-0.5 text-xs font-medium hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                          className="bidi-code min-h-11 rounded-xl border bg-muted px-3 py-2 text-xs font-medium hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
                         >
                           {prerequisite}
                         </button>
@@ -403,9 +451,37 @@ export const CourseMap = ({
                   {t('courseMap.noRequirements')}
                 </p>
               )}
+              {entries.some((entry) =>
+                entry.prerequisites.includes(selectedNode.entry.course_code),
+              ) && (
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {t('courseMap.unlocks')}
+                  </p>
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {entries
+                      .filter((entry) =>
+                        entry.prerequisites.includes(
+                          selectedNode.entry.course_code,
+                        ),
+                      )
+                      .map((entry) => (
+                        <li key={entry.course_code}>
+                          <button
+                            type="button"
+                            onClick={() => setSelected(entry.course_code)}
+                            className="bidi-code min-h-11 rounded-xl border bg-muted px-3 py-2 text-xs hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {entry.course_code}
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
               {selectedNode.entry.state === 'locked' &&
                 selectedNode.entry.prerequisites.length > 0 && (
-                  <p className="rounded-md bg-warning/10 p-2 text-xs text-warning-foreground">
+                  <p className="rounded-md bg-warning/10 p-2 text-xs text-warning">
                     {t('courseMap.lockedHint', {
                       courses: selectedNode.entry.prerequisites.join(', '),
                     })}

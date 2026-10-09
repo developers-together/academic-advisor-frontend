@@ -7,7 +7,7 @@ export const Notifications = () => {
   return (
     <div
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-4 bottom-0 z-60 flex flex-col items-center gap-3 pb-6 sm:inset-x-6 sm:items-end sm:pb-6"
+      className="pointer-events-none fixed inset-x-4 bottom-0 z-60 flex flex-col items-center gap-3 pb-6 sm:inset-x-6 sm:items-end"
     >
       {notifications.map((notification) => (
         <Notification

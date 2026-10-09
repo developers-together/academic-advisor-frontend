@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Ellipsis } from 'lucide-react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
@@ -21,12 +21,12 @@ export const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
   const collapsible = items.length > 3;
   const visible =
     collapsible && !expanded
-      ? [items[0], ...items.slice(items.length - 2)]
+      ? [items[0], { label: '…' }, ...items.slice(items.length - 2)]
       : items;
 
   return (
     <nav aria-label={t('breadcrumb.label')} className={cn(className)}>
-      <ol className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+      <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
         {visible.map((item, index) => {
           const isCurrent = index === visible.length - 1;
           const collapsed = collapsible && !expanded && index === 1;
@@ -35,7 +35,7 @@ export const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
             <React.Fragment key={`${item.label}-${index}`}>
               {index > 0 && (
                 <li aria-hidden className="flex items-center">
-                  <ChevronRight className="size-4 rtl:-scale-x-100" />
+                  <ChevronRight className="size-3 rtl:-scale-x-100" />
                 </li>
               )}
               {collapsed ? (
@@ -48,9 +48,9 @@ export const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
                       .map((entry) => entry.label)
                       .join(' / ')}
                     onClick={() => setExpanded(true)}
-                    className="rounded-sm px-1 hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                    className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg px-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
                   >
-                    …
+                    <Ellipsis className="size-4" aria-hidden />
                   </button>
                 </li>
               ) : (
@@ -58,7 +58,7 @@ export const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
                   {item.to && !isCurrent ? (
                     <Link
                       to={item.to}
-                      className="rounded-sm hover:text-accent-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                      className="inline-flex min-h-11 items-center rounded-lg px-1.5 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
                     >
                       {item.label}
                     </Link>

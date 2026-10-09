@@ -208,7 +208,8 @@
     "empty": {
       "title": "Your course map is not available yet.",
       "body": "It appears once the SIS reports your curriculum."
-    }
+    },
+    "unlocks": "Unlocks"
   },
   "progressRing": {
     "label": "{{percent}} percent of the mapped curriculum completed"

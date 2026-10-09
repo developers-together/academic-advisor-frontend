@@ -1,8 +1,4 @@
-import {
-  render as rtlRender,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
+import { render as rtlRender, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 
@@ -56,11 +52,20 @@ export const loginAsUser = async (user: MockUser) => {
 };
 
 export const waitForLoadingToFinish = () =>
-  waitForElementToBeRemoved(
-    () => [
-      ...screen.queryAllByTestId(/loading/i),
-      ...screen.queryAllByText(/loading/i),
-    ],
+  waitFor(
+    () => {
+      const loading = [
+        ...screen.queryAllByTestId(/loading/i),
+        ...screen.queryAllByText(/loading/i),
+        ...screen
+          .queryAllByRole('generic')
+          .filter((element) => element.getAttribute('aria-busy') === 'true'),
+        ...screen.queryAllByRole('region', { busy: true }),
+        ...screen.queryAllByRole('status', { busy: true }),
+        ...screen.queryAllByRole('button', { busy: true }),
+      ];
+      if (loading.length > 0) throw new Error('Page data is still loading');
+    },
     { timeout: 4000 },
   );
 

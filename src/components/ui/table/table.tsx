@@ -2,6 +2,7 @@ import { ArchiveX } from 'lucide-react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useScrollableTabIndex } from '@/hooks/use-scrollable-tab-index';
 import { cn } from '@/utils/cn';
 
 import { EmptyState } from '../empty-state';
@@ -11,15 +12,23 @@ import { TablePagination, TablePaginationProps } from './pagination';
 const TableElement = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
-    <table
-      ref={ref}
-      className={cn('w-full caption-bottom text-sm', className)}
-      {...props}
-    />
-  </div>
-));
+>(({ className, ...props }, ref) => {
+  const { ref: scrollRef, tabIndex } = useScrollableTabIndex();
+  return (
+    <div
+      ref={scrollRef}
+      role="group"
+      tabIndex={tabIndex}
+      className="relative w-full overflow-auto focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+    >
+      <table
+        ref={ref}
+        className={cn('w-full caption-bottom text-sm', className)}
+        {...props}
+      />
+    </div>
+  );
+});
 TableElement.displayName = 'Table';
 
 const TableHeader = React.forwardRef<

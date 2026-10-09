@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/components/ui/notifications';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useCaseload } from '@/features/advisor-students/api/get-caseload';
 import { ApiError } from '@/lib/api-error';
 import { useUser } from '@/lib/auth';
@@ -199,11 +199,11 @@ export const MeetingsDocument = () => {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Tabs
-          value={filter}
-          onValueChange={(value) => setFilter(value as MeetingsFilter)}
-        >
+      <Tabs
+        value={filter}
+        onValueChange={(value) => setFilter(value as MeetingsFilter)}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <TabsList aria-label={t('meetings.title')}>
             {MEETING_FILTERS.map((key) => (
               <TabsTrigger key={key} value={key}>
@@ -214,35 +214,40 @@ export const MeetingsDocument = () => {
               </TabsTrigger>
             ))}
           </TabsList>
-        </Tabs>
 
-        <Button onClick={() => setInviteOpen(true)}>
-          {t('meetings.invite')}
-        </Button>
-      </div>
+          <Button onClick={() => setInviteOpen(true)}>
+            {t('meetings.invite')}
+          </Button>
+        </div>
 
-      {visible.length === 0 ? (
-        <EmptyState
-          compact
-          className="mt-4 max-w-xl"
-          title={t(`meetings.empty.${filter}.title`)}
-          description={t(`meetings.empty.${filter}.body`)}
-        />
-      ) : (
-        <ul className="mt-4 space-y-3">
-          {visible.map((meeting) => (
-            <li key={meeting.id} className="max-w-xl">
-              <MeetingRequestCard
-                meeting={meeting}
-                otherParty={meeting.student.name}
-                viewerIsRequester={meeting.requester_id === user.data?.id}
-                actions={actionsFor(meeting)}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
-
+        {MEETING_FILTERS.map(
+          (value) =>
+            value !== filter && <TabsContent key={value} value={value} />,
+        )}
+        <TabsContent value={filter}>
+          {visible.length === 0 ? (
+            <EmptyState
+              compact
+              className="mt-4 max-w-xl"
+              title={t(`meetings.empty.${filter}.title`)}
+              description={t(`meetings.empty.${filter}.body`)}
+            />
+          ) : (
+            <ul className="mt-4 space-y-3">
+              {visible.map((meeting) => (
+                <li key={meeting.id} className="max-w-xl">
+                  <MeetingRequestCard
+                    meeting={meeting}
+                    otherParty={meeting.student.name}
+                    viewerIsRequester={meeting.requester_id === user.data?.id}
+                    actions={actionsFor(meeting)}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </TabsContent>
+      </Tabs>
       {inviteOpen && caseloadQuery.data && (
         <InviteStudentDialog
           caseload={caseloadQuery.data}

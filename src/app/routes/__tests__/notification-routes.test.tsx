@@ -6,14 +6,23 @@ import { AppProvider } from '@/app/provider';
 import { AppRouter } from '@/app/router';
 import NotificationCenter from '@/app/routes/advisor/notifications';
 import { db } from '@/testing/mocks/db';
-import { createUser, loginAsUser, type MockUser } from '@/testing/test-utils';
+import {
+  createUser,
+  loginAsUser,
+  type MockUser,
+  waitForLoadingToFinish,
+} from '@/testing/test-utils';
 import type { UserRole } from '@/types/domain';
 
-const renderRealRouter = (url: string) => {
+const renderRealRouter = async (url: string) => {
   window.history.pushState({}, '', url);
-  return rtlRender(<AppRouter />, {
+  const view = rtlRender(<AppRouter />, {
     wrapper: ({ children }) => <AppProvider>{children}</AppProvider>,
   });
+  if (screen.queryAllByText(/loading/i).length > 0) {
+    await waitForLoadingToFinish();
+  }
+  return view;
 };
 
 const seedNotification = (
@@ -73,7 +82,7 @@ describe('notification routing', () => {
       seedNotification(user.id as number, deepLink);
       await loginAsUser(user);
 
-      renderRealRouter(url);
+      await renderRealRouter(url);
 
       await userEvent.click(
         await screen.findByRole('button', { name: /Caseload student added/ }),
@@ -134,7 +143,7 @@ describe('notification routes per section', () => {
     const user: MockUser = await createUser({ role: role as UserRole });
     await loginAsUser(user);
 
-    renderRealRouter(url);
+    await renderRealRouter(url);
 
     expect(
       await screen.findByRole('heading', { name: 'Notifications' }),

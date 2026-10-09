@@ -22,5 +22,8 @@
     "meeting_declined": "Meeting declined",
     "meeting_cancelled": "Meeting cancelled",
     "meeting_completed": "Meeting completed"
-  }
+  },
+  "all": "All",
+  "viewAll": "View all notifications",
+  "caughtUp": "You are all caught up."
 }

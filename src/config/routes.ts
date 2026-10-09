@@ -145,7 +145,7 @@ const student: RoleRouteDefinition[] = [
     role: 'student',
     labelKey: 'nav.notifications',
     icon: Bell,
-    nav: 'primary',
+    nav: 'none',
     command: true,
   },
   {
@@ -160,7 +160,7 @@ const student: RoleRouteDefinition[] = [
   },
   {
     id: 'app.profile',
-    path: paths.app.profile.getHref(),
+    path: '/app/profile',
     kind: 'redirect',
     role: 'student',
     nav: 'none',
@@ -231,7 +231,7 @@ const advisor: RoleRouteDefinition[] = [
     role: 'advisor',
     labelKey: 'nav.notifications',
     icon: Bell,
-    nav: 'more',
+    nav: 'none',
     command: true,
   },
 ];
@@ -279,7 +279,7 @@ const dean: RoleRouteDefinition[] = [
     role: 'dean',
     labelKey: 'nav.notifications',
     icon: Bell,
-    nav: 'more',
+    nav: 'none',
     command: true,
   },
 ];
@@ -338,7 +338,7 @@ const vp: RoleRouteDefinition[] = [
     role: 'vp',
     labelKey: 'nav.notifications',
     icon: Bell,
-    nav: 'more',
+    nav: 'none',
     command: true,
   },
 ];
@@ -470,7 +470,7 @@ const admin: RoleRouteDefinition[] = [
     role: 'admin',
     labelKey: 'nav.notifications',
     icon: Bell,
-    nav: 'group',
+    nav: 'none',
     groupKey: 'nav.operations',
     command: true,
     parent: 'admin.operations',
@@ -493,7 +493,7 @@ const admin: RoleRouteDefinition[] = [
   },
   {
     id: 'admin.settings',
-    path: paths.admin.settings.getHref(),
+    path: '/admin/settings',
     kind: 'redirect',
     role: 'admin',
     nav: 'none',
@@ -606,8 +606,10 @@ export type BreadcrumbEntry = { labelKey: string; to?: string };
 
 export const breadcrumbTrail = (pathname: string): BreadcrumbEntry[] => {
   let current = matchRoute(pathname);
-  if (!current || !current.parent) return [];
-  const trail: BreadcrumbEntry[] = [];
+  if (!current) return [];
+  const trail: BreadcrumbEntry[] = [
+    { labelKey: current.labelKey ?? '', to: undefined },
+  ];
   let guard = 0;
   while (current?.parent && guard < 8) {
     const parent = routeById(current.parent);

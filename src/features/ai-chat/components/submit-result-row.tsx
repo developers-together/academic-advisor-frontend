@@ -18,7 +18,10 @@ export const SubmitResultRow = ({ result }: SubmitResultRowProps) => {
           variant="success"
           title={t('submitCard.resultSubmitted')}
           action={
-            <Link to="/app/plan" className="text-sm font-medium text-primary">
+            <Link
+              to="/app/plan"
+              className="text-sm font-medium text-primary-text"
+            >
               {t('submitCard.resultOpenPlan')}
             </Link>
           }

@@ -1,5 +1,5 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { Search } from 'lucide-react';
+import { ArrowUpRight, Search, X } from 'lucide-react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -109,18 +109,21 @@ export const CommandPalette = ({
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 data-[state=open]:animate-fade-in" />
         <DialogPrimitive.Content
           aria-label={t('commandPalette.label')}
-          className="fixed inset-s-1/2 top-[16%] z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-lg border bg-card shadow-lg data-[state=open]:animate-fade-in rtl:translate-x-1/2"
-          onKeyDown={onKeyDown}
+          className="fixed inset-s-1/2 top-[16%] z-50 w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 rounded-2xl bg-card shadow-2xl data-[state=open]:animate-fade-in rtl:translate-x-1/2"
         >
           <DialogPrimitive.Title className="sr-only">
             {t('commandPalette.label')}
           </DialogPrimitive.Title>
-          <div className="flex items-center gap-2 border-b px-3">
+          <DialogPrimitive.Description className="sr-only">
+            {t('experience.searchDescription')}
+          </DialogPrimitive.Description>
+          <div className="flex items-center gap-3 border-b px-5">
             <Search
               className="size-4 shrink-0 text-muted-foreground"
               aria-hidden
             />
             <input
+              onKeyDown={onKeyDown}
               role="combobox"
               aria-expanded={flat.length > 0}
               aria-controls="command-palette-list"
@@ -138,8 +141,14 @@ export const CommandPalette = ({
               placeholder={t('commandPalette.placeholder')}
               autoComplete="off"
               spellCheck={false}
-              className="h-12 w-full bg-transparent text-base outline-hidden placeholder:text-muted-foreground"
+              className="h-16 w-full bg-transparent text-base outline-hidden placeholder:text-muted-foreground"
             />
+            <DialogPrimitive.Close
+              className="flex size-11 shrink-0 items-center justify-center rounded-lg hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={t('actions.close')}
+            >
+              <X className="size-4" aria-hidden />
+            </DialogPrimitive.Close>
           </div>
 
           <div
@@ -147,11 +156,11 @@ export const CommandPalette = ({
             id="command-palette-list"
             role="listbox"
             aria-label={t('commandPalette.label')}
-            className="max-h-80 overflow-y-auto p-2"
+            className="max-h-[55dvh] overflow-y-auto p-3"
           >
             {visibleGroups.map((group) => (
               <div key={group.headingKey} className="mb-1 last:mb-0">
-                <p className="px-2 pt-2 pb-1 text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+                <p className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">
                   {t(group.headingKey)}
                 </p>
                 {indexed
@@ -176,16 +185,22 @@ export const CommandPalette = ({
                           }
                         }}
                         className={cn(
-                          'flex h-11 cursor-pointer items-center gap-3 rounded-md px-2 text-sm',
+                          'flex min-h-14 cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-sm',
                           active
                             ? 'bg-accent text-accent-foreground'
                             : 'text-muted-foreground',
                         )}
                       >
-                        <Icon className="size-4 shrink-0" aria-hidden />
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border bg-background">
+                          <Icon className="size-5" aria-hidden />
+                        </span>
                         <span className="truncate font-medium text-foreground">
                           {entry.label}
                         </span>
+                        <ArrowUpRight
+                          className="ms-auto size-4 shrink-0 text-muted-foreground rtl:-scale-x-100"
+                          aria-hidden
+                        />
                         {entry.meta && (
                           <span className="ms-auto shrink-0 text-xs text-muted-foreground">
                             {entry.meta}

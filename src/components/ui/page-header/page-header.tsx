@@ -24,7 +24,7 @@ export const PageHeader = ({
   return (
     <div
       className={cn(
-        'mb-6 flex flex-wrap items-start justify-between gap-3',
+        'mb-8 flex flex-wrap items-start justify-between gap-4',
         className,
       )}
     >
@@ -32,15 +32,17 @@ export const PageHeader = ({
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumb items={breadcrumbs} className="mb-2" />
         )}
-        <h1 className="text-2xl leading-tight font-semibold">{title}</h1>
+        <h1 className="text-2xl leading-tight font-semibold tracking-tight text-balance">
+          {title}
+        </h1>
         {description && (
-          <p className="mt-1 max-w-prose text-sm text-muted-foreground">
+          <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
             {description}
           </p>
         )}
       </div>
       {(primaryAction || actions) && (
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex max-w-full flex-wrap items-center gap-2">
           {primaryAction}
           {actions}
         </div>

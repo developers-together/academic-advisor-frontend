@@ -74,7 +74,7 @@ export const GoalDialog = ({ open, onClose, onCreated }: GoalDialogProps) => {
               className={cn(
                 'rounded-lg border p-4 text-start text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden',
                 goal === candidate
-                  ? 'border-crimson-300 bg-crimson-100'
+                  ? 'border-primary/30 bg-primary/5'
                   : 'border-border bg-card hover:bg-accent',
               )}
             >

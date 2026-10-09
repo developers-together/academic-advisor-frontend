@@ -69,7 +69,7 @@ export const MeetingRequestCard = ({
 
         {selected && (
           <div className="rounded-md border border-success/30 bg-success/10 px-3 py-2">
-            <p className="text-2xs font-medium tracking-wide text-success uppercase">
+            <p className="text-2xs font-medium tracking-wide text-success-emphasis uppercase">
               {t('meetingCard.selectedSlot')}
             </p>
             <p className="text-sm font-medium tabular-nums">
