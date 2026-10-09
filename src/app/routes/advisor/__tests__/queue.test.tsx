@@ -48,7 +48,6 @@ const seedQueueStudent = async (
     ...(cgpa !== null ? { cgpa } : {}),
     curriculum_year_level: 3,
     history: JSON.stringify([]),
-    current_enrollments: JSON.stringify([]),
     prerequisite_map: JSON.stringify(courseMap),
     last_synced_at: '2026-10-01T12:00:00.000Z',
   });

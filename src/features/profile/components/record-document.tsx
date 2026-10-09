@@ -8,7 +8,6 @@ import type { AcademicRecord } from '@/types/domain';
 
 import { CourseHistoryTable } from './course-history-table';
 import { CourseMap } from './course-map';
-import { CurrentEnrollments } from './current-enrollments';
 import { MilestonesCard, type Milestone } from './milestones-card';
 import { ProgressRing } from './progress-ring';
 
@@ -82,8 +81,6 @@ export const RecordDocument = ({
           />
         </CardBody>
       </Card>
-
-      <CurrentEnrollments enrollments={record.current_enrollments} />
 
       <CourseHistoryTable history={record.history} />
     </div>

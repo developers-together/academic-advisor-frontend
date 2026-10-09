@@ -61,7 +61,6 @@ const seedAcademicRecord = (userId: number) => {
     cgpa: 3.2,
     curriculum_year_level: 2,
     history: JSON.stringify([]),
-    current_enrollments: JSON.stringify([]),
     prerequisite_map: JSON.stringify(prerequisiteMap),
     last_synced_at: '2026-10-01T12:00:00.000Z',
   });

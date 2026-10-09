@@ -191,14 +191,6 @@ const seedAcademicRecord = (lastSyncedAt = '2026-10-01T12:00:00.000Z') => {
     cgpa: 3.2,
     curriculum_year_level: 2,
     history: JSON.stringify(history),
-    current_enrollments: JSON.stringify([
-      {
-        course_code: 'EE 210',
-        title: 'Circuits',
-        group: 'G1',
-        section: '01',
-      },
-    ]),
     prerequisite_map: JSON.stringify(prerequisiteMap),
     last_synced_at: lastSyncedAt,
   });
@@ -244,7 +236,6 @@ const seedQueue = () => {
         cgpa: student.cgpa,
         curriculum_year_level: 3,
         history: JSON.stringify([]),
-        current_enrollments: JSON.stringify([]),
         prerequisite_map: JSON.stringify(queueCourseMap),
         last_synced_at: '2026-10-01T12:00:00.000Z',
       });
@@ -253,7 +244,6 @@ const seedQueue = () => {
         userId: student.id,
         curriculum_year_level: 3,
         history: JSON.stringify([]),
-        current_enrollments: JSON.stringify([]),
         prerequisite_map: JSON.stringify(queueCourseMap),
         last_synced_at: '2026-10-01T12:00:00.000Z',
       });

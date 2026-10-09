@@ -86,7 +86,6 @@ export type AcademicRecord = {
   cgpa: number | null;
   curriculum_year_level: number | null;
   history: CourseAttempt[];
-  current_enrollments: CurrentEnrollment[];
   prerequisite_map: PrerequisiteMapEntry[];
   last_synced_at: string | null;
 };
@@ -100,13 +99,6 @@ export type CourseAttempt = {
   semester: string | null;
   level: number | null;
   grade: string;
-};
-
-export type CurrentEnrollment = {
-  course_code: string;
-  title: string | null;
-  group: string;
-  section: string;
 };
 
 export type PrerequisiteMapState =
