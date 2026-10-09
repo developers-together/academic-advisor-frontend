@@ -2,10 +2,8 @@
   "title": "AI Advisor",
   "context": "Your AI advisor helps you plan.",
   "newConversation": "New conversation",
-  "goalDialog": {
-    "title": "What do you want from this conversation?",
-    "body": "Pick one goal. Your AI advisor shapes the conversation around it.",
-    "start": "Start"
+  "promptCards": {
+    "groupLabel": "Suggested starters"
   },
   "goals": {
     "maintain": "Maintain my level",

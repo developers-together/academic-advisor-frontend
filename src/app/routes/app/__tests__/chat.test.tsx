@@ -89,7 +89,7 @@ test('the conversation list shows each conversation with its title, goal, and up
   expect(untitled).toHaveTextContent(/^Aim for excellence/);
 });
 
-test('starting a conversation requires a goal pick and navigates to the new transcript', async () => {
+test('starting a conversation creates it without a goal and lands on the composer view', async () => {
   await renderChat('/app/chat');
 
   await screen.findByText('No conversations yet.');
@@ -98,24 +98,17 @@ test('starting a conversation requires a goal pick and navigates to the new tran
   );
 
   expect(
-    await screen.findByText('What do you want from this conversation?'),
+    await screen.findByLabelText('Message your AI advisor'),
   ).toBeInTheDocument();
-  expect(screen.getByText('Maintain my level')).toBeInTheDocument();
-  expect(screen.getByText('Improve my standing')).toBeInTheDocument();
-  expect(screen.getByText('Aim for excellence')).toBeInTheDocument();
-
-  const start = screen.getByRole('button', { name: 'Start' });
-  expect(start).toBeDisabled();
-
-  await userEvent.click(
-    screen.getByRole('button', { name: 'Improve my standing' }),
-  );
-  expect(start).toBeEnabled();
-
-  await userEvent.click(start);
   expect(
-    await screen.findByText(
-      'My standing slipped last term and I want it back up.',
+    screen.getByText('Help me keep my current level steady this term.'),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText('My standing slipped last term and I want it back up.'),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      'I want to aim higher than passing. What would excellence look like?',
     ),
   ).toBeInTheDocument();
 });

@@ -20,7 +20,7 @@ export const PromptCards = ({
   return (
     <div
       role="group"
-      aria-label={t('goalDialog.title')}
+      aria-label={t('promptCards.groupLabel')}
       className={cn('grid gap-2 sm:grid-cols-3', className)}
     >
       {GOALS.map((goal) => (

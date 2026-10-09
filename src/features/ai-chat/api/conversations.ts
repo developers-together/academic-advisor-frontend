@@ -46,7 +46,7 @@ export const usePlanConversation = (conversationId: number | null) =>
   useQuery(getConversationQueryOptions(conversationId));
 
 export const createConversation = (input: {
-  goal: PlanGoal;
+  goal?: PlanGoal;
 }): Promise<PlanConversation> =>
   unwrap<PlanConversation>(api.post('/plan-conversations', input));
 

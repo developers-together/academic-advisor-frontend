@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
@@ -6,8 +5,8 @@ import { ContentLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { paths } from '@/config/paths';
+import { useCreateConversation } from '@/features/ai-chat/api/conversations';
 import { ConversationList } from '@/features/ai-chat/components/conversation-list';
-import { GoalDialog } from '@/features/ai-chat/components/goal-dialog';
 import { Transcript } from '@/features/ai-chat/components/transcript';
 import { cn } from '@/utils/cn';
 
@@ -18,14 +17,29 @@ export type ChatDocumentProps = {
 export const ChatDocument = ({ conversationId }: ChatDocumentProps) => {
   const { t } = useTranslation('chat');
   const navigate = useNavigate();
-  const [goalDialogOpen, setGoalDialogOpen] = useState(false);
+  const createConversation = useCreateConversation();
+
+  const startConversation = () => {
+    createConversation.mutate(
+      {},
+      {
+        onSuccess: (conversation) => {
+          void navigate(paths.app.conversation.getHref(conversation.id));
+        },
+      },
+    );
+  };
 
   return (
     <ContentLayout
       title={t('title')}
       context={t('context')}
       actions={
-        <Button onClick={() => setGoalDialogOpen(true)}>
+        <Button
+          onClick={startConversation}
+          isLoading={createConversation.isPending}
+          disabled={createConversation.isPending}
+        >
           {t('newConversation')}
         </Button>
       }
@@ -39,7 +53,7 @@ export const ChatDocument = ({ conversationId }: ChatDocumentProps) => {
         >
           <ConversationList
             activeId={conversationId}
-            onNewConversation={() => setGoalDialogOpen(true)}
+            onNewConversation={startConversation}
           />
         </aside>
         <section className="min-w-0" aria-label={t('title')}>
@@ -54,14 +68,6 @@ export const ChatDocument = ({ conversationId }: ChatDocumentProps) => {
           )}
         </section>
       </div>
-      <GoalDialog
-        open={goalDialogOpen}
-        onClose={() => setGoalDialogOpen(false)}
-        onCreated={(conversation) => {
-          setGoalDialogOpen(false);
-          void navigate(paths.app.conversation.getHref(conversation.id));
-        }}
-      />
     </ContentLayout>
   );
 };

@@ -200,8 +200,8 @@ export const planConversationHandlers = [
     const user = requireAuth(request);
     const body = (await request.json()) as { goal?: unknown };
     if (
-      typeof body.goal !== 'string' ||
-      !GOALS.includes(body.goal as PlanGoal)
+      body.goal !== undefined &&
+      (typeof body.goal !== 'string' || !GOALS.includes(body.goal as PlanGoal))
     ) {
       return HttpResponse.json(
         {
@@ -213,7 +213,7 @@ export const planConversationHandlers = [
     }
     const row = db.planConversation.create({
       userId: user.id as number,
-      goal: body.goal,
+      goal: typeof body.goal === 'string' ? body.goal : '',
       messages: JSON.stringify([]),
     }) as ConversationRow;
     return HttpResponse.json({ data: toConversation(row) }, { status: 201 });
