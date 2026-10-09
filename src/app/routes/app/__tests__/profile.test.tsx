@@ -53,6 +53,7 @@ const seedRecord = (
       {
         course_code: 'CS 101',
         name: 'Introduction to Programming',
+        term_code: '2025-fall',
         credits: 3,
         year: 2025,
         semester: 'Fall',
@@ -152,7 +153,7 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   expect(screen.getByText('Group G1, Section 01')).toBeInTheDocument();
 
   const historyTable = screen.getByRole('table');
-  expect(historyTable).toHaveTextContent('2025 · Fall');
+  expect(historyTable).toHaveTextContent('2025-fall · 2025 Fall');
   expect(historyTable).toHaveTextContent('A');
   expect(historyTable).toHaveTextContent('Introduction to Programming');
 

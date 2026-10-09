@@ -94,10 +94,11 @@ export type AcademicRecord = {
 export type CourseAttempt = {
   course_code: string;
   name: string | null;
-  credits: number;
-  year: number;
-  semester: string;
-  level: number;
+  term_code: string;
+  credits: number | null;
+  year: number | null;
+  semester: string | null;
+  level: number | null;
   grade: string;
 };
 

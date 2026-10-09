@@ -39,38 +39,45 @@ export const CourseHistoryTable = ({ history }: CourseHistoryTableProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {history.map((attempt) => (
-                <TableRow
-                  key={`${attempt.course_code}-${attempt.year}-${attempt.semester}`}
-                >
-                  <TableCell>
-                    <span className="text-sm">
-                      <span className="bidi-code">{attempt.course_code}</span>
-                      {attempt.name ? ` ${attempt.name}` : ''}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm tabular-nums">
-                      {attempt.credits}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm tabular-nums">
-                      {attempt.year} · {attempt.semester}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm tabular-nums">
-                      {attempt.level}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm tabular-nums">
-                      {attempt.grade}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {history.map((attempt) => {
+                const supplementaryTerm = [attempt.year, attempt.semester]
+                  .filter((part) => part !== null && part !== '')
+                  .join(' ');
+                return (
+                  <TableRow
+                    key={`${attempt.course_code}-${attempt.term_code}-${attempt.grade}`}
+                  >
+                    <TableCell>
+                      <span className="text-sm">
+                        <span className="bidi-code">{attempt.course_code}</span>
+                        {attempt.name ? ` ${attempt.name}` : ''}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm tabular-nums">
+                        {attempt.credits ?? '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm tabular-nums">
+                        {supplementaryTerm
+                          ? `${attempt.term_code} · ${supplementaryTerm}`
+                          : attempt.term_code}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm tabular-nums">
+                        {attempt.level ?? '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm tabular-nums">
+                        {attempt.grade}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </TableElement>
         )}

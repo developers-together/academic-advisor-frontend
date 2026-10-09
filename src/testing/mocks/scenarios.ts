@@ -166,6 +166,7 @@ const history = [
   {
     course_code: 'CS 101',
     name: 'Introduction to Programming',
+    term_code: '2025-fall',
     credits: 3,
     year: 2025,
     semester: 'Fall',
@@ -175,6 +176,7 @@ const history = [
   {
     course_code: 'MATH 101',
     name: 'Calculus I',
+    term_code: '2025-fall',
     credits: 4,
     year: 2025,
     semester: 'Fall',
