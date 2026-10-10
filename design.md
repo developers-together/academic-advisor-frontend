@@ -1343,7 +1343,7 @@ Starter rows only prefill the editable draft and focus the composer.
 An empty draft disables Send. Pending creation disables Send and starter selection.
 The student can edit the next draft during creation or a reply.
 History and New conversation sit together at the AI page's top corner opposite the sidebar.
-This placement replaces the earlier sidebar-only constraint. Narrow screens show icons with accessible names; wider screens also show labels.
+This placement replaces the earlier sidebar-only constraint. Both controls use icons with accessible names and hover titles at every width.
 New conversation returns to the welcome surface from the page action or history Drawer.
 This action clears the entry draft without a server conversation request.
 Creation failures show an error banner and retain the entry draft.
@@ -1362,7 +1362,7 @@ Streaming retains typing feedback, stop controls, partial failures, tool events,
 The transcript suppresses persisted assistant copies during an active stream. A polite announcement reports reply completion once.
 The next draft stays editable during a reply. Stop replaces Send until the reply ends.
 Failed sends restore the sent text only when the current draft has no text.
-Completed messages expose a 44px Copy control with success and failure feedback.
+Completed messages expose a 44px Copy control with success and failure feedback. Assistant replies show their timestamp beside Copy.
 Quota exhaustion disables active conversation input and preserves the builder link.
 Submission suggestions retain explicit confirmation under section 14. AI never silently submits a plan.
 Missing conversations retain recovery guidance. Other transcript failures retain retry controls.
@@ -1522,7 +1522,7 @@ Reduced motion removes AI draft and starter transitions. The existing global red
 The entry draft, pending creation, failures, history states, streaming, and submission confirmation follow section 29.2.
 
 The shared sidebar, AI greeting, and favicon use the actual E-JUST PNG logo.
-Dark mode applies an invert and hue rotation filter to PNG logos for a brighter mark.
+Dark mode brightens the dark logo strokes and retains a saturated red center.
 Development query tools require development mode and `VITE_ENABLE_DEVTOOLS=true`.
 The command palette uses the selected color roles for its surfaces, accents, and focus states.
 
@@ -1531,6 +1531,14 @@ Course hover and focus details use an optional backend description when availabl
 Without a description, the interface explains the actual course state and prerequisite context.
 
 My Plan exposes Edit courses for drafts. The builder searches available courses by code and title.
+The picker exposes loading and retry states. It excludes courses currently in the draft.
+All draft mutations disable other draft actions until the request finishes.
+Credit totals come from the plan response. The mock response sums its saved course credits.
+Server validation receives focus after rendering and links to affected course lines.
+Discard failures remain visible inside the confirmation dialog.
+Page headings omit matching breadcrumb leaves. Remaining ancestor links stay interactive.
+Course-map legend chips pair state icons with semantic colors.
+Shared retry controls show a rotating reload icon and respect reduced motion.
 The route error boundary shows a static recovery message. Retry reloads the page.
 These controls retain authorization checks and explicit confirmation for consequential actions.
 
