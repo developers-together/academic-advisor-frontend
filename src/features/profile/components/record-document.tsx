@@ -14,17 +14,25 @@ import { ProgressRing } from './progress-ring';
 
 export type RecordDocumentProps = {
   record: AcademicRecord;
+  plannedCourseCodes?: string[];
   onRetryRecord: () => void;
   isRetryingRecord?: boolean;
 };
 
 export const RecordDocument = ({
   record,
+  plannedCourseCodes = [],
   onRetryRecord,
   isRetryingRecord = false,
 }: RecordDocumentProps) => {
   const { t } = useTranslation('plan');
   const user = useUser();
+  const planned = new Set(plannedCourseCodes);
+  const mapEntries = record.prerequisite_map.map((entry) =>
+    entry.state === 'eligible' && planned.has(entry.course_code)
+      ? { ...entry, state: 'planned' as const }
+      : entry,
+  );
   const completedCount = record.prerequisite_map.filter(
     (entry) => entry.state === 'completed',
   ).length;
@@ -89,7 +97,7 @@ export const RecordDocument = ({
         </CardHeader>
         <CardBody>
           <CourseMap
-            entries={record.prerequisite_map}
+            entries={mapEntries}
             onRetry={onRetryRecord}
             isRetrying={isRetryingRecord}
           />
