@@ -40,7 +40,7 @@ export type PlanStatus =
 export type PlannedCourse = {
   course_code: string;
   title: string | null;
-  credits: number;
+  credits: number | null;
   reason: string | null;
 };
 
@@ -52,8 +52,8 @@ export type Plan = {
   courses: PlannedCourse[];
   total_credit_hours: number;
   warnings: string[];
-  submitted_at: string | null;
-  decided_at: string | null;
+  submitted_at?: string | null;
+  decided_at?: string | null;
   return_reason: string | null;
 };
 
@@ -95,9 +95,9 @@ export type PlanConversation = {
 export type AcademicRecord = {
   cgpa: number | null;
   curriculum_year_level: number | null;
-  remaining_requirements: string | null;
+  remaining_requirements?: string | null;
   history: CourseAttempt[];
-  current_enrollments: CurrentEnrollment[];
+  current_enrollments?: CurrentEnrollment[];
   prerequisite_map: PrerequisiteMapEntry[];
   last_synced_at: string | null;
 };
