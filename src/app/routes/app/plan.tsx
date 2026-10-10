@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
@@ -16,6 +16,7 @@ import { useSeenPlan } from '@/features/plan/api/seen-plan';
 import { useWithdrawPlan } from '@/features/plan/api/withdraw-plan';
 import { PlanDocument } from '@/features/plan/components/plan-document';
 import { PlanStateActions } from '@/features/plan/components/plan-state-actions';
+import { RegistrationGuide } from '@/features/plan/components/registration-guide';
 import { useDiscardPlan } from '@/features/plan-builder/api/discard-plan';
 import {
   parseSubmitFailure,
@@ -25,6 +26,7 @@ import { useSubmitPlan } from '@/features/plan-builder/api/submit-plan';
 import { ValidationPanel } from '@/features/plan-builder/components/validation-panel';
 import { useAcademicRecord } from '@/lib/api/academic-record';
 import { ApiError } from '@/lib/api-error';
+import { useUser } from '@/lib/auth';
 import { PermissionDenied } from '@/lib/authorization';
 
 const lineId = (courseCode: string) =>
@@ -33,6 +35,7 @@ const lineId = (courseCode: string) =>
 export default function PlanRoute() {
   const { t } = useTranslation('plan');
   const navigate = useNavigate();
+  const user = useUser();
   const planQuery = usePlan();
   const academicRecord = useAcademicRecord();
   const commentsQuery = usePlanComments(planQuery.data?.id ?? null);
@@ -47,7 +50,10 @@ export default function PlanRoute() {
     requestId: string | null;
   } | null>(null);
 
-  const plan = planQuery.data;
+  const plan = planQuery.isError ? undefined : planQuery.data;
+  useEffect(() => {
+    if (failure) document.getElementById('validation-panel-title')?.focus();
+  }, [failure]);
 
   const clearResults = () => {
     setFailure(null);
@@ -84,9 +90,14 @@ export default function PlanRoute() {
   return (
     <ContentLayout
       title={t('myPlan.title')}
-      context={plan ? t('termContext', { term: plan.term_code }) : undefined}
+      context={
+        user.data
+          ? [user.data.name, user.data.student_id].filter(Boolean).join(' · ')
+          : undefined
+      }
       actions={
-        plan && (
+        plan &&
+        plan.status !== 'discarded' && (
           <PlanStateActions
             plan={plan}
             canSubmit={plan.courses.length > 0}
@@ -97,18 +108,23 @@ export default function PlanRoute() {
             seenPending={seenPlanMutation.isPending}
             windowClosed={windowClosed}
             serviceUnavailable={serviceUnavailable}
+            onEdit={() =>
+              navigate(paths.app.builder.getHref(), {
+                state: { planId: plan.id, failure },
+              })
+            }
             onSubmit={handleSubmit}
             onWithdraw={() =>
-              withdrawPlanMutation.mutate(undefined, {
+              withdrawPlanMutation.mutateAsync(undefined, {
                 onSuccess: () => clearResults(),
               })
             }
             onDiscard={() =>
-              discardPlanMutation.mutate(undefined, {
+              discardPlanMutation.mutateAsync(undefined, {
                 onSuccess: () => clearResults(),
               })
             }
-            onSeen={() => seenPlanMutation.mutate()}
+            onSeen={() => seenPlanMutation.mutateAsync()}
           />
         )
       }
@@ -117,36 +133,49 @@ export default function PlanRoute() {
         {planQuery.isPending && <SkeletonCard className="max-w-2xl" />}
 
         {planQuery.isError &&
-          planQuery.error instanceof ApiError &&
-          planQuery.error.status !== 404 &&
-          planQuery.error.status !== 403 && (
+          !(
+            planQuery.error instanceof ApiError &&
+            [404, 403].includes(planQuery.error.status)
+          ) && (
             <ErrorState
               onRetry={() => void planQuery.refetch()}
-              requestId={planQuery.error.requestId}
+              pending={planQuery.isFetching}
+              requestId={
+                planQuery.error instanceof ApiError
+                  ? planQuery.error.requestId
+                  : null
+              }
             />
           )}
 
         {planQuery.isError &&
           planQuery.error instanceof ApiError &&
           planQuery.error.status === 403 && (
-            <PermissionDenied audience="student" />
-          )}
-
-        {planQuery.isError &&
-          planQuery.error instanceof ApiError &&
-          planQuery.error.status === 404 && (
-            <EmptyState
-              className="max-w-2xl"
-              title={t('myPlan.empty.title')}
-              description={t('myPlan.empty.body')}
-              action={{
-                label: t('myPlan.empty.action'),
-                onClick: () => navigate(paths.app.builder.getHref()),
+            <PermissionDenied
+              audience="student"
+              message={t('registration.accessDenied')}
+              backTo={{
+                label: 'permissionDenied.back',
+                href: paths.app.root.getHref(),
               }}
             />
           )}
 
-        {plan && (
+        {(plan?.status === 'discarded' ||
+          (planQuery.error instanceof ApiError &&
+            planQuery.error.status === 404)) && (
+          <EmptyState
+            className="max-w-2xl"
+            title={t('myPlan.empty.title')}
+            description={t('myPlan.empty.body')}
+            action={{
+              label: t('myPlan.empty.action'),
+              onClick: () => navigate(paths.app.builder.getHref()),
+            }}
+          />
+        )}
+
+        {plan && plan.status !== 'discarded' && (
           <>
             {academicRecord.data && (
               <RecordFreshness
@@ -167,17 +196,33 @@ export default function PlanRoute() {
                 <p className="text-sm text-muted-foreground">
                   {t('myPlan.submitFailed.body')}
                 </p>
-                <Link to="/app/builder">
+                <Link
+                  to={paths.app.builder.getHref()}
+                  state={{ planId: plan.id, failure }}
+                >
                   {t('myPlan.submitFailed.editAction')}
                 </Link>
               </div>
             )}
 
-            <PlanDocument plan={plan} lineErrors={failure?.lineErrors} />
+            <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+              <PlanDocument plan={plan} lineErrors={failure?.lineErrors} />
+              <aside className="xl:sticky xl:top-6">
+                <RegistrationGuide plan={plan} record={academicRecord.data} />
+              </aside>
+            </div>
+            {academicRecord.isError && (
+              <ErrorState
+                compact
+                pending={academicRecord.isFetching}
+                onRetry={() => void academicRecord.refetch()}
+              />
+            )}
 
             {commentsQuery.isError ? (
               <ErrorState
                 compact
+                pending={commentsQuery.isFetching}
                 onRetry={() => void commentsQuery.refetch()}
                 requestId={
                   commentsQuery.error instanceof ApiError
@@ -191,7 +236,9 @@ export default function PlanRoute() {
                   className="max-w-2xl"
                   comments={commentsQuery.data ?? []}
                   unreadAfter={
-                    plan.status === 'returned' ? plan.decided_at : null
+                    plan.status === 'returned'
+                      ? (plan.decided_at ?? null)
+                      : null
                   }
                   title={t('myPlan.comments.title')}
                   emptyText={t('myPlan.comments.empty')}
