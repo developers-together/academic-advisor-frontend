@@ -82,12 +82,12 @@ export const ChatDocument = ({ conversationId }: ChatDocumentProps) => {
           <DrawerTrigger asChild>
             <Button
               variant="ghost"
-              className="gap-2"
+              size="icon"
+              className="size-11"
               aria-label={t('studio.history')}
               title={t('studio.history')}
             >
               <History className="size-5 shrink-0" aria-hidden />
-              <span className="hidden sm:inline">{t('studio.history')}</span>
             </Button>
           </DrawerTrigger>
           <DrawerContent side="right" className="w-full sm:max-w-md">
@@ -112,14 +112,14 @@ export const ChatDocument = ({ conversationId }: ChatDocumentProps) => {
         </Drawer>
         <Button
           variant="ghost"
-          className="gap-2"
+          size="icon"
+          className="size-11"
           aria-label={t('newConversation')}
           title={t('newConversation')}
           onClick={() => startConversation()}
           disabled={createConversation.isPending}
         >
           <MessageSquarePlus className="size-5 shrink-0" aria-hidden />
-          <span className="hidden sm:inline">{t('newConversation')}</span>
         </Button>
       </div>
       {createConversation.isError && (
