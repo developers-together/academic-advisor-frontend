@@ -37,6 +37,7 @@ export type PermissionDeniedProps = {
 
 export const PermissionDenied = ({
   audience,
+  message,
   backTo,
   className,
 }: PermissionDeniedProps) => {
@@ -50,7 +51,8 @@ export const PermissionDenied = ({
       )}
     >
       <p className="text-sm text-muted-foreground">
-        {t('permissionDenied.title', { audience: t(`roles.${audience}`) })}
+        {message ??
+          t('permissionDenied.title', { audience: t(`roles.${audience}`) })}
       </p>
       {backTo && (
         <Link
