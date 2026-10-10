@@ -4,9 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
 import { ErrorState, Banner } from '@/components/ui/banner';
-import { Button } from '@/components/ui/button';
+import { Button, RetryButton } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   planConversationsRootKey,
@@ -195,9 +194,6 @@ export const Transcript = ({
       >
         {announcement}
       </p>
-      <Link to="/app/chat" className="md:hidden">
-        {t('list.back')}
-      </Link>
       <div className="studio-transcript-body relative">
         <div
           ref={scrollRef}
@@ -275,7 +271,7 @@ export const Transcript = ({
                     variant="destructive"
                     action={
                       turn.error.retryable ? (
-                        <Button
+                        <RetryButton
                           variant="outline"
                           size="sm"
                           className="h-11"
@@ -286,7 +282,7 @@ export const Transcript = ({
                           }
                         >
                           {tCommon('actions.retry')}
-                        </Button>
+                        </RetryButton>
                       ) : undefined
                     }
                   >
