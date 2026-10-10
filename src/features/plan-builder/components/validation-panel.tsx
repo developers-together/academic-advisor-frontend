@@ -67,7 +67,7 @@ export const ValidationPanel = ({
               <Button
                 variant="link"
                 size="sm"
-                className="h-auto p-0 text-xs"
+                className="min-h-11 px-2 text-sm"
                 onClick={() => onJumpToLine(courseCode)}
               >
                 {t('builder.validation.jumpToLine')}
