@@ -1285,7 +1285,7 @@ body[data-mode='staff'] .cluster {
   background: hsl(var(--accent));
 }
 .dark img[src='/ejust-logo.png'] {
-  filter: invert(1) hue-rotate(180deg) saturate(8) brightness(0.88);
+  filter: invert(1) hue-rotate(180deg) saturate(4) brightness(0.9);
 }
 @media (width < 48rem) {
   .studio-welcome {
@@ -1301,5 +1301,77 @@ body[data-mode='staff'] .cluster {
 @media (prefers-reduced-motion: reduce) {
   .chat-composer-shell {
     transition: none;
+  }
+}
+
+.ejust-response-mark {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.ejust-response-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ejust-response-mark[data-phase='thinking'] img {
+  opacity: 0.2;
+}
+.ejust-response-trace {
+  position: absolute;
+  inset: 0;
+  mask: url('/ejust-logo.png') center / contain no-repeat;
+  background: conic-gradient(
+    from var(--ejust-angle),
+    transparent 0deg,
+    hsl(var(--primary)) 100deg,
+    hsl(var(--foreground)) 150deg,
+    transparent 210deg
+  );
+  animation: ejust-trace 1.8s linear infinite;
+}
+.ejust-response-center {
+  position: absolute;
+  left: 26%;
+  top: 34%;
+  width: 48%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ejust-brand);
+}
+.ejust-response-mark[data-phase='thinking'] .ejust-response-center {
+  background: hsl(var(--background));
+}
+.ejust-response-mark[data-phase='streaming'] img {
+  mask: radial-gradient(circle at 50% 51%, transparent 8px, #000 8.5px);
+}
+.ejust-response-mark[data-phase='streaming'] .ejust-response-center {
+  animation: ejust-breathe 1.25s ease-in-out infinite;
+}
+@property --ejust-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes ejust-trace {
+  to {
+    --ejust-angle: 360deg;
+  }
+}
+@keyframes ejust-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ejust-response-trace,
+  .ejust-response-center {
+    animation: none !important;
   }
 }
