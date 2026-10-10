@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
 import { paths } from '@/config/paths';
+import { ApiError } from '@/lib/api-error';
 import type { Plan } from '@/types/domain';
 
 import { SeenButton } from './seen-button';
@@ -28,9 +29,10 @@ export type PlanStateActionsProps = {
   windowClosed: boolean;
   serviceUnavailable: { requestId: string | null } | null;
   onSubmit: () => void;
-  onWithdraw: () => void;
-  onDiscard: () => void;
-  onSeen: () => void;
+  onEdit: () => void;
+  onWithdraw: () => Promise<unknown>;
+  onDiscard: () => Promise<unknown>;
+  onSeen: () => Promise<unknown>;
 };
 
 export const PlanStateActions = ({
@@ -44,57 +46,69 @@ export const PlanStateActions = ({
   windowClosed,
   serviceUnavailable,
   onSubmit,
+  onEdit,
   onWithdraw,
   onDiscard,
   onSeen,
 }: PlanStateActionsProps) => {
   const { t } = useTranslation('plan');
+  const pending =
+    submitting || withdrawPending || discardPending || seenPending;
+
+  if (plan.status === 'discarded')
+    return (
+      <Button asChild>
+        <Link
+          to={paths.app.builder.getHref()}
+          onClick={(event) => {
+            if (pending) event.preventDefault();
+          }}
+        >
+          {t('builder.startPlan')}
+        </Link>
+      </Button>
+    );
 
   if (plan.status === 'draft') {
-    if (windowClosed) {
-      return (
-        <Banner
-          variant="window-closed"
-          title={t('builder.windowClosedTitle')}
-          className="max-w-md"
-        >
-          {t('builder.windowClosed')}
-        </Banner>
-      );
-    }
-    if (serviceUnavailable) {
-      return (
-        <ErrorState
-          compact
-          title={t('builder.submitUnavailableTitle')}
-          message={t('builder.submitUnavailableBody')}
-          onRetry={onSubmit}
-          requestId={serviceUnavailable.requestId}
-        />
-      );
-    }
     return (
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <Button
-          asChild
           variant="outline"
+          disabled={pending}
+          onClick={onEdit}
           icon={<PencilLine className="size-4" aria-hidden />}
         >
-          <Link to={paths.app.builder.getHref()}>
-            {t('myPlan.editCourses')}
-          </Link>
+          {t('myPlan.editCourses')}
         </Button>
-        <DraftSubmit
-          canSubmit={canSubmit}
-          submitBlockedCount={submitBlockedCount}
-          submitting={submitting}
-          onSubmit={onSubmit}
-        />
+        {windowClosed ? (
+          <Banner
+            variant="window-closed"
+            title={t('builder.windowClosedTitle')}
+          >
+            {t('builder.windowClosed')}
+          </Banner>
+        ) : serviceUnavailable ? (
+          <ErrorState
+            compact
+            title={t('builder.submitUnavailableTitle')}
+            message={t('builder.submitUnavailableBody')}
+            onRetry={onSubmit}
+            pending={pending}
+            requestId={serviceUnavailable.requestId}
+          />
+        ) : (
+          <DraftSubmit
+            canSubmit={canSubmit}
+            submitBlockedCount={submitBlockedCount}
+            submitting={pending}
+            onSubmit={onSubmit}
+          />
+        )}
         <MoreActions
           term={plan.term_code}
           withdrawable
-          withdrawPending={withdrawPending}
-          discardPending={discardPending}
+          withdrawPending={pending}
+          discardPending={pending}
           onWithdraw={onWithdraw}
           onDiscard={onDiscard}
         />
@@ -105,12 +119,12 @@ export const PlanStateActions = ({
   if (plan.status === 'returned') {
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <SeenButton pending={seenPending} onConfirm={onSeen} />
+        <SeenButton pending={pending} onConfirm={onSeen} />
         <MoreActions
           term={plan.term_code}
           withdrawable={false}
-          withdrawPending={withdrawPending}
-          discardPending={discardPending}
+          withdrawPending={pending}
+          discardPending={pending}
           onWithdraw={onWithdraw}
           onDiscard={onDiscard}
         />
@@ -174,8 +188,8 @@ type MoreActionsProps = {
   withdrawable: boolean;
   withdrawPending: boolean;
   discardPending: boolean;
-  onWithdraw: () => void;
-  onDiscard: () => void;
+  onWithdraw: () => Promise<unknown>;
+  onDiscard: () => Promise<unknown>;
 };
 
 const MoreActions = ({
@@ -189,6 +203,20 @@ const MoreActions = ({
   const { t } = useTranslation('plan');
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const confirm = async (action: () => Promise<unknown>, close: () => void) => {
+    setError(null);
+    try {
+      await action();
+      close();
+    } catch (failure) {
+      setError(
+        failure instanceof ApiError
+          ? failure.message
+          : t('common:errors.saveFailed'),
+      );
+    }
+  };
 
   return (
     <>
@@ -202,14 +230,20 @@ const MoreActions = ({
           {withdrawable && (
             <DropdownMenuItem
               disabled={withdrawPending}
-              onSelect={() => setWithdrawOpen(true)}
+              onSelect={() => {
+                setError(null);
+                setWithdrawOpen(true);
+              }}
             >
               {t('myPlan.withdraw')}
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
             disabled={discardPending}
-            onSelect={() => setDiscardOpen(true)}
+            onSelect={() => {
+              setError(null);
+              setDiscardOpen(true);
+            }}
           >
             {t('myPlan.discard')}
           </DropdownMenuItem>
@@ -223,10 +257,8 @@ const MoreActions = ({
         confirmLabel={t('myPlan.withdrawConfirm.confirm')}
         destructive
         pending={withdrawPending}
-        onConfirm={() => {
-          setWithdrawOpen(false);
-          onWithdraw();
-        }}
+        error={error}
+        onConfirm={() => void confirm(onWithdraw, () => setWithdrawOpen(false))}
       />
       <ConfirmDialog
         open={discardOpen}
@@ -236,10 +268,8 @@ const MoreActions = ({
         confirmLabel={t('myPlan.discardConfirm.confirm')}
         destructive
         pending={discardPending}
-        onConfirm={() => {
-          setDiscardOpen(false);
-          onDiscard();
-        }}
+        error={error}
+        onConfirm={() => void confirm(onDiscard, () => setDiscardOpen(false))}
       />
     </>
   );
