@@ -112,7 +112,7 @@
     "discard": "Discard plan",
     "startPlan": "Start your plan",
     "startPending": "Creating",
-    "creditsTotal": "Planned credits: {{total}} ({{min}}-{{max}} window)",
+    "creditsTotal": "Planned credits: {{total}}",
     "creditsOut": "Outside the {{min}}-{{max}} credit window. The validator blocks submission outside it."
   },
   "profile": {
