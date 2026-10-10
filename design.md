@@ -1538,6 +1538,14 @@ Server validation receives focus after rendering and links to affected course li
 Discard failures remain visible inside the confirmation dialog.
 Page headings omit matching breadcrumb leaves. Remaining ancestor links stay interactive.
 Course-map legend chips pair state icons with semantic colors.
+The builder places a sticky course shelf beside the draft at wide widths.
+Narrow layouts stack the shelf after the draft. Eligible cards support dragging and an accessible Add button.
+The drop target validates course-map membership and state before using the existing add endpoint.
+The shelf hides completed and already planned courses. Locked courses show prerequisite guidance.
+The student response does not confirm semester offerings. The shelf asks students to confirm availability with their advisor.
+During thinking, a rotating color trace follows the actual E-JUST image mask.
+During writing, the center dot pulses. Completed replies restore the normal logo.
+Reduced motion disables both effects. Collapsed navigation places notifications above the account avatar.
 Shared retry controls show a rotating reload icon and respect reduced motion.
 The route error boundary shows a static recovery message. Retry reloads the page.
 These controls retain authorization checks and explicit confirmation for consequential actions.
