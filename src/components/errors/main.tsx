@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button';
+import { RetryButton } from '@/components/ui/button';
 
 export const MainErrorFallback = () => {
   const { t } = useTranslation();
@@ -16,9 +16,11 @@ export const MainErrorFallback = () => {
           {t('errors.loadFailedBody')}
         </p>
       </div>
-      <Button onClick={() => window.location.assign(window.location.origin)}>
+      <RetryButton
+        onClick={() => window.location.assign(window.location.origin)}
+      >
         {t('actions.retry')}
-      </Button>
+      </RetryButton>
     </div>
   );
 };
