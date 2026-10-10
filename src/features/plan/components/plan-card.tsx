@@ -134,7 +134,9 @@ export const PlanCard = ({ plan }: PlanCardProps) => {
                   {course.title ?? ''}
                 </span>
                 <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                  {t('builder.line.credits', { credits: course.credits })}
+                  {course.credits == null
+                    ? t('builder.line.creditsUnknown')
+                    : t('builder.line.credits', { credits: course.credits })}
                 </span>
               </li>
             ))}
