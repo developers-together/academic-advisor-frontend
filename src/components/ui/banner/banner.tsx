@@ -8,7 +8,7 @@ import {
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button';
+import { RetryButton } from '@/components/ui/button';
 import { cn } from '@/utils/cn';
 
 export type BannerVariant =
@@ -80,6 +80,7 @@ export type ErrorStateProps = {
   onRetry?: () => void;
   requestId?: string | null;
   compact?: boolean;
+  pending?: boolean;
 };
 
 export const ErrorState = ({
@@ -88,6 +89,7 @@ export const ErrorState = ({
   onRetry,
   requestId,
   compact = false,
+  pending = false,
 }: ErrorStateProps) => {
   const { t } = useTranslation();
   const body = message ?? t('errors.loadFailedBody');
@@ -98,14 +100,15 @@ export const ErrorState = ({
       title={title ?? t('errors.loadFailed')}
       action={
         onRetry && (
-          <Button
+          <RetryButton
             variant="outline"
             size={compact ? 'sm' : 'default'}
             className="h-11"
             onClick={onRetry}
+            isLoading={pending}
           >
             {t('actions.retry')}
-          </Button>
+          </RetryButton>
         )
       }
       className={compact ? 'p-3' : undefined}
