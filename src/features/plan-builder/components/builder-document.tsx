@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Banner } from '@/components/ui/banner';
@@ -11,7 +11,6 @@ import {
 } from '@/lib/api/academic-record';
 import { ApiError } from '@/lib/api-error';
 import type { Plan } from '@/types/domain';
-import { cn } from '@/utils/cn';
 
 import { useAddPlanCourse } from '../api/add-plan-course';
 import { useDiscardPlan } from '../api/discard-plan';
@@ -43,6 +42,7 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
   const [failure, setFailure] = useState<SubmitFailure | null>(null);
   const [windowClosed, setWindowClosed] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [discardError, setDiscardError] = useState<string | null>(null);
   const [lineError, setLineError] = useState<{
     message: string;
     requestId: string | null;
@@ -52,6 +52,9 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
   } | null>(null);
 
   const titles = buildCourseTitleIndex(academicRecord.data);
+  useEffect(() => {
+    if (failure) document.getElementById('validation-panel-title')?.focus();
+  }, [failure]);
 
   const clearResults = () => {
     setFailure(null);
@@ -77,7 +80,8 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
   const pending =
     addCourse.isPending ||
     removeCourse.isPending ||
-    submitPlanMutation.isPending;
+    submitPlanMutation.isPending ||
+    discardPlanMutation.isPending;
 
   const handleSubmit = () => {
     submitPlanMutation.mutate(undefined, {
@@ -88,7 +92,6 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
           setWindowClosed(parsed.windowClosed);
           setFailure(parsed.total > 0 ? parsed : null);
           setServiceUnavailable(null);
-          document.getElementById('validation-panel-title')?.focus();
           return;
         }
         setFailure(null);
@@ -110,7 +113,7 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
     <div className="max-w-2xl space-y-4">
       <CoursePicker
         plan={plan}
-        disabled={addCourse.isPending}
+        disabled={pending}
         onSelect={(courseCode) => {
           clearResults();
           addCourse.mutate(
@@ -133,25 +136,11 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
           <h2 className="text-base font-semibold">
             {t('termContext', { term: plan.term_code })}
           </h2>
-          <p
-            className={cn(
-              'mt-1 text-sm tabular-nums',
-              plan.total_credit_hours < 12 || plan.total_credit_hours > 18
-                ? 'font-medium text-warning'
-                : 'text-muted-foreground',
-            )}
-          >
+          <p className="mt-1 text-sm text-muted-foreground tabular-nums">
             {t('builder.creditsTotal', {
               total: plan.total_credit_hours,
-              min: 12,
-              max: 18,
             })}
           </p>
-          {(plan.total_credit_hours < 12 || plan.total_credit_hours > 18) && (
-            <p className="mt-1 text-sm text-warning">
-              {t('builder.creditsOut', { min: 12, max: 18 })}
-            </p>
-          )}
         </CardHeader>
         <CardBody>
           {plan.courses.length === 0 ? (
@@ -166,9 +155,6 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
           ) : (
             <ul className="divide-y">
               {plan.courses.map((course) => {
-                const linePending =
-                  removeCourse.isPending &&
-                  removeCourse.variables?.courseCode === course.course_code;
                 return (
                   <li
                     key={course.course_code}
@@ -179,7 +165,7 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
                     <BuilderLine
                       course={course}
                       title={titles.get(course.course_code) ?? null}
-                      disabled={linePending}
+                      disabled={pending}
                       errors={failure?.lineErrors[course.course_code] ?? []}
                       onRemove={() => {
                         clearResults();
@@ -219,7 +205,11 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
             <Button
               variant="outline"
               className="h-11"
-              onClick={() => setDiscardOpen(true)}
+              disabled={pending}
+              onClick={() => {
+                setDiscardError(null);
+                setDiscardOpen(true);
+              }}
             >
               {t('builder.discard')}
             </Button>
@@ -229,6 +219,8 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
               onConfirm={() =>
                 discardPlanMutation.mutate(undefined, {
                   onSuccess: () => setDiscardOpen(false),
+                  onError: (error) =>
+                    setDiscardError(describeLineError(error).message),
                 })
               }
               title={t('myPlan.discardConfirm.title')}
@@ -236,6 +228,7 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
               confirmLabel={t('myPlan.discardConfirm.confirm')}
               destructive
               pending={discardPlanMutation.isPending}
+              error={discardError}
             />
           </>
         }
