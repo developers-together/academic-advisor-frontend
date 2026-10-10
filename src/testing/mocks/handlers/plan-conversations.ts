@@ -118,7 +118,10 @@ const appendMessage = (
   row: ConversationRow,
   message: Omit<StoredMessage, 'id' | 'created_at'>,
 ) => {
-  const messages = parseMessages(row);
+  const current = db.planConversation.findFirst({
+    where: { id: { equals: row.id } },
+  });
+  const messages = parseMessages(current ?? row);
   const next: StoredMessage = {
     id: messages.length + 1,
     created_at: new Date().toISOString(),
