@@ -135,6 +135,14 @@ export const MessageBubble = ({
                 <Copy className="size-4" aria-hidden />
               )}
             </button>
+            {messageRole === 'assistant' && (
+              <time
+                dateTime={createdAt}
+                className="text-xs text-muted-foreground tabular-nums"
+              >
+                {formatDateTime(createdAt)}
+              </time>
+            )}
             <span
               className={
                 copyState === 'failed' ? 'text-xs text-destructive' : 'sr-only'
