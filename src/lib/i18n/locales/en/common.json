@@ -54,7 +54,13 @@
     "unreadCount": "{{count}} unread notifications",
     "account": "Account menu",
     "signOut": "Sign out",
-    "signingOut": "Signing out"
+    "signingOut": "Signing out",
+    "appearance": "Appearance",
+    "themeOptions": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
   },
   "actions": {
     "retry": "Retry",
@@ -89,7 +95,9 @@
     "saveFailed": "We could not save that.",
     "saveFailedBody": "Nothing was saved. Retry in a moment.",
     "sendFailed": "We could not send that.",
-    "sendFailedBody": "Nothing was sent. Retry in a moment."
+    "sendFailedBody": "Nothing was sent. Retry in a moment.",
+    "pageUnavailable": "This page could not open",
+    "pageUnavailableBody": "The page update or connection was interrupted. Reload this page to try again."
   },
   "staleSis": {
     "dataAsOf": "Data as of {{datetime}}",

@@ -1,9 +1,8 @@
-import { Sparkles } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Avatar } from '@/components/ui/avatar';
 import { MDPreview } from '@/components/ui/md-preview';
-import { useUser } from '@/lib/auth';
 import { formatDateTime } from '@/lib/i18n/format';
 import { cn } from '@/utils/cn';
 
@@ -13,6 +12,7 @@ export type MessageBubbleProps = {
   createdAt: string;
   streaming?: boolean;
   className?: string;
+  entranceFrom?: DOMRect | null;
 };
 
 const AssistantBubble = ({
@@ -45,28 +45,51 @@ export const MessageBubble = ({
   createdAt,
   streaming = false,
   className,
+  entranceFrom,
 }: MessageBubbleProps) => {
   const { t } = useTranslation('chat');
-  const user = useUser().data;
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>(
+    'idle',
+  );
+  useEffect(() => {
+    if (copyState === 'idle') return;
+    const timer = window.setTimeout(() => setCopyState('idle'), 2000);
+    return () => window.clearTimeout(timer);
+  }, [copyState]);
+  const bubbleRef = useRef<HTMLLIElement>(null);
+  useLayoutEffect(() => {
+    const element = bubbleRef.current;
+    if (
+      !entranceFrom ||
+      !element?.animate ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    )
+      return;
+    const target = element.getBoundingClientRect();
+    element.animate(
+      [
+        {
+          transform: `translate(${entranceFrom.left - target.left}px, ${entranceFrom.top - target.top}px) scale(0.96)`,
+          opacity: 0.65,
+        },
+        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+      ],
+      { duration: 440, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+    );
+  }, [entranceFrom]);
 
   const mark =
     messageRole === 'assistant' ? (
       <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-text">
-        <Sparkles className="size-4" aria-hidden />
+        <img src="/ejust-logo.png" alt="" className="size-6 object-contain" />
       </span>
-    ) : (
-      <Avatar
-        name={user?.name ?? '?'}
-        size="sm"
-        className="bg-muted text-muted-foreground"
-        aria-hidden
-      />
-    );
+    ) : null;
 
   return (
     <li
+      ref={bubbleRef}
       className={cn(
-        'flex gap-3',
+        'group flex gap-3',
         messageRole === 'user' && 'ms-auto max-w-[90%] flex-row-reverse',
         className,
       )}
@@ -78,7 +101,7 @@ export const MessageBubble = ({
         ) : (
           <UserBubble content={content} />
         )}
-        <time className="mt-1 block text-2xs text-muted-foreground">
+        <time className="sr-only">
           <span className="sr-only">
             {messageRole === 'assistant'
               ? t('transcript.assistantMark')
@@ -86,6 +109,46 @@ export const MessageBubble = ({
           </span>
           {formatDateTime(createdAt)}
         </time>
+        {!streaming && (
+          <div className="mt-1 flex items-center gap-2">
+            <button
+              type="button"
+              aria-label={
+                copyState === 'copied'
+                  ? t('transcript.copied')
+                  : t('transcript.copy')
+              }
+              title={t('transcript.copy')}
+              className="inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(content);
+                  setCopyState('copied');
+                } catch {
+                  setCopyState('failed');
+                }
+              }}
+            >
+              {copyState === 'copied' ? (
+                <Check className="size-4" aria-hidden />
+              ) : (
+                <Copy className="size-4" aria-hidden />
+              )}
+            </button>
+            <span
+              className={
+                copyState === 'failed' ? 'text-xs text-destructive' : 'sr-only'
+              }
+              role="status"
+            >
+              {copyState === 'copied'
+                ? t('transcript.copied')
+                : copyState === 'failed'
+                  ? t('transcript.copyFailed')
+                  : ''}
+            </span>
+          </div>
+        )}
       </div>
     </li>
   );

@@ -81,7 +81,23 @@ const typeMessage = async (message: string) => {
 const CONSTITUTION =
   'The AI advisor explains and drafts. Your advisor approves. Only you can submit.';
 
-test('an empty conversation shows its goal suggestions as prompt cards and the constitution line once', async () => {
+test('a missing conversation shows recovery without restarting its failed request', async () => {
+  let requests = 0;
+  server.use(
+    http.get(`${env.API_URL}/plan-conversations/99999`, () => {
+      requests += 1;
+      return HttpResponse.json({ message: 'Not found' }, { status: 404 });
+    }),
+  );
+  const user = await createUser();
+  await renderChat('/app/chat/99999', user);
+  const back = await screen.findByRole('button', { name: 'All conversations' });
+  await userEvent.click(back);
+  expect(await screen.findByLabelText('Message your AI advisor')).toBeEnabled();
+  expect(requests).toBe(1);
+});
+
+test('an empty conversation shows goal suggestions without the removed disclaimer', async () => {
   const user = await createUser();
   const conversation = seedConversation(user.id as number);
   await renderChat(`/app/chat/${conversation.id as number}`, user);
@@ -97,7 +113,7 @@ test('an empty conversation shows its goal suggestions as prompt cards and the c
       'I want to aim higher than passing. What would excellence look like?',
     ),
   ).toBeInTheDocument();
-  expect(screen.getAllByText(CONSTITUTION)).toHaveLength(1);
+  expect(screen.queryByText(CONSTITUTION)).not.toBeInTheDocument();
 });
 
 test('the transcript renders assistant bodies as markdown and user bodies as plain text', async () => {
@@ -155,6 +171,9 @@ test('sending a turn shows the typing indicator, streams the reply, and updates 
     );
   });
   expect(screen.getByLabelText('Message your AI advisor')).toBeEnabled();
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Conversation history' }),
+  );
   await screen.findByText('How should I plan this...');
 });
 
@@ -190,6 +209,10 @@ test('stopping the reply keeps the partial text and closes it with a Stopped lin
   const partial = await screen.findByText(/Partial/);
   expect(partial).toBeInTheDocument();
 
+  const composer = screen.getByLabelText('Message your AI advisor');
+  await userEvent.type(composer, 'My next question');
+  expect(composer).toHaveValue('My next question');
+
   await userEvent.click(screen.getByRole('button', { name: 'Stop reply' }));
 
   expect(await screen.findByText('Stopped.')).toBeInTheDocument();
@@ -198,6 +221,25 @@ test('stopping the reply keeps the partial text and closes it with a Stopped lin
   await expect(
     screen.findByText(/text so far/, {}, { timeout: 1800 }),
   ).rejects.toThrow();
+
+  server.use(
+    http.post(`${env.API_URL}/plan-conversations/:conversation/turns`, () =>
+      sseResponse([
+        {
+          event: 'token',
+          data: { turn_id: 'turn-next', seq: 1, token: 'Your next answer' },
+        },
+        {
+          event: 'turn.completed',
+          data: { turn_id: 'turn-next', seq: 2, title: null },
+        },
+      ]),
+    ),
+  );
+  await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
+  expect(await screen.findByText('Your next answer')).toBeInTheDocument();
+  expect(screen.getByText(/Partial/)).toBeInTheDocument();
+  expect(screen.getByText('My next question')).toBeInTheDocument();
 });
 
 test('an applied plan edit renders a localized system row with the isolated course code and refreshes the plan cache', async () => {
@@ -594,4 +636,63 @@ test('the 429 quota disables the composer with the fixed copy, a builder link, a
   expect(storageAfter.filter((key) => !storageBefore.includes(key))).toEqual(
     [],
   );
+});
+
+test('a delayed transcript refresh keeps the sent message and streamed reply', async () => {
+  server.use(
+    http.post(`${env.API_URL}/plan-conversations/:conversation/turns`, () =>
+      sseResponse([
+        {
+          event: 'token',
+          data: {
+            turn_id: 'delayed-save',
+            seq: 1,
+            token: 'Your next step is ready.',
+          },
+        },
+        {
+          event: 'turn.completed',
+          data: { turn_id: 'delayed-save', seq: 2, title: null },
+        },
+      ]),
+    ),
+  );
+  const user = await createUser();
+  const conversation = seedConversation(user.id as number);
+  await renderChat(`/app/chat/${conversation.id as number}`, user);
+  await typeMessage('Keep this message visible.');
+  await screen.findByText('Your next step is ready.');
+  await waitFor(() =>
+    expect(
+      useTurnStreamStore.getState().turns[String(conversation.id)],
+    ).toBeUndefined(),
+  );
+  expect(
+    await screen.findByText(
+      'Your AI advisor has replied. Read the latest message.',
+    ),
+  ).toHaveAttribute('role', 'status');
+  expect(screen.getByText('Keep this message visible.')).toBeInTheDocument();
+  expect(screen.getByText('Your next step is ready.')).toBeInTheDocument();
+});
+
+test('an interrupted event stream retains the message and permits retry', async () => {
+  server.use(
+    http.post(`${env.API_URL}/plan-conversations/:conversation/turns`, () =>
+      sseResponse([
+        {
+          event: 'token',
+          data: { turn_id: 'interrupted', seq: 1, token: 'A partial answer' },
+        },
+      ]),
+    ),
+  );
+  const user = await createUser();
+  const conversation = seedConversation(user.id as number);
+  await renderChat(`/app/chat/${conversation.id as number}`, user);
+  await typeMessage('Keep my interrupted question.');
+  await screen.findByRole('button', { name: /^Retry$/ });
+  expect(screen.getByText('Keep my interrupted question.')).toBeInTheDocument();
+  expect(screen.getByText('A partial answer')).toBeInTheDocument();
+  expect(screen.getByLabelText('Message your AI advisor')).toBeEnabled();
 });

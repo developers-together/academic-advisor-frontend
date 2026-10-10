@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
@@ -31,11 +31,13 @@ import { ApiError } from '@/lib/api-error';
 export type TranscriptProps = {
   conversationId: number;
   initialDraft?: string;
+  initialMessage?: string;
 };
 
 export const Transcript = ({
   conversationId,
   initialDraft = '',
+  initialMessage,
 }: TranscriptProps) => {
   const { t } = useTranslation('chat');
   const { t: tCommon } = useTranslation();
@@ -57,6 +59,11 @@ export const Transcript = ({
   );
   const quotaExhausted = useTurnStreamStore((state) => state.quotaExhausted);
   const [draft, setDraft] = useState(initialDraft);
+  const [announcement, setAnnouncement] = useState('');
+  const [entrance, setEntrance] = useState<{
+    content: string;
+    from: DOMRect;
+  } | null>(null);
   const {
     containerRef,
     pinned,
@@ -66,6 +73,35 @@ export const Transcript = ({
     handleScroll,
   } = useTranscriptFollow();
   const { ref: scrollRef, tabIndex } = useScrollableTabIndex(containerRef);
+
+  const initialSendRef = useRef(false);
+  const mutateTurn = sendTurn.mutate;
+  useEffect(() => {
+    if (!initialMessage || !conversationQuery.data || initialSendRef.current)
+      return;
+    initialSendRef.current = true;
+    void navigate(`/app/chat/${conversationId}`, {
+      replace: true,
+      state: null,
+    });
+    mutateTurn(initialMessage, {
+      onError: () =>
+        setDraft((current) => (current.trim() ? current : initialMessage)),
+      onSuccess: (response) => {
+        if (response) setAnnouncement(t('transcript.replyReady'));
+      },
+    });
+    document
+      .querySelector<HTMLTextAreaElement>('.studio-composer textarea')
+      ?.focus();
+  }, [
+    initialMessage,
+    conversationQuery.data,
+    conversationId,
+    navigate,
+    mutateTurn,
+    t,
+  ]);
 
   const error = conversationQuery.error;
 
@@ -83,6 +119,7 @@ export const Transcript = ({
     ) {
       void queryClient.invalidateQueries({
         queryKey: planConversationsRootKey,
+        exact: true,
       });
     }
   }, [conversationQuery.isError, error, queryClient]);
@@ -90,7 +127,7 @@ export const Transcript = ({
   if (conversationQuery.isPending) {
     return (
       <div
-        className="space-y-4"
+        className="space-y-8"
         aria-busy="true"
         data-testid="loading conversation"
       >
@@ -117,7 +154,12 @@ export const Transcript = ({
   }
 
   const conversation = conversationQuery.data;
-  const messages = conversation.messages ?? [];
+  const messages = (conversation.messages ?? []).filter(
+    (message) =>
+      !turn ||
+      message.role !== 'assistant' ||
+      turn.messageIdsBeforeTurn.includes(message.id),
+  );
   const hasUserMessages = messages.some((message) => message.role === 'user');
   const replying = turn?.status === 'typing' || turn?.status === 'streaming';
   const blocks = turn?.blocks ?? [];
@@ -127,16 +169,36 @@ export const Transcript = ({
   );
 
   const send = (message: string, onError: () => void) => {
+    const composer = document.querySelector('.studio-composer textarea');
+    if (composer)
+      setEntrance({
+        content: message,
+        from: composer.getBoundingClientRect(),
+      });
     scrollToLatest();
-    sendTurn.mutate(message, { onError });
+    setAnnouncement('');
+    sendTurn.mutate(message, {
+      onError,
+      onSuccess: (response) => {
+        if (response) setAnnouncement(t('transcript.replyReady'));
+      },
+    });
   };
 
   return (
-    <div className="flex min-h-0 flex-col gap-4">
+    <div className="studio-transcript flex min-h-0 flex-col gap-4">
+      <p
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {announcement}
+      </p>
       <Link to="/app/chat" className="md:hidden">
         {t('list.back')}
       </Link>
-      <div className="relative">
+      <div className="studio-transcript-body relative">
         <div
           ref={scrollRef}
           onScroll={handleScroll}
@@ -144,12 +206,19 @@ export const Transcript = ({
           role="group"
           aria-label={t('transcript.label')}
           tabIndex={tabIndex}
-          className="max-h-[70dvh] overflow-y-auto focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+          className="studio-scroll overflow-y-auto focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
         >
-          <ul aria-label={t('transcript.label')} className="space-y-4">
+          <ul aria-label={t('transcript.label')} className="space-y-8">
             {messages.map((message) => (
               <MessageBubble
                 key={message.id}
+                entranceFrom={
+                  message.id < 0 &&
+                  message.role === 'user' &&
+                  entrance?.content === message.content
+                    ? entrance.from
+                    : undefined
+                }
                 messageRole={message.role}
                 content={message.content}
                 createdAt={message.created_at}
@@ -178,14 +247,14 @@ export const Transcript = ({
                 if (block.kind === 'tool') {
                   return (
                     <ToolEventRow
-                      key={`turn-tool-${index}`}
+                      key={`tool-${(sessionToolEvents ?? []).indexOf(block.toolEvent)}`}
                       toolEvent={block.toolEvent}
                     />
                   );
                 }
                 return (
                   <SubmitResultRow
-                    key={`turn-result-${index}`}
+                    key={`result-${(sessionSubmitResults ?? []).indexOf(block.result)}`}
                     result={block.result}
                   />
                 );
@@ -235,9 +304,6 @@ export const Transcript = ({
                 <SubmitResultRow key={`result-${index}`} result={result} />
               ))}
           </ul>
-          <p className="mt-6 text-xs text-muted-foreground">
-            {t('transcript.constitution')}
-          </p>
         </div>
         {!pinned && (
           <Button

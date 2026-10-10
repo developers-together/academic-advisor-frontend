@@ -1,4 +1,4 @@
-import { render as rtlRender, screen } from '@testing-library/react';
+import { render as rtlRender, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router';
 
@@ -29,6 +29,7 @@ const renderChat = async (
     </MemoryRouter>,
     { wrapper: ({ children }) => <AppProvider>{children}</AppProvider> },
   );
+  await screen.findByRole('heading', { name: 'AI Advisor' });
   return { user };
 };
 
@@ -50,6 +51,9 @@ const seedConversation = async (
 test('the empty conversation list renders the settled empty state with the new conversation action', async () => {
   await renderChat('/app/chat');
 
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Conversation history' }),
+  );
   expect(await screen.findByText('No conversations yet.')).toBeInTheDocument();
   expect(
     screen.getByText('Start one and your AI advisor will help you plan.'),
@@ -75,6 +79,9 @@ test('the conversation list shows each conversation with its title and updated t
     });
   });
 
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Conversation history' }),
+  );
   expect(
     await screen.findByText('Keeping my schedule steady'),
   ).toBeInTheDocument();
@@ -89,19 +96,20 @@ test('the conversation list shows each conversation with its title and updated t
   expect(untitled).toHaveTextContent(/^New conversation/);
 });
 
-test('starting a conversation opens the transcript directly with the default request goal', async () => {
+test('New conversation opens a blank composer without creating an empty conversation', async () => {
   await renderChat('/app/chat');
-  await screen.findByText('No conversations yet.');
   await userEvent.click(
     screen.getAllByRole('button', { name: 'New conversation' })[0],
   );
-  expect(await screen.findByRole('textbox')).toBeInTheDocument();
+  expect(
+    await screen.findByRole('button', { name: 'Send message' }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole('textbox')).toBeInTheDocument();
   expect(
     screen.queryByText('What do you want from this conversation?'),
   ).not.toBeInTheDocument();
   const conversations = db.planConversation.getAll();
-  expect(conversations).toHaveLength(1);
-  expect(conversations[0].goal).toBe('maintain');
+  expect(conversations).toHaveLength(0);
 });
 
 test('a starter prompt becomes a draft and never sends without the student', async () => {
@@ -109,9 +117,40 @@ test('a starter prompt becomes a draft and never sends without the student', asy
   await userEvent.click(
     await screen.findByRole('button', { name: 'Explain my prerequisites' }),
   );
-  expect(await screen.findByRole('textbox')).toHaveValue(
-    'Explain my prerequisites',
+  await waitFor(() =>
+    expect(screen.getByRole('textbox')).toHaveValue('Explain my prerequisites'),
   );
-  const [conversation] = db.planConversation.getAll();
-  expect(JSON.parse(conversation.messages as string)).toEqual([]);
+  expect(db.planConversation.getAll()).toHaveLength(0);
+});
+
+test('one send creates a conversation and sends its first message exactly once', async () => {
+  await renderChat('/app/chat');
+  await userEvent.type(
+    screen.getByRole('textbox', { name: 'Message your AI advisor' }),
+    'Help me review CS 201.',
+  );
+  await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
+  expect(await screen.findByText('Help me review CS 201.')).toBeInTheDocument();
+  await waitFor(() => {
+    const conversations = db.planConversation.getAll();
+    expect(conversations).toHaveLength(1);
+    const messages = JSON.parse(conversations[0].messages as string) as {
+      role: string;
+      content: string;
+    }[];
+    expect(messages.filter((message) => message.role === 'user')).toEqual([
+      expect.objectContaining({ content: 'Help me review CS 201.' }),
+    ]);
+  });
+  await screen.findByText(/credit range stays inside 12 to 18/);
+  await waitFor(() => {
+    const messages = JSON.parse(
+      db.planConversation.getAll()[0].messages as string,
+    ) as { role: string }[];
+    expect(messages.map((message) => message.role)).toEqual([
+      'user',
+      'assistant',
+    ]);
+  });
+  expect(screen.getByRole('textbox')).toHaveValue('');
 });

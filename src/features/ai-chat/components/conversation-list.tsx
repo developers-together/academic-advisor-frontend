@@ -15,6 +15,7 @@ export type ConversationListProps = {
   activeId: number | null;
   onNewConversation: () => void;
   className?: string;
+  onSelect?: () => void;
 };
 
 const conversationTitle = (conversation: PlanConversation, goalLabel: string) =>
@@ -23,9 +24,11 @@ const conversationTitle = (conversation: PlanConversation, goalLabel: string) =>
 const ConversationItem = ({
   conversation,
   active,
+  onSelect,
 }: {
   conversation: PlanConversation;
   active: boolean;
+  onSelect?: () => void;
 }) => {
   const { t } = useTranslation('chat');
   const goalLabel = t('newConversation');
@@ -33,6 +36,7 @@ const ConversationItem = ({
     <li>
       <Link
         to={paths.app.conversation.getHref(conversation.id)}
+        onClick={onSelect}
         aria-current={active ? 'true' : undefined}
         className={cn(
           'block rounded-xl border p-3 transition-colors',
@@ -59,6 +63,7 @@ export const ConversationList = ({
   activeId,
   onNewConversation,
   className,
+  onSelect,
 }: ConversationListProps) => {
   const { t } = useTranslation('chat');
   const conversationsQuery = usePlanConversations();
@@ -111,6 +116,7 @@ export const ConversationList = ({
             key={conversation.id}
             conversation={conversation}
             active={conversation.id === activeId}
+            onSelect={onSelect}
           />
         ))}
       </ul>

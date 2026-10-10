@@ -36,7 +36,11 @@
     "assistantMark": "Your AI advisor",
     "userMark": "You",
     "label": "Conversation",
-    "failedFallback": "The AI advisor could not finish this reply."
+    "failedFallback": "The AI advisor could not finish this reply.",
+    "replyReady": "Your AI advisor has replied. Read the latest message.",
+    "copy": "Copy message",
+    "copied": "Copied",
+    "copyFailed": "Could not copy. Select the text to copy it."
   },
   "toolRow": {
     "applied": "Your AI advisor updated your plan.",
@@ -80,5 +84,14 @@
     "courses": "Explain my prerequisites",
     "load": "Review my course load",
     "plan": "Help me build my plan"
+  },
+  "studio": {
+    "history": "Conversation history",
+    "historyBody": "Return to a previous conversation or start a fresh one.",
+    "title": "What would you like to plan?",
+    "placeholder": "Ask about a course, a requirement, or your next semester…",
+    "draftHint": "Review your message before sending.",
+    "continue": "Open conversation",
+    "greeting": "Hi {{name}}, what would you like to plan?"
   }
 }

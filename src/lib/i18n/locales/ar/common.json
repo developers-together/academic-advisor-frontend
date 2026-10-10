@@ -54,7 +54,13 @@
     "unreadCount": "{{count}} إشعارات غير مقروءة",
     "account": "قائمة الحساب",
     "signOut": "تسجيل الخروج",
-    "signingOut": "جارٍ تسجيل الخروج"
+    "signingOut": "جارٍ تسجيل الخروج",
+    "appearance": "المظهر",
+    "themeOptions": {
+      "light": "فاتح",
+      "dark": "داكن",
+      "system": "النظام"
+    }
   },
   "actions": {
     "retry": "إعادة المحاولة",
@@ -89,7 +95,9 @@
     "saveFailed": "لم نتمكن من الحفظ.",
     "saveFailedBody": "لم يتم حفظ أي شيء. أعد المحاولة بعد قليل.",
     "sendFailed": "لم نتمكن من الإرسال.",
-    "sendFailedBody": "لم يتم إرسال أي شيء. أعد المحاولة بعد قليل."
+    "sendFailedBody": "لم يتم إرسال أي شيء. أعد المحاولة بعد قليل.",
+    "pageUnavailable": "تعذر فتح هذه الصفحة",
+    "pageUnavailableBody": "انقطع تحديث الصفحة أو الاتصال. أعد تحميل الصفحة للمحاولة مرة أخرى."
   },
   "staleSis": {
     "dataAsOf": "البيانات كما في {{datetime}}",

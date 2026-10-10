@@ -32,6 +32,7 @@ export type ActiveTurn = {
   lastSeq: number;
   blocks: StreamBlock[];
   userMessageReconciled: boolean;
+  messageIdsBeforeTurn: number[];
   error: TurnError | null;
 };
 
@@ -41,7 +42,11 @@ type TurnStreamState = {
   submitResults: Record<string, SubmitResultInfo[]>;
   submitSuggested: Record<string, boolean>;
   quotaExhausted: boolean;
-  beginTurn: (conversationId: number, message: string) => void;
+  beginTurn: (
+    conversationId: number,
+    message: string,
+    messageIdsBeforeTurn?: number[],
+  ) => void;
   appendToken: (
     conversationId: number,
     frame: Extract<TurnFrame, { event: 'token' }>,
@@ -83,7 +88,7 @@ export const useTurnStreamStore = create<TurnStreamState>()((set) => ({
   submitSuggested: {},
   quotaExhausted: false,
 
-  beginTurn: (conversationId, message) =>
+  beginTurn: (conversationId, message, messageIdsBeforeTurn = []) =>
     set((state) => ({
       turns: {
         ...state.turns,
@@ -95,6 +100,7 @@ export const useTurnStreamStore = create<TurnStreamState>()((set) => ({
           lastSeq: 0,
           blocks: [],
           userMessageReconciled: false,
+          messageIdsBeforeTurn,
           error: null,
         },
       },
