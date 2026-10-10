@@ -117,10 +117,15 @@ export const Combobox = ({
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       setOpen(true);
-      setActiveIndex(Math.min(clampedIndex + 1, filtered.length - 1));
+      setActiveIndex(
+        open ? Math.min(clampedIndex + 1, Math.max(filtered.length - 1, 0)) : 0,
+      );
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
-      setActiveIndex(Math.max(clampedIndex - 1, 0));
+      setOpen(true);
+      setActiveIndex(
+        open ? Math.max(clampedIndex - 1, 0) : Math.max(filtered.length - 1, 0),
+      );
     } else if (event.key === 'Enter' && open) {
       const option = filtered[clampedIndex];
       if (option) {
@@ -162,6 +167,7 @@ export const Combobox = ({
                 setOpen(true);
               }}
               onFocus={() => setOpen(true)}
+              onClick={() => setOpen(true)}
               onBlur={() => setOpen(false)}
               onKeyDown={handleKeyDown}
               className="h-11 w-full rounded-md border border-input bg-transparent ps-9 pe-3 text-base placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
