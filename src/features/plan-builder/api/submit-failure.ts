@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { ApiError } from '@/lib/api-error';
 
 export type SubmitFailure = {
@@ -42,5 +44,33 @@ export const parseSubmitFailure = (error: ApiError): SubmitFailure => {
       0,
     );
 
+  if (total === 0 && !windowClosed) {
+    return {
+      lineErrors,
+      planMessages: [error.message],
+      windowClosed,
+      total: 1,
+    };
+  }
   return { lineErrors, planMessages, windowClosed, total };
+};
+
+const builderEntrySchema = z.object({
+  planId: z.number(),
+  failure: z.object({
+    lineErrors: z.record(z.string(), z.array(z.string())),
+    planMessages: z.array(z.string()),
+    windowClosed: z.boolean(),
+    total: z.number().nonnegative(),
+  }),
+});
+
+export const readBuilderFailure = (
+  state: unknown,
+  planId: number | undefined,
+): SubmitFailure | null => {
+  const result = builderEntrySchema.safeParse(state);
+  return result.success && result.data.planId === planId
+    ? result.data.failure
+    : null;
 };
