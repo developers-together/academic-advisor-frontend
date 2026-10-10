@@ -31,10 +31,14 @@ export const PlanLine = ({
         {course.course_code}
       </span>
       {lineTitle && (
-        <span className="min-w-0 flex-1 truncate text-sm">{lineTitle}</span>
+        <span className="min-w-0 flex-1 text-sm wrap-break-word">
+          {lineTitle}
+        </span>
       )}
       <span className="text-xs text-muted-foreground tabular-nums">
-        {t('builder.line.credits', { credits: course.credits })}
+        {course.credits == null
+          ? t('builder.line.creditsUnknown')
+          : t('builder.line.credits', { credits: course.credits })}
       </span>
       {course.reason && (
         <span className="w-full text-xs text-muted-foreground">
