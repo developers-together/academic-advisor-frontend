@@ -85,7 +85,8 @@
       "remove": "Remove {{code}}",
       "prerequisites": "Prerequisites",
       "prereqCaption": "The check result shows after submit.",
-      "aiNote": "AI note"
+      "aiNote": "AI note",
+      "creditsUnknown": "Credits not reported"
     },
     "emptyPlan": {
       "title": "Your plan is empty.",
@@ -106,7 +107,7 @@
     "submit": "Submit plan",
     "submitPending": "Submitting",
     "windowClosedTitle": "Registration is closed",
-    "windowClosed": "Your approved plan waits for the next window.",
+    "windowClosed": "Your draft was not submitted. Contact your advisor about the registration window.",
     "submitUnavailableTitle": "Your plan was not submitted",
     "submitUnavailableBody": "The registration service is unavailable. Retry in a moment.",
     "discard": "Discard plan",
@@ -121,8 +122,18 @@
       "add": "Add {{course}} to plan",
       "empty": "All mapped courses are completed or already in your plan.",
       "drop": "Drop a course here to add it to your plan.",
-      "release": "Release to add this course."
-    }
+      "release": "Release to add this course.",
+      "filterAll": "All choices",
+      "filterEligible": "Eligible",
+      "filterLocked": "Locked",
+      "noPrerequisites": "No prerequisites listed",
+      "prerequisiteDetails": "Course prerequisites",
+      "clearSearch": "Clear search",
+      "choicesCount_one": "{{count}} matching course",
+      "choicesCount_other": "{{count}} matching courses",
+      "filterEmpty": "No courses match this filter."
+    },
+    "viewPlan": "View plan and feedback"
   },
   "profile": {
     "title": "Profile",
@@ -291,5 +302,24 @@
     "attempts_other": "{{count}} course attempts",
     "noResults": "No course attempts match these filters.",
     "unreported": "Not reported"
+  },
+  "registration": {
+    "title": "Registration steps",
+    "steps": "Planning and registration steps",
+    "build": "Build your plan",
+    "review": "Advisor approval",
+    "register": "Register in SIS",
+    "done": "Complete",
+    "approved": "Your advisor approved this plan. Complete your course registration in the university SIS.",
+    "beforeApproval": "Choose courses here and submit your plan for advisor approval. Then register the approved courses in the university SIS.",
+    "checkCourses": "Use the approved course codes in this plan. Check your permitted academic load in SIS.",
+    "chooseSections": "Select the required lecture, tutorial, and lab sections in SIS. Each course counts once toward your credit total.",
+    "checkSIS": "Check the registered courses, payment status, and timetable in SIS. Complete add, drop, or withdrawal actions there.",
+    "openSIS": "Open university SIS",
+    "reportedEnrollments": "Courses reported by SIS",
+    "notVerified": "This record does not confirm registration for this plan or term. Check the current term in SIS.",
+    "unreported": "SIS enrollment data has not been reported.",
+    "detailsUnavailable": "Section choices, timetable, payment status, and registration verification are not available here.",
+    "accessDenied": "You do not have permission to access this plan. Contact the administration office if this is unexpected."
   }
 }
