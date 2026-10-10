@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { Navigate, createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 
+import { RouteErrorBoundary } from '@/components/layouts/route-error-boundary';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
 import { routeTable } from '@/config/routes';
@@ -81,7 +82,10 @@ const shellLoaders: Record<UserRole, () => Promise<{ default: unknown }>> = {
 };
 
 export const createAppRouter = (queryClient: QueryClient) => {
-  const load = (id: string) => () => loaders[id]!().then(convert(queryClient));
+  const load = (id: string) => () =>
+    loaders[id]!()
+      .then(convert(queryClient))
+      .catch(() => ({ Component: RouteErrorBoundary }));
 
   const topLevel = routeTable
     .filter((route) => route.role === 'public' || route.role === 'auth')
@@ -102,6 +106,7 @@ export const createAppRouter = (queryClient: QueryClient) => {
           };
         }
         return {
+          errorElement: <RouteErrorBoundary />,
           index: route.index === true,
           path: relative(route.path),
           lazy: load(route.id),
@@ -124,11 +129,20 @@ export const createAppRouter = (queryClient: QueryClient) => {
   );
 
   return createBrowserRouter([
-    ...topLevel.map((route) => ({ ...route, hydrateFallbackElement })),
-    ...sections.map((section) => ({ ...section, hydrateFallbackElement })),
+    ...topLevel.map((route) => ({
+      ...route,
+      hydrateFallbackElement,
+      errorElement: <RouteErrorBoundary />,
+    })),
+    ...sections.map((section) => ({
+      ...section,
+      hydrateFallbackElement,
+      errorElement: <RouteErrorBoundary />,
+    })),
     {
       path: '*',
       hydrateFallbackElement,
+      errorElement: <RouteErrorBoundary />,
       lazy: () => import('./routes/not-found').then(convert(queryClient)),
     },
   ]);

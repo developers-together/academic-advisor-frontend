@@ -22,6 +22,7 @@ export type ContentLayoutProps = {
   breadcrumbs?: PageHeaderProps['breadcrumbs'];
   width?: ContentWidth;
   head?: boolean;
+  header?: boolean;
   className?: string;
   children: React.ReactNode;
 };
@@ -33,6 +34,7 @@ export const ContentLayout = ({
   breadcrumbs,
   width = 'data',
   head = true,
+  header = true,
   className,
   children,
 }: ContentLayoutProps) => {
@@ -53,12 +55,16 @@ export const ContentLayout = ({
   return (
     <div className={cn('mx-auto w-full', widthClass[width], className)}>
       {head && <Head title={title} />}
-      <PageHeader
-        title={title}
-        description={context}
-        breadcrumbs={items}
-        actions={actions}
-      />
+      {header ? (
+        <PageHeader
+          title={title}
+          description={context}
+          breadcrumbs={items}
+          actions={actions}
+        />
+      ) : (
+        <h1 className="sr-only">{title}</h1>
+      )}
       {children}
     </div>
   );

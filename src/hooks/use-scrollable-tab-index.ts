@@ -18,7 +18,12 @@ export const useScrollableTabIndex = (
       const resizeObserver = new ResizeObserver(measure);
       const mutationObserver = new MutationObserver(measure);
       resizeObserver.observe(element);
-      mutationObserver.observe(element, { childList: true, subtree: true });
+      mutationObserver.observe(element, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'class'],
+      });
       return () => {
         resizeObserver.disconnect();
         mutationObserver.disconnect();

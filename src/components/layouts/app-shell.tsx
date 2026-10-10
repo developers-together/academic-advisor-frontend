@@ -1,6 +1,8 @@
 import {
   CalendarClock,
   ChevronLeft,
+  ChevronDown,
+  Globe,
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
@@ -9,6 +11,7 @@ import {
   Search,
   Sparkles,
   Sun,
+  UserRound,
 } from 'lucide-react';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
@@ -21,12 +24,19 @@ import {
 } from '@/components/ui/command-palette';
 import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import {
-  DropdownMenu as Dropdown,
-  DropdownMenuContent as DropdownContent,
-  DropdownMenuItem as DropdownMenuItem,
-  DropdownMenuTrigger as DropdownTrigger,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuPortal,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from '@/components/ui/dropdown';
-import { Spinner } from '@/components/ui/spinner';
 import {
   commandRoutes,
   roleRoutes,
@@ -86,7 +96,7 @@ const buildRoleNav = (role: UserRole): NavEntry[] => {
   const routes = roleRoutes(role);
   const entries: NavEntry[] = [];
   for (const route of routes) {
-    if (route.nav !== 'primary') continue;
+    if (route.nav !== 'primary' || route.id === 'app.account') continue;
     const children = groupChildren(route);
     if (children.length > 0) {
       entries.push({
@@ -170,7 +180,7 @@ const useCommandGroups = (forRole: UserRole): CommandGroup[] => {
       {
         id: 'language',
         label: t('topbar.language'),
-        icon: MoreHorizontal,
+        icon: Globe,
         onSelect: () =>
           setLanguage(
             document.documentElement.lang.startsWith('ar') ? 'en' : 'ar',
@@ -270,9 +280,33 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
       )}
     >
       <div className="sidebar-brand-row">
-        <span className="sidebar-brand-mark" aria-hidden>
-          A
-        </span>
+        {expanded ? (
+          <img
+            src="/ejust-logo.png"
+            alt="E-JUST"
+            className="sidebar-brand-mark object-contain"
+          />
+        ) : (
+          <button
+            type="button"
+            className="sidebar-brand-toggle group"
+            aria-label={t('experience.expandSidebar')}
+            aria-controls="workspace-sidebar"
+            aria-expanded={false}
+            ref={sidebarToggleRef}
+            onClick={toggleSidebar}
+          >
+            <img
+              src="/ejust-logo.png"
+              alt="E-JUST"
+              className="size-10 object-contain group-hover:opacity-0 group-focus-visible:opacity-0"
+            />
+            <PanelLeftOpen
+              className="absolute size-5 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 rtl:-scale-x-100"
+              aria-hidden
+            />
+          </button>
+        )}
         {expanded && (
           <span className="min-w-0 flex-1">
             <span className="block text-base font-semibold">
@@ -297,19 +331,6 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
           </button>
         )}
       </div>
-      {!expanded && (
-        <button
-          type="button"
-          className="sidebar-icon-button mx-auto"
-          aria-label={t('experience.expandSidebar')}
-          aria-controls="workspace-sidebar"
-          aria-expanded={expanded}
-          ref={sidebarToggleRef}
-          onClick={toggleSidebar}
-        >
-          <PanelLeftOpen className="size-5 rtl:-scale-x-100" aria-hidden />
-        </button>
-      )}
       <button
         type="button"
         className="sidebar-search"
@@ -372,6 +393,8 @@ export const AppShell = ({ forRole, density, bell }: AppShellProps) => {
       </div>
       <SidebarTools
         expanded={expanded}
+        forRole={forRole}
+        onNavigate={() => setMobileOpen(false)}
         bell={bell}
         name={user.data?.name ?? ''}
       />
@@ -517,65 +540,145 @@ const SidebarTools = ({
   expanded,
   bell,
   name,
+  forRole,
+  onNavigate,
 }: {
   expanded: boolean;
   bell?: React.ReactNode;
   name: string;
+  forRole: UserRole;
+  onNavigate: () => void;
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const logout = useLogout();
   const navigate = useNavigate();
+  const theme = useThemeStore((state) => state.theme);
+  const setTheme = useThemeStore((state) => state.setTheme);
+  const setLanguage = useLanguageStore((state) => state.setLanguage);
   return (
-    <div className="sidebar-tools">
-      <div
-        className={cn(
-          'flex gap-1',
-          expanded ? 'items-center justify-between' : 'flex-col items-center',
-        )}
-      >
-        {bell}
-        <LanguageToggle />
-        <ThemeToggle />
-      </div>
-      <Dropdown>
-        <DropdownTrigger asChild>
+    <div className={cn('sidebar-tools', expanded && 'is-expanded')}>
+      <DropdownMenu dir={i18n.dir()}>
+        <DropdownMenuTrigger asChild>
           <button
             type="button"
             aria-label={t('topbar.account')}
             className="sidebar-account"
           >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xs font-semibold text-primary-text">
-              {initials(name)}
-            </span>
+            <span className="sidebar-avatar">{initials(name)}</span>
             {expanded && (
-              <span className="min-w-0 text-start">
-                <span className="block truncate text-sm font-medium">
+              <>
+                <span className="min-w-0 flex-1 truncate text-start text-sm font-medium">
                   {name}
                 </span>
-                <span className="block text-xs text-muted-foreground">
-                  {t('topbar.account')}
-                </span>
-              </span>
+                <ChevronDown className="size-4 shrink-0" aria-hidden />
+              </>
             )}
           </button>
-        </DropdownTrigger>
-        <DropdownContent side="right" align="end">
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          side="top"
+          align="start"
+          sideOffset={10}
+          collisionPadding={12}
+          className="account-menu"
+        >
+          <DropdownMenuLabel className="account-menu-identity">
+            {name || t('topbar.account')}
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {forRole === 'student' && (
+            <DropdownMenuItem
+              className="account-menu-item"
+              onSelect={() => {
+                onNavigate();
+                void navigate('/app/account');
+              }}
+            >
+              <UserRound aria-hidden className="size-5" />
+              {t('nav.account')}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="account-menu-item">
+              <Sun className="size-5 dark:hidden" aria-hidden />
+              <Moon className="hidden size-5 dark:block" aria-hidden />
+              {t('topbar.appearance')}
+              <span className="account-menu-value">
+                {t(`topbar.themeOptions.${theme}`)}
+              </span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent className="account-menu">
+                <DropdownMenuRadioGroup
+                  value={theme}
+                  onValueChange={(value) => {
+                    if (
+                      value === 'light' ||
+                      value === 'dark' ||
+                      value === 'system'
+                    )
+                      setTheme(value);
+                  }}
+                >
+                  {(['light', 'dark', 'system'] as const).map((value) => (
+                    <DropdownMenuRadioItem
+                      key={value}
+                      value={value}
+                      className="account-menu-choice"
+                    >
+                      {t(`topbar.themeOptions.${value}`)}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="account-menu-item">
+              <Globe className="size-5" aria-hidden />
+              {t('topbar.language')}
+              <span className="account-menu-value">
+                {i18n.language.startsWith('ar') ? 'العربية' : 'English'}
+              </span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent className="account-menu">
+                <DropdownMenuRadioGroup
+                  value={i18n.language.startsWith('ar') ? 'ar' : 'en'}
+                  onValueChange={(value) => {
+                    if (value === 'ar' || value === 'en') setLanguage(value);
+                  }}
+                >
+                  <DropdownMenuRadioItem
+                    value="en"
+                    className="account-menu-choice"
+                  >
+                    English
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem
+                    value="ar"
+                    className="account-menu-choice"
+                  >
+                    العربية
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
+            className="account-menu-item text-destructive"
             disabled={logout.isPending}
-            onSelect={(event) => {
-              event.preventDefault();
-              logout.mutate(undefined, { onSettled: () => navigate('/login') });
-            }}
+            onSelect={() =>
+              logout.mutate(undefined, { onSettled: () => navigate('/login') })
+            }
           >
-            {logout.isPending ? (
-              <Spinner size="sm" />
-            ) : (
-              <LogOut className="size-4 rtl:-scale-x-100" aria-hidden />
-            )}
+            <LogOut className="size-5 rtl:-scale-x-100" aria-hidden />
             {logout.isPending ? t('topbar.signingOut') : t('topbar.signOut')}
           </DropdownMenuItem>
-        </DropdownContent>
-      </Dropdown>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <div className="sidebar-account-bell">{bell}</div>
     </div>
   );
 };
@@ -587,46 +690,3 @@ const initials = (name: string) =>
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? '')
     .join('') || '?';
-
-const LanguageToggle = () => {
-  const { t, i18n } = useTranslation();
-  const setLanguage = useLanguageStore((state) => state.setLanguage);
-  const language = i18n.language.startsWith('ar') ? 'ar' : 'en';
-  const next = language === 'ar' ? 'en' : 'ar';
-
-  return (
-    <button
-      type="button"
-      aria-label={t('topbar.language')}
-      onClick={() => setLanguage(next)}
-      className="flex h-11 min-w-11 items-center justify-center rounded-md px-2 text-xs font-semibold tracking-wide uppercase hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
-    >
-      {next === 'ar' ? 'ع' : 'EN'}
-    </button>
-  );
-};
-
-const ThemeToggle = () => {
-  const { t } = useTranslation();
-  const theme = useThemeStore((state) => state.theme);
-  const setTheme = useThemeStore((state) => state.setTheme);
-  const isDark =
-    theme === 'dark' ||
-    (theme === 'system' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-  return (
-    <button
-      type="button"
-      aria-label={isDark ? t('topbar.theme.light') : t('topbar.theme.dark')}
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="flex size-11 items-center justify-center rounded-md hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
-    >
-      {isDark ? (
-        <Sun className="size-5" aria-hidden />
-      ) : (
-        <Moon className="size-5" aria-hidden />
-      )}
-    </button>
-  );
-};

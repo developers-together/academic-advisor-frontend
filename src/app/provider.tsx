@@ -43,7 +43,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <ErrorBoundary FallbackComponent={MainErrorFallback}>
         <HelmetProvider>
           <QueryClientProvider client={queryClient}>
-            {import.meta.env.DEV && <ReactQueryDevtools />}
+            {import.meta.env.DEV &&
+              import.meta.env.VITE_ENABLE_DEVTOOLS === 'true' && (
+                <ReactQueryDevtools />
+              )}
             <Notifications />
             <ThemeBoot>
               <AuthLoader

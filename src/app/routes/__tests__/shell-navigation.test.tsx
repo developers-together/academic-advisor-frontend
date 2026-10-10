@@ -122,7 +122,6 @@ describe('mobile sidebar navigation', () => {
         'AI Advisor',
         'My Advisor',
         'Academic Record',
-        'Account',
       ]) {
         expect(within(sidebar).getByRole('link', { name })).toBeInTheDocument();
       }
@@ -139,7 +138,10 @@ describe('mobile sidebar navigation', () => {
         }),
       ).toHaveAttribute('aria-expanded', 'true');
       await user.click(
-        within(expandedSidebar).getByRole('link', { name: 'Account' }),
+        within(expandedSidebar).getByRole('button', { name: 'Account menu' }),
+      );
+      await user.click(
+      await screen.findByRole('menuitem', { name: 'Account' }),
       );
       await waitFor(() =>
         expect(window.location.pathname).toBe('/app/account'),

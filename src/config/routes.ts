@@ -82,7 +82,7 @@ const student: RoleRouteDefinition[] = [
     labelKey: 'nav.builder',
     icon: FileText,
     nav: 'none',
-    command: false,
+    command: true,
     parent: 'app.plan',
   },
   {
