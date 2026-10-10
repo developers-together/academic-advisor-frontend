@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useSearchParams } from 'react-router';
 
-import { Button } from '@/components/ui/button';
+import { Button, RetryButton } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { paths } from '@/config/paths';
 import { api } from '@/lib/api-client';
@@ -48,9 +48,9 @@ export const VerifyEmailPanel = () => {
         <div className="space-y-4 text-sm">
           <p className="font-medium">{t('verify.unavailableTitle')}</p>
           <p className="text-muted-foreground">{t('verify.unavailableBody')}</p>
-          <Button className="h-11" onClick={() => void query.refetch()}>
+          <RetryButton onClick={() => void query.refetch()}>
             {t('common:actions.retry')}
-          </Button>
+          </RetryButton>
         </div>
       );
     }
