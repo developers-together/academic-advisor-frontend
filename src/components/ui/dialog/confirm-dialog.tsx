@@ -40,8 +40,12 @@ export const ConfirmDialog = ({
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => !next && !pending && onCancel()}
+    >
       <DialogContent
+        closeDisabled={pending}
         onOpenAutoFocus={(event) => {
           event.preventDefault();
           cancelRef.current?.focus();
@@ -53,7 +57,12 @@ export const ConfirmDialog = ({
         </DialogHeader>
         {error && <Banner variant="destructive">{error}</Banner>}
         <DialogFooter>
-          <Button ref={cancelRef} variant="outline" onClick={onCancel}>
+          <Button
+            ref={cancelRef}
+            variant="outline"
+            onClick={onCancel}
+            disabled={pending}
+          >
             {t('actions.cancel')}
           </Button>
           <Button
