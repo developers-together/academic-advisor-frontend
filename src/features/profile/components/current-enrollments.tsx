@@ -29,10 +29,6 @@ export const CurrentEnrollments = ({
                   <span className="bidi-code">{enrollment.course_code}</span>
                   {enrollment.title ? ` ${enrollment.title}` : ''}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {t('profile.enrollments.group')} {enrollment.group},{' '}
-                  {t('profile.enrollments.section')} {enrollment.section}
-                </p>
               </li>
             ))}
           </ul>

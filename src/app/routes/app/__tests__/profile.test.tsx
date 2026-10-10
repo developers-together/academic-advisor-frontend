@@ -65,8 +65,6 @@ const seedRecord = (
       {
         course_code: 'EE 210',
         title: 'Circuits',
-        group: 'G1',
-        section: '01',
       },
     ]),
     prerequisite_map: JSON.stringify(fourStateMap),
@@ -143,21 +141,28 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   expect(screen.getByRole('group', { name: 'Course map' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /CS 101/ })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /CS 301/ })).toBeInTheDocument();
-  expect(screen.getAllByText('1 of 4 courses completed').length).toBe(2);
+  expect(screen.getAllByText('1 of 4 courses completed').length).toBe(1);
   expect(screen.getByRole('img', { name: /25 percent/ })).toBeInTheDocument();
-  expect(screen.getByText('Milestones')).toBeInTheDocument();
-  expect(screen.getByText('First steps')).toBeInTheDocument();
+  expect(screen.getByText('3020117')).toBeInTheDocument();
+  expect(screen.getByText('Engineering')).toBeInTheDocument();
 
   expect(screen.getAllByText('EE 210').length).toBeGreaterThanOrEqual(1);
-  expect(screen.getByText('Group G1, Section 01')).toBeInTheDocument();
-
-  const historyTable = screen.getByRole('table');
-  expect(historyTable).toHaveTextContent('2025 · Fall');
-  expect(historyTable).toHaveTextContent('A');
-  expect(historyTable).toHaveTextContent('Introduction to Programming');
-
-  expect(screen.queryAllByRole('textbox')).toHaveLength(0);
-  expect(screen.queryAllByRole('combobox')).toHaveLength(0);
+  const history = screen.getByRole('region', { name: '2025 · Fall' });
+  expect(history).toHaveTextContent('A');
+  expect(history).toHaveTextContent('Introduction to Programming');
+  await userEvent.type(
+    screen.getByRole('textbox', { name: 'Find a course in your history' }),
+    'missing',
+  );
+  expect(
+    screen.getByText('No course attempts match these filters.'),
+  ).toBeInTheDocument();
+  await userEvent.clear(
+    screen.getByRole('textbox', { name: 'Find a course in your history' }),
+  );
+  expect(
+    screen.getByRole('region', { name: '2025 · Fall' }),
+  ).toBeInTheDocument();
   expect(screen.queryAllByRole('spinbutton')).toHaveLength(0);
 });
 
@@ -358,8 +363,103 @@ test('renders the identity and the sign-out action on Account', async () => {
   });
 
   expect(await screen.findByText('Sara Student')).toBeInTheDocument();
-  expect(screen.getByText('3020117')).toBeInTheDocument();
+  expect(screen.queryByText('3020117')).not.toBeInTheDocument();
   expect(screen.getByText(user.email)).toBeInTheDocument();
-  expect(screen.getByText('Engineering')).toBeInTheDocument();
+  expect(screen.queryByText('Engineering')).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument();
+});
+
+test('preserves repeated course attempts and tolerates absent SIS history details', async () => {
+  const user = await createUser();
+  seedRecord(user.id as number, {
+    history: JSON.stringify([
+      {
+        course_code: 'CS 101',
+        title: 'Programming',
+        term_code: '2024F',
+        name: null,
+        credits: null,
+        year: null,
+        semester: null,
+        level: null,
+        grade: 'F',
+      },
+      {
+        course_code: 'CS 101',
+        title: 'Programming',
+        term_code: '2025S',
+        name: null,
+        credits: 3,
+        year: null,
+        semester: null,
+        level: 1,
+        grade: 'A',
+      },
+    ]),
+  });
+  await renderApp(<RecordRoute />, {
+    user,
+    path: '/app/record',
+    url: '/app/record',
+  });
+  expect(
+    await screen.findByRole('region', { name: '2024F' }),
+  ).toHaveTextContent('Not reported');
+  expect(screen.getByText('2 course attempts')).toBeInTheDocument();
+  await userEvent.selectOptions(
+    screen.getByRole('combobox', { name: 'Term' }),
+    '2025S',
+  );
+  expect(
+    screen.queryByRole('region', { name: '2024F' }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole('region', { name: '2025S' })).toHaveTextContent('A');
+  expect(screen.getByText('1 course attempt')).toBeInTheDocument();
+});
+
+test('filters attempts with missing terms separately from all terms', async () => {
+  const user = await createUser();
+  seedRecord(user.id as number, {
+    history: JSON.stringify([
+      {
+        course_code: 'CS 101',
+        title: 'Unknown term course',
+        term_code: null,
+        name: null,
+        credits: null,
+        year: null,
+        semester: null,
+        level: null,
+        grade: 'F',
+      },
+      {
+        course_code: 'MATH 101',
+        title: 'Dated course',
+        term_code: '2025S',
+        name: null,
+        credits: 3,
+        year: null,
+        semester: null,
+        level: 1,
+        grade: 'A',
+      },
+    ]),
+  });
+  await renderApp(<RecordRoute />, {
+    user,
+    path: '/app/record',
+    url: '/app/record',
+  });
+  await screen.findByText('Unknown term course');
+  await userEvent.selectOptions(
+    screen.getByRole('combobox', { name: 'Term' }),
+    '__unreported__',
+  );
+  expect(screen.getByText('Unknown term course')).toBeInTheDocument();
+  expect(screen.queryByText('Dated course')).not.toBeInTheDocument();
+  await userEvent.selectOptions(
+    screen.getByRole('combobox', { name: 'Term' }),
+    '',
+  );
+  expect(screen.getByText('Dated course')).toBeInTheDocument();
 });

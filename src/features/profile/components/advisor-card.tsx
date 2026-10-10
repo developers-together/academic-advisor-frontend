@@ -1,3 +1,4 @@
+import { Clock, MapPin, UserRound, GraduationCap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ErrorState } from '@/components/ui/banner';
@@ -13,7 +14,10 @@ export const AdvisorCard = () => {
   return (
     <Card aria-busy={advisorQuery.isPending}>
       <CardHeader>
-        <CardTitle>{t('profile.advisor.title')}</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <GraduationCap className="size-4" aria-hidden />
+          {t('profile.advisor.title')}
+        </CardTitle>
       </CardHeader>
       <CardBody>
         {advisorQuery.isPending && <SkeletonText lines={2} />}
@@ -44,7 +48,8 @@ export const AdvisorCard = () => {
 
         {advisorQuery.data && (
           <div className="space-y-3">
-            <p className="text-sm font-medium">
+            <p className="flex items-center gap-2 text-sm font-medium">
+              <UserRound className="size-4 shrink-0" aria-hidden />
               {advisorQuery.data.advisor.name}
             </p>
             {advisorQuery.data.office_location === null ? (
@@ -54,6 +59,7 @@ export const AdvisorCard = () => {
             ) : (
               <div>
                 <p className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+                  <MapPin className="me-2 inline size-4" aria-hidden />
                   {t('profile.advisor.location')}
                 </p>
                 <p className="mt-1 text-sm">
@@ -68,6 +74,7 @@ export const AdvisorCard = () => {
             ) : (
               <div>
                 <p className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+                  <Clock className="me-2 inline size-4" aria-hidden />
                   {t('profile.advisor.hours')}
                 </p>
                 <ul className="mt-1 space-y-1">

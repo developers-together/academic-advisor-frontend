@@ -1,3 +1,4 @@
+import { ArrowRight, BookOpen, CalendarDays, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
@@ -5,9 +6,7 @@ import { Link, useNavigate } from 'react-router';
 import { ContentLayout } from '@/components/layouts';
 import { Banner, ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
-import { Card, CardBody, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
-import { KpiCard } from '@/components/ui/kpi-card';
 import { SkeletonCard, SkeletonText } from '@/components/ui/skeleton';
 import { StatusChip } from '@/components/ui/status-chip';
 import { paths } from '@/config/paths';
@@ -34,121 +33,122 @@ export default function DashboardRoute() {
   return (
     <ContentLayout
       title={t('dashboard.title')}
-      context={
-        planQuery.data?.term_code
-          ? t('termContext', { term: planQuery.data.term_code })
-          : undefined
-      }
+      className="student-home"
+      context={t('redesign.welcome', { name: user.data?.name ?? '' })}
     >
-      <div className="grid items-start gap-6 lg:grid-cols-3">
-        {!user.data?.advisor_id && (
-          <Banner variant="warning" className="lg:col-span-3">
-            {t('noAdvisor.banner')}
-          </Banner>
-        )}
-
-        <section
-          className="space-y-4 lg:col-span-2"
-          aria-busy={planQuery.isPending}
-          aria-label={t('myPlan.title')}
-        >
-          {planQuery.isPending && <SkeletonCard className="max-w-xl" />}
-
-          {planQuery.isError &&
-            planQuery.error instanceof ApiError &&
-            planQuery.error.status !== 404 && (
-              <ErrorState
-                onRetry={() => void planQuery.refetch()}
-                requestId={planQuery.error.requestId}
-              />
-            )}
-
-          {planQuery.data && <PlanCard plan={planQuery.data} />}
-
-          {planQuery.isError &&
-            planQuery.error instanceof ApiError &&
-            planQuery.error.status === 404 && (
-              <EmptyState
-                className="max-w-xl"
-                title={t('dashboard.empty.title')}
-                description={t('dashboard.empty.body')}
-                action={{
-                  label: t('dashboard.empty.action'),
-                  loading: createPlan.isPending,
-                  onClick: () => {
-                    createPlan.mutate();
-                  },
-                }}
-              />
-            )}
-        </section>
-
-        <section aria-label={t('home.progressTitle')}>
-          <h2 className="mb-3 text-sm font-semibold">
-            {t('home.progressTitle')}
-          </h2>
-          <ProgressStrip
-            isPending={recordQuery.isPending}
-            cgpa={recordQuery.data?.cgpa ?? null}
-            onRetry={() => void recordQuery.refetch()}
-            requestId={
-              recordQuery.error instanceof ApiError
-                ? recordQuery.error.requestId
-                : null
-            }
-            failed={recordQuery.isError}
-          />
-        </section>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:col-span-3">
-          <section aria-label={t('home.meetingTitle')}>
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle>{t('home.meetingTitle')}</CardTitle>
-              </CardHeader>
-              <CardBody>
-                <NextMeeting />
-              </CardBody>
-            </Card>
+      {!user.data?.advisor_id && (
+        <Banner variant="warning" className="mb-6">
+          {t('noAdvisor.banner')}
+        </Banner>
+      )}
+      <div className="home-main">
+        <div className="min-w-0 space-y-6">
+          <section
+            aria-busy={planQuery.isPending}
+            aria-label={t('myPlan.title')}
+          >
+            {planQuery.isPending && <SkeletonCard />}
+            {planQuery.isError &&
+              !(
+                planQuery.error instanceof ApiError &&
+                planQuery.error.status === 404
+              ) && (
+                <ErrorState
+                  onRetry={() => void planQuery.refetch()}
+                  requestId={
+                    planQuery.error instanceof ApiError
+                      ? planQuery.error.requestId
+                      : null
+                  }
+                />
+              )}
+            {planQuery.data && <PlanCard plan={planQuery.data} />}
+            {planQuery.isError &&
+              planQuery.error instanceof ApiError &&
+              planQuery.error.status === 404 && (
+                <EmptyState
+                  title={t('dashboard.empty.title')}
+                  description={t('dashboard.empty.body')}
+                  action={{
+                    label: t('dashboard.empty.action'),
+                    loading: createPlan.isPending,
+                    onClick: () => createPlan.mutate(),
+                  }}
+                />
+              )}
           </section>
-
-          <section aria-label={t('profile.advisor.title')}>
-            <AdvisorCard />
+          <section
+            className="home-ai-invitation"
+            aria-label={t('home.aiTitle')}
+          >
+            <Sparkles className="size-7 text-primary-text" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <h2 className="text-xl font-semibold tracking-tight">
+                {t('redesign.aiHeading')}
+              </h2>
+              <p className="mt-2 max-w-prose text-sm text-muted-foreground">
+                {t('home.aiBody')}
+              </p>
+              <Link
+                to={paths.app.chat.getHref()}
+                className="home-text-link mt-3"
+              >
+                {t('home.aiCta')}
+                <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
+              </Link>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {t('home.aiDisclaimer')}
+              </p>
+            </div>
+          </section>
+          <section
+            aria-label={t('home.notificationsTitle')}
+            className="home-updates"
+          >
+            <h2 className="mb-4 text-lg font-semibold">
+              {t('home.notificationsTitle')}
+            </h2>
+            <NotificationsDigest />
           </section>
         </div>
-
-        <section
-          aria-label={t('home.notificationsTitle')}
-          className="lg:col-span-2"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('home.notificationsTitle')}</CardTitle>
-            </CardHeader>
-            <CardBody>
-              <NotificationsDigest />
-            </CardBody>
-          </Card>
-        </section>
-
-        <section aria-label={t('home.aiTitle')} className="h-full">
-          <Card className="h-full">
-            <CardBody className="flex flex-wrap items-center justify-between gap-4 pt-6">
-              <div>
-                <p className="text-sm font-semibold">{t('home.aiTitle')}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {t('home.aiBody')}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {t('home.aiDisclaimer')}
-                </p>
-              </div>
-              <Button asChild variant="outline">
-                <Link to={paths.app.chat.getHref()}>{t('home.aiCta')}</Link>
-              </Button>
-            </CardBody>
-          </Card>
-        </section>
+        <aside className="home-support">
+          <section
+            aria-label={t('home.progressTitle')}
+            className="home-support-section"
+          >
+            <h2 className="mb-5 flex items-center gap-2 text-sm font-semibold">
+              <BookOpen className="size-4 text-primary-text" aria-hidden />
+              {t('home.progressTitle')}
+            </h2>
+            <ProgressStrip
+              isPending={recordQuery.isPending}
+              cgpa={recordQuery.data?.cgpa ?? null}
+              onRetry={() => void recordQuery.refetch()}
+              requestId={
+                recordQuery.error instanceof ApiError
+                  ? recordQuery.error.requestId
+                  : null
+              }
+              failed={recordQuery.isError}
+            />
+          </section>
+          <section
+            aria-label={t('home.meetingTitle')}
+            className="home-support-section"
+          >
+            <h2 className="mb-5 flex items-center gap-2 text-sm font-semibold">
+              <CalendarDays className="size-4 text-primary-text" aria-hidden />
+              {t('home.meetingTitle')}
+            </h2>
+            <NextMeeting />
+          </section>
+          <section
+            aria-label={t('profile.advisor.title')}
+            className="home-advisor"
+          >
+            <AdvisorCard />
+          </section>
+        </aside>
       </div>
     </ContentLayout>
   );
@@ -178,19 +178,19 @@ const ProgressStrip = ({
 
   return (
     <div className="max-w-2xl">
-      <KpiCard
-        label={t('profile.cgpa.label')}
-        value={
-          cgpa === null ? (
-            <span className="text-base font-normal text-muted-foreground">
-              {t('profile.unavailable')}
-            </span>
-          ) : (
-            String(cgpa)
-          )
-        }
-        context={t('profile.cgpa.context')}
-      />
+      <p className="text-xs text-muted-foreground">{t('profile.cgpa.label')}</p>
+      <p className="mt-2 text-4xl font-semibold tracking-tight tabular-nums">
+        {cgpa === null ? (
+          <span className="text-base font-normal text-muted-foreground">
+            {t('profile.unavailable')}
+          </span>
+        ) : (
+          String(cgpa)
+        )}
+      </p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        {t('profile.cgpa.context')}
+      </p>
       <Link
         to={paths.app.record.getHref()}
         className="mt-3 inline-flex min-h-11 items-center rounded-md text-sm font-medium text-primary-text focus-visible:ring-2 focus-visible:ring-ring"

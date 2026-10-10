@@ -1,18 +1,20 @@
 import {
   CalendarDays,
   CircleCheck,
+  Hand,
   Lock,
   Minus,
   Plus,
   RotateCcw,
   Unlock,
 } from 'lucide-react';
-import { useId, useMemo, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
+import { useScrollableTabIndex } from '@/hooks/use-scrollable-tab-index';
 import type {
   PrerequisiteMapEntry,
   PrerequisiteMapState,
@@ -158,6 +160,15 @@ export const CourseMap = ({
 }: CourseMapProps) => {
   const { t, i18n } = useTranslation('plan');
   const isRtl = i18n.dir() === 'rtl';
+  const drag = useRef<{
+    x: number;
+    y: number;
+    left: number;
+    top: number;
+    moved: boolean;
+  } | null>(null);
+  const [panning, setPanning] = useState(false);
+  const { ref: canvasRef, tabIndex } = useScrollableTabIndex();
   const [selected, setSelected] = useState<string | null>(null);
   const [zoomIndex, setZoomIndex] = useState(1);
   const [preview, setPreview] = useState<string | null>(null);
@@ -206,7 +217,9 @@ export const CourseMap = ({
   return (
     <div className={className}>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs text-muted-foreground tabular-nums">
+        <p className="flex items-center gap-2 text-xs text-muted-foreground tabular-nums">
+          <Hand className="size-4" aria-hidden />
+          <span id={`${markerId}-pan-hint`}>{t('courseMap.panHint')}</span>
           {t('courseMap.summary', {
             completed,
             total: entries.length,
@@ -272,9 +285,57 @@ export const CourseMap = ({
       </div>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
         <div
+          ref={canvasRef}
           role="group"
           aria-label={t('courseMap.title')}
-          className="course-map-canvas overflow-auto rounded-2xl border p-6"
+          aria-describedby={`${markerId}-pan-hint`}
+          tabIndex={tabIndex}
+          onPointerDown={(event) => {
+            if (event.pointerType === 'touch' || event.button !== 0) return;
+            drag.current = {
+              x: event.clientX,
+              y: event.clientY,
+              left: event.currentTarget.scrollLeft,
+              top: event.currentTarget.scrollTop,
+              moved: false,
+            };
+          }}
+          onPointerMove={(event) => {
+            const start = drag.current;
+            if (!start) return;
+            const dx = event.clientX - start.x;
+            const dy = event.clientY - start.y;
+            if (!start.moved && Math.hypot(dx, dy) < 5) return;
+            start.moved = true;
+            event.currentTarget.setPointerCapture(event.pointerId);
+            setPanning(true);
+            event.currentTarget.scrollLeft = start.left - dx;
+            event.currentTarget.scrollTop = start.top - dy;
+          }}
+          onPointerUp={() => {
+            setPanning(false);
+          }}
+          onClickCapture={(event) => {
+            if (drag.current?.moved) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            drag.current = null;
+          }}
+          onPointerCancel={() => {
+            drag.current = null;
+            setPanning(false);
+          }}
+          onLostPointerCapture={() => {
+            setPanning(false);
+          }}
+          onPointerLeave={() => {
+            if (!panning) drag.current = null;
+          }}
+          className={cn(
+            'course-map-canvas max-h-[65dvh] overflow-auto rounded-2xl border p-6 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden',
+            panning ? 'cursor-grabbing select-none' : 'cursor-grab',
+          )}
         >
           <div
             dir="ltr"
@@ -377,7 +438,10 @@ export const CourseMap = ({
                     onBlur={() => setPreview(null)}
                     aria-pressed={selected === node.entry.course_code}
                     aria-label={`${node.entry.course_code} ${node.entry.title ?? ''}, ${stateLabel(node.entry.state)}`}
-                    title={node.entry.title ?? node.entry.course_code}
+                    title={
+                      node.entry.description ??
+                      `${node.entry.title ?? node.entry.course_code}. ${stateLabel(node.entry.state)}. ${node.entry.prerequisites.join(', ')}`
+                    }
                     style={{
                       position: 'absolute',
                       left: isRtl ? layout.width - node.x - NODE_WIDTH : node.x,
@@ -427,6 +491,10 @@ export const CourseMap = ({
                   {selectedNode.entry.title}
                 </p>
               )}
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {selectedNode.entry.description ||
+                  t(`courseMap.description.${selectedNode.entry.state}`)}
+              </p>
               {selectedNode.entry.prerequisites.length > 0 ? (
                 <div>
                   <p className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">

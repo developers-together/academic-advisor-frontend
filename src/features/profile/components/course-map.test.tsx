@@ -23,8 +23,14 @@ test('a large map preserves every course and supports prerequisite exploration f
   const course = within(canvas).getByRole('button', {
     name: 'CS 108 Course 9, Locked',
   });
-  for (let index = 0; index < 11; index += 1) await user.tab();
+  within(canvas).getAllByRole('button')[0].focus();
+  for (let index = 0; index < 8; index += 1) await user.tab();
   expect(course).toHaveFocus();
+  expect(
+    screen.getByText(
+      'Complete the listed prerequisites before planning this course.',
+    ),
+  ).toBeInTheDocument();
   expect(screen.getByText('Requires')).toBeInTheDocument();
   await user.keyboard('{Enter}');
   expect(course).toHaveAttribute('aria-pressed', 'true');

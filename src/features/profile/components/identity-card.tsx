@@ -7,19 +7,33 @@ import type { User } from '@/types/domain';
 
 export type IdentityCardProps = {
   user: User;
-  curriculumYear: number | null;
+  curriculumYear?: number | null;
+  academic?: boolean;
 };
 
-export const IdentityCard = ({ user, curriculumYear }: IdentityCardProps) => {
+export const IdentityCard = ({
+  user,
+  curriculumYear = null,
+  academic = false,
+}: IdentityCardProps) => {
   const { t } = useTranslation('plan');
 
   const rows = [
-    { label: t('profile.identity.studentId'), value: user.student_id },
-    { label: t('profile.identity.email'), value: user.email },
-    { label: t('profile.identity.faculty'), value: user.faculty },
+    {
+      label: t('profile.identity.studentId'),
+      value: academic ? user.student_id : null,
+    },
+    { label: t('profile.identity.email'), value: academic ? null : user.email },
+    {
+      label: t('profile.identity.faculty'),
+      value: academic ? user.faculty : null,
+    },
     {
       label: t('profile.identity.year'),
-      value: curriculumYear === null ? null : formatNumber(curriculumYear),
+      value:
+        !academic || curriculumYear === null
+          ? null
+          : formatNumber(curriculumYear),
     },
   ];
 

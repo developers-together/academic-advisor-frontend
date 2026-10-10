@@ -105,24 +105,25 @@ export type AcademicRecord = {
 export type CourseAttempt = {
   course_code: string;
   name: string | null;
-  credits: number;
-  year: number;
-  semester: string;
-  level: number;
+  title?: string | null;
+  term_code?: string;
+  credits: number | null;
+  year: number | null;
+  semester: string | null;
+  level: number | null;
   grade: string;
 };
 
 export type CurrentEnrollment = {
   course_code: string;
   title: string | null;
-  group: string;
-  section: string;
 };
 
 export type PrerequisiteMapState =
   'completed' | 'planned' | 'eligible' | 'locked';
 
 export type PrerequisiteMapEntry = {
+  description?: string | null;
   course_code: string;
   title: string | null;
   state: PrerequisiteMapState;
