@@ -34,14 +34,16 @@ export const BuilderLine = ({
             {course.course_code}
           </span>
           {lineTitle && (
-            <span className="mt-0.5 block text-sm sm:mt-0 sm:min-w-0 sm:truncate">
+            <span className="mt-0.5 block text-sm sm:mt-0 sm:min-w-0 sm:wrap-break-word">
               {lineTitle}
             </span>
           )}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 sm:mt-0 sm:flex-nowrap sm:gap-3">
           <span className="text-xs text-muted-foreground tabular-nums">
-            {t('builder.line.credits', { credits: course.credits })}
+            {course.credits == null
+              ? t('builder.line.creditsUnknown')
+              : t('builder.line.credits', { credits: course.credits })}
           </span>
           <Button
             variant="ghost"
