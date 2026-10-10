@@ -1,8 +1,7 @@
-import { RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Head } from '@/components/seo';
-import { Button } from '@/components/ui/button';
+import { RetryButton } from '@/components/ui/button';
 
 export const RouteErrorBoundary = () => {
   const { t } = useTranslation();
@@ -16,12 +15,9 @@ export const RouteErrorBoundary = () => {
       />
       <h1 className="text-2xl font-semibold">{t('errors.pageUnavailable')}</h1>
       <p className="text-muted-foreground">{t('errors.pageUnavailableBody')}</p>
-      <Button
-        onClick={() => window.location.reload()}
-        icon={<RefreshCw className="size-4" aria-hidden />}
-      >
+      <RetryButton onClick={() => window.location.reload()}>
         {t('actions.retry')}
-      </Button>
+      </RetryButton>
     </main>
   );
 };
