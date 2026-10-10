@@ -106,7 +106,7 @@ export const CommandPalette = ({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={closeAndReset}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 data-[state=open]:animate-fade-in" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-overlay data-[state=open]:animate-fade-in" />
         <DialogPrimitive.Content
           aria-label={t('commandPalette.label')}
           className="fixed inset-s-1/2 top-[16%] z-50 w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 rounded-2xl bg-card shadow-2xl data-[state=open]:animate-fade-in rtl:translate-x-1/2"
@@ -187,11 +187,18 @@ export const CommandPalette = ({
                         className={cn(
                           'flex min-h-14 cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-sm',
                           active
-                            ? 'bg-accent text-accent-foreground'
+                            ? 'bg-primary/10 text-primary-text'
                             : 'text-muted-foreground',
                         )}
                       >
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border bg-background">
+                        <span
+                          className={cn(
+                            'flex size-10 shrink-0 items-center justify-center rounded-xl',
+                            group.headingKey.endsWith('actions')
+                              ? 'bg-secondary/10 text-secondary'
+                              : 'bg-primary/10 text-primary-text',
+                          )}
+                        >
                           <Icon className="size-5" aria-hidden />
                         </span>
                         <span className="truncate font-medium text-foreground">
