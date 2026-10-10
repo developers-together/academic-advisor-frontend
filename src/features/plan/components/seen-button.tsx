@@ -1,19 +1,13 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/dialog';
+import { ApiError } from '@/lib/api-error';
 
 export type SeenButtonProps = {
   pending: boolean;
-  onConfirm: () => void;
+  onConfirm: () => Promise<unknown>;
   className?: string;
 };
 
@@ -24,50 +18,43 @@ export const SeenButton = ({
 }: SeenButtonProps) => {
   const { t } = useTranslation('plan');
   const [open, setOpen] = useState(false);
-  const cancelRef = useRef<HTMLButtonElement>(null);
-
+  const [error, setError] = useState<string | null>(null);
+  const confirm = async () => {
+    setError(null);
+    try {
+      await onConfirm();
+      setOpen(false);
+    } catch (failure) {
+      setError(
+        failure instanceof ApiError
+          ? failure.message
+          : t('common:errors.saveFailed'),
+      );
+    }
+  };
   return (
     <>
       <Button
         className={className}
-        onClick={() => setOpen(true)}
-        isLoading={pending}
         disabled={pending}
+        isLoading={pending}
+        onClick={() => {
+          setError(null);
+          setOpen(true);
+        }}
       >
         {t('myPlan.seen')}
       </Button>
-      <Dialog open={open} onOpenChange={(next) => !next && setOpen(false)}>
-        <DialogContent
-          onOpenAutoFocus={(event) => {
-            event.preventDefault();
-            cancelRef.current?.focus();
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle>{t('myPlan.seenConfirm.title')}</DialogTitle>
-            <DialogDescription>
-              {t('myPlan.seenConfirm.body')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              ref={cancelRef}
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              {t('common:actions.cancel')}
-            </Button>
-            <Button
-              onClick={() => {
-                setOpen(false);
-                onConfirm();
-              }}
-            >
-              {t('myPlan.seenConfirm.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={open}
+        onCancel={() => setOpen(false)}
+        onConfirm={() => void confirm()}
+        pending={pending}
+        error={error}
+        title={t('myPlan.seenConfirm.title')}
+        body={t('myPlan.seenConfirm.body')}
+        confirmLabel={t('myPlan.seenConfirm.confirm')}
+      />
     </>
   );
 };
