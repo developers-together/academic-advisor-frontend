@@ -113,7 +113,16 @@
     "startPlan": "Start your plan",
     "startPending": "Creating",
     "creditsTotal": "Planned credits: {{total}}",
-    "creditsOut": "Outside the {{min}}-{{max}} credit window. The validator blocks submission outside it."
+    "creditsOut": "Outside the {{min}}-{{max}} credit window. The validator blocks submission outside it.",
+    "shelf": {
+      "title": "Courses for your plan",
+      "description": "Drag an eligible course into your plan or use +. This list follows your course map. Confirm semester availability with your advisor.",
+      "requires": "Requires {{courses}}",
+      "add": "Add {{course}} to plan",
+      "empty": "All mapped courses are completed or already in your plan.",
+      "drop": "Drop a course here to add it to your plan.",
+      "release": "Release to add this course."
+    }
   },
   "profile": {
     "title": "Profile",
