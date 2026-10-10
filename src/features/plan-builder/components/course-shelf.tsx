@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  ChevronDown,
   GripVertical,
   LockKeyhole,
   Plus,
@@ -28,11 +29,16 @@ export const CourseShelf = ({
   const { t } = useTranslation('plan');
   const record = useAcademicRecord();
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<'all' | 'eligible' | 'locked'>('all');
   const planned = new Set(plan.courses.map((course) => course.course_code));
   const courses = (record.data?.prerequisite_map ?? []).filter(
     (course) =>
       course.state !== 'completed' &&
       !planned.has(course.course_code) &&
+      (filter === 'all' ||
+        (filter === 'locked'
+          ? course.state === 'locked'
+          : course.state !== 'locked')) &&
       `${course.course_code} ${course.title ?? ''}`
         .toLowerCase()
         .includes(search.trim().toLowerCase()),
@@ -56,12 +62,36 @@ export const CourseShelf = ({
         <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
         <span className="sr-only">{t('builder.addPlaceholder')}</span>
         <input
-          className="min-w-0 flex-1 bg-transparent text-sm outline-hidden"
+          className="min-w-0 flex-1 bg-transparent text-base outline-hidden"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder={t('builder.addPlaceholder')}
         />
       </label>
+      <div
+        className="mb-3 flex flex-wrap gap-1"
+        role="group"
+        aria-label={t('builder.shelf.title')}
+      >
+        {(['all', 'eligible', 'locked'] as const).map((value) => (
+          <Button
+            key={value}
+            variant={filter === value ? 'secondary' : 'ghost'}
+            className="min-h-11 px-3"
+            aria-pressed={filter === value}
+            onClick={() => setFilter(value)}
+          >
+            {t(
+              `builder.shelf.filter${value[0].toUpperCase()}${value.slice(1)}`,
+            )}
+          </Button>
+        ))}
+      </div>
+      {!record.isPending && !record.isError && (
+        <p className="mb-3 text-xs text-muted-foreground" role="status">
+          {t('builder.shelf.choicesCount', { count: courses.length })}
+        </p>
+      )}
       {record.isPending ? (
         <SkeletonCard />
       ) : record.isError ? (
@@ -140,6 +170,23 @@ export const CourseShelf = ({
                     </Button>
                   )}
                 </div>
+                <details className="group mt-2 border-t pt-1 text-xs text-muted-foreground">
+                  <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded focus-visible:outline-2 focus-visible:outline-ring">
+                    {t('builder.shelf.prerequisiteDetails')}
+                    <ChevronDown
+                      className="size-4 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none"
+                      aria-hidden
+                    />
+                  </summary>
+                  <p className="pb-2">
+                    {course.prerequisites.length
+                      ? course.prerequisites.join(', ')
+                      : t('builder.shelf.noPrerequisites')}
+                  </p>
+                  {course.description && (
+                    <p className="pb-2">{course.description}</p>
+                  )}
+                </details>
               </li>
             );
           })}
@@ -147,7 +194,18 @@ export const CourseShelf = ({
             <li className="py-6 text-center text-sm text-muted-foreground">
               {search
                 ? t('builder.addSearchEmpty', { query: search })
-                : t('builder.shelf.empty')}
+                : filter !== 'all'
+                  ? t('builder.shelf.filterEmpty')
+                  : t('builder.shelf.empty')}
+              {search && (
+                <Button
+                  variant="link"
+                  className="mt-2 min-h-11"
+                  onClick={() => setSearch('')}
+                >
+                  {t('builder.shelf.clearSearch')}
+                </Button>
+              )}
             </li>
           )}
         </ul>
