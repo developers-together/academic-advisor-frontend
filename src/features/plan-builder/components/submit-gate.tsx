@@ -56,6 +56,7 @@ export const SubmitGate = ({
           title={t('builder.submitUnavailableTitle')}
           message={t('builder.submitUnavailableBody')}
           onRetry={onSubmit}
+          pending={pending}
           requestId={serviceUnavailable.requestId}
         />
         {discard && <div className="mt-3">{discard}</div>}
