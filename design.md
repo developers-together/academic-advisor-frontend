@@ -47,13 +47,13 @@ quality bars, never designs to copy.
 
 ### 1.3 The five roles
 
-| Role | Job | Authority | Design consequence |
-|---|---|---|---|
-| Student | Understand where they stand; build one official plan; respond to feedback; register in SIS | Owns their plan; nothing is sent without their approval | Phone-first, spacious, AI chat in nav |
-| Advisor | Turn the queue into decisions; be available when needed | Approve, Return (mandatory reason), Request meeting. Never edits a plan (Q33) | Desktop-first, dense queue, attention management |
-| Dean | Know whether advising in their area functions, and where the team needs attention | Read-only; advisors and aggregates for their own area; no student personal details | Aggregate screens only, no student PII surface |
-| VP | Compare faculties and departments at a glance | Read-only, university-wide, aggregates only; never students, advisors, or dean identity beside faculty stats | Scorecard + drill-down + trends only |
-| Admin | Keep the machine running | Operational control plane: users, assignments, courses, programs, rules, registration windows, notifications config, AI config. Sees no analytics (Q55) | Forms and tables, task-oriented, zero charts |
+| Role    | Job                                                                                        | Authority                                                                                                                                               | Design consequence                               |
+| ------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Student | Understand where they stand; build one official plan; respond to feedback; register in SIS | Owns their plan; nothing is sent without their approval                                                                                                 | Phone-first, spacious, AI chat in nav            |
+| Advisor | Turn the queue into decisions; be available when needed                                    | Approve, Return (mandatory reason), Request meeting. Never edits a plan (Q33)                                                                           | Desktop-first, dense queue, attention management |
+| Dean    | Know whether advising in their area functions, and where the team needs attention          | Read-only; advisors and aggregates for their own area; no student personal details                                                                      | Aggregate screens only, no student PII surface   |
+| VP      | Compare faculties and departments at a glance                                              | Read-only, university-wide, aggregates only; never students, advisors, or dean identity beside faculty stats                                            | Scorecard + drill-down + trends only             |
+| Admin   | Keep the machine running                                                                   | Operational control plane: users, assignments, courses, programs, rules, registration windows, notifications config, AI config. Sees no analytics (Q55) | Forms and tables, task-oriented, zero charts     |
 
 "Faculty" is not a role: it is an aggregation layer. Department and faculty are data. Dean and advisor
 can never be the same human.
@@ -62,26 +62,26 @@ can never be the same human.
 
 These rules come from the foundation contract. They override any design preference.
 
-| ID | Rule | Source |
-|---|---|---|
-| PR-01 | No labels, no flags: no student is ever shown as "at risk" or "probation" anywhere in the UI. Rule messages speak about constraints, never about the person. | Q57 |
-| PR-02 | No simulators: no GPA simulator, no plan simulator, no what-if plans. | Q36 |
-| PR-03 | Dean is scoped to their own area; areas outside it are invisible. | Q54 |
-| PR-04 | No petitions in any form; advisors cannot approve rule-violating plans. | Q64, Q65 |
-| PR-05 | In-app only: no email, SMS, WhatsApp, push. The notification center is the entire delivery. No free-form person-to-person messaging; structured communication lives in plan comments and meeting requests. | Q22, Q39, Q48 |
-| PR-06 | Plan comments are advisor-authored. Students write free text only in plan fields, AI chat, and meeting-request notes. | Q66 as amended |
-| PR-07 | Humans own decisions: AI never sends, approves, or changes academic state. Drafts never auto-send. Nothing consequential happens without explicit confirmation. | Q33, Q45, Q46 |
-| PR-08 | AI is students-only, with exactly 6 capabilities: explain rules, explain degree requirements, recommend courses, draft a plan, explain why a line is invalid, explain the student's own state. Zero access to other students. | Q44, Q64 |
-| PR-09 | SIS is the ledger: the platform never writes to SIS. CGPA arrives from SIS and is never computed in-app. | Q59, Q67 |
-| PR-10 | No staff-facing AI and no predictions. | Q44, Q64 |
-| PR-11 | No career-path recommender. | Q64 |
-| PR-12 | Hard block: plans violating validation rules V1–V6 cannot be submitted. | Q65 |
-| PR-13 | Scoreboard metrics are locked: completion %, median decision time, aging (the UI reads the server's `is_aging` flag and never shows the threshold value). | Q40 |
-| PR-14 | Student record is minimal: CGPA, credits (earned/remaining), prereq map, history. No transcript, no grade pages. | Q31, Q58 |
-| PR-15 | VP surfaces never show dean identity beside faculty statistics, and never continue below Department. | v2 critical rule |
-| PR-16 | Data freshness is never faked: stale SIS data is labeled with its as-of time and a retry. | v2 |
-| PR-17 | Destructive actions show impact, confirm, execute, show result, and offer undo where safe. Harmless actions never get confirmation dialogs. | v2 |
-| PR-18 | Admin scope is fixed (foundation §5); Admin never grows an "everything settings" area. | v2 |
+| ID    | Rule                                                                                                                                                                                                                          | Source           |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| PR-01 | No labels, no flags: no student is ever shown as "at risk" or "probation" anywhere in the UI. Rule messages speak about constraints, never about the person.                                                                  | Q57              |
+| PR-02 | No simulators: no GPA simulator, no plan simulator, no what-if plans.                                                                                                                                                         | Q36              |
+| PR-03 | Dean is scoped to their own area; areas outside it are invisible.                                                                                                                                                             | Q54              |
+| PR-04 | No petitions in any form; advisors cannot approve rule-violating plans.                                                                                                                                                       | Q64, Q65         |
+| PR-05 | In-app only: no email, SMS, WhatsApp, push. The notification center is the entire delivery. No free-form person-to-person messaging; structured communication lives in plan comments and meeting requests.                    | Q22, Q39, Q48    |
+| PR-06 | Plan comments are advisor-authored. Students write free text only in plan fields, AI chat, and meeting-request notes.                                                                                                         | Q66 as amended   |
+| PR-07 | Humans own decisions: AI never sends, approves, or changes academic state. Drafts never auto-send. Nothing consequential happens without explicit confirmation.                                                               | Q33, Q45, Q46    |
+| PR-08 | AI is students-only, with exactly 6 capabilities: explain rules, explain degree requirements, recommend courses, draft a plan, explain why a line is invalid, explain the student's own state. Zero access to other students. | Q44, Q64         |
+| PR-09 | SIS is the ledger: the platform never writes to SIS. CGPA arrives from SIS and is never computed in-app.                                                                                                                      | Q59, Q67         |
+| PR-10 | No staff-facing AI and no predictions.                                                                                                                                                                                        | Q44, Q64         |
+| PR-11 | No career-path recommender.                                                                                                                                                                                                   | Q64              |
+| PR-12 | Hard block: plans violating validation rules V1–V6 cannot be submitted.                                                                                                                                                       | Q65              |
+| PR-13 | Scoreboard metrics are locked: completion %, median decision time, aging (the UI reads the server's `is_aging` flag and never shows the threshold value).                                                                     | Q40              |
+| PR-14 | Student record is minimal: CGPA, credits (earned/remaining), prereq map, history. No transcript, no grade pages.                                                                                                              | Q31, Q58         |
+| PR-15 | VP surfaces never show dean identity beside faculty statistics, and never continue below Department.                                                                                                                          | v2 critical rule |
+| PR-16 | Data freshness is never faked: stale SIS data is labeled with its as-of time and a retry.                                                                                                                                     | v2               |
+| PR-17 | Destructive actions show impact, confirm, execute, show result, and offer undo where safe. Harmless actions never get confirmation dialogs.                                                                                   | v2               |
+| PR-18 | Admin scope is fixed (foundation §5); Admin never grows an "everything settings" area.                                                                                                                                        | v2               |
 
 ### 1.5 Validation rules behind V1–V6
 
@@ -96,13 +96,13 @@ amendment).
 
 Each role's experience composes around one question and one page pattern.
 
-| Role | The question | Page composition |
-|---|---|---|
-| Student | "Where am I academically, what should I do next, and who can help me?" | Context → current state → next actions → supporting detail |
-| Advisor | "Who needs my attention, what decision do I need to make, and what should happen next?" | Attention queue → selected case → decision workspace |
-| Dean | "How is advising functioning in my area, and where does my team need attention?" | Operational health → bottlenecks → advisor workload → trends |
-| VP | "How do faculties compare, and which direction are they moving?" | Aggregate performance → comparison → trends → drilldown |
-| Admin | "What operational task am I here to do?" | Task → search/filter → edit → validation → confirmation |
+| Role    | The question                                                                            | Page composition                                             |
+| ------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Student | "Where am I academically, what should I do next, and who can help me?"                  | Context → current state → next actions → supporting detail   |
+| Advisor | "Who needs my attention, what decision do I need to make, and what should happen next?" | Attention queue → selected case → decision workspace         |
+| Dean    | "How is advising functioning in my area, and where does my team need attention?"        | Operational health → bottlenecks → advisor workload → trends |
+| VP      | "How do faculties compare, and which direction are they moving?"                        | Aggregate performance → comparison → trends → drilldown      |
+| Admin   | "What operational task am I here to do?"                                                | Task → search/filter → edit → validation → confirmation      |
 
 **DP-00 (MUST):** every important interaction answers five questions: Where am I? What is happening?
 Why is it happening? What can I do? What happens next? Applied to plan, review, meetings, AI,
@@ -110,20 +110,20 @@ notifications, admin workflows, errors, stale data, and permissions.
 
 ### 2.1 The five principles (carried from v1.1)
 
-| ID | Principle |
-|---|---|
+| ID    | Principle                                                                                                                                      |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | DP-01 | This product is an **Operate** surface: scanability, consistency, and the real usage scene outrank expression. Brand lives in precise details. |
-| DP-02 | Reduction filter: if an element can be removed without losing meaning, remove it. |
-| DP-03 | Hierarchy drives everything: one primary action per screen, unmissable. |
-| DP-04 | Material honesty: buttons communicate affordance through color, spacing, and typography, not shadows. Cards use borders and background. |
-| DP-05 | Consistency is non-negotiable: identical elements look and behave identically everywhere. |
-| DP-06 | Premium is calm and quiet: no noise, no decoration without a job, motion that feels like physics. |
-| DP-07 | Set body text first. |
-| DP-08 | Whitespace is a feature. |
-| DP-09 | Design the states, not the happy path. |
-| DP-10 | Accessibility and recoverability are fixed boundaries. |
-| DP-11 | Alignment is precision: every element sits on the grid. |
-| DP-12 | Boring copy beats cute copy: clear and institutional wins over clever. |
+| DP-02 | Reduction filter: if an element can be removed without losing meaning, remove it.                                                              |
+| DP-03 | Hierarchy drives everything: one primary action per screen, unmissable.                                                                        |
+| DP-04 | Material honesty: buttons communicate affordance through color, spacing, and typography, not shadows. Cards use borders and background.        |
+| DP-05 | Consistency is non-negotiable: identical elements look and behave identically everywhere.                                                      |
+| DP-06 | Premium is calm and quiet: no noise, no decoration without a job, motion that feels like physics.                                              |
+| DP-07 | Set body text first.                                                                                                                           |
+| DP-08 | Whitespace is a feature.                                                                                                                       |
+| DP-09 | Design the states, not the happy path.                                                                                                         |
+| DP-10 | Accessibility and recoverability are fixed boundaries.                                                                                         |
+| DP-11 | Alignment is precision: every element sits on the grid.                                                                                        |
+| DP-12 | Boring copy beats cute copy: clear and institutional wins over clever.                                                                         |
 
 ## 3. Roles and permissions
 
@@ -154,41 +154,41 @@ Primary navigation: **Home · My Plan · Academic Record · AI Advisor · My Adv
 Account**. Mobile bottom nav: **Home · Plan · AI · Advisor · More** (More sheet: Academic Record,
 Notifications, Account, language, theme, sign out).
 
-| Area | Route | Notes |
-|---|---|---|
-| Home | `/app` | Landing |
-| My Plan | `/app/plan` | Plan detail; Builder is its working mode |
-| Plan Builder | `/app/builder` | Internal route under My Plan |
-| Academic Record | `/app/record` | CGPA, credits, enrollment, history, prereq map |
-| AI Advisor | `/app/chat`, `/app/chat/:conversationId` | |
-| My Advisor | `/app/advisor` | Advisor profile, office hours, meetings |
-| Notifications | `/app/notifications` | |
-| Account | `/app/account` | Profile, sign out |
+| Area            | Route                                    | Notes                                          |
+| --------------- | ---------------------------------------- | ---------------------------------------------- |
+| Home            | `/app`                                   | Landing                                        |
+| My Plan         | `/app/plan`                              | Plan detail; Builder is its working mode       |
+| Plan Builder    | `/app/builder`                           | Internal route under My Plan                   |
+| Academic Record | `/app/record`                            | CGPA, credits, enrollment, history, prereq map |
+| AI Advisor      | `/app/chat`, `/app/chat/:conversationId` |                                                |
+| My Advisor      | `/app/advisor`                           | Advisor profile, office hours, meetings        |
+| Notifications   | `/app/notifications`                     |                                                |
+| Account         | `/app/account`                           | Profile, sign out                              |
 
 ### 4.2 Advisor
 
 Primary navigation: **Queue · Students · Meetings · More** (More: Office Hours, Profile,
 Notifications). Mobile bottom nav: **Queue · Students · Meetings · More**.
 
-| Area | Route | Notes |
-|---|---|---|
-| Queue | `/advisor` | Landing, decision workspace |
-| Students | `/advisor/students` | Caseload |
-| Meetings | `/advisor/meetings` | Both directions |
-| Office Hours | `/advisor/hours` | Under More |
-| Profile | `/advisor/profile` | Under More |
-| Notifications | `/advisor/notifications` | Under More |
+| Area          | Route                    | Notes                       |
+| ------------- | ------------------------ | --------------------------- |
+| Queue         | `/advisor`               | Landing, decision workspace |
+| Students      | `/advisor/students`      | Caseload                    |
+| Meetings      | `/advisor/meetings`      | Both directions             |
+| Office Hours  | `/advisor/hours`         | Under More                  |
+| Profile       | `/advisor/profile`       | Under More                  |
+| Notifications | `/advisor/notifications` | Under More                  |
 
 ### 4.3 Dean
 
 Primary navigation: **Overview · Advisors · Analytics · More** (More: Notifications). Mobile bottom
 nav: **Overview · Advisors · Analytics · More**.
 
-| Area | Route |
-|---|---|
-| Overview | `/dean` |
-| Advisors | `/dean/advisors` |
-| Analytics | `/dean/analytics` |
+| Area          | Route                 |
+| ------------- | --------------------- |
+| Overview      | `/dean`               |
+| Advisors      | `/dean/advisors`      |
+| Analytics     | `/dean/analytics`     |
 | Notifications | `/dean/notifications` |
 
 ### 4.4 VP
@@ -196,12 +196,12 @@ nav: **Overview · Advisors · Analytics · More**.
 Primary navigation: **Overview · Faculties · Trends · More** (More: Notifications). Mobile bottom
 nav: **Overview · Faculties · Trends · More**.
 
-| Area | Route |
-|---|---|
-| Overview | `/vp` |
-| Faculties | `/vp/faculties`; drilldown `/vp/drilldown` |
-| Trends | `/vp/trends` |
-| Notifications | `/vp/notifications` |
+| Area          | Route                                      |
+| ------------- | ------------------------------------------ |
+| Overview      | `/vp`                                      |
+| Faculties     | `/vp/faculties`; drilldown `/vp/drilldown` |
+| Trends        | `/vp/trends`                               |
+| Notifications | `/vp/notifications`                        |
 
 ### 4.5 Admin
 
@@ -209,18 +209,18 @@ Primary navigation: **Overview · Users · Operations · More** (More: Notificat
 a section landing that groups: Assignments · Courses · Programs · Rules · Registration Windows ·
 Notifications · AI Configuration. Mobile bottom nav: **Overview · Users · Operations · More**.
 
-| Area | Route |
-|---|---|
-| Overview | `/admin` |
-| Users | `/admin/users` |
-| Operations | `/admin/operations` (section landing) |
-| Assignments | `/admin/assignments` |
-| Courses | `/admin/courses` |
-| Programs | `/admin/programs` |
-| Rules | `/admin/rules` |
-| Registration Windows | `/admin/registration-windows` |
-| Notifications | `/admin/notifications` |
-| AI Configuration | `/admin/ai-configuration` |
+| Area                 | Route                                 |
+| -------------------- | ------------------------------------- |
+| Overview             | `/admin`                              |
+| Users                | `/admin/users`                        |
+| Operations           | `/admin/operations` (section landing) |
+| Assignments          | `/admin/assignments`                  |
+| Courses              | `/admin/courses`                      |
+| Programs             | `/admin/programs`                     |
+| Rules                | `/admin/rules`                        |
+| Registration Windows | `/admin/registration-windows`         |
+| Notifications        | `/admin/notifications`                |
+| AI Configuration     | `/admin/ai-configuration`             |
 
 **DS-IA-01 (MUST):** legacy routes (`/admin/students`, `/app/profile`) redirect to their new areas so
 deep links and tests survive.
@@ -330,12 +330,12 @@ Status semantics are consistent across all roles. Every status renders **icon + 
 `StatusChip` family maps every product status onto one of the four semantic channels or the plan-state
 palette.
 
-| Domain | Statuses |
-|---|---|
-| Plan | draft · submitted · under review · returned · approved · expired · closed · withdrawn · discarded |
+| Domain  | Statuses                                                                                                               |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Plan    | draft · submitted · under review · returned · approved · expired · closed · withdrawn · discarded                      |
 | Meeting | requested · pending · proposed · awaiting response · confirmed · completed · declined · cancelled · expired · conflict |
-| Account | active · suspended · binding pending · binding failed |
-| Data | saving · saved · updating · stale · offline · error |
+| Account | active · suspended · binding pending · binding failed                                                                  |
+| Data    | saving · saved · updating · stale · offline · error                                                                    |
 
 **DS-C-09 (MUST):** meeting and account statuses use the semantic channels: requested/pending/proposed
 = info, awaiting response = warning, confirmed/completed/saved = success, declined/cancelled/expired/
@@ -364,14 +364,14 @@ tables; every chart names the question it answers in its title or caption.
 
 Inter (EN) + Cairo (AR), loaded as in v1.1. Scale: Tailwind defaults plus `text-2xs`.
 
-| Class | Size | Use |
-|---|---|---|
-| `text-2xs` | 11px, lh 1.45 | Dense staff tables, meta labels only |
-| `text-xs` | 12px | Captions, table meta, helper text |
-| `text-sm` | 14px | Default UI text, labels, buttons |
-| `text-base` | 16px | Body text, form inputs (prevents iOS zoom) |
-| `text-lg`–`text-2xl` | 18–24px | Page titles, card titles |
-| `text-3xl`+ | 30px+ | Display numbers, empty-state titles |
+| Class                | Size          | Use                                        |
+| -------------------- | ------------- | ------------------------------------------ |
+| `text-2xs`           | 11px, lh 1.45 | Dense staff tables, meta labels only       |
+| `text-xs`            | 12px          | Captions, table meta, helper text          |
+| `text-sm`            | 14px          | Default UI text, labels, buttons           |
+| `text-base`          | 16px          | Body text, form inputs (prevents iOS zoom) |
+| `text-lg`–`text-2xl` | 18–24px       | Page titles, card titles                   |
+| `text-3xl`+          | 30px+         | Display numbers, empty-state titles        |
 
 Type hierarchy roles (v2): display/title (`text-3xl font-bold`), page title (`text-2xl font-semibold`),
 section title (`text-lg font-semibold`), body (`text-base`), secondary body (`text-sm
@@ -424,23 +424,23 @@ state × surface matrix.
 
 **DS-ST-08 (MUST):** every screen defines its states or documents N/A. The full matrix (v2):
 
-| State | Pattern |
-|---|---|
-| loading | Skeleton matching the final layout shape. No full-page spinners for area loads |
-| empty | EmptyState: icon, title, body, one action when an action exists. Names what is empty, whether it is normal, and the next step |
-| partial | Content renders; the missing slice shows a scoped skeleton or inline notice |
-| saving / saved / updating | Button state + polite live region; the plan and meeting editors show all three |
-| error | Inline under fields; page errors as destructive Banner with Retry; transient as toast. States what failed, whether anything was saved, whether it is temporary, and what to do |
-| permission denied | Calm panel with role reminder and a way back; route-scoped nav prevents most cases |
-| stale SIS | RecordFreshness line above the record with as-of time + retry; content stays visible. The SIS integration removed per-dataset staleness flags; refresh is lazy |
-| offline | Banner: reads are cached, writes queue or disable with explanation |
-| conflict | Explicit conflict banner with the two versions and resolution actions (meeting slots, plan edits) |
-| window closed | WindowClosedBanner replaces the submit CTA area; builder stays readable |
-| locked / expired | Lock affordance + explanation of who can unlock and when |
-| not found | Calm not-found panel with role-aware way back |
-| rate limited | Calm banner with the wait; AI surfaces show quota state |
-| maintenance | Full-page calm notice; no error aesthetic |
-| session expired | Redirect to login with `reason=expired` and a return path |
+| State                     | Pattern                                                                                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| loading                   | Skeleton matching the final layout shape. No full-page spinners for area loads                                                                                                 |
+| empty                     | EmptyState: icon, title, body, one action when an action exists. Names what is empty, whether it is normal, and the next step                                                  |
+| partial                   | Content renders; the missing slice shows a scoped skeleton or inline notice                                                                                                    |
+| saving / saved / updating | Button state + polite live region; the plan and meeting editors show all three                                                                                                 |
+| error                     | Inline under fields; page errors as destructive Banner with Retry; transient as toast. States what failed, whether anything was saved, whether it is temporary, and what to do |
+| permission denied         | Calm panel with role reminder and a way back; route-scoped nav prevents most cases                                                                                             |
+| stale SIS                 | RecordFreshness line above the record with as-of time + retry; content stays visible. The SIS integration removed per-dataset staleness flags; refresh is lazy                 |
+| offline                   | Banner: reads are cached, writes queue or disable with explanation                                                                                                             |
+| conflict                  | Explicit conflict banner with the two versions and resolution actions (meeting slots, plan edits)                                                                              |
+| window closed             | WindowClosedBanner replaces the submit CTA area; builder stays readable                                                                                                        |
+| locked / expired          | Lock affordance + explanation of who can unlock and when                                                                                                                       |
+| not found                 | Calm not-found panel with role-aware way back                                                                                                                                  |
+| rate limited              | Calm banner with the wait; AI surfaces show quota state                                                                                                                        |
+| maintenance               | Full-page calm notice; no error aesthetic                                                                                                                                      |
+| session expired           | Redirect to login with `reason=expired` and a return path                                                                                                                      |
 
 ### 7.4 Validation and the hard block
 
@@ -721,11 +721,11 @@ else. DS-M-01–06 carry over.
 
 ## 20. Responsive design
 
-| Viewport | Shell | Content |
-|---|---|---|
-| Desktop ≥1024 | Expanded sidebar | Content + optional detail drawer |
-| Tablet 768–1023 | Collapsed sidebar | Adaptive columns |
-| Mobile <768 | Top app bar + bottom nav | Single column; sheets; full-screen flows |
+| Viewport        | Shell                    | Content                                  |
+| --------------- | ------------------------ | ---------------------------------------- |
+| Desktop ≥1024   | Expanded sidebar         | Content + optional detail drawer         |
+| Tablet 768–1023 | Collapsed sidebar        | Adaptive columns                         |
+| Mobile <768     | Top app bar + bottom nav | Single column; sheets; full-screen flows |
 
 - Tables become stacked rows, cards, or priority information blocks; whole-table horizontal overflow
   is banned.
@@ -797,9 +797,10 @@ A page is done when all of the following hold (extends v1.1 section 9):
 
 **Governance** (v1.1 section 11 carries over): DS-G-01 no one-off styling; DS-G-02 token changes via
 proposal + Appendix B + consumers in one change; DS-G-03 new components via reuse check + spec + story
-+ test; DS-G-04 fix inconsistencies at the token level; DS-G-05 semantic versioning of this file;
-DS-G-06 D-phase acceptance; DS-G-07 dependencies, new base folders, and new documentation files
-require explicit human approval.
+
+- test; DS-G-04 fix inconsistencies at the token level; DS-G-05 semantic versioning of this file;
+  DS-G-06 D-phase acceptance; DS-G-07 dependencies, new base folders, and new documentation files
+  require explicit human approval.
 
 **Skill routing** (v1.1 section 10 carries over): DS-AI-01 the skill gate; DS-AI-02 repo rules
 outrank skills; DS-AI-03 process skills first; DS-AI-04 classify work (spike/bounded/architectural);
@@ -808,38 +809,38 @@ layout/responsive → typography/color → motion → forms → navigation → c
 
 ## 25. Implementation mapping
 
-| Contract | Code |
-|---|---|
-| Route table + role metadata (sections 3–5) | `src/config/paths.ts` (extends to role-scoped entries), `src/components/layouts/app-shell.tsx` (sidebar + bottom nav + More), `src/lib/authorization.tsx` (guards) |
-| Command palette | `src/components/ui/command-palette/` (new, Radix-based, no new deps) |
-| PageHeader + breadcrumbs | `src/components/ui/page-header/`, `src/components/ui/breadcrumb/` (new); `ContentLayout` composes them |
-| Status chips (meeting/account/data) | `src/components/ui/status-chip/` (new); plan states stay on PlanStateChip |
-| Meeting model | `src/features/advisor-meetings/` (unified requests, both directions), `src/features/advisor-hours/` (availability), student side in `src/features/my-advisor/` (new) |
-| Review workspace | `src/components/domain/review-drawer/` (restructured) |
-| Student areas | `/app` Home (dashboard), `/app/record` (new, from profile), `/app/advisor` (new), `/app/account` (from profile) |
-| Dean/VP | `src/features/governance/` (advisor aggregates, trends) |
-| Admin operations | `src/features/admin/` (users, operations landing, courses, programs, registration windows, AI config) |
-| Notifications | `src/features/notifications/` (categories) |
-| AI | `src/features/ai-chat/` (structured renderers, states) |
-| Mock/contract layer | `src/testing/mocks/` + `mock-server.ts` (new endpoints; existing scenarios preserved) |
-| i18n | `src/lib/i18n/locales/{en,ar}/*.json` — every new string keyed in both languages |
-| Naming | User-visible "Advisor"; internal storage keys stay `advaisor.*` (`advaisor.token`, `advaisor.theme`, `advaisor.language`, `advaisor.scenario`) — renaming them would drop user state for no user-visible gain |
+| Contract                                   | Code                                                                                                                                                                                                          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Route table + role metadata (sections 3–5) | `src/config/paths.ts` (extends to role-scoped entries), `src/components/layouts/app-shell.tsx` (sidebar + bottom nav + More), `src/lib/authorization.tsx` (guards)                                            |
+| Command palette                            | `src/components/ui/command-palette/` (new, Radix-based, no new deps)                                                                                                                                          |
+| PageHeader + breadcrumbs                   | `src/components/ui/page-header/`, `src/components/ui/breadcrumb/` (new); `ContentLayout` composes them                                                                                                        |
+| Status chips (meeting/account/data)        | `src/components/ui/status-chip/` (new); plan states stay on PlanStateChip                                                                                                                                     |
+| Meeting model                              | `src/features/advisor-meetings/` (unified requests, both directions), `src/features/advisor-hours/` (availability), student side in `src/features/my-advisor/` (new)                                          |
+| Review workspace                           | `src/components/domain/review-drawer/` (restructured)                                                                                                                                                         |
+| Student areas                              | `/app` Home (dashboard), `/app/record` (new, from profile), `/app/advisor` (new), `/app/account` (from profile)                                                                                               |
+| Dean/VP                                    | `src/features/governance/` (advisor aggregates, trends)                                                                                                                                                       |
+| Admin operations                           | `src/features/admin/` (users, operations landing, courses, programs, registration windows, AI config)                                                                                                         |
+| Notifications                              | `src/features/notifications/` (categories)                                                                                                                                                                    |
+| AI                                         | `src/features/ai-chat/` (structured renderers, states)                                                                                                                                                        |
+| Mock/contract layer                        | `src/testing/mocks/` + `mock-server.ts` (new endpoints; existing scenarios preserved)                                                                                                                         |
+| i18n                                       | `src/lib/i18n/locales/{en,ar}/*.json` — every new string keyed in both languages                                                                                                                              |
+| Naming                                     | User-visible "Advisor"; internal storage keys stay `advaisor.*` (`advaisor.token`, `advaisor.theme`, `advaisor.language`, `advaisor.scenario`) — renaming them would drop user state for no user-visible gain |
 
 ## Appendix A: resolved contradictions
 
-| Topic | Resolution |
-|---|---|
-| Em dash | Repo rules win: no em dashes in UI copy, labels, or agent prose. Ranges use the hyphen |
-| Serif | No serif. Inter + Cairo |
-| Icon library | lucide-react only |
-| Type scale | Tailwind defaults plus `text-2xs` |
-| Inter as default | Qualifies under the public-sector/civic exception: academic institution, Operate surface |
-| Pure white background | Operate app keeps white/slate surfaces; text is never pure black; no marketing pages |
-| Emoji | Banned in UI copy and as icons |
-| v1 Proposed-to-Done visits | Superseded by the v2 unified meeting model (foundation §10) |
-| v1 "no credits on plan surfaces" | Superseded: credits are visible (foundation §7.3 v2) |
-| v1 "no bottom-bar pattern in v1" | Superseded: bottom navigation is the mobile pattern (section 5.3) |
-| v1 "Advaisor" naming | Superseded: the product name is Advisor |
+| Topic                            | Resolution                                                                               |
+| -------------------------------- | ---------------------------------------------------------------------------------------- |
+| Em dash                          | Repo rules win: no em dashes in UI copy, labels, or agent prose. Ranges use the hyphen   |
+| Serif                            | No serif. Inter + Cairo                                                                  |
+| Icon library                     | lucide-react only                                                                        |
+| Type scale                       | Tailwind defaults plus `text-2xs`                                                        |
+| Inter as default                 | Qualifies under the public-sector/civic exception: academic institution, Operate surface |
+| Pure white background            | Operate app keeps white/slate surfaces; text is never pure black; no marketing pages     |
+| Emoji                            | Banned in UI copy and as icons                                                           |
+| v1 Proposed-to-Done visits       | Superseded by the v2 unified meeting model (foundation §10)                              |
+| v1 "no credits on plan surfaces" | Superseded: credits are visible (foundation §7.3 v2)                                     |
+| v1 "no bottom-bar pattern in v1" | Superseded: bottom navigation is the mobile pattern (section 5.3)                        |
+| v1 "Advaisor" naming             | Superseded: the product name is Advisor                                                  |
 
 ## Appendix B: token blocks
 
@@ -890,7 +891,8 @@ layout/responsive → typography/color → motion → forms → navigation → c
   --color-info-foreground: hsl(var(--info-foreground));
 
   /* Typography */
-  --font-arabic: 'Cairo', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+  --font-arabic:
+    'Cairo', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1.45;
 
@@ -901,63 +903,105 @@ layout/responsive → typography/color → motion → forms → navigation → c
   --animate-typing: typing 1.2s ease-in-out infinite;
 
   @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
   @keyframes chip-in {
-    from { opacity: 0; transform: scale(0.96); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
   @keyframes typing {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-2px); opacity: 1; }
+    0%,
+    60%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.4;
+    }
+    30% {
+      transform: translateY(-2px);
+      opacity: 1;
+    }
   }
 }
 
 @layer base {
   :root {
-    --primary: 0 100% 27%;            /* crimson-700 #8B0000, 10.0:1 with white */
+    --primary: 357.333333 78.947368% 44.705882%;
     --primary-foreground: 0 0% 100%;
-    --ring: 355 41% 49%;              /* crimson-500 */
-    --success: 158 94% 27%;           /* emerald-700, 5.5:1 with white */
+    --ring: 225.443787 75.111111% 55.882353%;
+    --success: 154.821429 90.322581% 24.313725%;
     --success-foreground: 0 0% 100%;
-    --warning: 32 95% 44%;            /* amber-600, use dark foreground */
-    --warning-foreground: 0 0% 9%;
-    --info: 201 96% 32%;              /* sky-700, 5.9:1 with white */
+    --warning: 21.849711 91.534392% 37.058824%;
+    --warning-foreground: 0 0% 100%;
+    --info: 201 97.560976% 32.156863%;
     --info-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%;         /* red-600, 4.8:1 with white */
-
-    /* Plan states, light (bg / foreground / border) */
-    --state-draft: #f1f5f9;           --state-draft-foreground: #334155;           --state-draft-border: #cbd5e1;
-    --state-submitted: #eff6ff;       --state-submitted-foreground: #1d4ed8;       --state-submitted-border: #bfdbfe;
-    --state-under-review: #fffbeb;    --state-under-review-foreground: #92400e;    --state-under-review-border: #fde68a;
-    --state-returned: #fff7ed;        --state-returned-foreground: #9a3412;        --state-returned-border: #fed7aa;
-    --state-approved: #ecfdf5;        --state-approved-foreground: #047857;        --state-approved-border: #a7f3d0;
-    --state-failed: #fef2f2;          --state-failed-foreground: #b91c1c;          --state-failed-border: #fecaca;
-    --state-closed: #f8fafc;          --state-closed-foreground: #64748b;          --state-closed-border: #e2e8f0;
+    --destructive: 343.404255 79.661017% 34.705882%;
+    --state-draft: #f0efee;
+    --state-draft-foreground: #44423e;
+    --state-draft-border: #c8c6c3;
+    --state-submitted: #eef4ff;
+    --state-submitted-foreground: #1d3aa3;
+    --state-submitted-border: #bfd2fb;
+    --state-under-review: #fffbeb;
+    --state-under-review-foreground: #965f04;
+    --state-under-review-border: #fde68a;
+    --state-returned: #fff6ed;
+    --state-returned-foreground: #b54708;
+    --state-returned-border: #fedf89;
+    --state-approved: #ecfdf3;
+    --state-approved-foreground: #067647;
+    --state-approved-border: #abefc6;
+    --state-failed: #fff1f4;
+    --state-failed-foreground: #9f1239;
+    --state-failed-border: #fecdd6;
+    --state-closed: #f8f8f7;
+    --state-closed-foreground: #5a5752;
+    --state-closed-border: #e1e0de;
   }
 
   .dark {
-    --primary: 355 60% 38%;           /* crimson-600, 7.2:1 with white */
-    --primary-foreground: 0 0% 100%;
-    --ring: 353 50% 63%;              /* crimson-400 */
-    --success: 160 84% 39%;           /* emerald-500 */
-    --success-foreground: 0 0% 9%;
-    --warning: 38 92% 50%;            /* amber-500 */
-    --warning-foreground: 0 0% 9%;
-    --info: 199 89% 48%;              /* sky-500 */
-    --info-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;     /* red-500 */
-    --destructive-foreground: 0 0% 9%;
-
-    /* Plan states, dark */
-    --state-draft: #1e293b;           --state-draft-foreground: #cbd5e1;           --state-draft-border: #475569;
-    --state-submitted: #172554;       --state-submitted-foreground: #93c5fd;       --state-submitted-border: #1e40af;
-    --state-under-review: #451a03;    --state-under-review-foreground: #fcd34d;    --state-under-review-border: #92400e;
-    --state-returned: #431407;        --state-returned-foreground: #fdba74;        --state-returned-border: #9a3412;
-    --state-approved: #022c22;        --state-approved-foreground: #6ee7b7;        --state-approved-border: #047857;
-    --state-failed: #450a0a;          --state-failed-foreground: #fca5a5;          --state-failed-border: #b91c1c;
-    --state-closed: #1e293b;          --state-closed-foreground: #94a3b8;          --state-closed-border: #334155;
+    --primary: 357.181208 91.411043% 68.039216%;
+    --primary-foreground: 30 7.142857% 5.490196%;
+    --ring: 220.8 86.206897% 77.254902%;
+    --success: 152 82.089552% 39.411765%;
+    --success-foreground: 30 7.142857% 5.490196%;
+    --warning: 34.033613 93.700787% 50.196078%;
+    --warning-foreground: 30 7.142857% 5.490196%;
+    --info: 198.933333 91.093117% 48.431373%;
+    --info-foreground: 30 7.142857% 5.490196%;
+    --destructive: 348.979592 96.078431% 90%;
+    --destructive-foreground: 30 7.142857% 5.490196%;
+    --state-draft: #2d2b28;
+    --state-draft-foreground: #f0efee;
+    --state-draft-border: #5a5752;
+    --state-submitted: #111b3d;
+    --state-submitted-foreground: #93b3f7;
+    --state-submitted-border: #2549c8;
+    --state-under-review: #3a2005;
+    --state-under-review-foreground: #fcd34d;
+    --state-under-review-border: #965f04;
+    --state-returned: #7a2e0e;
+    --state-returned-foreground: #fedf89;
+    --state-returned-border: #dc6803;
+    --state-approved: #074d31;
+    --state-approved-foreground: #abefc6;
+    --state-approved-border: #079455;
+    --state-failed: #881337;
+    --state-failed-foreground: #fecdd6;
+    --state-failed-border: #be123c;
+    --state-closed: #1d1c1a;
+    --state-closed-foreground: #a19e9a;
+    --state-closed-border: #44423e;
   }
 
   [dir='rtl'] body {
@@ -1001,7 +1045,6 @@ badges for invented actions, no confetti.
 
 **DS-C-14:** interactive cards may elevate with `shadow-xs` on hover only; rest state stays flat
 (material honesty, DP-04).
-
 
 ## 26. v5 design direction: Crimson Modern x Signal Operations (v5.0)
 
@@ -1084,7 +1127,7 @@ The user keeps crimson and replaces the dated layout. These rules take precedenc
 - DS-N-08: The sidebar shows product identity and role context. Section 28 replaces the topbar rule. Expanded labels wrap when necessary.
 - DS-Q-02: Overview interactions open actual workflows. The admin overview provides operation search and direct links. Student plan summaries show up to three planned courses with codes, available titles, and credits.
 - DS-Q-03: Student overview notifications open their related workflow and mark the notification as read. The next meeting excludes past slots and selects the earliest future slot.
-- DS-C-17: Shared cards use the common radius in section 28. Dialog and drawer close controls have 44px targets. Reduced motion disables animations and smooth scroll. Color, background, border, and opacity transitions remain at 150ms.
+- DS-C-17: Shared cards use the common radius in section 28. Dialog and drawer close controls have 44px targets. Reduced motion disables animations, transitions, and smooth scroll.
 - DS-D-01: A course count is not degree credit progress. The student overview omits this derived progress measure and displays the SIS CGPA instead.
 
 - DS-C-18: Primary action fills and primary text use separate semantic tokens. Primary text uses a lighter crimson tone in dark mode for contrast.
@@ -1097,7 +1140,6 @@ The user keeps crimson and replaces the dated layout. These rules take precedenc
 - DS-C-23: Tinted warning surfaces use warning text. Light warning uses HSL 40 100% 27% for text contrast. Warning foreground is reserved for solid warning fills.
 - DS-C-24: Markdown uses inverted typography in dark mode. The dark utility variant follows the root dark class. Active conversation backgrounds use semantic primary tints.
 - DS-C-25: Table scroll containers and chat transcripts accept keyboard focus when their content overflows. Resize and content changes update focus eligibility. Focused containers show the shared focus ring.
-
 
 ## 28. Reference-led workspace contract (2026-10-09)
 
@@ -1116,13 +1158,13 @@ The user retains crimson and selects rounded surfaces, a neutral canvas, and pho
 The workspace separates global controls from the page breadcrumb, title, and academic workflow.
 The references guide composition and interaction. They do not change role permissions or academic functions.
 
-| Reference | Applied pattern |
-| --- | --- |
-| HRPlatform 25339477 | Authentication form beside a large photograph |
-| Untitled | Sidebar identity, navigation, controls, and account area |
-| Cosmos | Grouped search with prominent input and icon results |
-| Uniswap | Compact breadcrumb trail with the current page |
-| Brainwave | Notification date groups, All/Unread filters, and quiet row separation |
+| Reference           | Applied pattern                                                        |
+| ------------------- | ---------------------------------------------------------------------- |
+| HRPlatform 25339477 | Authentication form beside a large photograph                          |
+| Untitled            | Sidebar identity, navigation, controls, and account area               |
+| Cosmos              | Grouped search with prominent input and icon results                   |
+| Uniswap             | Compact breadcrumb trail with the current page                         |
+| Brainwave           | Notification date groups, All/Unread filters, and quiet row separation |
 
 ### 28.2 Colors
 
@@ -1150,17 +1192,17 @@ The page retains its breadcrumb, title, description, and workflow actions.
 The sidebar owns product identity, role context, search, navigation, notifications, language, theme, and the account menu.
 Role routes continue to control navigation visibility. Secondary groups remain inside the sidebar.
 
-| Layout value | Implemented size |
-| --- | --- |
-| Expanded sidebar | 260px |
-| Collapsed sidebar | 64px |
-| Desktop edge gap | 12px |
-| Mobile edge gap | 6px |
-| Desktop content reservation, expanded | 284px |
-| Desktop content reservation, collapsed | 88px |
-| Mobile content reservation | 76px |
-| Mobile breakpoint | Below 768px |
-| Authentication window maximum width | 1120px |
+| Layout value                           | Implemented size |
+| -------------------------------------- | ---------------- |
+| Expanded sidebar                       | 260px            |
+| Collapsed sidebar                      | 64px             |
+| Desktop edge gap                       | 12px             |
+| Mobile edge gap                        | 6px              |
+| Desktop content reservation, expanded  | 284px            |
+| Desktop content reservation, collapsed | 88px             |
+| Mobile content reservation             | 76px             |
+| Mobile breakpoint                      | Below 768px      |
+| Authentication window maximum width    | 1120px           |
 
 - DS-N-01: One role route table drives sidebar navigation at every viewport width. The shell renders no topbar or bottom navigation.
 - DS-N-02: Sidebar links expose accessible labels and the active page. Expanded links show labels. Collapsed links show tooltips on hover and focus.
@@ -1171,8 +1213,8 @@ Desktop collapse persists in local storage. Collapsed tooltips use a portal to a
 Authentication uses two equal columns above the mobile breakpoint.
 Below that breakpoint, authentication hides the photograph and shows one form column.
 Student and staff density remain distinct. Shared card corners remain identical.
-Chat shows conversation history beside the conversation canvas. Below 1024px, these areas use one column.
-An active conversation hides history below 768px; the welcome view retains it.
+Chat uses a centered conversation canvas. The History action opens the shared modal Drawer at every width.
+Section 29 defines the current Home and AI Advisor surfaces.
 
 ### 28.5 Elevation & Depth
 
@@ -1182,7 +1224,7 @@ Search and mobile navigation use modal overlays. Tooltips sit outside the sideba
 The selected course node uses a crimson ring and glow.
 Motion leaves node positions stable. Active prerequisite paths show flow with a 1.2-second cycle.
 Reduced motion removes path animation, movement transitions, and smooth scroll.
-Reduced motion retains short color, background, border, and opacity transitions under DS-C-17.
+Reduced motion disables all transitions under DS-C-17.
 
 ### 28.6 Shapes
 
@@ -1233,9 +1275,9 @@ The accessible text list retains course states and prerequisites.
 
 #### AI conversation
 
-`src/features/ai-chat/components/chat-document.tsx` provides conversation history, a welcome view, and starter cards.
+`src/features/ai-chat/components/chat-document.tsx` provides a writing canvas, prompt starter rows, and a conversation history Drawer.
 New conversations use the internal `maintain` goal. The entry flow has no blocking goal dialog, model controls, or voice recording.
-Starter cards create a conversation and place editable text in the composer. They do not send a message automatically.
+Prompt starter rows create a conversation and place editable text in the composer. They do not send a message automatically.
 `src/features/ai-chat/components/composer.tsx` sends on Enter and adds a new line on Shift+Enter.
 Input method composition prevents Enter from sending. Failed sends restore the draft. Quota and reply states retain their controls.
 Academic tool results and the explicit submission confirmation flow remain governed by section 14 and product rules.
@@ -1258,5 +1300,250 @@ Authorization errors receive no automatic retry. This read policy does not chang
 - Do not add model controls, voice recording, or a blocking chat goal screen.
 - Do not infer production API validation or completed quality gates from this source record.
 
-`index.html` records the visual contract, candidate seed `0f139a13`, and the FINISH requirement.
+`index.html` records the visual contract, base seed `0f139a13`, and the FINISH requirement.
 This section documents source evidence. The finish review and validation report provide their own results.
+
+## 29. Home and AI Advisor focus surfaces (2026-10-09)
+
+This section records surface candidate 6, seed `1cc81333`, from `index.html` and the implemented source.
+The user confirmed next action and plan status as the Home priority.
+These surfaces retain section 28's sidebar, tokens, typography, permissions, and academic workflows.
+This section replaces section 28's earlier AI page composition.
+The corrections below record the current source behavior on 2026-10-10.
+
+### 29.1 Home
+
+`src/app/routes/app/dashboard.tsx` places the plan before the AI invitation and unread updates.
+`src/features/plan/components/plan-card.tsx` combines an E-JUST Red plan stage with a neutral course ledger.
+The stage shows the term, actual status, status explanation, course count, and applicable next action.
+Draft and discarded plans link to the builder. Submitted, under-review, and returned plans link to the plan.
+Other statuses retain their explanations without an additional stage action.
+The ledger shows up to three courses with isolated codes, titles, and credits.
+A remaining-course count and plan link provide access to the complete plan.
+
+The support column groups the academic record, next meeting, and advisor.
+At 80rem and above, this column stays visible through sticky positioning and scrolls independently when necessary.
+Advisor details use icons beside their existing labels.
+The record shows CGPA or its unavailable state and a record link.
+The meeting section prioritizes the earliest future confirmed meeting, then an awaiting-response request, then the empty state.
+The AI invitation opens the existing chat route. Its disclaimer retains the advisor's academic authority.
+Updates show up to two unread notifications. Selection marks the notification read before navigation.
+
+### 29.2 AI Advisor
+
+`src/features/ai-chat/components/chat-document.tsx` centers the entry surface within a maximum width of 768px.
+The visible page header is absent. `ContentLayout` retains the document title and an accessible, visually hidden h1.
+A centered greeting uses the student's first name when available. A translated generic greeting covers the unavailable-name state.
+The E-JUST PNG logo accompanies the greeting above the wide, rounded draft composer.
+Three simple starter rows follow the composer.
+The entry omits the draft-review hint and constitution disclaimer. Academic authority and confirmation rules remain applicable.
+The shared circular Send control creates a `maintain` conversation and transfers the trimmed message through route state.
+The active transcript dispatches that first message once, then clears the route state.
+Starter rows only prefill the editable draft and focus the composer.
+An empty draft disables Send. Pending creation disables Send and starter selection.
+The student can edit the next draft during creation or a reply.
+History and New conversation sit together at the AI page's top corner opposite the sidebar.
+This placement replaces the earlier sidebar-only constraint. Narrow screens show icons with accessible names; wider screens also show labels.
+New conversation returns to the welcome surface from the page action or history Drawer.
+This action clears the entry draft without a server conversation request.
+Creation failures show an error banner and retain the entry draft.
+
+History opens in the shared modal Drawer at every viewport width.
+The Drawer includes its title, description, close control, new-conversation action, and existing conversation list.
+Selection closes the Drawer. The active conversation exposes its current state to assistive technology.
+The list retains loading skeletons, empty guidance, and an error retry action.
+
+The active transcript uses a maximum width of 768px and a separate scroll region.
+The AI workspace fills 100dvh. The transcript takes the available height within its flex layout.
+The shared composer stays at the bottom as a fixed-size flex child.
+The transcript retains Jump to latest when the student scrolls away.
+Section 28's Enter, Shift+Enter, input composition, and failed-draft restoration rules remain applicable.
+Streaming retains typing feedback, stop controls, partial failures, tool events, and retry controls where permitted.
+The transcript suppresses persisted assistant copies during an active stream. A polite announcement reports reply completion once.
+The next draft stays editable during a reply. Stop replaces Send until the reply ends.
+Failed sends restore the sent text only when the current draft has no text.
+Completed messages expose a 44px Copy control with success and failure feedback.
+Quota exhaustion disables active conversation input and preserves the builder link.
+Submission suggestions retain explicit confirmation under section 14. AI never silently submits a plan.
+Missing conversations retain recovery guidance. Other transcript failures retain retry controls.
+
+### 29.3 Responsive behavior and states
+
+At 80rem and above, Home uses a flexible main column and a 290px support column.
+Below 80rem, the support area follows the main content in three columns.
+Below 48rem, support sections stack with dividers.
+Below 48rem, the AI greeting stacks its mark above the text. The shared composer retains its circular action.
+Home plan and support surfaces use 16px corners. The AI invitation retains 14px corners.
+Section 31 defines the current E-JUST light and dark color pairs.
+English and Arabic translations cover the new entry and Home text.
+Logical spacing, RTL arrows, the mirrored Drawer, and isolated course codes retain Arabic support.
+Visible focus, labeled text areas, pending states, and shared modal behavior retain keyboard access.
+Reduced motion removes the composer border transition, starter background transitions, and message entrance animation.
+Home retains the missing-advisor warning, plan skeleton, missing-plan creation action, record fallback, and independent error retry states.
+Meeting and notification requests retain their loading, error, and empty states.
+This section records source behavior. It does not establish test results, browser validation, or production API validation.
+
+## 30. Student information placement and history, 2026-10-09
+
+Home prioritizes the current plan status and its next action. My Plan owns plan editing, feedback, and submission. AI Advisor owns guidance and conversation history. My Advisor owns the advisor profile and meeting actions. The sidebar notification center owns full notification management.
+
+Academic Record owns student ID, faculty, curriculum year, SIS freshness, CGPA, remaining requirements, current enrollments, course attempts, and prerequisites. Account owns contact details and the sign-out action. Academic Record does not request the current plan to calculate milestone rewards.
+
+Course history uses a term timeline, course search, and a term filter. Repeated courses remain separate attempts. The interface displays missing credits and levels as not reported. It uses the backend term code when available. Legacy history can use year and semester. Enrollments display course code and title. Groups and sections are absent from the current backend response.
+
+The backend audit used origin/main at 0bcfa22. The pull fetched that revision but could not fast-forward the local branch. No local backend changes were removed. School, department, and enrollment status exist in the SIS identity model but lack student response fields. The student API lacks historical plan listing, earned-credit totals, and semester GPA. The frontend does not invent these values. Beads acad-zxc tracks the missing contracts.
+
+The separate interactive palette prototypes propose E-JUST red and graphite, Teal and ink, Cobalt and slate, and Plum and graphite. Each proposal includes light and dark tokens, Home, AI, and record previews. E-JUST red and graphite follows the official site red, gray, white, and black family. Accessible action shades are proposed UI adaptations. No proposal changes the application palette before selection.
+
+## 31. E-JUST palette and AI composition, 2026-10-09
+
+### 31.1 Overview and precedence
+
+The current direction uses the quiet Operate E-JUST system.
+The user selected the complete token table from `E-JUST Color System.html` and the supplied Gemini, ChatGPT, and Claude composition references.
+`src/index.css` implements the palette. `index.html` records the opening visual contract.
+This section replaces conflicting crimson palette values in earlier sections, including sections 3, 26, 28, and 29.
+The palette proposals in section 30 record earlier exploration. The selected E-JUST palette now governs the application.
+Section 29.2 defines the current AI composition. Section 28 continues to govern other layouts unless a later section explicitly replaces them.
+Product rules, permissions, academic authority, and plan workflows retain their existing contracts.
+Legacy `crimson` scale names alias E-JUST Red for compatibility. Their names do not authorize the earlier palette.
+
+### 31.2 Colors
+
+Warm Stone supplies the canvas, surfaces, text, and borders.
+E-JUST Red supplies primary actions. Nile Blue supplies secondary actions, links, and focus.
+Sand Gold supplies highlights. Alexandria Teal remains available through its supplied scale and data roles.
+The following table records the implemented `--ejust-*` role tokens.
+
+| Role                | Light       | Dark        |
+| ------------------- | ----------- | ----------- |
+| Background          | `#F8F8F7`   | `#0F0E0D`   |
+| Surface             | `#FFFFFF`   | `#1D1C1A`   |
+| Secondary surface   | `#F0EFEE`   | `#2D2B28`   |
+| Border              | `#E1E0DE`   | `#44423E`   |
+| Strong border       | `#C8C6C3`   | `#5A5752`   |
+| Text                | `#1D1C1A`   | `#F0EFEE`   |
+| Muted text          | `#5A5752`   | `#A19E9A`   |
+| Subtle text         | `#78756F`   | `#78756F`   |
+| Primary             | `#CC1820`   | `#F8636A`   |
+| Primary hover       | `#A8131B`   | `#FF9FA3`   |
+| Primary active      | `#8A141B`   | `#FFC8CA`   |
+| Primary subtle      | `#FFF1F1`   | `#3F0709`   |
+| Text on primary     | `#FFFFFF`   | `#0F0E0D`   |
+| Brand               | `#EA232B`   | `#EA232B`   |
+| Secondary           | `#1D3AA3`   | `#6089F0`   |
+| Secondary subtle    | `#EEF4FF`   | `#111B3D`   |
+| Highlight           | `#E0A100`   | `#F5BC2B`   |
+| Focus ring          | `#3A63E3`   | `#93B3F7`   |
+| Link                | `#2549C8`   | `#93B3F7`   |
+| Disabled background | `#F0EFEE`   | `#2D2B28`   |
+| Disabled text       | `#A19E9A`   | `#5A5752`   |
+| Selection           | `#FFC8CA`   | `#721719`   |
+| Skeleton            | `#E1E0DE`   | `#2D2B28`   |
+| Overlay             | `#0F0E0D8C` | `#000000B3` |
+
+Shared semantic tokens map these roles into existing components. Components use role tokens rather than raw scale values.
+The supplied subtle-text and disabled-text values remain distinct from normal body text.
+The implementation uses muted text for AI placeholders and disclaimers.
+Rose danger uses `#9F1239` with white text in light mode.
+Dark mode uses `#FECDD6` with `#0F0E0D` text. These supplied shades keep error text readable and separate from brand red.
+Success uses `#067647` in light mode and `#12B76A` in dark mode.
+Warning uses `#B54708` in light mode and `#F79009` in dark mode.
+Info uses `#026AA2` in light mode and `#0BA5EC` in dark mode.
+Status labels and borders continue to express plan states alongside their colors.
+
+The eight chart colors retain this order in both themes:
+
+| Series | Color     |
+| ------ | --------- |
+| 1      | `#2F5BEA` |
+| 2      | `#E0A100` |
+| 3      | `#0E9F8E` |
+| 4      | `#EA232B` |
+| 5      | `#7C3AED` |
+| 6      | `#F26B21` |
+| 7      | `#0BA5EC` |
+| 8      | `#6F798E` |
+
+### 31.3 Typography
+
+Inter Variable supplies Latin text. Cairo Variable supplies Arabic text through the RTL body rule.
+Both stacks retain system sans-serif fallbacks. Code retains the existing monospace stack.
+The AI greeting uses a responsive size from 24px to 36px, weight 450, line height 1.35, and letter spacing of -0.03em.
+The greeting centers and balances its text. Its E-JUST PNG logo measures 48px.
+Draft text uses 16px with line height 1.5. Starter rows use 14px.
+The AI entry has no constitution disclaimer. The Home invitation retains its academic authority text.
+
+### 31.4 Layout
+
+The AI entry centers within the available workspace. Its content width reaches 768px and contracts with the viewport.
+The greeting leaves 40px before the draft composer on wider screens.
+Starter rows occupy a centered column of at most 540px, with 24px above the group.
+The active transcript shares the 768px content limit.
+The AI workspace fills 100dvh and prevents outer page scrolling.
+The transcript scrolls independently. The composer occupies the bottom of the flex layout.
+History and New conversation occupy adjacent page actions at the top corner opposite the sidebar.
+The existing sidebar retains its account, notification, and global controls.
+The account control opens a contextual dropdown above the sidebar footer.
+The expanded control shows the avatar, account name, and chevron.
+The notification bell sits beside this control in the expanded row.
+The collapsed 64px rail stacks the account control and notification bell vertically.
+Students see Account in the dropdown. All roles see Appearance, Language, and Sign out.
+Appearance offers Light, Dark, and System radio choices. Language offers English and Arabic radio choices.
+The menu shows the current appearance and language. Menu choices retain 44px minimum targets.
+Sign out remains disabled during its request.
+The collapsed logo reveals the expand icon on hover or keyboard focus. Activation expands the sidebar.
+Collapsed search uses a compact 44px icon target.
+Below 48rem, the greeting stacks vertically and leaves 24px before the composer.
+The entry uses 16px vertical padding. The main workspace uses 12px vertical padding on these smaller screens.
+Logical spacing, mirrored arrows, and the existing RTL Drawer behavior continue to govern Arabic layouts.
+
+### 31.5 Elevation and shapes
+
+The AI draft uses a flat surface and a thin border. Focus adds the Nile Blue border and a soft outline.
+The sidebar retains its low-opacity shadow and 24px corners.
+Both AI surfaces share one composer with 28px corners. The entry action and active send or stop controls use circular shapes.
+Starter rows use 12px corners and a neutral hover fill.
+Home retains its 16px plan surfaces and 14px AI invitation under section 29.
+
+### 31.6 Components and states
+
+The shared textarea disables manual resizing and adjusts its height automatically to 160px.
+Send measures 44px and shows an upward arrow without a spinner.
+Stop uses the same circular 44px target. Each starter row has a minimum height of 48px.
+Page conversation controls retain accessible names when labels disappear.
+The active composer replaces Send with Stop during a reply.
+The textarea remains editable during a reply. Quota exhaustion disables active conversation input.
+Send clears the submitted draft. A failed send restores it only when no newer draft contains text.
+Completed messages expose Copy with a 44px target and success or failure feedback.
+Primary buttons use the primary, hover, active, and text-on-primary roles.
+Shared link controls use the link role. Overlays and loading skeletons use their supplied role tokens.
+Reduced motion removes AI draft and starter transitions. The existing global reduced-motion contract continues to apply.
+The entry draft, pending creation, failures, history states, streaming, and submission confirmation follow section 29.2.
+
+The shared sidebar, AI greeting, and favicon use the actual E-JUST PNG logo.
+Dark mode applies an invert and hue rotation filter to PNG logos for a brighter mark.
+Development query tools require development mode and `VITE_ENABLE_DEVTOOLS=true`.
+The command palette uses the selected color roles for its surfaces, accents, and focus states.
+
+The course map supports hand dragging and arrow-key movement when its canvas has focus.
+Course hover and focus details use an optional backend description when available.
+Without a description, the interface explains the actual course state and prerequisite context.
+
+My Plan exposes Edit courses for drafts. The builder searches available courses by code and title.
+The route error boundary shows a static recovery message. Retry reloads the page.
+These controls retain authorization checks and explicit confirmation for consequential actions.
+
+The backend pull remains blocked by divergent branches.
+Fetched `origin/main` exposes catalog descriptions and annual mean and mode grades through an AI tool.
+The student HTTP response omits these fields. This interface does not invent them.
+The audit does not verify SIS registration writes or establish a new registration contract.
+
+### 31.7 Application rules
+
+Use the selected role pairs for light and dark surfaces.
+Keep the AI greeting, composer, and starter rows in their established order.
+Keep History and New conversation adjacent in the AI page actions.
+Preserve explicit message sending and explicit plan submission confirmation.
+Preserve factual progress and existing academic permissions.
+This section records implemented source behavior. Validation reports establish test and browser results separately.
