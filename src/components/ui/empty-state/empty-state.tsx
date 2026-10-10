@@ -2,14 +2,19 @@ import type { LucideIcon } from 'lucide-react';
 import { Inbox } from 'lucide-react';
 import * as React from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Button, RetryButton } from '@/components/ui/button';
 import { cn } from '@/utils/cn';
 
 export type EmptyStateProps = {
   icon?: LucideIcon;
   title: string;
   description?: string;
-  action?: { label: string; onClick: () => void; loading?: boolean };
+  action?: {
+    label: string;
+    onClick: () => void;
+    loading?: boolean;
+    retry?: boolean;
+  };
   compact?: boolean;
   className?: string;
 };
@@ -22,6 +27,7 @@ export const EmptyState = ({
   compact = false,
   className,
 }: EmptyStateProps) => {
+  const ActionButton = action?.retry ? RetryButton : Button;
   return (
     <div
       className={cn(
@@ -45,7 +51,7 @@ export const EmptyState = ({
         </p>
       )}
       {action && (
-        <Button
+        <ActionButton
           className="mt-2 h-11"
           variant={compact ? 'outline' : 'default'}
           onClick={action.onClick}
@@ -54,7 +60,7 @@ export const EmptyState = ({
           aria-busy={action.loading}
         >
           {action.label}
-        </Button>
+        </ActionButton>
       )}
     </div>
   );
