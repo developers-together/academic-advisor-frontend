@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button';
+import { RetryButton } from '@/components/ui/button';
 import { formatDateTime } from '@/lib/i18n/format';
 import { cn } from '@/utils/cn';
 
@@ -33,7 +33,7 @@ export const RecordFreshness = ({
       <p className="text-xs text-muted-foreground">
         {t('staleSis.dataAsOf', { datetime: formatDateTime(lastSyncedAt) })}
       </p>
-      <Button
+      <RetryButton
         variant="ghost"
         size="sm"
         className="h-11 text-xs text-muted-foreground"
@@ -42,7 +42,7 @@ export const RecordFreshness = ({
         disabled={isRetrying}
       >
         {t('actions.retry')}
-      </Button>
+      </RetryButton>
     </div>
   );
 };
