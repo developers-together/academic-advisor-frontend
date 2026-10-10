@@ -37,7 +37,7 @@ const parsePlan = (row: {
     summary: row.summary,
     courses,
     total_credit_hours: courses.reduce(
-      (total, course) => total + course.credits,
+      (total, course) => total + (course.credits ?? 0),
       0,
     ),
     warnings: JSON.parse(row.warnings) as string[],
