@@ -14,14 +14,18 @@ test('J1: the student builds and submits a plan', async ({ page, request }) => {
     page.getByRole('heading', { name: 'Plan Builder' }),
   ).toBeVisible();
 
-  const picker = page.getByRole('combobox', { name: 'Add a course' });
-  await picker.click();
-  await picker.fill('CS 101');
-  const option = page.getByRole('option', { name: /CS 101/ });
-  await option.waitFor();
-  await option.click();
+  await page.getByRole('button', { name: 'Remove MATH 201' }).click();
   await expect(
-    page.getByRole('button', { name: 'Remove CS 101' }),
+    page.getByRole('button', { name: 'Remove MATH 201' }),
+  ).toBeHidden();
+
+  const search = page.getByRole('textbox', { name: 'Add a course' });
+  await search.fill('MATH 201');
+  const add = page.getByRole('button', { name: 'Add MATH 201 to plan' });
+  await add.waitFor();
+  await add.click();
+  await expect(
+    page.getByRole('button', { name: 'Remove MATH 201' }),
   ).toBeVisible();
 
   await page.getByRole('button', { name: 'Submit plan' }).click();

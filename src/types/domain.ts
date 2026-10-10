@@ -330,6 +330,8 @@ export type NotificationSlug =
   | 'meeting_declined'
   | 'meeting_cancelled'
   | 'meeting_completed'
+  | 'visit_requested'
+  | 'visit_slots_provided'
   | 'caseload_student_removed'
   | 'caseload_student_added'
   | 'window_opened'
@@ -404,10 +406,16 @@ export type ImportSummary = {
 export type AcademicsImportDataset =
   'statistics' | 'active-courses' | 'credit-allowances' | 'curricula';
 
+export type AcademicsImportError = {
+  sheet: string;
+  row: number;
+  message: string;
+};
+
 export type AcademicsImportReport = {
   imported: number;
   skipped: number;
-  errors: string[];
+  errors: AcademicsImportError[];
 };
 
 export type CurrentTerm = {

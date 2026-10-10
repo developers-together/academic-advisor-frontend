@@ -24,11 +24,11 @@ const ACADEMICS_DATASETS = new Set([
 const TERM_KINDS = new Set(['fall', 'spring', 'summer']);
 
 let currentTermState = {
-  code: CURRENT_TERM,
-  kind: 'fall',
-  opens: '2026-09-20',
-  closes: '2026-10-01',
-  starts: '2026-10-10',
+  term_code: CURRENT_TERM,
+  term_kind: 'fall',
+  registration_opens_at: '2026-09-20T00:00:00.000000Z',
+  registration_closes_at: '2026-10-01T00:00:00.000000Z',
+  term_starts_at: '2026-10-10T00:00:00.000000Z',
 };
 
 const requireAdmin = (request: Request) => {
@@ -705,7 +705,7 @@ export const adminHandlers = [
       }
     }
     const summary: ImportSummary = { assigned, unchanged, scheduled };
-    return HttpResponse.json({ data: summary });
+    return HttpResponse.json(summary);
   }),
 
   http.get(`${env.API_URL}/admin/rules`, async ({ request }) => {
@@ -1331,13 +1331,13 @@ export const adminHandlers = [
       const report = {
         imported: errorCount > 0 ? 4 : 128,
         skipped: 3,
-        errors: Array.from(
-          { length: errorCount },
-          (_, index) =>
-            `Row ${index + 1}: the value does not match the expected format.`,
-        ),
+        errors: Array.from({ length: errorCount }, (_, index) => ({
+          sheet: 'Sheet1',
+          row: index + 2,
+          message: 'The value does not match the expected format.',
+        })),
       };
-      return HttpResponse.json({ data: report });
+      return HttpResponse.json(report);
     },
   ),
 
@@ -1358,13 +1358,17 @@ export const adminHandlers = [
     requireAdmin(request);
     const body = (await request.json()) as Record<string, unknown>;
     const errors: Record<string, string[]> = {};
-    if (typeof body.code !== 'string' || !body.code.trim()) {
-      errors.code = ['The term code is required.'];
+    if (typeof body.term_code !== 'string' || !body.term_code.trim()) {
+      errors.term_code = ['The term code is required.'];
     }
-    if (typeof body.kind !== 'string' || !TERM_KINDS.has(body.kind)) {
-      errors.kind = ['Choose a term kind.'];
+    if (typeof body.term_kind !== 'string' || !TERM_KINDS.has(body.term_kind)) {
+      errors.term_kind = ['Choose a term kind.'];
     }
-    for (const field of ['opens', 'closes', 'starts'] as const) {
+    for (const field of [
+      'registration_opens_at',
+      'registration_closes_at',
+      'term_starts_at',
+    ] as const) {
       if (typeof body[field] !== 'string' || !body[field]) {
         errors[field] = ['Pick a date.'];
       }
@@ -1373,11 +1377,11 @@ export const adminHandlers = [
       return invalid(errors);
     }
     currentTermState = {
-      code: String(body.code),
-      kind: String(body.kind),
-      opens: String(body.opens),
-      closes: String(body.closes),
-      starts: String(body.starts),
+      term_code: String(body.term_code),
+      term_kind: String(body.term_kind),
+      registration_opens_at: `${String(body.registration_opens_at)}T00:00:00.000000Z`,
+      registration_closes_at: `${String(body.registration_closes_at)}T00:00:00.000000Z`,
+      term_starts_at: `${String(body.term_starts_at)}T00:00:00.000000Z`,
     };
     return HttpResponse.json({ data: currentTermState });
   }),

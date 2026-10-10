@@ -108,20 +108,21 @@ test('adding a course posts it and shows the returned plan row without a refetch
   expect(planReads).toBe(1);
 
   await userEvent.click(
-    await screen.findByRole('combobox', { name: /add a course/i }),
+    await screen.findByRole('button', { name: 'Add MATH 201 to plan' }),
   );
-  await userEvent.click(await screen.findByRole('option', { name: /CS 301/ }));
 
-  expect(await screen.findByText('CS 301')).toBeInTheDocument();
-  expect(screen.getByText('Algorithms')).toBeInTheDocument();
+  expect(
+    await screen.findByRole('button', { name: 'Remove MATH 201' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText('Calculus II')).toBeInTheDocument();
   expect(planReads).toBe(1);
   expect(planCourses(user.id as number).map((c) => c.course_code)).toEqual([
     'CS 201',
-    'CS 301',
+    'MATH 201',
   ]);
 });
 
-test('the picker lists map entries minus plan members with their map state', async () => {
+test('the shelf lists mapped courses minus completed and plan members', async () => {
   const user = await createUser({ advisor_id: 2 });
   seedDraftPlan(
     user.id as number,
@@ -138,27 +139,22 @@ test('the picker lists map entries minus plan members with their map state', asy
     url: '/app/builder',
   });
 
-  await userEvent.click(
-    await screen.findByRole('combobox', { name: /add a course/i }),
-  );
-
+  const shelf = await screen.findByRole('complementary', {
+    name: /courses for your plan/i,
+  });
+  expect(await within(shelf).findByText('CS 301')).toBeInTheDocument();
+  expect(within(shelf).getByText(/Requires CS 201/)).toBeInTheDocument();
+  expect(within(shelf).getByText('EE 210')).toBeInTheDocument();
+  expect(within(shelf).queryByText('CS 101')).not.toBeInTheDocument();
+  expect(within(shelf).queryByText('MATH 101')).not.toBeInTheDocument();
   expect(
-    await screen.findByRole('option', { name: /CS 101/ }),
-  ).toHaveTextContent('Completed');
-  expect(screen.getByRole('option', { name: /MATH 101/ })).toHaveTextContent(
-    'Completed',
-  );
-  expect(screen.getByRole('option', { name: /CS 301/ })).toHaveTextContent(
-    'Locked',
-  );
-  expect(
-    screen.queryByRole('option', { name: /CS 201/ }),
+    within(shelf).queryByRole('button', { name: 'Add CS 201 to plan' }),
   ).not.toBeInTheDocument();
   expect(
-    screen.queryByRole('option', { name: /MATH 201/ }),
+    within(shelf).queryByRole('button', { name: 'Add MATH 201 to plan' }),
   ).not.toBeInTheDocument();
   expect(
-    screen.queryByRole('option', { name: /EE 210/ }),
+    within(shelf).queryByRole('button', { name: 'Add CS 301 to plan' }),
   ).not.toBeInTheDocument();
 });
 
@@ -178,7 +174,7 @@ test('an empty picker search names the query', async () => {
     url: '/app/builder',
   });
 
-  const input = await screen.findByRole('combobox', {
+  const input = await screen.findByRole('textbox', {
     name: /add a course/i,
   });
   await userEvent.type(input, 'zzz');
@@ -206,7 +202,7 @@ test('remove is one click without a dialog', async () => {
 
   expect(await screen.findByText('CS 201')).toBeInTheDocument();
   expect(screen.getByText('3 credits')).toBeInTheDocument();
-  expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  expect(screen.queryByLabelText(/reason/i)).not.toBeInTheDocument();
 
   await userEvent.click(screen.getByRole('button', { name: 'Remove CS 201' }));
 
@@ -288,7 +284,9 @@ test('a failed submit renders each server message under its line plus the groupe
     'CS 301 requires CS 201 first. Complete the missing prerequisites or pick an eligible course.',
   );
 
-  const cs999Line = screen.getByText('CS 999').closest('li');
+  const cs999Line = screen
+    .getByRole('button', { name: 'Remove CS 999' })
+    .closest('li');
   expect(cs999Line).not.toBeNull();
   expect(
     within(cs999Line as HTMLElement).getByText(
@@ -331,7 +329,9 @@ test('an inactive course shows its message under the line and the plan keeps oth
     await screen.findByText('Resolve 1 issue to submit.'),
   ).toBeInTheDocument();
 
-  const ee210Line = screen.getByText('EE 210').closest('li');
+  const ee210Line = screen
+    .getByRole('button', { name: 'Remove EE 210' })
+    .closest('li');
   expect(ee210Line).not.toBeNull();
   expect(
     within(ee210Line as HTMLElement).getByText(
@@ -339,7 +339,9 @@ test('an inactive course shows its message under the line and the plan keeps oth
     ),
   ).toBeInTheDocument();
 
-  const cs201Line = screen.getByText('CS 201').closest('li');
+  const cs201Line = screen
+    .getByRole('button', { name: 'Remove CS 201' })
+    .closest('li');
   expect(
     within(cs201Line as HTMLElement).queryByRole('status'),
   ).not.toBeInTheDocument();
@@ -389,7 +391,9 @@ test('the window 422 renders the closed-window banner at the submit gate and the
 
   expect(await screen.findByText('Registration is closed')).toBeInTheDocument();
   expect(
-    screen.getByText('Your approved plan waits for the next window.'),
+    screen.getByText(
+      'Your draft was not submitted. Contact your advisor about the registration window.',
+    ),
   ).toBeInTheDocument();
   expect(
     screen.queryByRole('button', { name: /submit plan/i }),
@@ -402,7 +406,14 @@ test('the window 422 renders the closed-window banner at the submit gate and the
   expect(
     await screen.findByRole('button', { name: /submit plan/i }),
   ).toBeInTheDocument();
-  expect(screen.getByText('CS 201')).toBeInTheDocument();
+  expect(
+    await screen.findByRole('button', { name: 'Remove CS 201' }),
+  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', { name: 'Remove MATH 201' }),
+    ).not.toBeInTheDocument(),
+  );
 });
 
 test('a 503 submit renders the destructive retry banner and the builder stays editable', async () => {
@@ -448,10 +459,9 @@ test('a 503 submit renders the destructive retry banner and the builder stays ed
   expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
 
   await userEvent.click(
-    await screen.findByRole('combobox', { name: /add a course/i }),
+    await screen.findByRole('button', { name: 'Add EE 210 to plan' }),
   );
-  await userEvent.click(await screen.findByRole('option', { name: /CS 301/ }));
-  expect(await screen.findByText('CS 301')).toBeInTheDocument();
+  expect(await screen.findByText('Circuits')).toBeInTheDocument();
 });
 
 test('the builder flow is operable with the keyboard alone', async () => {
@@ -468,28 +478,32 @@ test('the builder flow is operable with the keyboard alone', async () => {
   expect(await screen.findByText(/your plan is empty/i)).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /submit plan/i })).toBeDisabled();
 
-  const picker = await screen.findByRole('combobox', {
+  const search = await screen.findByRole('textbox', {
     name: /add a course/i,
   });
-  picker.focus();
-  await screen.findByRole('option', { name: /CS 101/ });
+  search.focus();
   await userEvent.keyboard('MATH 201');
-  await userEvent.keyboard('{ArrowDown}');
-  await userEvent.keyboard('{ArrowDown}');
+
+  await screen.findByRole('button', { name: 'Add MATH 201 to plan' });
+  await userEvent.keyboard('{Tab}{Tab}{Tab}{Tab}');
   await userEvent.keyboard('{Enter}');
 
-  expect(await screen.findByText('MATH 201')).toBeInTheDocument();
+  expect(
+    await screen.findByRole('button', { name: 'Remove MATH 201' }),
+  ).toBeInTheDocument();
 
   const remove = screen.getByRole('button', { name: 'Remove MATH 201' });
   remove.focus();
   await userEvent.keyboard('{Enter}');
   await screen.findByText(/your plan is empty/i);
 
+  await userEvent.clear(search);
   await userEvent.click(
-    await screen.findByRole('combobox', { name: /add a course/i }),
+    await screen.findByRole('button', { name: 'Add MATH 201 to plan' }),
   );
-  await userEvent.click(await screen.findByRole('option', { name: /CS 101/ }));
-  await screen.findByText('CS 101');
+  expect(
+    await screen.findByRole('button', { name: 'Remove MATH 201' }),
+  ).toBeInTheDocument();
 
   const submit = screen.getByRole('button', { name: /submit plan/i });
   submit.focus();
@@ -542,7 +556,9 @@ test('starting a plan from the builder creates it', async () => {
   );
 
   expect(
-    await screen.findByRole('combobox', { name: /add a course/i }),
+    await screen.findByRole('complementary', {
+      name: /courses for your plan/i,
+    }),
   ).toBeInTheDocument();
   expect(await screen.findByText(/your plan is empty/i)).toBeInTheDocument();
 });
@@ -612,7 +628,7 @@ test('discarding a plan confirms once and the plan leaves the draft builder', as
   );
 
   expect(
-    await screen.findByText(/only a draft can be edited/i),
+    await screen.findByRole('button', { name: /start your plan/i }),
   ).toBeInTheDocument();
   expect(
     db.plan.findFirst({ where: { userId: { equals: user.id as number } } })

@@ -54,15 +54,13 @@ export const RegistrationGuide = ({ plan }: { plan: Plan }) => {
         </ol>
       </CardHeader>
       <CardBody className="space-y-4 pt-0">
-        <p className="max-w-prose text-sm text-muted-foreground">
-          {approved
-            ? t('registration.approved')
-            : plan.status === 'draft'
-              ? t('registration.beforeApproval')
-              : t(
-                  `dashboard.context.${plan.status === 'submitted' ? 'submittedFallback' : plan.status}`,
-                )}
-        </p>
+        {(approved || plan.status === 'draft') && (
+          <p className="max-w-prose text-sm text-muted-foreground">
+            {approved
+              ? t('registration.approved')
+              : t('registration.beforeApproval')}
+          </p>
+        )}
         {approved && (
           <>
             <ol className="list-decimal space-y-2 ps-5 text-sm">

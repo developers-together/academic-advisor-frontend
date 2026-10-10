@@ -13,6 +13,10 @@ beforeEach(() => {
 
 const fillSignupForm = async () => {
   await userEvent.type(
+    await screen.findByLabelText('Full name'),
+    'Lina Abdullah',
+  );
+  await userEvent.type(
     await screen.findByLabelText('University email'),
     'lina.abdullah@ejust.edu.eg',
   );
@@ -44,7 +48,11 @@ test('a valid signup posts the National ID and reports the verification email', 
   const onRegistered = vi.fn();
   server.use(
     http.post(`${env.API_URL}/register`, async ({ request }) => {
-      const body = (await request.json()) as { national_id?: string };
+      const body = (await request.json()) as {
+        national_id?: string;
+        name?: string;
+      };
+      expect(body.name).toBe('Lina Abdullah');
       expect(body.national_id).toBe('30201011204519');
       return HttpResponse.json(
         { message: 'We sent a verification link to your email.' },

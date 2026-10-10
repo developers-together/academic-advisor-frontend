@@ -71,6 +71,10 @@ const loginWithEmailAndPassword = async (data: LoginInput): Promise<User> => {
 
 export const registerInputSchema = z
   .object({
+    name: z
+      .string()
+      .min(1, 'auth:errors.nameRequired')
+      .max(255, 'auth:errors.nameMax'),
     email: z
       .string()
       .min(1, 'auth:errors.emailRequired')
@@ -101,6 +105,7 @@ const registerWithEmailAndPassword = async (
   data: RegisterInput,
 ): Promise<RegisterResult> => {
   await api.post('/register', {
+    name: data.name,
     email: data.email,
     password: data.password,
     password_confirmation: data.passwordConfirmation,

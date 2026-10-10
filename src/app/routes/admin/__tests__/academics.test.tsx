@@ -74,7 +74,7 @@ test('saving the current term puts every field', async () => {
 
   await waitFor(() =>
     expect(putTerm).toHaveBeenCalledWith(
-      expect.objectContaining({ code: '2027S', kind: 'spring' }),
+      expect.objectContaining({ term_code: '2027S', term_kind: 'spring' }),
     ),
   );
 });
@@ -84,15 +84,13 @@ test('an import reports the counts and lists the rejected rows with a cap', asyn
   server.use(
     http.post(`${env.API_URL}/admin/imports/statistics`, async () =>
       HttpResponse.json({
-        data: {
-          imported: 4,
-          skipped: 3,
-          errors: Array.from(
-            { length: 23 },
-            (_, index) =>
-              `Row ${index + 1}: the value does not match the expected format.`,
-          ),
-        },
+        imported: 4,
+        skipped: 3,
+        errors: Array.from({ length: 23 }, (_, index) => ({
+          sheet: 'Sheet1',
+          row: index + 2,
+          message: 'The value does not match the expected format.',
+        })),
       }),
     ),
   );
@@ -123,7 +121,7 @@ test('an import reports the counts and lists the rejected rows with a cap', asyn
   expect(
     await screen.findByText('Imported 4. Skipped 3. Rejected 23.'),
   ).toBeInTheDocument();
-  const rows = within(card).getAllByText(/Row \d+:/);
+  const rows = within(card).getAllByText(/does not match the expected format/);
   expect(rows).toHaveLength(20);
   expect(within(card).getByText('3 more rows not shown.')).toBeInTheDocument();
 });
@@ -132,9 +130,7 @@ test('a clean import shows counts with no rejected-row table', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   server.use(
     http.post(`${env.API_URL}/admin/imports/statistics`, async () =>
-      HttpResponse.json({
-        data: { imported: 128, skipped: 3, errors: [] },
-      }),
+      HttpResponse.json({ imported: 128, skipped: 3, errors: [] }),
     ),
   );
 

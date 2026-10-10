@@ -28,6 +28,7 @@ export const SignupForm = ({ onRegistered }: SignupFormProps) => {
     resolver,
     mode: 'onBlur',
     defaultValues: {
+      name: '',
       email: '',
       studentId: '',
       nationalId: '',
@@ -56,6 +57,7 @@ export const SignupForm = ({ onRegistered }: SignupFormProps) => {
             string,
             keyof z.input<typeof registerInputSchema>
           > = {
+            name: 'name',
             email: 'email',
             student_id: 'studentId',
             national_id: 'nationalId',
@@ -84,6 +86,17 @@ export const SignupForm = ({ onRegistered }: SignupFormProps) => {
       className="space-y-4"
       noValidate
     >
+      <div className="space-y-1">
+        <Input
+          type="text"
+          label={t('signup.name')}
+          autoComplete="name"
+          error={form.formState.errors.name}
+          registration={form.register('name')}
+          className="h-11 text-base"
+        />
+      </div>
+
       <div className="space-y-1">
         <Input
           type="email"

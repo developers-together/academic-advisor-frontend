@@ -357,7 +357,9 @@ test.describe('Student workspace corrections', () => {
       .getByRole('link', { name: 'Edit courses manually', exact: true })
       .click();
     await expect(page).toHaveURL(/\/app\/builder$/);
-    await expect(page.getByRole('combobox')).toBeVisible();
+    await expect(
+      page.getByRole('textbox', { name: 'Add a course' }),
+    ).toBeVisible();
     await page.goto('/app/record');
     await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
     const canvas = page.locator('.course-map-canvas');

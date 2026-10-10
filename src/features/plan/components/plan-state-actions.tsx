@@ -57,16 +57,21 @@ export const PlanStateActions = ({
 
   if (plan.status === 'discarded')
     return (
-      <Button asChild>
-        <Link
-          to={paths.app.builder.getHref()}
-          onClick={(event) => {
-            if (pending) event.preventDefault();
-          }}
-        >
-          {t('builder.startPlan')}
-        </Link>
-      </Button>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <p className="text-sm text-muted-foreground">
+          {t('dashboard.context.discarded')}
+        </p>
+        <Button asChild>
+          <Link
+            to={paths.app.builder.getHref()}
+            onClick={(event) => {
+              if (pending) event.preventDefault();
+            }}
+          >
+            {t('builder.startPlan')}
+          </Link>
+        </Button>
+      </div>
     );
 
   if (plan.status === 'draft') {

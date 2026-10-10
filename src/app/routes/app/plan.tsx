@@ -96,8 +96,7 @@ export default function PlanRoute() {
           : undefined
       }
       actions={
-        plan &&
-        plan.status !== 'discarded' && (
+        plan && (
           <PlanStateActions
             plan={plan}
             canSubmit={plan.courses.length > 0}
@@ -161,19 +160,19 @@ export default function PlanRoute() {
             />
           )}
 
-        {(plan?.status === 'discarded' ||
-          (planQuery.error instanceof ApiError &&
-            planQuery.error.status === 404)) && (
-          <EmptyState
-            className="max-w-2xl"
-            title={t('myPlan.empty.title')}
-            description={t('myPlan.empty.body')}
-            action={{
-              label: t('myPlan.empty.action'),
-              onClick: () => navigate(paths.app.builder.getHref()),
-            }}
-          />
-        )}
+        {planQuery.isError &&
+          planQuery.error instanceof ApiError &&
+          planQuery.error.status === 404 && (
+            <EmptyState
+              className="max-w-2xl"
+              title={t('myPlan.empty.title')}
+              description={t('myPlan.empty.body')}
+              action={{
+                label: t('myPlan.empty.action'),
+                onClick: () => navigate(paths.app.builder.getHref()),
+              }}
+            />
+          )}
 
         {plan && plan.status !== 'discarded' && (
           <>

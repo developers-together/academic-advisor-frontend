@@ -387,7 +387,9 @@ test('the window 422 renders the closed-window banner at the CTA instead of the 
 
   expect(await screen.findByText('Registration is closed')).toBeInTheDocument();
   expect(
-    screen.getByText('Your approved plan waits for the next window.'),
+    screen.getByText(
+      'Your draft was not submitted. Contact your advisor about the registration window.',
+    ),
   ).toBeInTheDocument();
   expect(
     screen.queryByRole('button', { name: /submit plan/i }),

@@ -13,15 +13,21 @@ test('the plan builder runs add to submit from the keyboard', async ({
     page.getByRole('heading', { name: 'Plan Builder' }),
   ).toBeVisible();
 
-  const picker = page.getByRole('combobox', { name: 'Add a course' });
-  await focusByKeyboard(page, picker);
+  await page.getByRole('button', { name: 'Remove MATH 201' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Remove MATH 201' }),
+  ).toBeHidden();
 
-  await picker.pressSequentially('CS 101');
-  const option = page.getByRole('option', { name: /CS 101/ });
-  await option.waitFor();
+  const search = page.getByRole('textbox', { name: 'Add a course' });
+  await focusByKeyboard(page, search);
+
+  await search.pressSequentially('MATH 201');
+  const add = page.getByRole('button', { name: 'Add MATH 201 to plan' });
+  await add.waitFor();
+  await focusByKeyboard(page, add);
   await page.keyboard.press('Enter');
   await expect(
-    page.getByRole('button', { name: 'Remove CS 101' }),
+    page.getByRole('button', { name: 'Remove MATH 201' }),
   ).toBeVisible();
 
   const submit = page.getByRole('button', { name: 'Submit plan' });

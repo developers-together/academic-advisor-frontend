@@ -118,15 +118,15 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
                     <TableBody>
                       {report.errors
                         .slice(0, MAX_REPORT_ROWS)
-                        .map((message) => (
-                          <TableRow key={report.errors.indexOf(message)}>
+                        .map((error, index) => (
+                          <TableRow key={`${error.sheet}-${error.row}`}>
                             <TableCell className="w-24 px-3 py-2 text-2xs text-muted-foreground tabular-nums">
                               {t('academics.imports.reportRow', {
-                                n: report.errors.indexOf(message) + 1,
+                                n: index + 1,
                               })}
                             </TableCell>
                             <TableCell className="px-3 py-2 text-sm">
-                              {message}
+                              {error.message}
                             </TableCell>
                           </TableRow>
                         ))}

@@ -21,7 +21,9 @@
     "meeting_confirmed": "تم تأكيد الاجتماع",
     "meeting_declined": "تم رفض الاجتماع",
     "meeting_cancelled": "تم إلغاء الاجتماع",
-    "meeting_completed": "تم الاجتماع"
+    "meeting_completed": "تم الاجتماع",
+    "visit_requested": "طلب زيارة",
+    "visit_slots_provided": "أوقات زيارة مقترحة"
   },
   "all": "الكل",
   "viewAll": "عرض جميع الإشعارات",

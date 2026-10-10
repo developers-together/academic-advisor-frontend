@@ -32,6 +32,8 @@ const slugIcons: Record<NotificationSlug, LucideIcon> = {
   meeting_declined: CalendarX2,
   meeting_cancelled: CalendarX2,
   meeting_completed: CircleCheck,
+  visit_requested: CalendarPlus,
+  visit_slots_provided: CalendarCheck,
 };
 
 export type NotificationItemProps = {
