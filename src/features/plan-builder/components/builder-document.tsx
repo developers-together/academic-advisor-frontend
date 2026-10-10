@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 
 import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/dialog';
+import { paths } from '@/config/paths';
 import {
   buildCourseTitleIndex,
   useAcademicRecord,
@@ -29,10 +31,15 @@ const lineId = (courseCode: string) =>
 
 export type BuilderDocumentProps = {
   plan: Plan;
+  initialFailure?: SubmitFailure | null;
 };
 
-export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
+export const BuilderDocument = ({
+  plan,
+  initialFailure = null,
+}: BuilderDocumentProps) => {
   const { t } = useTranslation('plan');
+  const navigate = useNavigate();
   const academicRecord = useAcademicRecord();
   const addCourse = useAddPlanCourse();
   const removeCourse = useRemovePlanCourse();
@@ -40,7 +47,7 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
   const discardPlanMutation = useDiscardPlan();
 
   const [dragOver, setDragOver] = useState(false);
-  const [failure, setFailure] = useState<SubmitFailure | null>(null);
+  const [failure, setFailure] = useState<SubmitFailure | null>(initialFailure);
   const [windowClosed, setWindowClosed] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
   const [discardError, setDiscardError] = useState<string | null>(null);
@@ -86,7 +93,10 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
 
   const handleSubmit = () => {
     submitPlanMutation.mutate(undefined, {
-      onSuccess: () => clearResults(),
+      onSuccess: () => {
+        clearResults();
+        navigate(paths.app.plan.getHref());
+      },
       onError: (error) => {
         if (error instanceof ApiError && error.status === 422) {
           const parsed = parseSubmitFailure(error);
@@ -177,7 +187,10 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
               <h2 className="text-base font-semibold">
                 {t('termContext', { term: plan.term_code })}
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground tabular-nums">
+              <p
+                className="mt-1 text-sm text-muted-foreground tabular-nums"
+                role="status"
+              >
                 {t('builder.creditsTotal', {
                   total: plan.total_credit_hours,
                 })}
@@ -209,7 +222,7 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
                         key={course.course_code}
                         id={lineId(course.course_code)}
                         tabIndex={-1}
-                        className="list-none focus-visible:outline-none"
+                        className="list-none rounded-lg focus:outline-2 focus:outline-offset-4 focus:outline-ring"
                       >
                         <BuilderLine
                           course={course}
