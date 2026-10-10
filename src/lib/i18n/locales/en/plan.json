@@ -67,7 +67,8 @@
       "title": "Your plan was not submitted",
       "body": "The checks below block submission. Edit in the Plan Builder to fix these.",
       "editAction": "Edit in the Plan Builder"
-    }
+    },
+    "editCourses": "Edit courses manually"
   },
   "builder": {
     "title": "Plan Builder",
@@ -209,7 +210,14 @@
       "title": "Your course map is not available yet.",
       "body": "It appears once the SIS reports your curriculum."
     },
-    "unlocks": "Unlocks"
+    "unlocks": "Unlocks",
+    "panHint": "Drag to explore · Arrow keys to move",
+    "description": {
+      "completed": "You completed this course. Explore its connections to see which courses it unlocks.",
+      "planned": "This course is in your current plan. Review its prerequisites before you submit.",
+      "eligible": "You meet the prerequisite requirements for this course. You can add it in the manual plan builder.",
+      "locked": "Complete the listed prerequisites before planning this course."
+    }
   },
   "progressRing": {
     "label": "{{percent}} percent of the mapped curriculum completed"
@@ -257,5 +265,22 @@
     "submitted": "Submitted",
     "under_review": "Under review",
     "withdrawn": "Withdrawn"
+  },
+  "redesign": {
+    "welcome": "Welcome back, {{name}}. Your next step starts here.",
+    "viewPlan": "View plan",
+    "noCourses": "Your course list is ready to build.",
+    "moreCourses_one": "And {{count}} more course in your plan.",
+    "moreCourses_other": "And {{count}} more courses in your plan.",
+    "aiHeading": "A clearer plan starts with a conversation."
+  },
+  "recordDetails": {
+    "search": "Find a course in your history",
+    "allTerms": "All terms",
+    "historyContext": "Explore your SIS course attempts by term. Repeated courses remain separate attempts.",
+    "attempts_one": "{{count}} course attempt",
+    "attempts_other": "{{count}} course attempts",
+    "noResults": "No course attempts match these filters.",
+    "unreported": "Not reported"
   }
 }

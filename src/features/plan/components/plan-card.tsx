@@ -1,15 +1,9 @@
+import { ArrowRight, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import { PlanStateChip } from '@/components/domain/plan-state-chip';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { paths } from '@/config/paths';
 import type { Plan, PlanStatus } from '@/types/domain';
 
@@ -89,52 +83,73 @@ export const PlanCard = ({ plan }: PlanCardProps) => {
   const context = contextLineFor(plan.status, null);
 
   return (
-    <Card className="h-full">
-      <CardHeader className="flex-row items-start justify-between gap-3">
-        <div>
-          <CardTitle>{t('termContext', { term: plan.term_code })}</CardTitle>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t(context.key, context.values)}
-          </p>
+    <article className="home-plan">
+      <div className="home-plan-stage">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-base font-medium">
+            {t('termContext', { term: plan.term_code })}
+          </h2>
+          <PlanStateChip status={plan.status} />
         </div>
-        <PlanStateChip status={plan.status} />
-      </CardHeader>
-      <CardBody className="pt-0">
-        <p className="text-sm text-muted-foreground">
-          {t('dashboard.courseCount', { count: plan.courses.length })}
-        </p>
-        {plan.courses.length > 0 && (
-          <ul className="mt-4 divide-y">
+        <p className="home-plan-message">{t(context.key, context.values)}</p>
+        <div className="mt-7 flex flex-wrap items-center gap-4">
+          {cta.kind === 'link' ? (
+            <Button asChild className="home-plan-action">
+              <Link to={cta.href}>
+                {t(cta.labelKey)}
+                <ArrowRight
+                  className="ms-3 size-4 rtl:-scale-x-100"
+                  aria-hidden
+                />
+              </Link>
+            </Button>
+          ) : null}
+          <span className="text-sm">
+            {t('dashboard.courseCount', { count: plan.courses.length })}
+          </span>
+        </div>
+      </div>
+      <div className="home-course-ledger">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <h3 className="inline-flex items-center gap-2 text-sm font-semibold">
+            <BookOpen className="size-4" aria-hidden />
+            {t('myPlan.title')}
+          </h3>
+          <Link to={paths.app.plan.getHref()} className="home-text-link">
+            {t('redesign.viewPlan')}
+            <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
+          </Link>
+        </div>
+        {plan.courses.length > 0 ? (
+          <ul className="divide-y">
             {plan.courses.slice(0, 3).map((course) => (
               <li
                 key={course.course_code}
-                className="flex items-start justify-between gap-4 py-3"
+                className="flex items-center gap-4 py-4"
               >
-                <div className="min-w-0">
-                  <span className="bidi-code text-sm font-semibold">
-                    {course.course_code}
-                  </span>
-                  {course.title && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {course.title}
-                    </p>
-                  )}
-                </div>
-                <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+                <span className="bidi-code min-w-20 text-sm font-semibold">
+                  {course.course_code}
+                </span>
+                <span className="min-w-0 flex-1 text-sm text-muted-foreground">
+                  {course.title ?? ''}
+                </span>
+                <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                   {t('builder.line.credits', { credits: course.credits })}
                 </span>
               </li>
             ))}
           </ul>
+        ) : (
+          <p className="py-4 text-sm text-muted-foreground">
+            {t('redesign.noCourses')}
+          </p>
         )}
-      </CardBody>
-      {cta.kind === 'link' && (
-        <CardFooter className="pt-0">
-          <Button asChild className="h-11">
-            <Link to={cta.href}>{t(cta.labelKey)}</Link>
-          </Button>
-        </CardFooter>
-      )}
-    </Card>
+        {plan.courses.length > 3 && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {t('redesign.moreCourses', { count: plan.courses.length - 3 })}
+          </p>
+        )}
+      </div>
+    </article>
   );
 };

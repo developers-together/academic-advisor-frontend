@@ -42,7 +42,7 @@ export const NotificationBell = ({ forRole }: NotificationBellProps) => {
             {unreadCount > 0 && (
               <span
                 aria-hidden
-                className="absolute inset-e-1 top-1 flex min-w-4 items-center justify-center rounded-full bg-crimson-500 px-1 text-2xs leading-4 font-semibold text-white"
+                className="absolute inset-e-1 top-1 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-2xs leading-4 font-semibold text-primary-foreground"
               >
                 {unreadCount}
               </span>

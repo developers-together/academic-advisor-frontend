@@ -1,5 +1,7 @@
+import { PencilLine } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 
 import { Banner, ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
+import { paths } from '@/config/paths';
 import type { Plan } from '@/types/domain';
 
 import { SeenButton } from './seen-button';
@@ -72,6 +75,15 @@ export const PlanStateActions = ({
     }
     return (
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <Button
+          asChild
+          variant="outline"
+          icon={<PencilLine className="size-4" aria-hidden />}
+        >
+          <Link to={paths.app.builder.getHref()}>
+            {t('myPlan.editCourses')}
+          </Link>
+        </Button>
         <DraftSubmit
           canSubmit={canSubmit}
           submitBlockedCount={submitBlockedCount}

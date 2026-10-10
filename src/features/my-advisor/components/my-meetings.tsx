@@ -77,7 +77,7 @@ export const MyMeetings = ({
                     }
                     className={`flex min-h-11 items-center rounded-md border px-3 text-sm tabular-nums transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden ${
                       picked === slot.id
-                        ? 'border-primary bg-crimson-100 font-medium text-foreground'
+                        ? 'border-primary bg-crimson-100 dark:bg-primary-subtle font-medium text-foreground'
                         : 'hover:bg-accent'
                     }`}
                   >

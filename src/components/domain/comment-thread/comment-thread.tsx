@@ -86,7 +86,10 @@ export const CommentThread = ({
             return (
               <li
                 key={comment.id}
-                className={cn('rounded-lg p-3', unread && 'bg-crimson-100')}
+                className={cn(
+                  'rounded-lg p-3',
+                  unread && 'bg-crimson-100 dark:bg-primary-subtle',
+                )}
               >
                 <p className="text-sm whitespace-pre-wrap">{comment.body}</p>
                 <p className="mt-1 flex items-center gap-2 text-2xs text-muted-foreground">

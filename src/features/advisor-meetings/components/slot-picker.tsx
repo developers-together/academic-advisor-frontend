@@ -101,7 +101,7 @@ export const SlotPicker = ({
                       ? 'cursor-not-allowed border-border bg-muted text-muted-foreground line-through'
                       : 'hover:bg-accent',
                     isSelected &&
-                      'border-primary bg-crimson-100 font-medium text-foreground',
+                      'border-primary bg-crimson-100 dark:bg-primary-subtle font-medium text-foreground',
                   )}
                 >
                   {formatCairoSlotRange(slot.starts_at, slot.ends_at)}
