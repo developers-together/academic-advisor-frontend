@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContentLayout } from '@/components/layouts';
@@ -17,18 +16,15 @@ export default function BuilderRoute() {
   const user = useUser();
   const planQuery = usePlan();
   const createPlan = useCreatePlan();
-  const [startConflict, setStartConflict] = useState(false);
 
   const plan = planQuery.data;
   const notDraft = plan && plan.status !== 'draft';
 
   const startPlan = () => {
     createPlan.mutate(undefined, {
-      onSuccess: () => setStartConflict(false),
       onError: (error) => {
         if (error instanceof ApiError && error.status === 409) {
           void planQuery.refetch();
-          setStartConflict(true);
         }
       },
     });
@@ -40,11 +36,17 @@ export default function BuilderRoute() {
         {planQuery.isPending && <SkeletonCard className="max-w-2xl" />}
 
         {planQuery.isError &&
-          planQuery.error instanceof ApiError &&
-          planQuery.error.status !== 404 && (
+          !(
+            planQuery.error instanceof ApiError &&
+            planQuery.error.status === 404
+          ) && (
             <ErrorState
               onRetry={() => void planQuery.refetch()}
-              requestId={planQuery.error.requestId}
+              requestId={
+                planQuery.error instanceof ApiError
+                  ? planQuery.error.requestId
+                  : null
+              }
             />
           )}
 
@@ -52,7 +54,7 @@ export default function BuilderRoute() {
           planQuery.error instanceof ApiError &&
           planQuery.error.status === 404 && (
             <>
-              {(startConflict || !user.data?.advisor_id) && (
+              {!user.data?.advisor_id && (
                 <Banner variant="warning" className="max-w-2xl">
                   {t('noAdvisor.banner')}
                 </Banner>
@@ -77,6 +79,14 @@ export default function BuilderRoute() {
               />
             </>
           )}
+
+        {createPlan.isError && (
+          <Banner variant="destructive" className="max-w-2xl">
+            {createPlan.error instanceof ApiError
+              ? createPlan.error.message
+              : t('common:errors.saveFailed')}
+          </Banner>
+        )}
 
         {plan && (
           <>
