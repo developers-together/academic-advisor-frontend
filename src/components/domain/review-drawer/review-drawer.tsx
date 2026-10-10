@@ -224,9 +224,11 @@ export const ReviewDrawer = ({
                             {course.course_code}
                           </span>
                           <span className="ms-auto text-xs text-muted-foreground tabular-nums">
-                            {t('plan:builder.line.credits', {
-                              credits: course.credits,
-                            })}
+                            {course.credits == null
+                              ? t('plan:builder.line.creditsUnknown')
+                              : t('plan:builder.line.credits', {
+                                  credits: course.credits,
+                                })}
                           </span>
                         </li>
                       ))}
