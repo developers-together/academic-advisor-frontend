@@ -28,7 +28,7 @@ export const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
     <nav aria-label={t('breadcrumb.label')} className={cn(className)}>
       <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
         {visible.map((item, index) => {
-          const isCurrent = index === visible.length - 1;
+          const isCurrent = index === visible.length - 1 && !item.to;
           const collapsed = collapsible && !expanded && index === 1;
 
           return (
