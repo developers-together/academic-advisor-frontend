@@ -28,18 +28,24 @@ const parsePlan = (row: {
   submitted_at: string | null;
   decided_at: string | null;
   return_reason: string | null;
-}): Plan => ({
-  id: row.id as number,
-  status: row.status as Plan['status'],
-  term_code: row.term_code,
-  summary: row.summary,
-  courses: JSON.parse(row.courses) as PlannedCourse[],
-  total_credit_hours: row.total_credit_hours,
-  warnings: JSON.parse(row.warnings) as string[],
-  submitted_at: row.submitted_at,
-  decided_at: row.decided_at,
-  return_reason: row.return_reason || null,
-});
+}): Plan => {
+  const courses = JSON.parse(row.courses) as PlannedCourse[];
+  return {
+    id: row.id as number,
+    status: row.status as Plan['status'],
+    term_code: row.term_code,
+    summary: row.summary,
+    courses,
+    total_credit_hours: courses.reduce(
+      (total, course) => total + course.credits,
+      0,
+    ),
+    warnings: JSON.parse(row.warnings) as string[],
+    submitted_at: row.submitted_at,
+    decided_at: row.decided_at,
+    return_reason: row.return_reason || null,
+  };
+};
 
 const planOf = (userId: number) =>
   db.plan.findFirst({ where: { userId: { equals: userId as number } } });
@@ -150,6 +156,12 @@ export const planHandlers = [
     if (!row) {
       return HttpResponse.json({ message: 'No plan found.' }, { status: 404 });
     }
+    if (row.status !== 'draft') {
+      return HttpResponse.json(
+        { message: 'Only a draft plan can be edited.' },
+        { status: 422 },
+      );
+    }
     const body = (await request.json()) as { course_code?: unknown };
     const courseCode =
       typeof body.course_code === 'string' ? body.course_code.trim() : '';
@@ -201,6 +213,12 @@ export const planHandlers = [
         return HttpResponse.json(
           { message: 'No plan found.' },
           { status: 404 },
+        );
+      }
+      if (row.status !== 'draft') {
+        return HttpResponse.json(
+          { message: 'Only a draft plan can be edited.' },
+          { status: 422 },
         );
       }
       const courseCode = parseCourseCode(String(params.courseCode));
@@ -307,6 +325,12 @@ export const planHandlers = [
     const row = planOf(user.id as number);
     if (!row) {
       return HttpResponse.json({ message: 'No plan found.' }, { status: 404 });
+    }
+    if (row.status !== 'draft') {
+      return HttpResponse.json(
+        { message: 'Only a draft plan can be edited.' },
+        { status: 422 },
+      );
     }
     if (registrationClosed()) {
       return HttpResponse.json(
