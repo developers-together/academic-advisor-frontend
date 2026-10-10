@@ -6,6 +6,8 @@ import { MDPreview } from '@/components/ui/md-preview';
 import { formatDateTime } from '@/lib/i18n/format';
 import { cn } from '@/utils/cn';
 
+import { EjustResponseMark } from './ejust-response-mark';
+
 export type MessageBubbleProps = {
   messageRole: 'user' | 'assistant';
   content: string;
@@ -80,9 +82,7 @@ export const MessageBubble = ({
 
   const mark =
     messageRole === 'assistant' ? (
-      <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-text">
-        <img src="/ejust-logo.png" alt="" className="size-6 object-contain" />
-      </span>
+      <EjustResponseMark phase={streaming ? 'streaming' : 'complete'} />
     ) : null;
 
   return (
