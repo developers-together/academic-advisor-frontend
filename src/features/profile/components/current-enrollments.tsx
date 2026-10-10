@@ -5,7 +5,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import type { CurrentEnrollment } from '@/types/domain';
 
 export type CurrentEnrollmentsProps = {
-  enrollments: CurrentEnrollment[];
+  enrollments?: CurrentEnrollment[];
 };
 
 export const CurrentEnrollments = ({
@@ -19,11 +19,17 @@ export const CurrentEnrollments = ({
         <CardTitle>{t('profile.enrollments.title')}</CardTitle>
       </CardHeader>
       <CardBody>
-        {enrollments.length === 0 ? (
+        {!enrollments ? (
+          <EmptyState compact title={t('registration.unreported')} />
+        ) : enrollments.length === 0 ? (
           <EmptyState compact title={t('profile.enrollments.empty')} />
         ) : (
           <ul className="space-y-3">
-            {enrollments.map((enrollment) => (
+            {[
+              ...new Map(
+                enrollments.map((entry) => [entry.course_code, entry]),
+              ).values(),
+            ].map((enrollment) => (
               <li key={enrollment.course_code} className="space-y-0.5">
                 <p className="text-sm font-medium">
                   <span className="bidi-code">{enrollment.course_code}</span>
