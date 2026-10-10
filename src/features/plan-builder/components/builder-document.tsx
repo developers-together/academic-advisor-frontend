@@ -20,7 +20,7 @@ import type { SubmitFailure } from '../api/submit-failure';
 import { useSubmitPlan } from '../api/submit-plan';
 
 import { BuilderLine } from './builder-line';
-import { CoursePicker } from './course-picker';
+import { COURSE_DRAG_TYPE, CourseShelf } from './course-shelf';
 import { SubmitGate } from './submit-gate';
 import { ValidationPanel } from './validation-panel';
 
@@ -39,6 +39,7 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
   const submitPlanMutation = useSubmitPlan();
   const discardPlanMutation = useDiscardPlan();
 
+  const [dragOver, setDragOver] = useState(false);
   const [failure, setFailure] = useState<SubmitFailure | null>(null);
   const [windowClosed, setWindowClosed] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
@@ -109,130 +110,181 @@ export const BuilderDocument = ({ plan }: BuilderDocumentProps) => {
     line?.focus();
   };
 
+  const addToPlan = (courseCode: string) => {
+    if (
+      pending ||
+      plan.courses.some((course) => course.course_code === courseCode)
+    )
+      return;
+    clearResults();
+    addCourse.mutate(
+      { courseCode },
+      { onError: (error) => setLineError(describeLineError(error)) },
+    );
+  };
+
   return (
-    <div className="max-w-2xl space-y-4">
-      <CoursePicker
-        plan={plan}
-        disabled={pending}
-        onSelect={(courseCode) => {
-          clearResults();
-          addCourse.mutate(
-            { courseCode },
-            { onError: (error) => setLineError(describeLineError(error)) },
-          );
-        }}
-      />
-      {lineError && (
-        <Banner variant="destructive" title={lineError.message}>
-          {lineError.requestId && (
-            <p className="text-xs text-muted-foreground">
-              {t('common:errors.requestRef', { id: lineError.requestId })}
-            </p>
-          )}
-        </Banner>
-      )}
-      <Card>
-        <CardHeader className="pb-0">
-          <h2 className="text-base font-semibold">
-            {t('termContext', { term: plan.term_code })}
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground tabular-nums">
-            {t('builder.creditsTotal', {
-              total: plan.total_credit_hours,
-            })}
-          </p>
-        </CardHeader>
-        <CardBody>
-          {plan.courses.length === 0 ? (
-            <div className="py-6 text-center">
-              <p className="text-sm font-medium">
-                {t('builder.emptyPlan.title')}
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <section className="min-w-0 space-y-4" aria-label={t('builder.title')}>
+        {lineError && (
+          <Banner variant="destructive" title={lineError.message}>
+            {lineError.requestId && (
+              <p className="text-xs text-muted-foreground">
+                {t('common:errors.requestRef', { id: lineError.requestId })}
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {t('builder.emptyPlan.body')}
+            )}
+          </Banner>
+        )}
+        <div
+          className={
+            dragOver
+              ? 'rounded-2xl ring-2 ring-primary ring-offset-4 ring-offset-background'
+              : 'rounded-2xl'
+          }
+          onDragOver={(event) => {
+            if (
+              !pending &&
+              event.dataTransfer.types.includes(COURSE_DRAG_TYPE)
+            ) {
+              event.preventDefault();
+              event.dataTransfer.dropEffect = 'copy';
+              setDragOver(true);
+            }
+          }}
+          onDragLeave={(event) => {
+            if (
+              !event.currentTarget.contains(event.relatedTarget as Node | null)
+            )
+              setDragOver(false);
+          }}
+          onDrop={(event) => {
+            event.preventDefault();
+            setDragOver(false);
+            const code = event.dataTransfer.getData(COURSE_DRAG_TYPE);
+            const course = academicRecord.data?.prerequisite_map.find(
+              (entry) => entry.course_code === code,
+            );
+            if (
+              course &&
+              course.state !== 'locked' &&
+              course.state !== 'completed'
+            )
+              addToPlan(code);
+          }}
+        >
+          <Card>
+            <CardHeader className="pb-0">
+              <h2 className="text-base font-semibold">
+                {t('termContext', { term: plan.term_code })}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground tabular-nums">
+                {t('builder.creditsTotal', {
+                  total: plan.total_credit_hours,
+                })}
               </p>
-            </div>
-          ) : (
-            <ul className="divide-y">
-              {plan.courses.map((course) => {
-                return (
-                  <li
-                    key={course.course_code}
-                    id={lineId(course.course_code)}
-                    tabIndex={-1}
-                    className="list-none focus-visible:outline-none"
-                  >
-                    <BuilderLine
-                      course={course}
-                      title={titles.get(course.course_code) ?? null}
-                      disabled={pending}
-                      errors={failure?.lineErrors[course.course_code] ?? []}
-                      onRemove={() => {
-                        clearResults();
-                        removeCourse.mutate(
-                          {
-                            courseCode: course.course_code,
-                          },
-                          {
-                            onError: (error) =>
-                              setLineError(describeLineError(error)),
-                          },
-                        );
-                      }}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </CardBody>
-      </Card>
-      <ValidationPanel
-        warnings={plan.warnings}
-        failure={failure}
-        onJumpToLine={jumpToLine}
-      />
-      <SubmitGate
-        canSubmit={plan.courses.length > 0}
-        pending={pending}
-        submitting={submitPlanMutation.isPending}
-        failure={failure}
-        windowClosed={windowClosed}
-        serviceUnavailable={serviceUnavailable}
-        onSubmit={handleSubmit}
-        discard={
-          <>
-            <Button
-              variant="outline"
-              className="h-11"
-              disabled={pending}
-              onClick={() => {
-                setDiscardError(null);
-                setDiscardOpen(true);
-              }}
-            >
-              {t('builder.discard')}
-            </Button>
-            <ConfirmDialog
-              open={discardOpen}
-              onCancel={() => setDiscardOpen(false)}
-              onConfirm={() =>
-                discardPlanMutation.mutate(undefined, {
-                  onSuccess: () => setDiscardOpen(false),
-                  onError: (error) =>
-                    setDiscardError(describeLineError(error).message),
-                })
-              }
-              title={t('myPlan.discardConfirm.title')}
-              body={t('myPlan.discardConfirm.body', { term: plan.term_code })}
-              confirmLabel={t('myPlan.discardConfirm.confirm')}
-              destructive
-              pending={discardPlanMutation.isPending}
-              error={discardError}
-            />
-          </>
-        }
-      />
+              <p
+                className="mt-2 text-xs text-muted-foreground"
+                aria-live="polite"
+              >
+                {dragOver
+                  ? t('builder.shelf.release')
+                  : t('builder.shelf.drop')}
+              </p>
+            </CardHeader>
+            <CardBody>
+              {plan.courses.length === 0 ? (
+                <div className="py-6 text-center">
+                  <p className="text-sm font-medium">
+                    {t('builder.emptyPlan.title')}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {t('builder.emptyPlan.body')}
+                  </p>
+                </div>
+              ) : (
+                <ul className="divide-y">
+                  {plan.courses.map((course) => {
+                    return (
+                      <li
+                        key={course.course_code}
+                        id={lineId(course.course_code)}
+                        tabIndex={-1}
+                        className="list-none focus-visible:outline-none"
+                      >
+                        <BuilderLine
+                          course={course}
+                          title={titles.get(course.course_code) ?? null}
+                          disabled={pending}
+                          errors={failure?.lineErrors[course.course_code] ?? []}
+                          onRemove={() => {
+                            clearResults();
+                            removeCourse.mutate(
+                              {
+                                courseCode: course.course_code,
+                              },
+                              {
+                                onError: (error) =>
+                                  setLineError(describeLineError(error)),
+                              },
+                            );
+                          }}
+                        />
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </CardBody>
+          </Card>
+        </div>
+        <ValidationPanel
+          warnings={plan.warnings}
+          failure={failure}
+          onJumpToLine={jumpToLine}
+        />
+        <SubmitGate
+          canSubmit={plan.courses.length > 0}
+          pending={pending}
+          submitting={submitPlanMutation.isPending}
+          failure={failure}
+          windowClosed={windowClosed}
+          serviceUnavailable={serviceUnavailable}
+          onSubmit={handleSubmit}
+          discard={
+            <>
+              <Button
+                variant="outline"
+                className="h-11"
+                disabled={pending}
+                onClick={() => {
+                  setDiscardError(null);
+                  setDiscardOpen(true);
+                }}
+              >
+                {t('builder.discard')}
+              </Button>
+              <ConfirmDialog
+                open={discardOpen}
+                onCancel={() => setDiscardOpen(false)}
+                onConfirm={() =>
+                  discardPlanMutation.mutate(undefined, {
+                    onSuccess: () => setDiscardOpen(false),
+                    onError: (error) =>
+                      setDiscardError(describeLineError(error).message),
+                  })
+                }
+                title={t('myPlan.discardConfirm.title')}
+                body={t('myPlan.discardConfirm.body', { term: plan.term_code })}
+                confirmLabel={t('myPlan.discardConfirm.confirm')}
+                destructive
+                pending={discardPlanMutation.isPending}
+                error={discardError}
+              />
+            </>
+          }
+        />
+      </section>
+      <CourseShelf plan={plan} disabled={pending} onAdd={addToPlan} />
     </div>
   );
 };
