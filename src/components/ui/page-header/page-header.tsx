@@ -21,6 +21,9 @@ export const PageHeader = ({
   actions,
   className,
 }: PageHeaderProps) => {
+  const parentBreadcrumbs = breadcrumbs?.filter(
+    (item, index) => index !== breadcrumbs.length - 1 || item.label !== title,
+  );
   return (
     <div
       className={cn(
@@ -29,8 +32,8 @@ export const PageHeader = ({
       )}
     >
       <div className="min-w-0">
-        {breadcrumbs && breadcrumbs.length > 0 && (
-          <Breadcrumb items={breadcrumbs} className="mb-2" />
+        {parentBreadcrumbs && parentBreadcrumbs.length > 0 && (
+          <Breadcrumb items={parentBreadcrumbs} className="mb-2" />
         )}
         <h1 className="text-2xl leading-tight font-semibold tracking-tight text-balance">
           {title}
