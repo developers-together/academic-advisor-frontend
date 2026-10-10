@@ -40,7 +40,8 @@
     "aiConfiguration": "AI Configuration",
     "staff": "Staff",
     "settings": "Settings",
-    "more": "More"
+    "more": "More",
+    "builder": "Plan Builder"
   },
   "topbar": {
     "language": "Change language",
