@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
+import { ErrorState } from '@/components/ui/banner';
 import { Combobox } from '@/components/ui/combobox';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   buildCourseTitleIndex,
   useAcademicRecord,
@@ -21,11 +23,14 @@ export const CoursePicker = ({
   const { t } = useTranslation('plan');
   const academicRecord = useAcademicRecord();
 
+  if (academicRecord.isPending) return <Skeleton className="h-11 w-full" />;
+  if (academicRecord.isError)
+    return <ErrorState compact onRetry={() => void academicRecord.refetch()} />;
+
   const titles = buildCourseTitleIndex(academicRecord.data);
   const planned = new Set(plan.courses.map((course) => course.course_code));
   const options = (academicRecord.data?.prerequisite_map ?? [])
     .filter((entry) => !planned.has(entry.course_code))
-    .filter((entry) => entry.state !== 'planned')
     .map((entry) => ({
       value: entry.course_code,
       label:
