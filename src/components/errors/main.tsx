@@ -16,9 +16,7 @@ export const MainErrorFallback = () => {
           {t('errors.loadFailedBody')}
         </p>
       </div>
-      <RetryButton
-        onClick={() => window.location.assign(window.location.origin)}
-      >
+      <RetryButton onClick={() => window.location.reload()}>
         {t('actions.retry')}
       </RetryButton>
     </div>
