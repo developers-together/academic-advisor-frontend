@@ -130,6 +130,13 @@ const stateIcons = {
   locked: Lock,
 };
 
+const legendClasses: Record<PrerequisiteMapState, string> = {
+  completed: 'border-success/30 bg-success/10 text-success',
+  planned: 'border-info/30 bg-info/10 text-info',
+  eligible: 'border-warning/30 bg-warning/10 text-warning',
+  locked: 'border-border bg-muted text-muted-foreground',
+};
+
 const nodeStateClasses: Record<PrerequisiteMapState, { box: string }> = {
   completed: {
     box: 'border-success/60 bg-success/10 hover:border-success',
@@ -199,6 +206,7 @@ export const CourseMap = ({
                 label: t('actions.retry', { ns: 'common' }),
                 onClick: onRetry,
                 loading: isRetrying,
+                retry: true,
               }
             : undefined
         }
@@ -265,7 +273,7 @@ export const CourseMap = ({
       </div>
 
       <div
-        className="mb-4 flex flex-wrap gap-4"
+        className="mb-4 flex flex-wrap gap-2"
         aria-label={t('courseMap.title')}
       >
         {(['completed', 'planned', 'eligible', 'locked'] as const).map(
@@ -274,7 +282,10 @@ export const CourseMap = ({
             return (
               <span
                 key={state}
-                className="flex items-center gap-2 text-xs text-muted-foreground"
+                className={cn(
+                  'flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium',
+                  legendClasses[state],
+                )}
               >
                 <Icon className="size-4" aria-hidden />
                 {stateLabel(state)}
