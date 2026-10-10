@@ -141,7 +141,7 @@ describe('mobile sidebar navigation', () => {
         within(expandedSidebar).getByRole('button', { name: 'Account menu' }),
       );
       await user.click(
-      await screen.findByRole('menuitem', { name: 'Account' }),
+        await screen.findByRole('menuitem', { name: 'Account' }),
       );
       await waitFor(() =>
         expect(window.location.pathname).toBe('/app/account'),

@@ -9,15 +9,9 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardBody, CardHeader } from '@/components/ui/card';
-import type { AcademicRecord, Plan } from '@/types/domain';
+import type { Plan } from '@/types/domain';
 
-export const RegistrationGuide = ({
-  plan,
-  record,
-}: {
-  plan: Plan;
-  record?: AcademicRecord;
-}) => {
+export const RegistrationGuide = ({ plan }: { plan: Plan }) => {
   const { t } = useTranslation('plan');
   const approved = plan.status === 'approved';
   const steps = [
@@ -33,15 +27,6 @@ export const RegistrationGuide = ({
     },
     { icon: ListChecks, title: t('registration.register'), done: false },
   ];
-  const enrollments = record?.current_enrollments;
-  const unique = enrollments
-    ? [
-        ...new Map(
-          enrollments.map((course) => [course.course_code, course]),
-        ).values(),
-      ]
-    : undefined;
-
   return (
     <Card>
       <CardHeader>
@@ -97,40 +82,6 @@ export const RegistrationGuide = ({
             </Button>
           </>
         )}
-        <div className="border-t pt-4">
-          <h3 className="text-sm font-medium">
-            {t('registration.reportedEnrollments')}
-          </h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t('registration.notVerified')}
-          </p>
-          {!unique ? (
-            <p className="mt-3 text-sm text-muted-foreground">
-              {t('registration.unreported')}
-            </p>
-          ) : unique.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">
-              {t('profile.enrollments.empty')}
-            </p>
-          ) : (
-            <ul className="mt-3 divide-y">
-              {unique.map((course) => (
-                <li
-                  key={course.course_code}
-                  className="flex flex-wrap gap-x-3 gap-y-1 py-2 text-sm"
-                >
-                  <span className="bidi-code font-medium">
-                    {course.course_code}
-                  </span>
-                  <span>{course.title}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="mt-3 text-xs text-muted-foreground">
-            {t('registration.detailsUnavailable')}
-          </p>
-        </div>
       </CardBody>
     </Card>
   );

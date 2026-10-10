@@ -166,20 +166,20 @@ const history = [
   {
     course_code: 'CS 101',
     name: 'Introduction to Programming',
+    term_code: '2025-fall',
     credits: 3,
     year: 2025,
     semester: 'Fall',
-    term_code: '2025F',
     level: 1,
     grade: 'A',
   },
   {
     course_code: 'MATH 101',
     name: 'Calculus I',
+    term_code: '2025-fall',
     credits: 4,
     year: 2025,
     semester: 'Fall',
-    term_code: '2025F',
     level: 1,
     grade: 'B+',
   },
@@ -190,14 +190,7 @@ const seedAcademicRecord = (lastSyncedAt = '2026-10-01T12:00:00.000Z') => {
     userId: 1,
     cgpa: 3.2,
     curriculum_year_level: 2,
-    remaining_requirements: '60 credit hours',
     history: JSON.stringify(history),
-    current_enrollments: JSON.stringify([
-      {
-        course_code: 'EE 210',
-        title: 'Circuits',
-      },
-    ]),
     prerequisite_map: JSON.stringify(prerequisiteMap),
     last_synced_at: lastSyncedAt,
   });
@@ -242,9 +235,7 @@ const seedQueue = () => {
         userId: student.id,
         cgpa: student.cgpa,
         curriculum_year_level: 3,
-        remaining_requirements: '40 credit hours',
         history: JSON.stringify([]),
-        current_enrollments: JSON.stringify([]),
         prerequisite_map: JSON.stringify(queueCourseMap),
         last_synced_at: '2026-10-01T12:00:00.000Z',
       });
@@ -252,9 +243,7 @@ const seedQueue = () => {
       db.academicRecord.create({
         userId: student.id,
         curriculum_year_level: 3,
-        remaining_requirements: '40 credit hours',
         history: JSON.stringify([]),
-        current_enrollments: JSON.stringify([]),
         prerequisite_map: JSON.stringify(queueCourseMap),
         last_synced_at: '2026-10-01T12:00:00.000Z',
       });
@@ -474,7 +463,6 @@ const seedConversations = () => {
   db.planConversation.create({
     id: 1,
     userId: 1,
-    goal: 'maintain',
     title: 'Keeping my schedule steady',
     messages: JSON.stringify([
       {

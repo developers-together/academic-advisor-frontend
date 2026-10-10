@@ -45,10 +45,8 @@ const models = {
     userId: primaryKey(() => nextId()),
     cgpa: nullableNumber,
     curriculum_year_level: Number,
-    remaining_requirements: nullableString,
 
     history: String,
-    current_enrollments: String,
     prerequisite_map: String,
     last_synced_at: nullableString,
   },
@@ -121,7 +119,6 @@ const models = {
   planConversation: {
     id: primaryKey(() => nextId()),
     userId: Number,
-    goal: String,
     title: nullableString,
     submission_confirmed_at: nullableString,
     messages: String,
@@ -148,6 +145,7 @@ const models = {
   },
   rule: {
     id: primaryKey(() => nextId()),
+    faculty: nullableString,
     title_en: String,
     title_ar: String,
     body_en: String,
@@ -158,42 +156,6 @@ const models = {
 };
 
 export const db = factory(models);
-
-const dbFilePath = 'mocked-db.json';
-
-export const loadDb = async () => {
-  if (typeof window === 'undefined') {
-    const { readFile, writeFile } = await import('fs/promises');
-    try {
-      const data = await readFile(dbFilePath, 'utf8');
-      return JSON.parse(data);
-    } catch (error: any) {
-      if (error?.code === 'ENOENT') {
-        const emptyDB = {};
-        await writeFile(dbFilePath, JSON.stringify(emptyDB, null, 2));
-        return emptyDB;
-      } else {
-        console.error('Error loading mocked DB:', error);
-        return null;
-      }
-    }
-  }
-  return Object.assign(
-    JSON.parse(window.localStorage.getItem('msw-db') || '{}'),
-  );
-};
-
-export const initializeDb = async () => {
-  const database = await loadDb();
-  Object.entries(db).forEach(([key, model]) => {
-    const dataEntries = database[key];
-    if (dataEntries) {
-      dataEntries?.forEach((entry: Record<string, any>) => {
-        model.create(entry);
-      });
-    }
-  });
-};
 
 export const resetDb = () => {
   for (const model of Object.values(db)) {

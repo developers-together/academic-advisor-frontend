@@ -49,8 +49,13 @@ export const Composer = ({
     if (!element) {
       return;
     }
+    const styles = window.getComputedStyle(element);
+    const toPixels = (value: string) => Number.parseFloat(value) || 0;
+    const borders =
+      toPixels(styles.borderTopWidth) + toPixels(styles.borderBottomWidth);
     element.style.height = 'auto';
-    element.style.height = `${Math.min(element.scrollHeight, COMPOSER_MAX_HEIGHT)}px`;
+    const contentHeight = element.scrollHeight + borders;
+    element.style.height = `${Math.min(contentHeight, COMPOSER_MAX_HEIGHT)}px`;
   }, [value]);
 
   const disabled = quotaExhausted;

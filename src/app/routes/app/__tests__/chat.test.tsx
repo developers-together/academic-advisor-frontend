@@ -42,7 +42,6 @@ const seedConversation = async (
   );
   return db.planConversation.create({
     userId,
-    goal: 'maintain',
     messages: JSON.stringify([]),
     ...values,
   });
@@ -68,13 +67,11 @@ test('the conversation list shows each conversation with its title and updated t
     await seedConversation(userId, {
       id: 1,
       title: 'Keeping my schedule steady',
-      goal: 'maintain',
       updatedAt: '2026-10-02T14:30:00.000Z',
     });
     await seedConversation(userId, {
       id: 2,
       title: null,
-      goal: 'excel',
       updatedAt: '2026-10-01T09:00:00.000Z',
     });
   });

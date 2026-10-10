@@ -5,7 +5,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { paths } from '@/config/paths';
 
 import { useGovernanceDashboard } from '../api/get-governance-dashboard';
+import { sortByCompletionDesc } from '../utils/governance-tree';
 
+import { FacultyStats } from './faculty-stats';
 import {
   GovernanceChildrenTable,
   GovernanceTableSkeleton,
@@ -45,6 +47,16 @@ export const VpScorecard = () => {
             parent={root}
             onOpen={(code) => navigate(paths.vp.drilldown.getHref(code))}
           />
+          <div className="space-y-3">
+            {sortByCompletionDesc(
+              root.children.filter((child) => child.level === 'faculty'),
+            ).map((faculty) => (
+              <FacultyStats
+                key={faculty.code ?? faculty.name_en ?? faculty.name_ar}
+                faculty={faculty}
+              />
+            ))}
+          </div>
         </div>
       )}
     </GovernanceQueryStates>

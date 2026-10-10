@@ -64,8 +64,6 @@ export type PlanComment = {
   created_at: string;
 };
 
-export type PlanGoal = 'maintain' | 'improve' | 'excel';
-
 export type PlanMessageRole = 'user' | 'assistant';
 
 export type PlanConversationMessage = {
@@ -75,29 +73,19 @@ export type PlanConversationMessage = {
   created_at: string;
 };
 
-export type GoalSuggestions = {
-  maintain: string;
-  improve: string;
-  excel: string;
-};
-
 export type PlanConversation = {
   id: number;
-  goal: PlanGoal;
   title: string | null;
   submission_confirmed_at: string | null;
   created_at: string;
   updated_at: string;
   messages?: PlanConversationMessage[];
-  goal_suggestions?: GoalSuggestions;
 };
 
 export type AcademicRecord = {
   cgpa: number | null;
   curriculum_year_level: number | null;
-  remaining_requirements?: string | null;
   history: CourseAttempt[];
-  current_enrollments?: CurrentEnrollment[];
   prerequisite_map: PrerequisiteMapEntry[];
   last_synced_at: string | null;
 };
@@ -106,17 +94,12 @@ export type CourseAttempt = {
   course_code: string;
   name: string | null;
   title?: string | null;
-  term_code?: string;
+  term_code: string;
   credits: number | null;
   year: number | null;
   semester: string | null;
   level: number | null;
   grade: string;
-};
-
-export type CurrentEnrollment = {
-  course_code: string;
-  title: string | null;
 };
 
 export type PrerequisiteMapState =
@@ -131,7 +114,7 @@ export type PrerequisiteMapEntry = {
 };
 
 export type AdvisorProfile = {
-  advisor: UserSummary;
+  advisor: UserSummary | null;
   availability_window: { rows: AvailabilityWindowRow[] };
   office_location: string | null;
 };
@@ -315,6 +298,7 @@ export type GovernanceNode = {
 
 export type UniversityRule = {
   id: number;
+  faculty: string | null;
   title_en: string;
   title_ar: string;
   body_en: string;
@@ -325,10 +309,11 @@ export type UniversityRule = {
 
 export type UniversityRuleSummary = Pick<
   UniversityRule,
-  'id' | 'title_en' | 'title_ar' | 'body_en' | 'body_ar'
+  'id' | 'faculty' | 'title_en' | 'title_ar' | 'body_en' | 'body_ar'
 >;
 
 export type UniversityRuleInput = {
+  faculty: string | null;
   title_en: string;
   title_ar: string;
   body_en: string;

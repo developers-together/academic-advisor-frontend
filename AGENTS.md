@@ -46,7 +46,7 @@ These rules govern all prose an agent produces: replies, tickets, PRDs, review c
 
 ## Project Overview
 
-This repo is the Advaisor React client: a single Vite app built with React 19, TanStack Query, and Tailwind v4. It is the frontend for the university academic plan platform with an AI advisor.
+This repo is the Advisor React client: a single Vite app built with React 19, TanStack Query, and Tailwind v4. It is the frontend for the university academic plan platform with an AI advisor.
 
 Product truth lives in `docs/product/`. Design truth lives in `design.md`. Implementation has not started; the code is a demo scaffold from bulletproof-react.
 

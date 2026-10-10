@@ -18,9 +18,6 @@ export type ConversationListProps = {
   onSelect?: () => void;
 };
 
-const conversationTitle = (conversation: PlanConversation, goalLabel: string) =>
-  conversation.title ?? goalLabel;
-
 const ConversationItem = ({
   conversation,
   active,
@@ -31,7 +28,6 @@ const ConversationItem = ({
   onSelect?: () => void;
 }) => {
   const { t } = useTranslation('chat');
-  const goalLabel = t('newConversation');
   return (
     <li>
       <Link
@@ -46,7 +42,7 @@ const ConversationItem = ({
         )}
       >
         <span className="block truncate text-sm font-medium text-foreground">
-          {conversationTitle(conversation, goalLabel)}
+          {conversation.title ?? t('newConversation')}
         </span>
         <span className="mt-1.5 flex items-center gap-2">
           <MessageSquare className="size-3.5" aria-hidden />

@@ -2,6 +2,7 @@ import { HttpResponse, http } from 'msw';
 
 import AdminRulesRoute from '@/app/routes/admin/rules';
 import { env } from '@/config/env';
+import { i18n } from '@/lib/i18n/i18n-instance';
 import { db } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
 import {
@@ -13,12 +14,13 @@ import {
   within,
 } from '@/testing/test-utils';
 
-const seedRule = (title_en: string, title_ar: string) =>
+const seedRule = (title_en: string, title_ar: string, faculty?: string) =>
   db.rule.create({
     title_en,
     title_ar,
     body_en: 'Body in English.',
     body_ar: 'نص بالعربية.',
+    ...(faculty ? { faculty } : {}),
     created_at: '2026-09-01T09:00:00.000Z',
     updated_at: '2026-09-01T09:00:00.000Z',
   });
@@ -99,6 +101,48 @@ test('the rules editor maps all four server 422 keys inline under the EN and AR 
   ).toBeNull();
 });
 
+test('creating a rule with a faculty scopes it and the list shows the faculty', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  await renderApp(<AdminRulesRoute />, {
+    user: admin,
+    path: '/admin/rules',
+    url: '/admin/rules',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'New rule' }),
+  );
+  const dialog = await screen.findByRole('dialog', { name: 'New rule' });
+  await userEvent.type(
+    within(dialog).getByLabelText('Title (English)'),
+    'Prerequisite rule',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Title (Arabic)'),
+    'قاعدة المتطلبات',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Body (English)'),
+    'A course needs its prerequisites.',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Body (Arabic)'),
+    'تحتاج المادة إلى متطلباتها.',
+  );
+  await userEvent.type(within(dialog).getByLabelText('Faculty'), 'Engineering');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save rule' }),
+  );
+
+  expect(await screen.findByText('Prerequisite rule')).toBeInTheDocument();
+  expect(await screen.findByText('Engineering')).toBeInTheDocument();
+  expect(
+    db.rule.findFirst({ where: { title_en: { equals: 'Prerequisite rule' } } })
+      ?.faculty,
+  ).toBe('Engineering');
+});
+
 test('creating a rule applies the returned rule to the list', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
 
@@ -136,6 +180,154 @@ test('creating a rule applies the returned rule to the list', async () => {
   expect(
     db.rule.findFirst({ where: { title_en: { equals: 'Prerequisite rule' } } }),
   ).not.toBeNull();
+});
+
+test('creating a rule without a faculty keeps it global', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  await renderApp(<AdminRulesRoute />, {
+    user: admin,
+    path: '/admin/rules',
+    url: '/admin/rules',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'New rule' }),
+  );
+  const dialog = await screen.findByRole('dialog', { name: 'New rule' });
+  await userEvent.type(
+    within(dialog).getByLabelText('Title (English)'),
+    'Prerequisite rule',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Title (Arabic)'),
+    'قاعدة المتطلبات',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Body (English)'),
+    'A course needs its prerequisites.',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Body (Arabic)'),
+    'تحتاج المادة إلى متطلباتها.',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save rule' }),
+  );
+
+  expect(await screen.findByText('Prerequisite rule')).toBeInTheDocument();
+  const row = screen.getByText('Prerequisite rule').closest('tr');
+  expect(row).not.toBeNull();
+  expect(within(row as HTMLElement).getByText('Global')).toBeInTheDocument();
+  const stored = db.rule.findFirst({
+    where: { title_en: { equals: 'Prerequisite rule' } },
+  });
+  expect(stored?.faculty ?? null).toBeNull();
+});
+
+test('editing a rule moves it to another faculty', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  seedRule('Course load rule', 'قاعدة الحمل الدراسي', 'Engineering');
+
+  await renderApp(<AdminRulesRoute />, {
+    user: admin,
+    path: '/admin/rules',
+    url: '/admin/rules',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', {
+      name: 'Edit Course load rule',
+    }),
+  );
+  const dialog = await screen.findByRole('dialog', { name: 'Edit rule' });
+  const facultyInput = within(dialog).getByLabelText(
+    'Faculty',
+  ) as HTMLInputElement;
+  expect(facultyInput).toHaveValue('Engineering');
+  await userEvent.clear(facultyInput);
+  await userEvent.type(facultyInput, 'Science');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save rule' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.rule.findFirst({
+        where: { title_en: { equals: 'Course load rule' } },
+      })?.faculty,
+    ).toBe('Science'),
+  );
+  const row = screen.getByText('Course load rule').closest('tr');
+  expect(within(row as HTMLElement).getByText('Science')).toBeInTheDocument();
+});
+
+test('editing a rule without a faculty keeps it global', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  seedRule('Course load rule', 'قاعدة الحمل الدراسي', 'Engineering');
+
+  await renderApp(<AdminRulesRoute />, {
+    user: admin,
+    path: '/admin/rules',
+    url: '/admin/rules',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', {
+      name: 'Edit Course load rule',
+    }),
+  );
+  const dialog = await screen.findByRole('dialog', { name: 'Edit rule' });
+  const facultyInput = within(dialog).getByLabelText(
+    'Faculty',
+  ) as HTMLInputElement;
+  await userEvent.clear(facultyInput);
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save rule' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.rule.findFirst({
+        where: { title_en: { equals: 'Course load rule' } },
+      })?.faculty ?? null,
+    ).toBeNull(),
+  );
+  const row = screen.getByText('Course load rule').closest('tr');
+  expect(within(row as HTMLElement).getByText('Global')).toBeInTheDocument();
+});
+
+test('the scope column renders faculty names and the global badge in Arabic', async () => {
+  await i18n.changeLanguage('ar');
+  try {
+    const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+    seedRule('Course load rule', 'قاعدة الحمل الدراسي', 'Engineering');
+    seedRule('Prerequisite rule', 'قاعدة المتطلبات');
+
+    await renderApp(<AdminRulesRoute />, {
+      user: admin,
+      path: '/admin/rules',
+      url: '/admin/rules',
+    });
+
+    expect(
+      await screen.findByRole('columnheader', { name: 'النطاق' }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText('Engineering')).toBeInTheDocument();
+    expect(screen.getByText('عامة')).toBeInTheDocument();
+
+    await userEvent.click(
+      await screen.findByRole('button', {
+        name: 'تعديل Course load rule',
+      }),
+    );
+    const dialog = await screen.findByRole('dialog', {
+      name: 'تعديل القاعدة',
+    });
+    expect(within(dialog).getByLabelText('الكلية')).toHaveValue('Engineering');
+  } finally {
+    await i18n.changeLanguage('en');
+  }
 });
 
 test('deleting a rule confirms the AI quoting consequence and removes it', async () => {

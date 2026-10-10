@@ -202,7 +202,11 @@
     "columns": {
       "titleEn": "Title (English)",
       "titleAr": "Title (Arabic)",
+      "scope": "Scope",
       "updated": "Updated"
+    },
+    "scope": {
+      "global": "Global"
     },
     "editor": {
       "createTitle": "New rule",
@@ -211,6 +215,8 @@
       "titleAr": "Title (Arabic)",
       "bodyEn": "Body (English)",
       "bodyAr": "Body (Arabic)",
+      "faculty": "Faculty",
+      "facultyHelper": "Leave empty for a global rule.",
       "save": "Save rule",
       "required": "This field is required.",
       "maxLength": "Titles are limited to 255 characters."

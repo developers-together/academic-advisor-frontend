@@ -62,7 +62,7 @@ export const ChatDocument = ({ conversationId }: ChatDocumentProps) => {
       return;
     }
     createConversation.mutate(
-      { goal: 'maintain' },
+      {},
       {
         onError: () => setDraft((current) => current || message),
         onSuccess: (conversation) => {

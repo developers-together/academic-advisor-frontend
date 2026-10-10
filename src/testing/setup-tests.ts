@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 
 import { api } from '@/lib/api-client';
-import { initializeDb, resetDb } from '@/testing/mocks/db';
+import { resetDb } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
 
 vi.mock('zustand');
@@ -56,8 +56,6 @@ beforeEach(async () => {
 
   window.btoa = (str: string) => Buffer.from(str, 'binary').toString('base64');
   window.atob = (str: string) => Buffer.from(str, 'base64').toString('binary');
-
-  await initializeDb();
 });
 afterEach(async () => {
   server.resetHandlers();

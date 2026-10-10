@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Badge } from '@/components/ui/badge';
 import { ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -99,14 +100,16 @@ export const RulesDocument = () => {
         <TableElement>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              {(['titleEn', 'titleAr', 'updated'] as const).map((key) => (
-                <TableHead
-                  key={key}
-                  className="sticky top-0 z-10 bg-card px-3 py-2 text-2xs font-medium tracking-wide uppercase"
-                >
-                  {t(`rules.columns.${key}`)}
-                </TableHead>
-              ))}
+              {(['titleEn', 'titleAr', 'scope', 'updated'] as const).map(
+                (key) => (
+                  <TableHead
+                    key={key}
+                    className="sticky top-0 z-10 bg-card px-3 py-2 text-2xs font-medium tracking-wide uppercase"
+                  >
+                    {t(`rules.columns.${key}`)}
+                  </TableHead>
+                ),
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -126,6 +129,11 @@ export const RulesDocument = () => {
                 </TableCell>
                 <TableCell className="px-3 py-2 text-sm" dir="rtl">
                   {rule.title_ar}
+                </TableCell>
+                <TableCell className="px-3 py-2 text-sm">
+                  {rule.faculty ?? (
+                    <Badge size="sm">{t('rules.scope.global')}</Badge>
+                  )}
                 </TableCell>
                 <TableCell className="px-3 py-2 text-2xs text-muted-foreground tabular-nums">
                   {formatDate(rule.updated_at)}

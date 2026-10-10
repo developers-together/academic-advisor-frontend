@@ -57,7 +57,6 @@ const seedConversation = (
   );
   return db.planConversation.create({
     userId,
-    goal: 'maintain',
     messages: JSON.stringify([]),
     ...values,
   });

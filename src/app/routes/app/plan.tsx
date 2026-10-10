@@ -208,7 +208,7 @@ export default function PlanRoute() {
             <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
               <PlanDocument plan={plan} lineErrors={failure?.lineErrors} />
               <aside className="xl:sticky xl:top-6">
-                <RegistrationGuide plan={plan} record={academicRecord.data} />
+                <RegistrationGuide plan={plan} />
               </aside>
             </div>
             {academicRecord.isError && (

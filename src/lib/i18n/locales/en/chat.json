@@ -2,15 +2,8 @@
   "title": "AI Advisor",
   "context": "Your AI advisor helps you plan.",
   "newConversation": "New conversation",
-  "goalDialog": {
-    "title": "What do you want from this conversation?",
-    "body": "Pick one goal. Your AI advisor shapes the conversation around it.",
-    "start": "Start"
-  },
-  "goals": {
-    "maintain": "Maintain my level",
-    "improve": "Improve my standing",
-    "excel": "Aim for excellence"
+  "promptCards": {
+    "groupLabel": "Suggested starters"
   },
   "list": {
     "empty": {
@@ -18,6 +11,7 @@
       "body": "Start one and your AI advisor will help you plan."
     },
     "back": "All conversations",
+    "untitled": "Untitled conversation",
     "missing": {
       "title": "This conversation is gone.",
       "body": "It may have been removed. Pick another conversation or start a new one."

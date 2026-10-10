@@ -7,7 +7,7 @@ import {
 
 import { api } from '@/lib/api-client';
 import { unwrap, unwrapList } from '@/lib/api-envelope';
-import type { PlanConversation, PlanGoal } from '@/types/domain';
+import type { PlanConversation } from '@/types/domain';
 
 export const planConversationsRootKey = ['plan-conversations'] as const;
 
@@ -79,7 +79,7 @@ export const usePlanConversation = (conversationId: number | null) =>
   useQuery(getConversationQueryOptions(conversationId));
 
 export const createConversation = (input: {
-  goal: PlanGoal;
+  first_message?: string;
 }): Promise<PlanConversation> =>
   unwrap<PlanConversation>(api.post('/plan-conversations', input));
 

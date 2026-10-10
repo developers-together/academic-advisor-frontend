@@ -49,22 +49,16 @@ const seedRecord = (
     userId,
     cgpa: 3.2,
     curriculum_year_level: 2,
-    remaining_requirements: '60 credit hours',
     history: JSON.stringify([
       {
         course_code: 'CS 101',
         name: 'Introduction to Programming',
+        term_code: '2025-fall',
         credits: 3,
         year: 2025,
         semester: 'Fall',
         level: 1,
         grade: 'A',
-      },
-    ]),
-    current_enrollments: JSON.stringify([
-      {
-        course_code: 'EE 210',
-        title: 'Circuits',
       },
     ]),
     prerequisite_map: JSON.stringify(fourStateMap),
@@ -121,7 +115,7 @@ const trackRequests = () => {
   };
 };
 
-test('renders the read-only academic record with KPIs, map, enrollments, and history', async () => {
+test('renders the read-only academic record with KPIs, map, and history', async () => {
   const user = await createUser({
     advisor_id: 2,
     faculty: 'Engineering',
@@ -136,7 +130,10 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   });
 
   expect(await screen.findByText('3.2')).toBeInTheDocument();
-  expect(screen.getByText('60 credit hours')).toBeInTheDocument();
+  expect(screen.queryByText('Remaining requirements')).not.toBeInTheDocument();
+  expect(screen.queryByText('60 credit hours')).not.toBeInTheDocument();
+  expect(screen.queryByText('Current enrollments')).not.toBeInTheDocument();
+  expect(screen.queryByText('Group G1, Section 01')).not.toBeInTheDocument();
 
   expect(screen.getByRole('group', { name: 'Course map' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /CS 101/ })).toBeInTheDocument();
@@ -146,8 +143,7 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   expect(screen.getByText('3020117')).toBeInTheDocument();
   expect(screen.getByText('Engineering')).toBeInTheDocument();
 
-  expect(screen.getAllByText('EE 210').length).toBeGreaterThanOrEqual(1);
-  const history = screen.getByRole('region', { name: '2025 · Fall' });
+  const history = screen.getByRole('region', { name: '2025-fall' });
   expect(history).toHaveTextContent('A');
   expect(history).toHaveTextContent('Introduction to Programming');
   await userEvent.type(
@@ -160,9 +156,7 @@ test('renders the read-only academic record with KPIs, map, enrollments, and his
   await userEvent.clear(
     screen.getByRole('textbox', { name: 'Find a course in your history' }),
   );
-  expect(
-    screen.getByRole('region', { name: '2025 · Fall' }),
-  ).toBeInTheDocument();
+  expect(screen.getByRole('region', { name: '2025-fall' })).toBeInTheDocument();
   expect(screen.queryAllByRole('spinbutton')).toHaveLength(0);
 });
 
@@ -186,11 +180,10 @@ test('labels the record with its as-of time and retries the record only', async 
   expect(reads.others).toEqual([]);
 });
 
-test('renders compact empty states for empty sections and the retry copy for an empty map', async () => {
+test('renders the compact empty history state and the retry copy for an empty map', async () => {
   const user = await createUser();
   seedRecord(user.id as number, {
     history: '[]',
-    current_enrollments: '[]',
     prerequisite_map: '[]',
   });
   const reads = trackRequests();
@@ -202,9 +195,8 @@ test('renders compact empty states for empty sections and the retry copy for an 
   });
 
   expect(
-    await screen.findByText('No current enrollments.'),
+    await screen.findByText('No finished courses yet.'),
   ).toBeInTheDocument();
-  expect(screen.getByText('No finished courses yet.')).toBeInTheDocument();
   expect(
     screen.getByText('Your course map is not available yet.'),
   ).toBeInTheDocument();
