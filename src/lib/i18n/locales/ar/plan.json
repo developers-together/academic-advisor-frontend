@@ -116,7 +116,7 @@
     "discard": "إلغاء الخطة",
     "startPlan": "ابدأ خطتك",
     "startPending": "جارٍ الإنشاء",
-    "creditsTotal": "الساعات المعتمدة المخططة: {{total}} (نطاق {{min}}-{{max}})",
+    "creditsTotal": "الساعات المخططة: {{total}}",
     "creditsOut": "خارج نطاق {{min}}-{{max}} ساعة. يمنع المدقق الإرسال خارج النطاق."
   },
   "profile": {
