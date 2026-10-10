@@ -1563,3 +1563,20 @@ Keep History and New conversation adjacent in the AI page actions.
 Preserve explicit message sending and explicit plan submission confirmation.
 Preserve factual progress and existing academic permissions.
 This section records implemented source behavior. Validation reports establish test and browser results separately.
+
+
+### 31.8 Planning and SIS registration review
+
+My Plan displays unique course counts and the server credit total. Course titles wrap on narrow screens.
+The registration guide separates plan building, advisor approval, and manual SIS registration.
+Only an approved plan offers the SIS link. This platform never performs SIS enrollment writes.
+Lecture, tutorial, and lab sections count once per course. Students choose these sections in SIS.
+Reported enrollments remain separate from the plan. Matching course codes do not establish registration verification.
+Missing enrollment fields display as not reported. They do not imply an empty enrollment record.
+The current API does not expose section choices, payment status, timetable, or verified registration status.
+The academic course map marks eligible courses in the current plan as planned. Completed and locked states retain priority.
+The course shelf supports eligibility filters, prerequisite details, search recovery, dragging, and accessible Add buttons.
+Discarded plans offer a replacement draft. Returned plans link to feedback before editing.
+Successful builder submission returns to My Plan. Confirmation dialogs retain failed actions for retry.
+Plan mutations disable competing actions. Validation summaries receive focus after failed submission. Builder navigation retains server errors for the same plan.
+Backend issue acad-6vq tracks lifecycle and SIS contract defects. Automated tests remain paused under the current user instruction.
