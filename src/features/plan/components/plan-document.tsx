@@ -25,10 +25,23 @@ export const PlanDocument = ({ plan, lineErrors }: PlanDocumentProps) => {
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between">
-        <h2 className="text-base font-semibold">
-          {t('termContext', { ns: 'plan', term: plan.term_code })}
-        </h2>
+      <CardHeader className="flex-row flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-base font-semibold">
+            {t('termContext', { ns: 'plan', term: plan.term_code })}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground" aria-live="polite">
+            {t('dashboard.courseCount', {
+              ns: 'plan',
+              count: plan.courses.length,
+            })}
+            {' · '}
+            {t('builder.creditsTotal', {
+              ns: 'plan',
+              total: plan.total_credit_hours,
+            })}
+          </p>
+        </div>
         <PlanStateChip
           key={plan.status}
           status={plan.status}
@@ -44,13 +57,30 @@ export const PlanDocument = ({ plan, lineErrors }: PlanDocumentProps) => {
         {plan.summary && (
           <p className="mb-4 text-sm text-muted-foreground">{plan.summary}</p>
         )}
+        {plan.courses.length === 0 && (
+          <p className="py-4 text-sm text-muted-foreground">
+            {t('builder.emptyPlan.body', { ns: 'plan' })}
+          </p>
+        )}
+        {plan.warnings.length > 0 && (
+          <div className="mb-4 rounded-lg border border-warning/30 bg-warning/10 p-3">
+            <h3 className="text-sm font-medium">
+              {t('builder.validation.advisoryTitle', { ns: 'plan' })}
+            </h3>
+            <ul className="mt-2 list-disc space-y-1 ps-4 text-sm">
+              {plan.warnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <ul className="divide-y">
           {plan.courses.map((course) => (
             <li
               key={course.course_code}
               id={lineId(course.course_code)}
               tabIndex={-1}
-              className="list-none focus-visible:outline-none"
+              className="list-none rounded-lg focus:outline-2 focus:outline-offset-4 focus:outline-ring"
             >
               <PlanLine
                 course={course}
