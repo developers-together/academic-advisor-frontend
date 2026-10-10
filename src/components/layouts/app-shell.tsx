@@ -557,6 +557,7 @@ const SidebarTools = ({
   const setLanguage = useLanguageStore((state) => state.setLanguage);
   return (
     <div className={cn('sidebar-tools', expanded && 'is-expanded')}>
+      {!expanded && <div className="sidebar-account-bell">{bell}</div>}
       <DropdownMenu dir={i18n.dir()}>
         <DropdownMenuTrigger asChild>
           <button
@@ -678,7 +679,7 @@ const SidebarTools = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <div className="sidebar-account-bell">{bell}</div>
+      {expanded && <div className="sidebar-account-bell">{bell}</div>}
     </div>
   );
 };
