@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { Badge } from '@/components/ui/badge';
 import { Banner } from '@/components/ui/banner';
-import { Button } from '@/components/ui/button';
+import { Button, RetryButton } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/dialog';
 import {
   Drawer,
@@ -246,14 +246,14 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
               <Banner
                 variant="destructive"
                 action={
-                  <Button
+                  <RetryButton
                     variant="outline"
                     size="sm"
                     onClick={handleRetrySis}
                     isLoading={retrySis.isPending}
                   >
                     {t('common:actions.retry')}
-                  </Button>
+                  </RetryButton>
                 }
               >
                 {sisBanner}
@@ -262,14 +262,14 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
             {binding !== 'bound' && (
               <div className="space-y-3">
                 <div className="flex flex-wrap gap-2">
-                  <Button
+                  <RetryButton
                     variant="outline"
                     size="sm"
                     onClick={handleRetrySis}
                     isLoading={retrySis.isPending}
                   >
                     {t('accounts.actions.retrySis')}
-                  </Button>
+                  </RetryButton>
                   <Button
                     variant="outline"
                     size="sm"
