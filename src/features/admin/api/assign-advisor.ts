@@ -32,6 +32,7 @@ export const useAssignAdvisor = () => {
       }
       if (result.mode === 'scheduled' && result.assignment) {
         prependPendingAssignmentToCache(queryClient, result.assignment);
+        invalidateStudents(queryClient);
       }
       invalidatePendingAssignments(queryClient);
     },

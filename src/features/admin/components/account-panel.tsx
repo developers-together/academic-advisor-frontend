@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
-import { ApiError } from '@/lib/api-error';
+import { ApiError, readableApiError } from '@/lib/api-error';
 import type { User } from '@/types/domain';
 
 import { useCorrectStudentId } from '../api/correct-student-id';
@@ -74,10 +74,12 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
   const [confirmTarget, setConfirmTarget] = useState<ConfirmTarget | null>(
     null,
   );
+  const [confirmError, setConfirmError] = useState<string | null>(null);
   const [pendingCorrectId, setPendingCorrectId] = useState<string | null>(null);
   const [sisBanner, setSisBanner] = useState<string | null>(null);
   const [reassignEmail, setReassignEmail] = useState('');
   const [reassignMessage, setReassignMessage] = useState<string | null>(null);
+  const [reassignError, setReassignError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
 
   const suspend = useSuspendStudent();
@@ -113,34 +115,56 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
             type: 'info',
             title: t('common:errors.conflict'),
           });
+        } else {
+          addNotification({
+            type: 'error',
+            title: t('common:errors.saveFailed'),
+          });
         }
       },
     });
   };
 
   const openCorrectConfirm = correctForm.handleSubmit(({ student_id }) => {
+    setConfirmError(null);
     setPendingCorrectId(student_id);
     setConfirmTarget('correctId');
   });
 
   const handleConfirm = () => {
     if (confirmTarget === 'suspend') {
-      suspend.mutate(user.id, { onSettled: () => setConfirmTarget(null) });
+      suspend.mutate(user.id, {
+        onSuccess: () => setConfirmTarget(null),
+        onError: (error) =>
+          setConfirmError(
+            readableApiError(error, t('common:errors.saveFailed')),
+          ),
+      });
     } else if (confirmTarget === 'correctId' && pendingCorrectId) {
       correctId.mutate(
         { studentId: user.id, student_id: pendingCorrectId },
         {
-          onSuccess: () => correctForm.reset({ student_id: '' }),
-          onSettled: () => {
+          onSuccess: () => {
+            correctForm.reset({ student_id: '' });
             setConfirmTarget(null);
             setPendingCorrectId(null);
           },
+          onError: (error) =>
+            setConfirmError(
+              readableApiError(error, t('common:errors.saveFailed')),
+            ),
         },
       );
     } else if (confirmTarget === 'delete') {
       remove.mutate(user.id, {
-        onSuccess: () => onClose(),
-        onSettled: () => setConfirmTarget(null),
+        onSuccess: () => {
+          setConfirmTarget(null);
+          onClose();
+        },
+        onError: (error) =>
+          setConfirmError(
+            readableApiError(error, t('common:errors.saveFailed')),
+          ),
       });
     }
   };
@@ -148,6 +172,7 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
   const handleReassign = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setReassignMessage(null);
+    setReassignError(null);
     reassign.mutate(
       { studentId: user.id, advisor_email: reassignEmail.trim().toLowerCase() },
       {
@@ -162,7 +187,11 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
             setReassignMessage(
               error.fields['advisor_email']?.[0] ?? error.message,
             );
+            return;
           }
+          setReassignError(
+            readableApiError(error, t('common:errors.saveFailed')),
+          );
         },
       },
     );
@@ -345,6 +374,11 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
                 {reassignMessage}
               </p>
             )}
+            {reassignError && (
+              <p role="alert" className="text-sm text-destructive">
+                {reassignError}
+              </p>
+            )}
           </section>
 
           <section
@@ -359,7 +393,10 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => setConfirmTarget('suspend')}
+                  onClick={() => {
+                    setConfirmError(null);
+                    setConfirmTarget('suspend');
+                  }}
                 >
                   {t('accounts.actions.suspend')}
                 </Button>
@@ -369,6 +406,12 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
                   size="sm"
                   onClick={() =>
                     reactivate.mutate(user.id, {
+                      onSuccess: () => {
+                        addNotification({
+                          type: 'success',
+                          title: t('accounts.reactivatedToast'),
+                        });
+                      },
                       onError: () =>
                         addNotification({
                           type: 'error',
@@ -384,7 +427,10 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => setConfirmTarget('delete')}
+                onClick={() => {
+                  setConfirmError(null);
+                  setConfirmTarget('delete');
+                }}
               >
                 {t('accounts.actions.delete')}
               </Button>
@@ -405,6 +451,7 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
           confirmLabel={activeConfirm.confirmLabel}
           destructive={confirmTarget !== 'correctId'}
           pending={confirmPending}
+          error={confirmError}
           onCancel={() => setConfirmTarget(null)}
           onConfirm={handleConfirm}
         />

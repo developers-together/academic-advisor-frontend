@@ -110,7 +110,12 @@ export const ImportAssignmentsDialog = ({
             }))
             .sort((a, b) => a.row - b.row);
           setReport({ file: error.fields['file']?.[0], rows });
+          return;
         }
+        addNotification({
+          type: 'error',
+          title: t('common:errors.saveFailed'),
+        });
       },
     });
   };

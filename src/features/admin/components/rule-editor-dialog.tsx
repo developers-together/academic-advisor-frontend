@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input, Select, Textarea } from '@/components/ui/form';
-import { ApiError } from '@/lib/api-error';
+import { ApiError, readableApiError } from '@/lib/api-error';
 import type { UniversityRule, UniversityRuleInput } from '@/types/domain';
 
 import { useCreateRule } from '../api/create-rule';
@@ -54,6 +54,7 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
   const facultiesQuery = useFaculties();
 
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const facultyOptions = [
     { label: t('rules.editor.facultyGlobal'), value: '' },
@@ -130,6 +131,8 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
         setConfirmDelete(false);
         onClose();
       },
+      onError: (error) =>
+        setDeleteError(readableApiError(error, t('common:errors.saveFailed'))),
     });
   };
 
@@ -198,7 +201,10 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
                 <Button
                   type="button"
                   variant="destructive"
-                  onClick={() => setConfirmDelete(true)}
+                  onClick={() => {
+                    setDeleteError(null);
+                    setConfirmDelete(true);
+                  }}
                 >
                   {t('rules.delete.confirm')}
                 </Button>
@@ -221,6 +227,7 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
         confirmLabel={t('rules.delete.confirm')}
         destructive
         pending={removeRule.isPending}
+        error={deleteError}
         onCancel={() => setConfirmDelete(false)}
         onConfirm={handleDelete}
       />

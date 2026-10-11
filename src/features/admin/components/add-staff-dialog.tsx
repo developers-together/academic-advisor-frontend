@@ -106,7 +106,12 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
                 form.setError(field, { message: messages[0] });
               }
             }
+            return;
           }
+          addNotification({
+            type: 'error',
+            title: t('common:errors.saveFailed'),
+          });
         },
       },
     );

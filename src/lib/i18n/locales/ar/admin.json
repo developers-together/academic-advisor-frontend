@@ -109,7 +109,8 @@
       "noRowsBody": "أضِف أول حساب طالب برقمه الجامعي."
     },
     "reassignSuccess": "انتقل {{name}} إلى المرشد الجديد.",
-    "retryQueued": "تمت جدولة تحقق النظام."
+    "retryQueued": "تمت جدولة تحقق النظام.",
+    "reactivatedToast": "تمت إعادة تنشيط الطالب."
   },
   "assignments": {
     "title": "الإسنادات",

@@ -1,6 +1,7 @@
 import { HttpResponse, http } from 'msw';
 
 import AdminUsersRoute from '@/app/routes/admin/users';
+import { useNotifications } from '@/components/ui/notifications';
 import { env } from '@/config/env';
 import { db } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
@@ -447,4 +448,97 @@ test('a failed read renders the shared error state with retry', async () => {
     await screen.findByText('Could not load this content.'),
   ).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+});
+
+test('a failed staff create explains in a toast and keeps the dialog open', async () => {
+  const admin = await seedDirectory();
+
+  server.use(
+    http.post(`${env.API_URL}/admin/staff`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderStaffTab({
+    user: admin,
+  });
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add staff' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add staff' });
+  await userEvent.type(within(dialog).getByLabelText('Name'), 'Nadia Sherif');
+  await userEvent.type(
+    within(dialog).getByLabelText('Email'),
+    'nadia.sherif@ejust.edu.eg',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Initial password'),
+    'initial-secret-9',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create staff account' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  expect(
+    within(dialog).getByRole('button', { name: 'Create staff account' }),
+  ).toBeInTheDocument();
+  expect(
+    db.user.findFirst({
+      where: { email: { equals: 'nadia.sherif@ejust.edu.eg' } },
+    }),
+  ).toBeNull();
+});
+
+test('a failed staff edit explains in a toast and keeps the dialog open', async () => {
+  const admin = await seedDirectory();
+
+  server.use(
+    http.patch(`${env.API_URL}/admin/staff/:staffId`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderStaffTab({
+    user: admin,
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'Edit Amr Advisor' }),
+  );
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Edit staff account',
+  });
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  expect(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText('Edit staff account')).toBeInTheDocument();
 });

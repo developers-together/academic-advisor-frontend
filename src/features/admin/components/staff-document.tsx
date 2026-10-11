@@ -6,7 +6,7 @@ import { ConfirmDialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/components/ui/notifications';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ApiError } from '@/lib/api-error';
+import { readableApiError } from '@/lib/api-error';
 import type { StaffMember, StaffRole } from '@/types/domain';
 
 import { useDeleteStaff } from '../api/delete-staff';
@@ -26,13 +26,6 @@ type ConfirmTarget =
 
 export type StaffDocumentProps = {
   onAddStaff: () => void;
-};
-
-const readableError = (error: unknown): string => {
-  if (error instanceof ApiError) {
-    return error.message ?? Object.values(error.fields)[0]?.[0] ?? '';
-  }
-  return '';
 };
 
 export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
@@ -65,7 +58,9 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
           setConfirmTarget(null);
         },
         onError: (error) => {
-          setConfirmError(readableError(error));
+          setConfirmError(
+            readableApiError(error, t('common:errors.saveFailed')),
+          );
         },
       });
       return;
@@ -79,7 +74,7 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
         setConfirmTarget(null);
       },
       onError: (error) => {
-        setConfirmError(readableError(error));
+        setConfirmError(readableApiError(error, t('common:errors.saveFailed')));
       },
     });
   };

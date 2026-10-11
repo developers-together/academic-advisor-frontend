@@ -45,6 +45,12 @@ export const PendingAssignmentsCard = () => {
           title: t('assignments.pending.cancelledToast'),
         });
       },
+      onError: () => {
+        addNotification({
+          type: 'error',
+          title: t('common:errors.saveFailed'),
+        });
+      },
       onSettled: () => setCancelTarget(null),
     });
   };

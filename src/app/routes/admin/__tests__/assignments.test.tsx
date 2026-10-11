@@ -550,3 +550,154 @@ test('an import row for a never-registered student is counted as scheduled', asy
   });
   expect(scheduled).not.toBeNull();
 });
+
+test('an import outage explains in a toast and keeps the dialog usable', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  server.use(
+    http.post(`${env.API_URL}/admin/assignments/import`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminAssignmentsRoute />, {
+    user: admin,
+    path: '/admin/assignments',
+    url: '/admin/assignments',
+  });
+
+  const dialog = await pickFile(
+    csvFile(
+      ['student_id,advisor_email', '3020771,amr@ejust.edu.eg'].join('\n'),
+    ),
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Import assignments' }),
+  );
+  const confirm = await screen.findByRole('dialog', {
+    name: 'Import assignments?',
+  });
+  await userEvent.click(
+    within(confirm).getByRole('button', { name: 'Import assignments' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('dialog', { name: 'Import assignments?' }),
+    ).not.toBeInTheDocument(),
+  );
+  expect(within(dialog).getByLabelText('CSV or TXT file')).toBeInTheDocument();
+});
+
+test('a failed cancellation explains in a toast and keeps the pending row', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const advisor = await createUser({
+    name: 'Amr Five',
+    email: 'amr.five@ejust.edu.eg',
+    role: 'advisor',
+  });
+  db.pendingAssignment.create({
+    student_id: '3025555',
+    advisor_id: advisor.id as number,
+  });
+
+  server.use(
+    http.delete(`${env.API_URL}/admin/assignments/pending/:assignmentId`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminAssignmentsRoute />, {
+    user: admin,
+    path: '/admin/assignments',
+    url: '/admin/assignments',
+  });
+
+  const row = await screen.findByRole('row', { name: /3025555/ });
+  await userEvent.click(within(row).getByRole('button', { name: 'Cancel' }));
+  const confirm = await screen.findByRole('dialog', {
+    name: 'Cancel this scheduled assignment?',
+  });
+  await userEvent.click(
+    within(confirm).getByRole('button', { name: 'Cancel assignment' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('dialog', {
+        name: 'Cancel this scheduled assignment?',
+      }),
+    ).not.toBeInTheDocument(),
+  );
+  expect(screen.getByRole('row', { name: /3025555/ })).toBeInTheDocument();
+});
+
+test('scheduling an assignment refreshes the students directory', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  await createUser({
+    name: 'Amr Two',
+    email: 'amr.two@ejust.edu.eg',
+    role: 'advisor',
+  });
+
+  let directoryReads = 0;
+  server.events.on('request:start', ({ request }) => {
+    const url = new URL(request.url);
+    if (url.pathname.endsWith('/admin/students') && request.method === 'GET') {
+      directoryReads += 1;
+    }
+  });
+
+  await renderApp(<AdminAssignmentsRoute />, {
+    user: admin,
+    path: '/admin/assignments',
+    url: '/admin/assignments',
+  });
+
+  await screen.findByText('No scheduled assignments.');
+  const readsBeforeScheduling = directoryReads;
+
+  const dialog = await openAssignDialog();
+  await fillAssignForm(dialog, '3029999', 'amr.two@ejust.edu.eg');
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'success' &&
+            toast.title ===
+              'Assignment scheduled. It applies when the student registers.',
+        ),
+    ).toBe(true),
+  );
+  await waitFor(() =>
+    expect(directoryReads).toBeGreaterThan(readsBeforeScheduling),
+  );
+});

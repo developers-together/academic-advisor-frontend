@@ -30,6 +30,13 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null;
 };
 
+export const readableApiError = (error: unknown, fallback = ''): string => {
+  if (error instanceof ApiError) {
+    return error.message || Object.values(error.fields)[0]?.[0] || fallback;
+  }
+  return fallback;
+};
+
 type AxiosLikeError = {
   response?: {
     status?: number;

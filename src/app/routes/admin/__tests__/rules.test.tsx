@@ -377,3 +377,50 @@ test('deleting a rule confirms the AI quoting consequence and removes it', async
     }),
   ).toBeNull();
 });
+
+test('a failed rule deletion keeps the confirm open with the server error', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  seedRule('Course load rule', 'قاعدة الحمل الدراسي');
+
+  server.use(
+    http.delete(`${env.API_URL}/admin/rules/:ruleId`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminRulesRoute />, {
+    user: admin,
+    path: '/admin/rules',
+    url: '/admin/rules',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', {
+      name: 'Edit Course load rule',
+    }),
+  );
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Edit rule',
+  });
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Delete rule' }),
+  );
+  const confirm = await screen.findByRole('dialog', {
+    name: 'Delete this rule?',
+  });
+  await userEvent.click(
+    within(confirm).getByRole('button', { name: 'Delete rule' }),
+  );
+
+  const alert = await within(confirm).findByRole('alert');
+  expect(alert).toHaveTextContent('The server encountered an error.');
+  expect(
+    db.rule.findFirst({
+      where: { title_en: { equals: 'Course load rule' } },
+    }),
+  ).not.toBeNull();
+  expect(screen.getByText('Edit rule')).toBeInTheDocument();
+});

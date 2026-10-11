@@ -109,7 +109,8 @@
       "noRowsBody": "Add the first student account with their SIS ID."
     },
     "reassignSuccess": "{{name}} moved to the new advisor.",
-    "retryQueued": "SIS check queued."
+    "retryQueued": "SIS check queued.",
+    "reactivatedToast": "Student reactivated."
   },
   "assignments": {
     "title": "Assignments",

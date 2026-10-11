@@ -1,6 +1,7 @@
 import { HttpResponse, http } from 'msw';
 
 import AdminUsersRoute from '@/app/routes/admin/users';
+import { useNotifications } from '@/components/ui/notifications';
 import { env } from '@/config/env';
 import { db } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
@@ -417,6 +418,212 @@ test('reassigning moves the student to the advisor by email without a dialog', a
   await within(row).findByText('Assigned');
 });
 
+test('a failed suspend keeps the confirm open with the server error', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const advisor = await advisorFor();
+  const student = await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+    advisor_id: advisor.id as number,
+  });
+
+  server.use(
+    http.post(`${env.API_URL}/admin/students/:studentId/suspend`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+
+  const panel = await openPanel('Lina Majors');
+  await userEvent.click(within(panel).getByRole('button', { name: 'Suspend' }));
+  const confirm = await screen.findByRole('dialog', {
+    name: 'Suspend Lina Majors?',
+  });
+  await userEvent.click(
+    within(confirm).getByRole('button', { name: 'Suspend' }),
+  );
+
+  const alert = await within(confirm).findByRole('alert');
+  expect(alert).toHaveTextContent('The server encountered an error.');
+  expect(
+    db.user.findFirst({ where: { id: { equals: student.id as number } } })
+      ?.suspended_at,
+  ).toBeNull();
+});
+
+test('a failed delete keeps the confirm and the panel open with the server error', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const advisor = await advisorFor();
+  const student = await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+    advisor_id: advisor.id as number,
+  });
+
+  server.use(
+    http.delete(`${env.API_URL}/admin/students/:studentId`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+
+  const panel = await openPanel('Lina Majors');
+  await userEvent.click(
+    within(panel).getByRole('button', { name: 'Delete account' }),
+  );
+  const confirm = await screen.findByRole('dialog', {
+    name: 'Delete Lina Majors?',
+  });
+  await userEvent.click(
+    within(confirm).getByRole('button', { name: 'Delete account' }),
+  );
+
+  const alert = await within(confirm).findByRole('alert');
+  expect(alert).toHaveTextContent('The server encountered an error.');
+  expect(
+    db.user.findFirst({ where: { id: { equals: student.id as number } } }),
+  ).not.toBeNull();
+  expect(screen.getAllByText('Lina Majors').length).toBeGreaterThan(0);
+});
+
+test('reactivating explains the success in a toast', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const advisor = await advisorFor();
+  const student = await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+    advisor_id: advisor.id as number,
+  });
+  db.user.update({
+    where: { id: { equals: student.id as number } },
+    data: { suspended_at: '2026-09-20T10:00:00.000Z' },
+  });
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+
+  const panel = await openPanel('Lina Majors');
+  await userEvent.click(
+    within(panel).getByRole('button', { name: 'Reactivate' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.user.findFirst({ where: { id: { equals: student.id as number } } })
+        ?.suspended_at,
+    ).toBeNull(),
+  );
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'success' && toast.title === 'Student reactivated.',
+        ),
+    ).toBe(true),
+  );
+});
+
+test('a SIS retry failure beyond the outage explains in a toast', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const student = await createUser({
+    name: 'Hana Held',
+    role: 'student',
+  });
+  clearStudentId(student.id as number);
+
+  server.use(
+    http.post(`${env.API_URL}/admin/students/:studentId/retry-sis`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+
+  const panel = await openPanel('Hana Held');
+  await userEvent.click(
+    within(panel).getByRole('button', { name: 'Retry SIS check' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  expect(within(panel).queryByRole('alert')).not.toBeInTheDocument();
+});
+
+test('a reassign failure beyond validation explains inline', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const student = await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+  });
+
+  server.use(
+    http.post(`${env.API_URL}/admin/assignments/:studentId/reassign`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+
+  const panel = await openPanel('Lina Majors');
+  await userEvent.type(
+    within(panel).getByLabelText('Advisor email'),
+    'nadia.sherif@ejust.edu.eg',
+  );
+  await userEvent.click(
+    within(panel).getByRole('button', { name: 'Reassign' }),
+  );
+
+  const alert = await within(panel).findByRole('alert');
+  expect(alert).toHaveTextContent('The server encountered an error.');
+  expect(
+    db.user.findFirst({ where: { id: { equals: student.id as number } } })
+      ?.advisor_id,
+  ).toBeNull();
+});
+
 test('a true empty directory renders the no-rows empty state with the add action', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
 
@@ -746,4 +953,42 @@ test('a failed read renders the shared error state with retry', async () => {
     await screen.findByText('Could not load this content.'),
   ).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+});
+
+test('a suspend failure without a message still explains in the confirm', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const advisor = await advisorFor();
+  const student = await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+    advisor_id: advisor.id as number,
+  });
+
+  server.use(
+    http.post(`${env.API_URL}/admin/students/:studentId/suspend`, () =>
+      HttpResponse.json({}, { status: 502 }),
+    ),
+  );
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+
+  const panel = await openPanel('Lina Majors');
+  await userEvent.click(within(panel).getByRole('button', { name: 'Suspend' }));
+  const confirm = await screen.findByRole('dialog', {
+    name: 'Suspend Lina Majors?',
+  });
+  await userEvent.click(
+    within(confirm).getByRole('button', { name: 'Suspend' }),
+  );
+
+  const alert = await within(confirm).findByRole('alert');
+  expect(alert).toHaveTextContent('We could not save that.');
+  expect(
+    db.user.findFirst({ where: { id: { equals: student.id as number } } })
+      ?.suspended_at,
+  ).toBeNull();
 });
