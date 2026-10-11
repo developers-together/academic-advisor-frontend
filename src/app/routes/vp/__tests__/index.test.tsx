@@ -140,17 +140,29 @@ test('the scorecard lists faculties by completion descending with nulls last', a
   expect(within(education).getAllByText('—').length).toBeGreaterThanOrEqual(2);
 });
 
-test('the scorecard never names deans beside faculty statistics', async () => {
+test('the scorecard stats name each faculty deans and flag a faculty without one', async () => {
   seedGovernanceTree(universityTree());
 
   await vpSeesScorecard();
 
-  await screen.findByRole('table');
-  const body =
-    (await screen.findByRole('main').then((main) => main.textContent)) ?? '';
-  expect(body).not.toContain('Salma Ibrahim');
-  expect(body).not.toContain('Omar Khaled');
-  expect(body).not.toContain('No dean assigned yet.');
+  const main = await screen.findByRole('main');
+  await within(main).findByRole('table');
+
+  const science = within(main).getByRole('region', { name: 'Science' });
+  expect(within(science).getByText('Salma Ibrahim')).toBeInTheDocument();
+  expect(within(science).getByText('Deans')).toBeInTheDocument();
+  expect(within(science).getByText('610')).toBeInTheDocument();
+  expect(
+    (await within(science).findAllByText('80%')).length,
+  ).toBeGreaterThanOrEqual(1);
+
+  const engineering = within(main).getByRole('region', { name: 'Engineering' });
+  expect(within(engineering).getByText('Omar Khaled')).toBeInTheDocument();
+
+  const education = within(main).getByRole('region', { name: 'Education' });
+  expect(
+    within(education).getByText('No dean assigned yet.'),
+  ).toBeInTheDocument();
 });
 
 test('the completion header carries aria-sort and other headers do not', async () => {

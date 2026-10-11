@@ -18,6 +18,7 @@ export const FacultyStats = ({ faculty }: { faculty: GovernanceNode }) => {
   const { t, i18n } = useTranslation('governance');
   const name = governanceNodeName(faculty, i18n.language, t('levels.faculty'));
   const rate = faculty.metrics.completion_rate;
+  const deans = faculty.deans ?? [];
 
   return (
     <section aria-label={name}>
@@ -34,6 +35,24 @@ export const FacultyStats = ({ faculty }: { faculty: GovernanceNode }) => {
           </span>
         </CardHeader>
         <CardBody className="space-y-4">
+          <div>
+            <p className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+              {t('faculty.deans')}
+            </p>
+            {deans.length === 0 ? (
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t('faculty.noDean')}
+              </p>
+            ) : (
+              <ul className="mt-1 space-y-1">
+                {deans.map((dean) => (
+                  <li key={dean.id} className="text-sm">
+                    {dean.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <GovernanceKpiCards metrics={faculty.metrics} />
         </CardBody>
       </Card>

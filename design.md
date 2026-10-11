@@ -52,7 +52,7 @@ quality bars, never designs to copy.
 | Student | Understand where they stand; build one official plan; respond to feedback; register in SIS | Owns their plan; nothing is sent without their approval                                                                                                 | Phone-first, spacious, AI chat in nav            |
 | Advisor | Turn the queue into decisions; be available when needed                                    | Approve, Return (mandatory reason), Request meeting. Never edits a plan (Q33)                                                                           | Desktop-first, dense queue, attention management |
 | Dean    | Know whether advising in their area functions, and where the team needs attention          | Read-only; advisors and aggregates for their own area; no student personal details                                                                      | Aggregate screens only, no student PII surface   |
-| VP      | Compare faculties and departments at a glance                                              | Read-only, university-wide, aggregates only; never students, advisors, or dean identity beside faculty stats                                            | Scorecard + drill-down + trends only             |
+| VP      | Compare faculties and departments at a glance                                              | Read-only, university-wide, aggregates only; never students, advisors, or caseloads; faculty stat cards name each faculty's deans                       | Scorecard + drill-down + trends only             |
 | Admin   | Keep the machine running                                                                   | Operational control plane: users, assignments, courses, programs, rules, registration windows, notifications config, AI config. Sees no analytics (Q55) | Forms and tables, task-oriented, zero charts     |
 
 "Faculty" is not a role: it is an aggregation layer. Department and faculty are data. Dean and advisor
@@ -62,26 +62,26 @@ can never be the same human.
 
 These rules come from the foundation contract. They override any design preference.
 
-| ID    | Rule                                                                                                                                                                                                                          | Source           |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| PR-01 | No labels, no flags: no student is ever shown as "at risk" or "probation" anywhere in the UI. Rule messages speak about constraints, never about the person.                                                                  | Q57              |
-| PR-02 | No simulators: no GPA simulator, no plan simulator, no what-if plans.                                                                                                                                                         | Q36              |
-| PR-03 | Dean is scoped to their own area; areas outside it are invisible.                                                                                                                                                             | Q54              |
-| PR-04 | No petitions in any form; advisors cannot approve rule-violating plans.                                                                                                                                                       | Q64, Q65         |
-| PR-05 | In-app only: no email, SMS, WhatsApp, push. The notification center is the entire delivery. No free-form person-to-person messaging; structured communication lives in plan comments and meeting requests.                    | Q22, Q39, Q48    |
-| PR-06 | Plan comments are advisor-authored. Students write free text only in plan fields, AI chat, and meeting-request notes.                                                                                                         | Q66 as amended   |
-| PR-07 | Humans own decisions: AI never sends, approves, or changes academic state. Drafts never auto-send. Nothing consequential happens without explicit confirmation.                                                               | Q33, Q45, Q46    |
-| PR-08 | AI is students-only, with exactly 6 capabilities: explain rules, explain degree requirements, recommend courses, draft a plan, explain why a line is invalid, explain the student's own state. Zero access to other students. | Q44, Q64         |
-| PR-09 | SIS is the ledger: the platform never writes to SIS. CGPA arrives from SIS and is never computed in-app.                                                                                                                      | Q59, Q67         |
-| PR-10 | No staff-facing AI and no predictions.                                                                                                                                                                                        | Q44, Q64         |
-| PR-11 | No career-path recommender.                                                                                                                                                                                                   | Q64              |
-| PR-12 | Hard block: plans violating validation rules V1–V6 cannot be submitted.                                                                                                                                                       | Q65              |
-| PR-13 | Scoreboard metrics are locked: completion %, median decision time, aging (the UI reads the server's `is_aging` flag and never shows the threshold value).                                                                     | Q40              |
-| PR-14 | Student record is minimal: CGPA, prereq map, history with per-course credits. No transcript, no grade pages.                                                                                                                  | Q31, Q58         |
-| PR-15 | VP surfaces never show dean identity beside faculty statistics, and never continue below Department.                                                                                                                          | v2 critical rule |
-| PR-16 | Data freshness is never faked: stale SIS data is labeled with its as-of time and a retry.                                                                                                                                     | v2               |
-| PR-17 | Destructive actions show impact, confirm, execute, show result, and offer undo where safe. Harmless actions never get confirmation dialogs.                                                                                   | v2               |
-| PR-18 | Admin scope is fixed (foundation §5); Admin never grows an "everything settings" area.                                                                                                                                        | v2               |
+| ID    | Rule                                                                                                                                                                                                                          | Source                               |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| PR-01 | No labels, no flags: no student is ever shown as "at risk" or "probation" anywhere in the UI. Rule messages speak about constraints, never about the person.                                                                  | Q57                                  |
+| PR-02 | No simulators: no GPA simulator, no plan simulator, no what-if plans.                                                                                                                                                         | Q36                                  |
+| PR-03 | Dean is scoped to their own area; areas outside it are invisible.                                                                                                                                                             | Q54                                  |
+| PR-04 | No petitions in any form; advisors cannot approve rule-violating plans.                                                                                                                                                       | Q64, Q65                             |
+| PR-05 | In-app only: no email, SMS, WhatsApp, push. The notification center is the entire delivery. No free-form person-to-person messaging; structured communication lives in plan comments and meeting requests.                    | Q22, Q39, Q48                        |
+| PR-06 | Plan comments are advisor-authored. Students write free text only in plan fields, AI chat, and meeting-request notes.                                                                                                         | Q66 as amended                       |
+| PR-07 | Humans own decisions: AI never sends, approves, or changes academic state. Drafts never auto-send. Nothing consequential happens without explicit confirmation.                                                               | Q33, Q45, Q46                        |
+| PR-08 | AI is students-only, with exactly 6 capabilities: explain rules, explain degree requirements, recommend courses, draft a plan, explain why a line is invalid, explain the student's own state. Zero access to other students. | Q44, Q64                             |
+| PR-09 | SIS is the ledger: the platform never writes to SIS. CGPA arrives from SIS and is never computed in-app.                                                                                                                      | Q59, Q67                             |
+| PR-10 | No staff-facing AI and no predictions.                                                                                                                                                                                        | Q44, Q64                             |
+| PR-11 | No career-path recommender.                                                                                                                                                                                                   | Q64                                  |
+| PR-12 | Hard block: plans violating validation rules V1–V6 cannot be submitted.                                                                                                                                                       | Q65                                  |
+| PR-13 | Scoreboard metrics are locked: completion %, median decision time, aging (the UI reads the server's `is_aging` flag and never shows the threshold value).                                                                     | Q40                                  |
+| PR-14 | Student record is minimal: CGPA, prereq map, history with per-course credits. No transcript, no grade pages.                                                                                                                  | Q31, Q58                             |
+| PR-15 | VP surfaces never continue below Department, and no advisor or student data appears beside faculty statistics. Faculty stat cards name each faculty's deans.                                                                  | v2 critical rule, amended 2026-10-11 |
+| PR-16 | Data freshness is never faked: stale SIS data is labeled with its as-of time and a retry.                                                                                                                                     | v2                                   |
+| PR-17 | Destructive actions show impact, confirm, execute, show result, and offer undo where safe. Harmless actions never get confirmation dialogs.                                                                                   | v2                                   |
+| PR-18 | Admin scope is fixed (foundation §5); Admin never grows an "everything settings" area.                                                                                                                                        | v2                                   |
 
 ### 1.5 Validation rules behind V1–V6
 
@@ -466,8 +466,9 @@ empty-state, avatar, confirm-dialog, breadcrumb, page-header, command-palette, b
 Domain: plan-state-chip, plan-card, plan-line, validation-panel, comment-thread, seen-button,
 submit-suggestion-card, prereq-map, status-chip (meeting/account/data), meeting-request-card,
 slot-picker, availability-editor, queue-table, review-drawer (review workspace), caseload-table,
-advisor-workload-table, scoreboard-table, funnel-chart, trend-chart, faculty-scorecard, drilldown-table,
-notification-center, record-freshness, window-closed-banner, advisor-card, course-card (AI).
+advisor-workload-table, scoreboard-table, funnel-chart, trend-chart, faculty-scorecard, faculty-stats,
+drilldown-table, notification-center, record-freshness, window-closed-banner, advisor-card,
+course-card (AI).
 
 **DS-CP-05 (MUST):** new components enter through section 24 governance: reuse check, spec added to
 this section, story + test, then build. Never build a second variation of an existing component.
@@ -535,6 +536,11 @@ cards on mobile.
 
 **AdvisorWorkloadTable** — dean's per-advisor aggregates: grouping, caseload size, queue size,
 decision times, activity, aggregate outcomes. Tabular-nums, sort, CSV export. No student rows.
+
+**FacultyStats**: one card per faculty on the VP scorecard. Faculty name and completion rate band
+in the header; the faculty's deans listed under a Deans label, or "No dean assigned yet." when none
+is assigned; the shared KPI card set (completion, median decision time, aging, caseload, approved).
+Bilingual labels, RTL-safe rendering.
 
 **TrendChart** — line/bar series over terms for dean analytics and VP trends: completion %, median
 decision time, aging. Legend + tooltips + text alternative; the question the chart answers is its
@@ -604,7 +610,8 @@ Mental model: "How do faculties compare, and which direction are they moving?"
 
 - **Overview (V1)**: university aggregate performance and the faculty scorecard entry.
 - **Faculties (V2)**: faculty scorecards; drilldown University → Faculty → Department. It stops
-  there (PR-15). **Never a dean name beside faculty statistics.**
+  there (PR-15). **Each faculty stat card names the faculty's deans**, or "No dean assigned yet."
+  (amended 2026-10-11, acad-3j3).
 - **Trends (V3)**: completion, decision time, aging over terms; faculty comparisons.
 - Aggregates emphasize trends and comparisons, never operational detail; no advisor or student data.
 
@@ -829,19 +836,20 @@ layout/responsive → typography/color → motion → forms → navigation → c
 
 ## Appendix A: resolved contradictions
 
-| Topic                            | Resolution                                                                               |
-| -------------------------------- | ---------------------------------------------------------------------------------------- |
-| Em dash                          | Repo rules win: no em dashes in UI copy, labels, or agent prose. Ranges use the hyphen   |
-| Serif                            | No serif. Inter + Cairo                                                                  |
-| Icon library                     | lucide-react only                                                                        |
-| Type scale                       | Tailwind defaults plus `text-2xs`                                                        |
-| Inter as default                 | Qualifies under the public-sector/civic exception: academic institution, Operate surface |
-| Pure white background            | Operate app keeps white/slate surfaces; text is never pure black; no marketing pages     |
-| Emoji                            | Banned in UI copy and as icons                                                           |
-| v1 Proposed-to-Done visits       | Superseded by the v2 unified meeting model (foundation §10)                              |
-| v1 "no credits on plan surfaces" | Superseded: credits are visible (foundation §7.3 v2)                                     |
-| v1 "no bottom-bar pattern in v1" | Superseded: bottom navigation is the mobile pattern (section 5.3)                        |
-| v1 "Advaisor" naming             | Superseded: the product name is Advisor                                                  |
+| Topic                                            | Resolution                                                                               |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Em dash                                          | Repo rules win: no em dashes in UI copy, labels, or agent prose. Ranges use the hyphen   |
+| Serif                                            | No serif. Inter + Cairo                                                                  |
+| Icon library                                     | lucide-react only                                                                        |
+| Type scale                                       | Tailwind defaults plus `text-2xs`                                                        |
+| Inter as default                                 | Qualifies under the public-sector/civic exception: academic institution, Operate surface |
+| Pure white background                            | Operate app keeps white/slate surfaces; text is never pure black; no marketing pages     |
+| Emoji                                            | Banned in UI copy and as icons                                                           |
+| v1 Proposed-to-Done visits                       | Superseded by the v2 unified meeting model (foundation §10)                              |
+| v1 "no credits on plan surfaces"                 | Superseded: credits are visible (foundation §7.3 v2)                                     |
+| v1 "no bottom-bar pattern in v1"                 | Superseded: bottom navigation is the mobile pattern (section 5.3)                        |
+| v1 "Advaisor" naming                             | Superseded: the product name is Advisor                                                  |
+| v2 "never a dean name beside faculty statistics" | Superseded 2026-10-11: faculty stat cards name each faculty's deans (acad-3j3, PR-15)    |
 
 ## Appendix B: token blocks
 
@@ -1567,7 +1575,6 @@ Keep History and New conversation adjacent in the AI page actions.
 Preserve explicit message sending and explicit plan submission confirmation.
 Preserve factual progress and existing academic permissions.
 This section records implemented source behavior. Validation reports establish test and browser results separately.
-
 
 ### 31.8 Planning and SIS registration review
 

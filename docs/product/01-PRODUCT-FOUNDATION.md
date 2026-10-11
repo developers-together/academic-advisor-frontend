@@ -8,6 +8,8 @@
 > **2026-10-11 amendment (acad-aux)**: the SIS exposes no remaining-requirements or
 > current-enrollment data. The academic record drops both surfaces; §3, §7.3, §9, §12, and §14 S4
 > carry the change.
+> **2026-10-11 amendment (acad-c51)**: governance faculty nodes carry their deans. The VP scorecard
+> names each faculty's deans beside the statistics; §2, §5, and §13 carry the change.
 > This document is the **contract**. Nothing gets designed or built that contradicts it.
 > If reality contradicts it, the document is amended first — never silently.
 >
@@ -95,7 +97,7 @@ advising at a glance, at the right level of aggregation for their role.
 - Student state labels / risk flags / early-warning anything (Q57)
 - Attendance, financial, scholarship data
 - Email / SMS / WhatsApp / push; free-form person-to-person messaging
-- VP visibility of advisor caseloads, individual students, or dean identity beside faculty statistics
+- VP visibility of advisor caseloads or individual students
 - Dean visibility of VP governance data or other faculties
 - Timetable/calendar management (Q55); academic calendar authoring (window dates come from SIS, Q67)
 - Staff-facing AI (Q44); predictions (Q64)
@@ -134,12 +136,13 @@ Student     (belongs to exactly one department, has exactly one advisor)
 | **Student** | Understand where they stand, build one official plan, respond to advisor feedback, register in SIS | Owns their plan; cannot send AI outputs anywhere without approving them |
 | **Advisor** | Turn the queue into decisions; be available when needed | Approve / Return (mandatory reason) / Request meeting. **Never edits a plan** (Q33) |
 | **Dean** | Know whether advising in their area is functioning, and where the team needs attention | Read-only; sees advisors and advisor-level aggregates for their area; no student-level personal details |
-| **VP** | Compare faculties and departments at a glance | Read-only, university-wide, aggregates only. Never individual students, advisors, caseloads, or dean identity beside faculty statistics |
+| **VP** | Compare faculties and departments at a glance | Read-only, university-wide, aggregates only. Never individual students, advisors, or caseloads. Faculty stat cards name the faculty's deans |
 | **Admin** | Keep the machine running | Operational control plane: users, students, staff, advisor assignments, courses, programs, academic rules, registration windows, notification configuration, AI configuration. Sees no analytics (Q55) |
 
-**Critical VP rule (v2):** the VP must never see a dean identity or name associated with faculty
-statistics. Faculty scorecards show aggregates only. Interfaces of the form "Faculty of X — Dean:
-John Doe — KPI" are forbidden.
+**Critical VP rule (v2, amended 2026-10-11):** the VP sees university-wide aggregates only: never
+individual students, advisors, or caseloads. The drilldown stops at Department. Faculty stat cards
+name the faculty's deans (governance contract, acad-3j3). No advisor identity or student data
+appears beside faculty statistics.
 
 **Dean view (v2):** advisors are visible as operational units — grouping, workload, queue size,
 decision times, activity, aggregate outcomes. Individual student profiles, student names beyond what
@@ -412,9 +415,10 @@ general explanation. Deterministic engine computes, LLM converses, LLM has zero 
 bottlenecks) · **advisor view**: grouping, workload, queue size, decision times, activity, aggregate
 outcomes · trends · exports. No student-level personal details; no student profiles.
 
-**VP (university)**: university overview · faculty scorecards on the same metrics · trends over time ·
-drill **University → Faculty → Department** · comparisons · exports. **No dean identity beside
-faculty statistics. No individual students or advisors anywhere** (Q63, v2 critical rule).
+**VP (university)**: university overview · faculty scorecards on the same metrics, each naming the
+faculty's deans · trends over time · drill **University → Faculty → Department** · comparisons ·
+exports. **No individual students or advisors anywhere** (Q63, v2 critical rule, amended
+2026-10-11).
 
 Charts exist only to answer a specific question (Is performance improving? Where is the bottleneck?
 Which faculty differs? How is workload distributed? How old are unresolved cases?). Every chart has a
@@ -619,6 +623,12 @@ Overview: faculties compared, trends over time.
 | Admin | Operational scope fixed: users, assignments, courses, programs, rules, registration windows, notifications config, AI configuration + Overview; no infra scope | §5, §14 |
 | Notifications | Categorized (§11); meeting lifecycle triggers added | §11 |
 | AI UX | Structured response types and explicit AI states (§12); submit confirmation unchanged | §12 |
+
+### 2026-10-11 amendment (acad-c51)
+
+| Topic | Decision | Amends |
+|---|---|---|
+| VP | Governance faculty nodes carry their deans. Faculty stat cards name each faculty's deans beside the statistics. The v2 rule that forbids dean identity beside faculty statistics is superseded. The bans on individual students, advisors, and caseloads stand | v2 amendments, §5, §13 |
 
 ---
 

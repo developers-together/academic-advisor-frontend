@@ -43,7 +43,7 @@ React 19 app in this repository; product truth lives in `docs/product/`, design 
 - No student is ever labeled "at risk" or "probation"; rule copy states constraints, never categories.
 - Notifications are in-app only; no email, SMS, WhatsApp, or push; no free-form person-to-person
   messaging.
-- VP surfaces never show dean identity beside faculty statistics and never drill below Department.
+- VP surfaces show aggregates only and never drill below Department; faculty stat cards name each faculty's deans.
 - Dean sees only their own area; advisors and aggregates, never student profiles.
 - Every user-facing string exists in both EN and AR dictionaries; numerals stay Latin in both locales.
 - Status is never color alone: icon + label + color everywhere.
