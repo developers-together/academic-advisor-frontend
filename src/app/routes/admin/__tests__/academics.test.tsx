@@ -47,6 +47,23 @@ test('the academics page shows the current term, the four import cards, and the 
   ).toBeInTheDocument();
 });
 
+test('the credit-allowances card states the per-faculty CGPA-band sheet format', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  await renderApp(<AdminAcademicsRoute />, {
+    user: admin,
+    path: '/admin/academics',
+    url: '/admin/academics',
+  });
+
+  const card = await screen.findByTestId('import-card-credit-allowances');
+  expect(
+    within(card).getByText(
+      'Per-faculty minimum and maximum credit hours by CGPA band (below 2.0, regular, above 3.7).',
+    ),
+  ).toBeInTheDocument();
+});
+
 test('saving the current term puts every field', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   const putTerm = vi.fn();
