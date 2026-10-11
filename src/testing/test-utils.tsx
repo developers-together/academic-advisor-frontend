@@ -86,8 +86,14 @@ export const renderApp = async (
     user,
     url = '/',
     path = '/',
+    routes = [],
     ...renderOptions
-  }: { user?: MockUser | null; url?: string; path?: string } = {},
+  }: {
+    user?: MockUser | null;
+    url?: string;
+    path?: string;
+    routes?: Array<{ path: string; element: React.ReactElement }>;
+  } = {},
 ) => {
   const initializedUser = await initializeUser(user);
 
@@ -97,6 +103,7 @@ export const renderApp = async (
         path: path,
         element: ui,
       },
+      ...routes,
     ],
     {
       initialEntries: url ? ['/', url] : ['/'],

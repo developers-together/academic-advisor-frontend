@@ -399,7 +399,7 @@
   "windows": {
     "title": "Registration Windows",
     "context": "The academic clock plans submit inside. Dates mirror the SIS.",
-    "hint": "Dates come from the SIS. Activation controls whether students can submit.",
+    "hint": "A window is created when the current term is set on Academics. Dates mirror the SIS; activation controls whether students can submit.",
     "columns": {
       "term": "Term",
       "opens": "Opens",
@@ -417,6 +417,11 @@
       "title": "Close registration for {{term}}?",
       "body": "Students can no longer submit plans for {{term}} while the window is closed. You can reopen it.",
       "confirm": "Close registration"
+    },
+    "empty": {
+      "title": "No registration windows yet.",
+      "body": "Setting the current term on Academics creates a window. Dates mirror the SIS; activation controls whether students can submit.",
+      "action": "Go to Academics"
     }
   },
   "ai": {

@@ -31,11 +31,7 @@ export const useUpdateRegistrationWindow = () => {
       input,
     }: {
       id: number;
-      input: {
-        is_active?: boolean;
-        opens_at?: string;
-        closes_at?: string;
-      };
+      input: { is_active: boolean };
     }): Promise<RegistrationWindow> =>
       unwrap<RegistrationWindow>(
         api.put(`/admin/registration-windows/${id}`, input),

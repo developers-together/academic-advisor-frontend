@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 
 import { Badge } from '@/components/ui/badge';
 import { ErrorState } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/dialog';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/components/ui/notifications';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -15,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { paths } from '@/config/paths';
 import { ApiError } from '@/lib/api-error';
 import { PermissionDenied } from '@/lib/authorization';
 import { formatDate } from '@/lib/i18n/format';
@@ -26,6 +29,7 @@ import {
 
 export const RegistrationWindowsDocument = () => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const addNotification = useNotifications((state) => state.addNotification);
   const windowsQuery = useRegistrationWindows();
   const updateWindow = useUpdateRegistrationWindow();
@@ -64,6 +68,23 @@ export const RegistrationWindowsDocument = () => {
   }
 
   const windows = windowsQuery.data;
+
+  if (windows.length === 0) {
+    return (
+      <div className="max-w-3xl space-y-4">
+        <EmptyState
+          compact
+          title={t('windows.empty.title')}
+          description={t('windows.empty.body')}
+          action={{
+            label: t('windows.empty.action'),
+            onClick: () => navigate(paths.admin.academics.getHref()),
+          }}
+          className="max-w-xl"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl space-y-4">
