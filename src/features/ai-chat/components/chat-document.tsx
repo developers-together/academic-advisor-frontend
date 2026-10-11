@@ -26,6 +26,7 @@ import { useCreateConversation } from '@/features/ai-chat/api/conversations';
 import { Composer } from '@/features/ai-chat/components/composer';
 import { ConversationList } from '@/features/ai-chat/components/conversation-list';
 import { Transcript } from '@/features/ai-chat/components/transcript';
+import { readableApiError } from '@/lib/api-error';
 import { useUser } from '@/lib/auth';
 
 export type ChatDocumentProps = { conversationId: number | null };
@@ -124,7 +125,10 @@ export const ChatDocument = ({ conversationId }: ChatDocumentProps) => {
       </div>
       {createConversation.isError && (
         <Banner variant="destructive" className="mb-4">
-          {t('composer.sendFailed')}
+          {readableApiError(
+            createConversation.error,
+            t('common:errors.saveFailed'),
+          )}
         </Banner>
       )}
       <section

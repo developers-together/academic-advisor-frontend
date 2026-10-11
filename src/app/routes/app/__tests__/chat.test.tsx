@@ -1,12 +1,15 @@
 import { render as rtlRender, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { HttpResponse, http } from 'msw';
 import { MemoryRouter, Route, Routes } from 'react-router';
 
 import { AppProvider } from '@/app/provider';
 import ChatRoute from '@/app/routes/app/chat';
 import ConversationRoute from '@/app/routes/app/conversation';
+import { env } from '@/config/env';
 import { formatDateTime } from '@/lib/i18n/format';
 import { db } from '@/testing/mocks/db';
+import { server } from '@/testing/mocks/server';
 import { createUser, loginAsUser } from '@/testing/test-utils';
 
 const renderChat = async (
@@ -118,6 +121,45 @@ test('a starter prompt becomes a draft and never sends without the student', asy
     expect(screen.getByRole('textbox')).toHaveValue('Explain my prerequisites'),
   );
   expect(db.planConversation.getAll()).toHaveLength(0);
+});
+
+test('a failed conversation start shows feedback near the new conversation action', async () => {
+  await renderChat('/app/chat');
+  server.use(
+    http.post(`${env.API_URL}/plan-conversations`, () =>
+      HttpResponse.json({}, { status: 500 }),
+    ),
+  );
+
+  await userEvent.type(
+    screen.getByRole('textbox', { name: 'Message your AI advisor' }),
+    'Help me review CS 201.',
+  );
+  await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'We could not save that.',
+  );
+});
+
+test('a failed conversation start keeps the entry draft', async () => {
+  await renderChat('/app/chat');
+  server.use(
+    http.post(`${env.API_URL}/plan-conversations`, () =>
+      HttpResponse.json({}, { status: 500 }),
+    ),
+  );
+
+  await userEvent.type(
+    screen.getByRole('textbox', { name: 'Message your AI advisor' }),
+    'Help me review CS 201.',
+  );
+  await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
+
+  await screen.findByRole('alert');
+  expect(
+    screen.getByRole('textbox', { name: 'Message your AI advisor' }),
+  ).toHaveValue('Help me review CS 201.');
 });
 
 test('one send creates a conversation and sends its first message exactly once', async () => {
