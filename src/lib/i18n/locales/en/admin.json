@@ -389,7 +389,12 @@
       "level": "Level",
       "saveCreate": "Create course",
       "saveEdit": "Save changes",
-      "fixAndRetry": "Fix the highlighted field and retry."
+      "errors": {
+        "codeRequired": "Enter the course code.",
+        "titleRequired": "Enter the title.",
+        "creditsRange": "Enter credit hours from 1 to 6.",
+        "levelRange": "Enter a level from 1 to 8."
+      }
     },
     "deleteDialog": {
       "title": "Delete {{code}}?",

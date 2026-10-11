@@ -77,6 +77,145 @@ test('editing credits updates the row', async () => {
   expect(await screen.findByText('CS 201')).toBeInTheDocument();
 });
 
+test('saving a course without credit hours shows a field error and saves nothing', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  await renderApp(<AdminCoursesRoute />, {
+    user: admin,
+    path: '/admin/courses',
+    url: '/admin/courses',
+  });
+
+  const addButtons = await screen.findAllByRole('button', {
+    name: 'Add course',
+  });
+  await userEvent.click(addButtons[0]);
+
+  const dialog = await screen.findByRole('dialog', { name: 'Add a course' });
+  await userEvent.type(within(dialog).getByLabelText('Course code'), 'CS 402');
+  await userEvent.type(
+    within(dialog).getByLabelText('Title'),
+    'Machine Learning',
+  );
+  await userEvent.clear(within(dialog).getByLabelText('Credits'));
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create course' }),
+  );
+
+  expect(
+    await within(dialog).findByRole('alert', {
+      name: 'Enter credit hours from 1 to 6.',
+    }),
+  ).toBeInTheDocument();
+  expect(
+    db.course.findFirst({ where: { code: { equals: 'CS 402' } } }),
+  ).toBeNull();
+});
+
+test('saving a course with more than six credit hours shows a field error and saves nothing', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  await renderApp(<AdminCoursesRoute />, {
+    user: admin,
+    path: '/admin/courses',
+    url: '/admin/courses',
+  });
+
+  const addButtons = await screen.findAllByRole('button', {
+    name: 'Add course',
+  });
+  await userEvent.click(addButtons[0]);
+
+  const dialog = await screen.findByRole('dialog', { name: 'Add a course' });
+  await userEvent.type(within(dialog).getByLabelText('Course code'), 'CS 402');
+  await userEvent.type(
+    within(dialog).getByLabelText('Title'),
+    'Machine Learning',
+  );
+  const credits = within(dialog).getByLabelText('Credits');
+  await userEvent.clear(credits);
+  await userEvent.type(credits, '9');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create course' }),
+  );
+
+  expect(
+    await within(dialog).findByRole('alert', {
+      name: 'Enter credit hours from 1 to 6.',
+    }),
+  ).toBeInTheDocument();
+  expect(
+    db.course.findFirst({ where: { code: { equals: 'CS 402' } } }),
+  ).toBeNull();
+});
+
+test('saving a course with a level outside 1 to 8 shows a field error and saves nothing', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  await renderApp(<AdminCoursesRoute />, {
+    user: admin,
+    path: '/admin/courses',
+    url: '/admin/courses',
+  });
+
+  const addButtons = await screen.findAllByRole('button', {
+    name: 'Add course',
+  });
+  await userEvent.click(addButtons[0]);
+
+  const dialog = await screen.findByRole('dialog', { name: 'Add a course' });
+  await userEvent.type(within(dialog).getByLabelText('Course code'), 'CS 402');
+  await userEvent.type(
+    within(dialog).getByLabelText('Title'),
+    'Machine Learning',
+  );
+  const level = within(dialog).getByLabelText('Level');
+  await userEvent.type(level, '9');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create course' }),
+  );
+
+  expect(
+    await within(dialog).findByRole('alert', {
+      name: 'Enter a level from 1 to 8.',
+    }),
+  ).toBeInTheDocument();
+  expect(
+    db.course.findFirst({ where: { code: { equals: 'CS 402' } } }),
+  ).toBeNull();
+});
+
+test('saving a course with no level saves it without one', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  await renderApp(<AdminCoursesRoute />, {
+    user: admin,
+    path: '/admin/courses',
+    url: '/admin/courses',
+  });
+
+  const addButtons = await screen.findAllByRole('button', {
+    name: 'Add course',
+  });
+  await userEvent.click(addButtons[0]);
+
+  const dialog = await screen.findByRole('dialog', { name: 'Add a course' });
+  await userEvent.type(within(dialog).getByLabelText('Course code'), 'CS 402');
+  await userEvent.type(
+    within(dialog).getByLabelText('Title'),
+    'Machine Learning',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create course' }),
+  );
+
+  const row = await screen.findByText('CS 402');
+  expect(row).toBeInTheDocument();
+  expect(
+    db.course.findFirst({ where: { code: { equals: 'CS 402' } } })?.level,
+  ).toBeNull();
+});
+
 test('deleting a course asks for confirmation and removes the row', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   db.course.create({

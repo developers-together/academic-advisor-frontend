@@ -389,7 +389,12 @@
       "level": "المستوى",
       "saveCreate": "إنشاء المقرر",
       "saveEdit": "حفظ التغييرات",
-      "fixAndRetry": "صحح الحقل المحدد وأعد المحاولة."
+      "errors": {
+        "codeRequired": "أدخل رمز المقرر.",
+        "titleRequired": "أدخل العنوان.",
+        "creditsRange": "أدخل الساعات من 1 إلى 6.",
+        "levelRange": "أدخل المستوى من 1 إلى 8."
+      }
     },
     "deleteDialog": {
       "title": "حذف {{code}}؟",

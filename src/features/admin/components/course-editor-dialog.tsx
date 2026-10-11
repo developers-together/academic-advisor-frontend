@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormEvent } from 'react';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
 
-import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
 import { ApiError } from '@/lib/api-error';
 import type { AdminCourse } from '@/types/domain';
@@ -26,12 +29,12 @@ export type CourseEditorDialogProps = {
   onClose: () => void;
 };
 
-const emptyForm = {
-  code: '',
-  title_en: '',
-  title_ar: '',
-  credits: 3,
-  level: '',
+type CourseValues = {
+  code: string;
+  title_en: string;
+  title_ar: string;
+  credits: string;
+  level: string;
 };
 
 export const CourseEditorDialog = ({
@@ -42,38 +45,71 @@ export const CourseEditorDialog = ({
   const addNotification = useNotifications((state) => state.addNotification);
   const createCourse = useCreateCourse();
   const updateCourse = useUpdateCourse();
-  const [form, setForm] = useState(
-    course
-      ? {
-          code: course.code,
-          title_en: course.title_en,
-          title_ar: course.title_ar ?? '',
-          credits: course.credits,
-          level: course.level === null ? '' : String(course.level),
-        }
-      : emptyForm,
-  );
-  const [failed, setFailed] = useState<string | null>(null);
+
+  const codeLocked = course !== null;
+
+  const schema = z.object({
+    code: z.string().trim().min(1, t('courses.editor.errors.codeRequired')),
+    title_en: z
+      .string()
+      .trim()
+      .min(1, t('courses.editor.errors.titleRequired')),
+    title_ar: z.string().trim(),
+    credits: z
+      .string()
+      .trim()
+      .min(1, t('courses.editor.errors.creditsRange'))
+      .refine(
+        (value) => Number(value) >= 1 && Number(value) <= 6,
+        t('courses.editor.errors.creditsRange'),
+      ),
+    level: z
+      .string()
+      .trim()
+      .refine(
+        (value) =>
+          value === '' ||
+          (Number.isInteger(Number(value)) &&
+            Number(value) >= 1 &&
+            Number(value) <= 8),
+        t('courses.editor.errors.levelRange'),
+      ),
+  });
+
+  const form = useForm<CourseValues>({
+    resolver: zodResolver(schema),
+    mode: 'onBlur',
+    defaultValues: {
+      code: course?.code ?? '',
+      title_en: course?.title_en ?? '',
+      title_ar: course?.title_ar ?? '',
+      credits: course ? String(course.credits) : '3',
+      level:
+        course?.level === null || course?.level === undefined
+          ? ''
+          : String(course.level),
+    },
+  });
 
   const pending = createCourse.isPending || updateCourse.isPending;
-  const codeLocked = course !== null;
-  const invalid = form.code.trim() === '' || form.title_en.trim() === '';
 
-  const save = () => {
-    setFailed(null);
+  const submit = form.handleSubmit((values) => {
     const input: CourseInput = {
-      code: form.code.trim(),
-      title_en: form.title_en.trim(),
-      title_ar: form.title_ar.trim() || null,
-      credits: Number(form.credits) || 0,
-      level: form.level === '' ? null : Number(form.level),
+      code: values.code.trim(),
+      title_en: values.title_en.trim(),
+      title_ar: values.title_ar.trim() || null,
+      credits: Number(values.credits),
+      level: values.level.trim() === '' ? null : Number(values.level),
     };
     const onError = (error: unknown) => {
       if (error instanceof ApiError && error.status === 409) {
-        setFailed(t('courses.errors.codeExists'));
+        form.setError('code', { message: t('courses.errors.codeExists') });
         return;
       }
-      setFailed(t('common:errors.loadFailed'));
+      addNotification({
+        type: 'error',
+        title: t('common:errors.saveFailed'),
+      });
     };
     if (course) {
       updateCourse.mutate(
@@ -109,10 +145,12 @@ export const CourseEditorDialog = ({
         onError,
       });
     }
-  };
+  });
 
-  const field =
-    'mt-1 flex h-11 w-full rounded-md border border-input bg-background px-3 text-base focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden';
+  const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void submit();
+  };
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()}>
@@ -126,89 +164,57 @@ export const CourseEditorDialog = ({
           <DialogDescription>{t('courses.editor.body')}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3">
-          <div>
-            <label htmlFor="course-code" className="text-sm font-medium">
-              {t('courses.editor.code')}
-            </label>
-            <input
-              id="course-code"
-              value={form.code}
-              disabled={codeLocked}
-              onChange={(event) =>
-                setForm({ ...form, code: event.target.value })
-              }
-              className={`${field} disabled:opacity-50`}
-            />
-          </div>
-          <div>
-            <label htmlFor="course-title" className="text-sm font-medium">
-              {t('courses.editor.title')}
-            </label>
-            <input
-              id="course-title"
-              value={form.title_en}
-              onChange={(event) =>
-                setForm({ ...form, title_en: event.target.value })
-              }
-              className={field}
-            />
-          </div>
+        <form onSubmit={onFormSubmit} className="space-y-3" noValidate>
+          <Input
+            label={t('courses.editor.code')}
+            error={form.formState.errors.code}
+            registration={form.register('code')}
+            disabled={codeLocked}
+          />
+          <Input
+            label={t('courses.editor.title')}
+            error={form.formState.errors.title_en}
+            registration={form.register('title_en')}
+          />
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="course-credits" className="text-sm font-medium">
-                {t('courses.editor.credits')}
-              </label>
-              <input
-                id="course-credits"
-                type="number"
-                min={0}
-                value={form.credits}
-                onChange={(event) =>
-                  setForm({ ...form, credits: Number(event.target.value) })
-                }
-                className={`${field} tabular-nums`}
-              />
-            </div>
-            <div>
-              <label htmlFor="course-level" className="text-sm font-medium">
-                {t('courses.editor.level')}
-              </label>
-              <input
-                id="course-level"
-                type="number"
-                min={1}
-                value={form.level}
-                onChange={(event) =>
-                  setForm({ ...form, level: event.target.value })
-                }
-                className={`${field} tabular-nums`}
-              />
-            </div>
+            <Input
+              type="number"
+              min={1}
+              max={6}
+              step="any"
+              label={t('courses.editor.credits')}
+              error={form.formState.errors.credits}
+              registration={form.register('credits')}
+              className="tabular-nums"
+            />
+            <Input
+              type="number"
+              min={1}
+              max={8}
+              step={1}
+              label={t('courses.editor.level')}
+              error={form.formState.errors.level}
+              registration={form.register('level')}
+              className="tabular-nums"
+            />
           </div>
 
-          {failed && (
-            <Banner variant="destructive" title={failed}>
-              {t('courses.editor.fixAndRetry')}
-            </Banner>
-          )}
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {t('actions.cancel', { ns: 'common' })}
-          </Button>
-          <Button
-            onClick={save}
-            disabled={invalid}
-            isLoading={pending}
-            aria-busy={pending}
-          >
-            {course
-              ? t('courses.editor.saveEdit')
-              : t('courses.editor.saveCreate')}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
+              {t('common:actions.cancel')}
+            </Button>
+            <Button
+              type="submit"
+              isLoading={pending}
+              disabled={pending}
+              aria-busy={pending}
+            >
+              {course
+                ? t('courses.editor.saveEdit')
+                : t('courses.editor.saveCreate')}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
