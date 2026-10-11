@@ -164,8 +164,8 @@ const prerequisiteMap = [
     state: 'locked',
     prerequisites: ['CS 201'],
     missing_prerequisites: ['CS 201'],
-    is_available: false,
-    availability_reasons: ['Not offered in the spring term.'],
+    available: false,
+    reasons: ['Not offered in the spring term.'],
   }),
 ];
 

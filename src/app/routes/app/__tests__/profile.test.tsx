@@ -1,3 +1,4 @@
+import { i18n } from '@/lib/i18n/i18n-instance';
 import { db } from '@/testing/mocks/db';
 import { mapEntry } from '@/testing/mocks/map-entry';
 import { CURRENT_TERM } from '@/testing/mocks/mock-auth';
@@ -80,8 +81,8 @@ const levelMap = [
     state: 'eligible',
     prerequisites: ['CS 201'],
     missing_prerequisites: ['CS 201'],
-    is_available: false,
-    availability_reasons: ['Not offered in the spring term.'],
+    available: false,
+    reasons: ['Not offered in the spring term.'],
     warnings: ['Requires exception — talk to your academic advisor.'],
   }),
   mapEntry({
@@ -293,6 +294,53 @@ test('shows the unavailable reason on the card and the exception note in the det
       'Requires exception — talk to your academic advisor.',
     ),
   ).toBeInTheDocument();
+});
+
+test('renders the level map chrome, states, and availability in Arabic', async () => {
+  await i18n.changeLanguage('ar');
+  try {
+    const user = await createUser({ advisor_id: 2 });
+    seedRecord(user.id as number, {
+      prerequisite_map: JSON.stringify(levelMap),
+      curriculum_year_level: 3,
+    });
+
+    await renderApp(<RecordRoute />, {
+      user,
+      path: '/app/record',
+      url: '/app/record',
+    });
+
+    const map = await screen.findByRole('group', { name: 'خريطة المقررات' });
+    const headings = within(map).getAllByRole('heading');
+    expect(headings.map((heading) => heading.textContent)).toEqual([
+      'المستوى 1',
+      'المستوى 3',
+      'المستوى 4',
+      'المستوى 5',
+      'مقررات أخرى',
+    ]);
+    expect(within(map).getByText('مستواك الحالي')).toBeInTheDocument();
+    expect(
+      within(map).getAllByText('محاولة سابقة').length,
+    ).toBeGreaterThan(0);
+    expect(
+      within(map).getByText('Not offered in the spring term.'),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      within(map).getByRole('button', {
+        name: 'CS 301 Algorithms, مؤهل',
+      }),
+    );
+    const panel = screen.getByRole('group', { name: 'تفاصيل المقرر' });
+    expect(within(panel).getByText('التوفر')).toBeInTheDocument();
+    expect(
+      within(panel).getByText('Not offered in the spring term.'),
+    ).toBeInTheDocument();
+  } finally {
+    await i18n.changeLanguage('en');
+  }
 });
 
 test('badges the current level, scrolls it into view, and skips the badge without a level', async () => {

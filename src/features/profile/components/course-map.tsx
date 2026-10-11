@@ -269,13 +269,13 @@ export const CourseMap = ({
                         <span className="text-2xs font-medium">
                           {stateLabel(entry.state)}
                         </span>
-                        {!entry.is_available && (
+                        {!entry.available && (
                           <span className="flex items-start gap-1 text-2xs font-medium text-muted-foreground">
                             <CircleSlash
                               className="mt-0.5 size-3 shrink-0"
                               aria-hidden
                             />
-                            {entry.availability_reasons.join(' ')}
+                            {entry.reasons.join(' ')}
                           </span>
                         )}
                         {entry.warnings.map((warning) => (
@@ -327,13 +327,13 @@ export const CourseMap = ({
               <p className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
                 {t('courseMap.details.availability')}
               </p>
-              {selectedEntry.is_available ? (
+              {selectedEntry.available ? (
                 <p className="mt-1 text-sm text-muted-foreground">
                   {t('courseMap.available')}
                 </p>
               ) : (
                 <ul className="mt-1 space-y-1">
-                  {selectedEntry.availability_reasons.map((reason) => (
+                  {selectedEntry.reasons.map((reason) => (
                     <li
                       key={reason}
                       className="flex items-start gap-1 text-sm text-muted-foreground"

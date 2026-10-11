@@ -36,7 +36,7 @@ export const CourseShelf = ({
     (course) =>
       course.state !== 'completed' &&
       course.state !== 'planned' &&
-      course.is_available &&
+      course.available &&
       !planned.has(course.course_code) &&
       (filter === 'all' ||
         (filter === 'locked'

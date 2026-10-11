@@ -113,8 +113,9 @@ export type PrerequisiteMapEntry = {
   state: PrerequisiteMapState;
   prerequisites: string[];
   missing_prerequisites: string[];
-  is_available: boolean;
-  availability_reasons: string[];
+  active: boolean;
+  available: boolean;
+  reasons: string[];
   warnings: string[];
 };
 

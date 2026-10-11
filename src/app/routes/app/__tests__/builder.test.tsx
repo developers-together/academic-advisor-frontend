@@ -80,8 +80,8 @@ const prerequisiteMap = [
     level: 5,
     state: 'eligible',
     prerequisites: ['CS 301'],
-    is_available: false,
-    availability_reasons: ['Not offered in the spring term.'],
+    available: false,
+    reasons: ['Not offered in the spring term.'],
   }),
 ];
 

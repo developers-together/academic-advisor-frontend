@@ -9,8 +9,9 @@ export const mapEntry = (
   state: 'eligible',
   prerequisites: [],
   missing_prerequisites: [],
-  is_available: true,
-  availability_reasons: [],
+  active: true,
+  available: true,
+  reasons: [],
   warnings: [],
   ...overrides,
 });
