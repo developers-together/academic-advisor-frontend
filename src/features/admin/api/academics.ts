@@ -1,4 +1,9 @@
-import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
 import { unwrap } from '@/lib/api-envelope';
@@ -53,17 +58,21 @@ const fromApi = (term: ApiCurrentTerm | null): CurrentTerm | null =>
 export const getCurrentTerm = (): Promise<CurrentTerm | null> =>
   unwrap<ApiCurrentTerm | null>(api.get('/admin/current-term')).then(fromApi);
 
+export const currentTermQueryKey = ['admin', 'current-term'] as const;
+
 export const getCurrentTermQueryOptions = () =>
   queryOptions({
-    queryKey: ['admin', 'current-term'],
+    queryKey: currentTermQueryKey,
     queryFn: getCurrentTerm,
     staleTime: 60 * 1000,
   });
 
 export const useCurrentTerm = () => useQuery(getCurrentTermQueryOptions());
 
-export const useUpdateCurrentTerm = () =>
-  useMutation({
+export const useUpdateCurrentTerm = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: (input: CurrentTerm): Promise<CurrentTerm | null> =>
       unwrap<ApiCurrentTerm>(
         api.put('/admin/current-term', {
@@ -74,7 +83,11 @@ export const useUpdateCurrentTerm = () =>
           term_starts_at: input.starts,
         }),
       ).then(fromApi),
+    onSuccess: (term) => {
+      queryClient.setQueryData(currentTermQueryKey, term);
+    },
   });
+};
 
 export const useRevokeSisMirror = () =>
   useMutation({

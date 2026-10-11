@@ -79,6 +79,32 @@ test('saving the current term puts every field', async () => {
   );
 });
 
+test('a saved term keeps its values instead of reverting to the stale term', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  server.use(
+    http.put(`${env.API_URL}/admin/current-term`, async ({ request }) =>
+      HttpResponse.json({ data: await request.json() }),
+    ),
+  );
+
+  await renderApp(<AdminAcademicsRoute />, {
+    user: admin,
+    path: '/admin/academics',
+    url: '/admin/academics',
+  });
+
+  const codeInput = await screen.findByLabelText('Term code');
+  await userEvent.clear(codeInput);
+  await userEvent.type(codeInput, '2027S');
+  await userEvent.selectOptions(screen.getByLabelText('Term kind'), 'spring');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Save term' }));
+
+  await screen.findByText('Current term saved.');
+  expect(codeInput).toHaveValue('2027S');
+  expect(screen.getByLabelText('Term kind')).toHaveValue('spring');
+});
+
 test('an import reports the counts and lists the rejected rows with a cap', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   server.use(
