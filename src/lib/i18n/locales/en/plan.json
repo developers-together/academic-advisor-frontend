@@ -77,6 +77,7 @@
     "mapState": {
       "completed": "Completed",
       "planned": "Planned",
+      "attempted": "Attempted",
       "eligible": "Eligible",
       "locked": "Locked"
     },
@@ -210,21 +211,29 @@
     "summary": "{{completed}} of {{total}} courses completed",
     "requires": "Requires",
     "noRequirements": "No prerequisites. Open to you now.",
-    "lockedHint": "Complete {{courses}} first to unlock this course.",
-    "pickHint": "Select a course to see its requirements and what it unlocks.",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
-    "zoomReset": "Reset zoom",
-    "zoomLabel": "Map zoom",
+    "pickHint": "Select a course to see its requirements and warnings.",
     "empty": {
       "title": "Your course map is not available yet.",
       "body": "It appears once the SIS reports your curriculum."
     },
     "unlocks": "Unlocks",
-    "panHint": "Drag to explore · Arrow keys to move",
+    "level": "Level {{level}}",
+    "noLevel": "Other courses",
+    "yourLevel": "Your current level",
+    "levelSummary": "{{completed}} of {{total}} completed",
+    "unavailable": "Not available this term",
+    "available": "Available this term",
+    "detailsPanel": "Course details",
+    "details": {
+      "recorded": "Satisfied prerequisites",
+      "missing": "Missing prerequisites",
+      "availability": "Availability",
+      "warnings": "Warnings"
+    },
     "description": {
       "completed": "You completed this course. Explore its connections to see which courses it unlocks.",
       "planned": "This course is in your current plan. Review its prerequisites before you submit.",
+      "attempted": "You attempted this course without a passing grade. Plan a retake when it is offered.",
       "eligible": "You meet the prerequisite requirements for this course. You can add it in the manual plan builder.",
       "locked": "Complete the listed prerequisites before planning this course."
     }

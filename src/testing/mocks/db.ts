@@ -44,7 +44,7 @@ const models = {
   academicRecord: {
     userId: primaryKey(() => nextId()),
     cgpa: nullableNumber,
-    curriculum_year_level: Number,
+    curriculum_year_level: nullableNumber,
 
     history: String,
     prerequisite_map: String,

@@ -1,4 +1,5 @@
 import { db } from '@/testing/mocks/db';
+import { mapEntry } from '@/testing/mocks/map-entry';
 import { CURRENT_TERM } from '@/testing/mocks/mock-auth';
 import { server } from '@/testing/mocks/server';
 import {
@@ -15,30 +16,79 @@ import MyAdvisorRoute from '../my-advisor';
 import RecordRoute from '../record';
 
 const fourStateMap = [
-  {
+  mapEntry({
     course_code: 'CS 101',
     title: 'Introduction to Programming',
+    level: 1,
     state: 'completed',
-    prerequisites: [],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'EE 210',
     title: 'Circuits',
+    level: 2,
     state: 'planned',
-    prerequisites: [],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'CS 201',
     title: 'Data Structures',
+    level: 3,
     state: 'eligible',
     prerequisites: ['CS 101'],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'CS 301',
     title: 'Algorithms',
+    level: 5,
     state: 'locked',
     prerequisites: ['CS 201'],
-  },
+    missing_prerequisites: ['CS 201'],
+  }),
+];
+
+const levelMap = [
+  mapEntry({
+    course_code: 'CS 101',
+    title: 'Introduction to Programming',
+    level: 1,
+    state: 'completed',
+  }),
+  mapEntry({
+    course_code: 'CS 102',
+    title: 'Programming II',
+    level: 1,
+    state: 'attempted',
+  }),
+  mapEntry({
+    course_code: 'CS 201',
+    title: 'Data Structures',
+    level: 3,
+    state: 'eligible',
+    prerequisites: ['CS 101'],
+  }),
+  mapEntry({
+    course_code: 'CS 302',
+    title: 'Operating Systems',
+    level: 4,
+    state: 'eligible',
+    prerequisites: ['CS 102'],
+    warnings: ['Prerequisite CS 102 was attempted without a passing grade.'],
+  }),
+  mapEntry({
+    course_code: 'CS 301',
+    title: 'Algorithms',
+    level: 5,
+    state: 'eligible',
+    prerequisites: ['CS 201'],
+    missing_prerequisites: ['CS 201'],
+    is_available: false,
+    availability_reasons: ['Not offered in the spring term.'],
+    warnings: ['Requires exception — talk to your academic advisor.'],
+  }),
+  mapEntry({
+    course_code: 'UNIV 100',
+    title: 'University Skills',
+    state: 'eligible',
+  }),
 ];
 
 const seedRecord = (
@@ -158,6 +208,195 @@ test('renders the read-only academic record with KPIs, map, and history', async 
   );
   expect(screen.getByRole('region', { name: '2025-fall' })).toBeInTheDocument();
   expect(screen.queryAllByRole('spinbutton')).toHaveLength(0);
+});
+
+test('groups the course map into level sections with counts and a trailing section for unknown levels', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedRecord(user.id as number, { prerequisite_map: JSON.stringify(levelMap) });
+
+  await renderApp(<RecordRoute />, {
+    user,
+    path: '/app/record',
+    url: '/app/record',
+  });
+
+  const map = await screen.findByRole('group', { name: 'Course map' });
+  const headings = within(map).getAllByRole('heading');
+  expect(headings.map((heading) => heading.textContent)).toEqual([
+    'Level 1',
+    'Level 3',
+    'Level 4',
+    'Level 5',
+    'Other courses',
+  ]);
+  const firstSection = headings[0]!.closest('section') as HTMLElement;
+  expect(
+    within(firstSection).getByText('1 of 2 completed'),
+  ).toBeInTheDocument();
+  const lastSection = headings[4]!.closest('section') as HTMLElement;
+  expect(
+    within(lastSection).getByRole('button', { name: /UNIV 100/ }),
+  ).toBeInTheDocument();
+});
+
+test('renders failed attempts as attempted with the prerequisite warning on their dependents', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedRecord(user.id as number, { prerequisite_map: JSON.stringify(levelMap) });
+
+  await renderApp(<RecordRoute />, {
+    user,
+    path: '/app/record',
+    url: '/app/record',
+  });
+
+  const map = await screen.findByRole('group', { name: 'Course map' });
+  expect(
+    within(map).getByRole('button', {
+      name: 'CS 102 Programming II, Attempted',
+    }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      'Prerequisite CS 102 was attempted without a passing grade.',
+    ),
+  ).toBeInTheDocument();
+});
+
+test('shows the unavailable reason on the card and the exception note in the detail panel', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedRecord(user.id as number, { prerequisite_map: JSON.stringify(levelMap) });
+
+  await renderApp(<RecordRoute />, {
+    user,
+    path: '/app/record',
+    url: '/app/record',
+  });
+
+  const map = await screen.findByRole('group', { name: 'Course map' });
+  expect(
+    within(map).getByText('Not offered in the spring term.'),
+  ).toBeInTheDocument();
+
+  await userEvent.click(
+    within(map).getByRole('button', {
+      name: 'CS 301 Algorithms, Eligible',
+    }),
+  );
+
+  const panel = screen.getByRole('group', { name: 'Course details' });
+  expect(within(panel).getByText('Availability')).toBeInTheDocument();
+  expect(
+    within(panel).getByText('Not offered in the spring term.'),
+  ).toBeInTheDocument();
+  expect(
+    within(panel).getByText(
+      'Requires exception — talk to your academic advisor.',
+    ),
+  ).toBeInTheDocument();
+});
+
+test('badges the current level, scrolls it into view, and skips the badge without a level', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedRecord(user.id as number, {
+    prerequisite_map: JSON.stringify(levelMap),
+    curriculum_year_level: 3,
+  });
+  const scrolled: (string | null)[] = [];
+  const original = Element.prototype.scrollIntoView;
+  Element.prototype.scrollIntoView = function (this: Element) {
+    scrolled.push(this.getAttribute('data-level'));
+  };
+
+  try {
+    await renderApp(<RecordRoute />, {
+      user,
+      path: '/app/record',
+      url: '/app/record',
+    });
+
+    const map = await screen.findByRole('group', { name: 'Course map' });
+    const levelThree = within(map).getByText('Level 3').closest('section');
+    expect(levelThree).not.toBeNull();
+    expect(
+      within(levelThree as HTMLElement).getByText('Your current level'),
+    ).toBeInTheDocument();
+    expect(scrolled.length).toBeGreaterThan(0);
+    expect(scrolled.every((level) => level === '3')).toBe(true);
+  } finally {
+    Element.prototype.scrollIntoView = original;
+  }
+});
+
+test('renders no current-level badge when the record has no level', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedRecord(user.id as number, { curriculum_year_level: null });
+
+  await renderApp(<RecordRoute />, {
+    user,
+    path: '/app/record',
+    url: '/app/record',
+  });
+
+  expect(await screen.findByText('3.2')).toBeInTheDocument();
+  expect(screen.queryByText('Your current level')).not.toBeInTheDocument();
+});
+
+test('renders the course map without the graph pan and zoom controls', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedRecord(user.id as number);
+
+  await renderApp(<RecordRoute />, {
+    user,
+    path: '/app/record',
+    url: '/app/record',
+  });
+
+  await screen.findByRole('group', { name: 'Course map' });
+  expect(
+    screen.queryByRole('button', { name: 'Zoom in' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Reset zoom' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText('Drag to explore · Arrow keys to move'),
+  ).not.toBeInTheDocument();
+});
+
+test('lists recorded and missing prerequisites in the course detail panel', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedRecord(user.id as number, { prerequisite_map: JSON.stringify(levelMap) });
+
+  await renderApp(<RecordRoute />, {
+    user,
+    path: '/app/record',
+    url: '/app/record',
+  });
+
+  const map = await screen.findByRole('group', { name: 'Course map' });
+  await userEvent.click(
+    within(map).getByRole('button', {
+      name: 'CS 201 Data Structures, Eligible',
+    }),
+  );
+  const panel = screen.getByRole('group', { name: 'Course details' });
+  expect(
+    within(panel).getByText('Satisfied prerequisites'),
+  ).toBeInTheDocument();
+  expect(
+    within(panel).getByRole('button', { name: 'CS 101' }),
+  ).toBeInTheDocument();
+
+  await userEvent.click(
+    within(map).getByRole('button', { name: 'CS 301 Algorithms, Eligible' }),
+  );
+  expect(within(panel).getByText('Missing prerequisites')).toBeInTheDocument();
+  expect(
+    within(panel).getByRole('button', { name: 'CS 201' }),
+  ).toBeInTheDocument();
+  expect(
+    within(panel).queryByText('Satisfied prerequisites'),
+  ).not.toBeInTheDocument();
 });
 
 test('labels the record with its as-of time and retries the record only', async () => {

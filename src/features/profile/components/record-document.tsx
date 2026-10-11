@@ -88,6 +88,7 @@ export const RecordDocument = ({
         <CardBody>
           <CourseMap
             entries={mapEntries}
+            currentLevel={record.curriculum_year_level}
             onRetry={onRetryRecord}
             isRetrying={isRetryingRecord}
           />

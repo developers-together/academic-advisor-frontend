@@ -361,31 +361,17 @@ test.describe('Student workspace corrections', () => {
       page.getByRole('textbox', { name: 'Add a course' }),
     ).toBeVisible();
     await page.goto('/app/record');
-    await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
-    const canvas = page.locator('.course-map-canvas');
-    await canvas.scrollIntoViewIfNeeded();
-    await expect
-      .poll(() =>
-        canvas.evaluate((element) => element.scrollWidth > element.clientWidth),
-      )
-      .toBe(true);
-    await expect(canvas).toHaveAttribute('tabindex', '0');
-    await canvas.focus();
-    await page.keyboard.press('ArrowRight');
-    await expect
-      .poll(() => canvas.evaluate((element) => element.scrollLeft))
-      .toBeGreaterThan(0);
-    const before = await canvas.evaluate((element) => element.scrollLeft);
-    const box = await canvas.boundingBox();
-    if (!box) throw new Error('Course map has no visible bounds');
-    await page.mouse.move(box.x + box.width * 0.75, box.y + box.height - 15);
-    await page.mouse.down();
-    await page.mouse.move(box.x + box.width * 0.25, box.y + box.height - 15, {
-      steps: 8,
-    });
-    await page.mouse.up();
-    await expect
-      .poll(() => canvas.evaluate((element) => element.scrollLeft))
-      .toBeGreaterThan(before);
+    const map = page.getByRole('group', { name: 'Course map', exact: true });
+    await map.scrollIntoViewIfNeeded();
+    await expect(
+      page.getByRole('button', { name: 'Zoom in', exact: true }),
+    ).toHaveCount(0);
+    await expect(map.getByText('Your current level')).toBeVisible();
+    const firstCard = map.getByRole('button', { name: /CS 101/ }).first();
+    await firstCard.focus();
+    await page.keyboard.press('Enter');
+    await expect(
+      page.getByRole('group', { name: 'Course details' }),
+    ).toContainText('CS 101');
   });
 });

@@ -103,14 +103,19 @@ export type CourseAttempt = {
 };
 
 export type PrerequisiteMapState =
-  'completed' | 'planned' | 'eligible' | 'locked';
+  'completed' | 'planned' | 'attempted' | 'eligible' | 'locked';
 
 export type PrerequisiteMapEntry = {
   description?: string | null;
   course_code: string;
   title: string | null;
+  level: number | null;
   state: PrerequisiteMapState;
   prerequisites: string[];
+  missing_prerequisites: string[];
+  is_available: boolean;
+  availability_reasons: string[];
+  warnings: string[];
 };
 
 export type AdvisorProfile = {

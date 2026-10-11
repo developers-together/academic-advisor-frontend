@@ -1,47 +1,103 @@
-import userEvent from '@testing-library/user-event';
-
-import { render, screen, within } from '@/testing/test-utils';
+import { i18n } from '@/lib/i18n/i18n-instance';
+import { mapEntry } from '@/testing/mocks/map-entry';
+import { render, screen, userEvent, within } from '@/testing/test-utils';
 import type { PrerequisiteMapEntry } from '@/types/domain';
 
 import { CourseMap } from './course-map';
 
-const entries: PrerequisiteMapEntry[] = Array.from(
-  { length: 40 },
-  (_, index) => ({
-    course_code: `CS ${index + 100}`,
-    title: `Course ${index + 1}`,
-    state: index < 8 ? 'completed' : 'locked',
-    prerequisites: index < 8 ? [] : [`CS ${index + 92}`],
+const entries: PrerequisiteMapEntry[] = [
+  mapEntry({
+    course_code: 'CS 101',
+    title: 'Introduction to Computing',
+    level: 1,
+    state: 'completed',
   }),
-);
+  mapEntry({
+    course_code: 'CS 201',
+    title: 'Data Structures',
+    level: 1,
+    state: 'eligible',
+    prerequisites: ['CS 101'],
+    missing_prerequisites: ['CS 101'],
+  }),
+  mapEntry({
+    course_code: 'CS 301',
+    title: 'Algorithms',
+    level: 2,
+    state: 'attempted',
+  }),
+];
 
-test('a large map preserves every course and supports prerequisite exploration from the keyboard', async () => {
+test('keeps the level map keyboard operable from the cards to the detail panel', async () => {
   const user = userEvent.setup();
   render(<CourseMap entries={entries} />);
-  const canvas = screen.getByRole('group', { name: 'Course map' });
-  expect(within(canvas).getAllByRole('button')).toHaveLength(40);
-  const course = within(canvas).getByRole('button', {
-    name: 'CS 108 Course 9, Locked',
-  });
-  within(canvas).getAllByRole('button')[0].focus();
-  for (let index = 0; index < 8; index += 1) await user.tab();
-  expect(course).toHaveFocus();
-  expect(
-    screen.getByText(
-      'Complete the listed prerequisites before planning this course.',
-    ),
-  ).toBeInTheDocument();
-  expect(screen.getByText('Requires')).toBeInTheDocument();
+
+  const map = screen.getByRole('group', { name: 'Course map' });
+  const cards = within(map).getAllByRole('button');
+  expect(cards).toHaveLength(3);
+  cards[0]!.focus();
+  await user.tab();
+  expect(cards[1]).toHaveFocus();
   await user.keyboard('{Enter}');
-  expect(course).toHaveAttribute('aria-pressed', 'true');
-  expect(screen.getByText('Requires')).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'CS 100' }));
+  expect(cards[1]).toHaveAttribute('aria-pressed', 'true');
+
+  const panel = screen.getByRole('group', { name: 'Course details' });
+  expect(panel).toHaveTextContent('CS 201');
+  await user.click(within(panel).getByRole('button', { name: 'CS 101' }));
   expect(
-    within(canvas).getByRole('button', { name: 'CS 100 Course 1, Completed' }),
+    within(map).getByRole('button', {
+      name: 'CS 101 Introduction to Computing, Completed',
+    }),
   ).toHaveAttribute('aria-pressed', 'true');
-  expect(screen.getByText('Unlocks')).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Zoom in' }));
-  expect(screen.getByRole('button', { name: 'Zoom in' })).toBeDisabled();
-  await user.click(screen.getByRole('button', { name: 'Reset zoom' }));
-  expect(screen.getByRole('button', { name: 'Zoom in' })).toBeEnabled();
+
+  const readerList = screen.getByRole('list', { name: 'Course map' });
+  expect(readerList).toHaveTextContent('Attempted');
+  expect(readerList).toHaveTextContent('Completed');
+});
+
+test('renders the Arabic course map chrome with RTL flow', async () => {
+  await i18n.changeLanguage('ar');
+  const arabicEntries: PrerequisiteMapEntry[] = [
+    mapEntry({
+      course_code: 'CS 101',
+      title: 'مقدمة في الحاسوب',
+      level: 1,
+      state: 'completed',
+    }),
+    mapEntry({
+      course_code: 'CS 201',
+      title: 'هياكل البيانات',
+      level: 1,
+      state: 'attempted',
+    }),
+    mapEntry({
+      course_code: 'CS 301',
+      title: 'الخوارزميات',
+      level: 2,
+      state: 'locked',
+    }),
+  ];
+
+  const { unmount } = render(
+    <CourseMap entries={arabicEntries} currentLevel={2} />,
+  );
+
+  try {
+    const map = screen.getByRole('group', { name: 'خريطة المقررات' });
+    const headings = within(map).getAllByRole('heading');
+    expect(headings.map((heading) => heading.textContent)).toEqual([
+      'المستوى 1',
+      'المستوى 2',
+    ]);
+    expect(within(map).getByText('مستواك الحالي')).toBeInTheDocument();
+    expect(
+      within(map).getByRole('button', {
+        name: 'CS 101 مقدمة في الحاسوب, مكتمل',
+      }),
+    ).toBeInTheDocument();
+    expect(within(map).getByText('محاولة سابقة')).toBeInTheDocument();
+  } finally {
+    unmount();
+    await i18n.changeLanguage('en');
+  }
 });

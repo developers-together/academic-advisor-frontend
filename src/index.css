@@ -799,32 +799,6 @@ body[data-mode='staff'] .cluster {
     transition: none;
   }
 }
-.course-map-canvas {
-  background-color: hsl(var(--card));
-  background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
-  background-size: 18px 18px;
-  min-height: 260px;
-}
-.course-map-selected {
-  box-shadow:
-    0 0 0 6px hsl(var(--primary) / 0.06),
-    0 8px 28px hsl(var(--primary) / 0.18);
-}
-.course-map-flow {
-  stroke-dasharray: 6 5;
-  animation: course-path-flow 1.2s linear infinite;
-}
-@keyframes course-path-flow {
-  to {
-    stroke-dashoffset: -22;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .course-map-flow {
-    animation: none;
-    stroke-dasharray: none;
-  }
-}
 .workspace-sidebar[role='dialog'] {
   z-index: 60;
 }

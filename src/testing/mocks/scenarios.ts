@@ -12,6 +12,7 @@ import type {
 import { governanceTrends } from '../governance-tree';
 
 import { db } from './db';
+import { mapEntry } from './map-entry';
 import { CURRENT_TERM } from './mock-auth';
 import { hash } from './utils';
 
@@ -130,36 +131,42 @@ const seedUsers = () => {
 };
 
 const prerequisiteMap = [
-  {
+  mapEntry({
     course_code: 'CS 101',
     title: 'Introduction to Programming',
+    level: 1,
     state: 'completed',
-    prerequisites: [],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'MATH 101',
     title: 'Calculus I',
+    level: 1,
     state: 'completed',
-    prerequisites: [],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'CS 201',
     title: 'Data Structures',
+    level: 3,
     state: 'eligible',
     prerequisites: ['CS 101'],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'MATH 201',
     title: 'Calculus II',
+    level: 3,
     state: 'eligible',
     prerequisites: ['MATH 101'],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'CS 301',
     title: 'Algorithms',
+    level: 5,
     state: 'locked',
     prerequisites: ['CS 201'],
-  },
+    missing_prerequisites: ['CS 201'],
+    is_available: false,
+    availability_reasons: ['Not offered in the spring term.'],
+  }),
 ];
 
 const history = [
@@ -189,7 +196,7 @@ const seedAcademicRecord = (lastSyncedAt = '2026-10-01T12:00:00.000Z') => {
   db.academicRecord.create({
     userId: 1,
     cgpa: 3.2,
-    curriculum_year_level: 2,
+    curriculum_year_level: 1,
     history: JSON.stringify(history),
     prerequisite_map: JSON.stringify(prerequisiteMap),
     last_synced_at: lastSyncedAt,
@@ -197,18 +204,18 @@ const seedAcademicRecord = (lastSyncedAt = '2026-10-01T12:00:00.000Z') => {
 };
 
 const queueCourseMap = [
-  {
+  mapEntry({
     course_code: 'CS 201',
     title: 'Data Structures',
+    level: 3,
     state: 'eligible',
-    prerequisites: [],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'MATH 201',
     title: 'Calculus II',
+    level: 3,
     state: 'eligible',
-    prerequisites: [],
-  },
+  }),
 ];
 
 const seedQueue = () => {
