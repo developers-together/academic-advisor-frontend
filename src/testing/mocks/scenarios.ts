@@ -51,7 +51,6 @@ export const setScenario = (scenario: Scenario) => {
   db.rule.deleteMany({ where: {} });
   db.advisorProfile.deleteMany({ where: {} });
   db.course.deleteMany({ where: {} });
-  db.program.deleteMany({ where: {} });
   db.registrationWindow.deleteMany({ where: {} });
   db.aiConfig.deleteMany({ where: {} });
   seeds[scenario]();
@@ -749,18 +748,6 @@ const seedAdminOperations = () => {
   for (const course of courses) {
     db.course.create({ ...course, title_ar: null });
   }
-  db.program.create({
-    code: 'CSE',
-    name_en: 'Computer Science and Engineering',
-    name_ar: null,
-    faculty: 'Engineering',
-  });
-  db.program.create({
-    code: 'EE',
-    name_en: 'Electronics Engineering',
-    name_ar: null,
-    faculty: 'Engineering',
-  });
   db.registrationWindow.create({
     term_code: CURRENT_TERM,
     opens_at: '2026-09-20T00:00:00.000Z',

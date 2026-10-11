@@ -404,18 +404,6 @@ const admin: RoleRouteDefinition[] = [
     parent: 'admin.operations',
   },
   {
-    id: 'admin.programs',
-    path: paths.admin.programs.getHref(),
-    kind: 'page',
-    role: 'admin',
-    labelKey: 'nav.programs',
-    icon: BookOpen,
-    nav: 'group',
-    groupKey: 'nav.operations',
-    command: true,
-    parent: 'admin.operations',
-  },
-  {
     id: 'admin.rules',
     path: paths.admin.rules.getHref(),
     kind: 'page',

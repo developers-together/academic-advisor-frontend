@@ -463,14 +463,6 @@ export type AdminCourse = {
   level: number | null;
 };
 
-export type AdminProgram = {
-  id: number;
-  code: string;
-  name_en: string;
-  name_ar: string | null;
-  faculty: string | null;
-};
-
 export type RegistrationWindow = {
   id: number;
   term_code: string;

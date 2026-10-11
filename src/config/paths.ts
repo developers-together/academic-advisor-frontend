@@ -165,10 +165,6 @@ export const paths = {
       path: 'courses',
       getHref: () => '/admin/courses',
     },
-    programs: {
-      path: 'programs',
-      getHref: () => '/admin/programs',
-    },
     rules: {
       path: 'rules',
       getHref: () => '/admin/rules',

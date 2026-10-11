@@ -18,11 +18,6 @@ const tasks = [
     hintKey: 'operations.items.courses',
   },
   {
-    to: paths.admin.programs.getHref(),
-    labelKey: 'nav.programs',
-    hintKey: 'operations.items.programs',
-  },
-  {
     to: paths.admin.rules.getHref(),
     labelKey: 'nav.rules',
     hintKey: 'operations.items.rules',

@@ -727,6 +727,29 @@ export const adminHandlers = [
     return HttpResponse.json({ data: rules });
   }),
 
+  http.get(`${env.API_URL}/admin/faculties`, async ({ request }) => {
+    if (injectsErrors()) {
+      return HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      );
+    }
+    if (deniesPermission()) {
+      return unauthorised();
+    }
+    requireAdmin(request);
+    await networkDelay();
+    return HttpResponse.json({
+      data: [
+        { code: 'BAS', name: 'Basic and Applied Sciences' },
+        { code: 'CSIT', name: 'Computer Science and Information Technology' },
+        { code: 'ENG', name: 'Engineering' },
+        { code: 'IBH', name: 'International Business and Humanities' },
+        { code: 'PHA', name: 'Pharmacy' },
+      ],
+    });
+  }),
+
   http.post(`${env.API_URL}/admin/rules`, async ({ request }) => {
     requireAdmin(request);
     await networkDelay();
@@ -1091,89 +1114,6 @@ export const adminHandlers = [
       }
       db.course.delete({ where: { id: { equals: row.id as number } } });
       return new HttpResponse(null, { status: 204 });
-    },
-  ),
-
-  http.get(`${env.API_URL}/admin/programs`, async ({ request }) => {
-    await networkDelay();
-    if (deniesPermission()) {
-      return HttpResponse.json(
-        { message: 'This action is unauthorized.' },
-        { status: 403 },
-      );
-    }
-    requireAdmin(request);
-    const programs = db.program
-      .findMany({ where: {} })
-      .sort((a, b) => a.code.localeCompare(b.code));
-    return HttpResponse.json({ data: programs });
-  }),
-
-  http.post(`${env.API_URL}/admin/programs`, async ({ request }) => {
-    await networkDelay();
-    if (deniesPermission()) {
-      return HttpResponse.json(
-        { message: 'This action is unauthorized.' },
-        { status: 403 },
-      );
-    }
-    requireAdmin(request);
-    const body = (await request.json()) as Record<string, unknown>;
-    const code = typeof body.code === 'string' ? body.code.trim() : '';
-    if (!code || typeof body.name_en !== 'string' || !body.name_en.trim()) {
-      return HttpResponse.json(
-        {
-          message: 'A program code and name are required.',
-          key: 'program.fields_required',
-        },
-        { status: 422 },
-      );
-    }
-    const created = db.program.create({
-      code,
-      name_en: body.name_en.trim(),
-      name_ar: typeof body.name_ar === 'string' ? body.name_ar : null,
-      faculty: typeof body.faculty === 'string' ? body.faculty : null,
-    });
-    return HttpResponse.json({ data: created }, { status: 201 });
-  }),
-
-  http.put(
-    `${env.API_URL}/admin/programs/:programId`,
-    async ({ request, params }) => {
-      await networkDelay();
-      if (deniesPermission()) {
-        return HttpResponse.json(
-          { message: 'This action is unauthorized.' },
-          { status: 403 },
-        );
-      }
-      requireAdmin(request);
-      const row = db.program.findFirst({
-        where: { id: { equals: Number(params.programId) } },
-      });
-      if (!row) {
-        return HttpResponse.json(
-          { message: 'Program not found.' },
-          { status: 404 },
-        );
-      }
-      const body = (await request.json()) as Record<string, unknown>;
-      const updated = db.program.update({
-        where: { id: { equals: row.id as number } },
-        data: {
-          ...(typeof body.name_en === 'string'
-            ? { name_en: body.name_en }
-            : {}),
-          ...(body.name_ar === null || typeof body.name_ar === 'string'
-            ? { name_ar: body.name_ar as string | null }
-            : {}),
-          ...(body.faculty === null || typeof body.faculty === 'string'
-            ? { faculty: body.faculty as string | null }
-            : {}),
-        },
-      });
-      return HttpResponse.json({ data: updated });
     },
   ),
 

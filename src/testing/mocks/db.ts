@@ -87,13 +87,6 @@ const models = {
     credits: Number,
     level: nullableNumber,
   },
-  program: {
-    id: primaryKey(() => nextId()),
-    code: String,
-    name_en: String,
-    name_ar: nullableString,
-    faculty: nullableString,
-  },
   registrationWindow: {
     id: primaryKey(() => nextId()),
     term_code: String,

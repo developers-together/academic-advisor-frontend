@@ -130,7 +130,11 @@ test('creating a rule with a faculty scopes it and the list shows the faculty', 
     within(dialog).getByLabelText('Body (Arabic)'),
     'تحتاج المادة إلى متطلباتها.',
   );
-  await userEvent.type(within(dialog).getByLabelText('Faculty'), 'Engineering');
+  const facultySelect = within(dialog).getByLabelText(
+    'Faculty',
+  ) as HTMLSelectElement;
+  await waitFor(() => expect(facultySelect).toBeEnabled());
+  await userEvent.selectOptions(facultySelect, 'Engineering');
   await userEvent.click(
     within(dialog).getByRole('button', { name: 'Save rule' }),
   );
@@ -241,12 +245,12 @@ test('editing a rule moves it to another faculty', async () => {
     }),
   );
   const dialog = await screen.findByRole('dialog', { name: 'Edit rule' });
-  const facultyInput = within(dialog).getByLabelText(
+  const facultySelect = within(dialog).getByLabelText(
     'Faculty',
-  ) as HTMLInputElement;
-  expect(facultyInput).toHaveValue('Engineering');
-  await userEvent.clear(facultyInput);
-  await userEvent.type(facultyInput, 'Science');
+  ) as HTMLSelectElement;
+  await waitFor(() => expect(facultySelect).toBeEnabled());
+  expect(facultySelect).toHaveValue('Engineering');
+  await userEvent.selectOptions(facultySelect, 'Pharmacy');
   await userEvent.click(
     within(dialog).getByRole('button', { name: 'Save rule' }),
   );
@@ -256,10 +260,10 @@ test('editing a rule moves it to another faculty', async () => {
       db.rule.findFirst({
         where: { title_en: { equals: 'Course load rule' } },
       })?.faculty,
-    ).toBe('Science'),
+    ).toBe('Pharmacy'),
   );
   const row = screen.getByText('Course load rule').closest('tr');
-  expect(within(row as HTMLElement).getByText('Science')).toBeInTheDocument();
+  expect(within(row as HTMLElement).getByText('Pharmacy')).toBeInTheDocument();
 });
 
 test('editing a rule without a faculty keeps it global', async () => {
@@ -278,10 +282,11 @@ test('editing a rule without a faculty keeps it global', async () => {
     }),
   );
   const dialog = await screen.findByRole('dialog', { name: 'Edit rule' });
-  const facultyInput = within(dialog).getByLabelText(
+  const facultySelect = within(dialog).getByLabelText(
     'Faculty',
-  ) as HTMLInputElement;
-  await userEvent.clear(facultyInput);
+  ) as HTMLSelectElement;
+  await waitFor(() => expect(facultySelect).toBeEnabled());
+  await userEvent.selectOptions(facultySelect, '');
   await userEvent.click(
     within(dialog).getByRole('button', { name: 'Save rule' }),
   );

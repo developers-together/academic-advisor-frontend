@@ -56,7 +56,6 @@ const loaders: Record<string, () => Promise<{ default: unknown }>> = {
   'admin.operations': () => import('./routes/admin/operations'),
   'admin.assignments': () => import('./routes/admin/assignments'),
   'admin.courses': () => import('./routes/admin/courses'),
-  'admin.programs': () => import('./routes/admin/programs'),
   'admin.rules': () => import('./routes/admin/rules'),
   'admin.registration-windows': () =>
     import('./routes/admin/registration-windows'),

@@ -14,7 +14,6 @@ import { ApiError } from '@/lib/api-error';
 import { PermissionDenied } from '@/lib/authorization';
 
 import { useAdminCourses } from '../api/get-admin-courses';
-import { useAdminPrograms } from '../api/get-admin-programs';
 import { useAdminRules } from '../api/get-admin-rules';
 import { useAdminStudents } from '../api/get-admin-students';
 import { useRegistrationWindows } from '../api/registration-windows';
@@ -34,11 +33,6 @@ const OVERVIEW_LINKS = [
     labelKey: 'nav.courses',
     to: () => paths.admin.courses.getHref(),
     countOf: 'courses',
-  },
-  {
-    labelKey: 'nav.programs',
-    to: () => paths.admin.programs.getHref(),
-    countOf: 'programs',
   },
   {
     labelKey: 'nav.rules',
@@ -63,17 +57,10 @@ export const AdminOverviewDocument = () => {
   const [search, setSearch] = useState('');
   const studentsQuery = useAdminStudents({ search: '', perPage: 50, page: 1 });
   const coursesQuery = useAdminCourses();
-  const programsQuery = useAdminPrograms();
   const rulesQuery = useAdminRules();
   const windowsQuery = useRegistrationWindows();
 
-  const queries = [
-    studentsQuery,
-    coursesQuery,
-    programsQuery,
-    rulesQuery,
-    windowsQuery,
-  ];
+  const queries = [studentsQuery, coursesQuery, rulesQuery, windowsQuery];
   const pending = queries.some((query) => query.isPending);
   const denied = queries.some(
     (query) => query.error instanceof ApiError && query.error.status === 403,
@@ -114,7 +101,6 @@ export const AdminOverviewDocument = () => {
   const counts: Record<string, number | null> = {
     students: studentsQuery.data?.meta?.total ?? null,
     courses: coursesQuery.data?.length ?? null,
-    programs: programsQuery.data?.length ?? null,
     rules: rulesQuery.data?.length ?? null,
   };
 

@@ -216,7 +216,8 @@
       "bodyEn": "Body (English)",
       "bodyAr": "Body (Arabic)",
       "faculty": "Faculty",
-      "facultyHelper": "Leave empty for a global rule.",
+      "facultyGlobal": "Global rule",
+      "facultyHelper": "Scope the rule to one faculty, or choose Global rule to apply it university-wide.",
       "save": "Save rule",
       "required": "This field is required.",
       "maxLength": "Titles are limited to 255 characters."
@@ -388,34 +389,6 @@
       "body": "Plans that reference this course lose its metadata. This cannot be undone."
     }
   },
-  "programs": {
-    "title": "Programs",
-    "context": "Program structures behind plans and degree progress.",
-    "create": "Add program",
-    "edit": "Edit",
-    "saved": "{{code}} updated.",
-    "created": "{{code}} created.",
-    "columns": {
-      "code": "Code",
-      "name": "Name",
-      "faculty": "Faculty",
-      "actions": "Actions"
-    },
-    "empty": {
-      "title": "No programs yet.",
-      "body": "Add the programs students belong to."
-    },
-    "editor": {
-      "createTitle": "Add a program",
-      "editTitle": "Edit {{code}}",
-      "body": "Programs group plans and degree requirements.",
-      "code": "Program code",
-      "name": "Program name",
-      "faculty": "Faculty",
-      "saveCreate": "Create program",
-      "saveEdit": "Save changes"
-    }
-  },
   "windows": {
     "title": "Registration Windows",
     "context": "The academic clock plans submit inside. Dates mirror the SIS.",
@@ -454,7 +427,6 @@
     "items": {
       "assignments": "Who advises whom. Imports, changes, and validation.",
       "courses": "Course metadata that plans and the AI build on.",
-      "programs": "Program structure behind degree progress.",
       "rules": "Prerequisite and eligibility rules the validator applies.",
       "registrationWindows": "Open, close, and annotate registration periods.",
       "academics": "Registrar imports, the current term, and the SIS mirror.",

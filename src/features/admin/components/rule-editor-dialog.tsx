@@ -14,12 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input, Textarea } from '@/components/ui/form';
+import { Input, Select, Textarea } from '@/components/ui/form';
 import { ApiError } from '@/lib/api-error';
 import type { UniversityRule, UniversityRuleInput } from '@/types/domain';
 
 import { useCreateRule } from '../api/create-rule';
 import { useDeleteRule } from '../api/delete-rule';
+import { useFaculties } from '../api/get-faculties';
 import { useUpdateRule } from '../api/update-rule';
 
 const ruleSchema = z.object({
@@ -50,8 +51,21 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
   const createRule = useCreateRule();
   const updateRule = useUpdateRule();
   const removeRule = useDeleteRule();
+  const facultiesQuery = useFaculties();
 
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const facultyOptions = [
+    { label: t('rules.editor.facultyGlobal'), value: '' },
+    ...(facultiesQuery.data ?? []).map((faculty) => ({
+      label: faculty.name,
+      value: faculty.name,
+    })),
+  ];
+
+  if (rule?.faculty && !facultyOptions.some((o) => o.value === rule.faculty)) {
+    facultyOptions.push({ label: rule.faculty, value: rule.faculty });
+  }
 
   const form = useForm<RuleValues>({
     resolver: zodResolver(ruleSchema),
@@ -167,10 +181,12 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
               dir="rtl"
             />
             <div>
-              <Input
+              <Select
                 label={t('rules.editor.faculty')}
                 error={form.formState.errors.faculty}
                 registration={form.register('faculty')}
+                options={facultyOptions}
+                disabled={facultiesQuery.isPending}
               />
               <p className="mt-1 text-xs text-muted-foreground">
                 {t('rules.editor.facultyHelper')}

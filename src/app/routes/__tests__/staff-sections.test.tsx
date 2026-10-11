@@ -212,7 +212,6 @@ describe('admin section', () => {
       ['Users', '/admin/users'],
       ['Assignments', '/admin/assignments'],
       ['Courses', '/admin/courses'],
-      ['Programs', '/admin/programs'],
       ['Rules', '/admin/rules'],
       ['Registration Windows', '/admin/registration-windows'],
       ['AI Configuration', '/admin/ai-configuration'],
