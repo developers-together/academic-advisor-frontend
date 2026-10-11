@@ -15,7 +15,7 @@ import { PermissionDenied } from '@/lib/authorization';
 
 import { useAdminCourses } from '../api/get-admin-courses';
 import { useAdminRules } from '../api/get-admin-rules';
-import { useAdminStudents } from '../api/get-admin-students';
+import { useAdminStudentsCount } from '../api/get-admin-students-count';
 import { useRegistrationWindows } from '../api/registration-windows';
 
 const OVERVIEW_LINKS = [
@@ -23,6 +23,11 @@ const OVERVIEW_LINKS = [
     labelKey: 'nav.users',
     to: () => paths.admin.users.getHref(),
     countOf: 'students',
+  },
+  {
+    labelKey: 'nav.operations',
+    to: () => paths.admin.operations.getHref(),
+    countOf: null,
   },
   {
     labelKey: 'nav.assignments',
@@ -45,6 +50,11 @@ const OVERVIEW_LINKS = [
     countOf: null,
   },
   {
+    labelKey: 'nav.academics',
+    to: () => paths.admin.academics.getHref(),
+    countOf: null,
+  },
+  {
     labelKey: 'nav.aiConfiguration',
     to: () => paths.admin.aiConfiguration.getHref(),
     countOf: null,
@@ -55,12 +65,12 @@ export const AdminOverviewDocument = () => {
   const { t } = useTranslation('admin');
   const { t: tNav } = useTranslation();
   const [search, setSearch] = useState('');
-  const studentsQuery = useAdminStudents({ search: '', perPage: 50, page: 1 });
+  const studentsCountQuery = useAdminStudentsCount();
   const coursesQuery = useAdminCourses();
   const rulesQuery = useAdminRules();
   const windowsQuery = useRegistrationWindows();
 
-  const queries = [studentsQuery, coursesQuery, rulesQuery, windowsQuery];
+  const queries = [studentsCountQuery, coursesQuery, rulesQuery, windowsQuery];
   const pending = queries.some((query) => query.isPending);
   const denied = queries.some(
     (query) => query.error instanceof ApiError && query.error.status === 403,
@@ -99,7 +109,7 @@ export const AdminOverviewDocument = () => {
 
   const activeWindow = windowsQuery.data?.find((entry) => entry.is_active);
   const counts: Record<string, number | null> = {
-    students: studentsQuery.data?.meta?.total ?? null,
+    students: studentsCountQuery.data ?? null,
     courses: coursesQuery.data?.length ?? null,
     rules: rulesQuery.data?.length ?? null,
   };

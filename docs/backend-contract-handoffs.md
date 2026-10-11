@@ -75,7 +75,7 @@ Lower priority; recorded so they reach backend triage. Each was accepted or work
 - Profile: `GET /api/me` carries no school or department; there is no plan history endpoint. (acad-abl.14)
 - Advisor: no queue visit flag, no Seen receipt, no staleness payload on advisor endpoints, no level query param, and the visit-request POST 201 contract entry is undocumented. (acad-abl.16)
 - Governance: the dean 403 lacks a stable error key; an advisor-performance endpoint would unlock the parked scoreboard detail; a trends series endpoint would unlock the trends chart. (acad-abl.17)
-- Admin: no audit/system-log endpoint (M5 ships deferred); password reset needs a staff id but there is no staff list; a rule enable field exists only if wanted; riders for `search-matches-email` and `rows.{n}` 422 keys. (acad-abl.18)
+- Admin: no audit/system-log endpoint (M5 ships deferred); password reset needs a staff id but there is no staff list; a rule enable field exists only if wanted; riders for `search-matches-email` and `rows.{n}` 422 keys. (acad-abl.18) The admin overview reads its student count from `GET /api/admin/students/count` answering `{ data: { total } }`; until the endpoint lands the client works against the mock handler, and the overview shows the error state against the real backend. (acad-34y)
 - Chat: a quota read endpoint would let the UI show remaining turns; v1 ships with the count invisible until exhaustion. (acad-abl.15, acad-abl.20 item 9)
 
 ## SIS integration interim assumptions (2026-10-07)

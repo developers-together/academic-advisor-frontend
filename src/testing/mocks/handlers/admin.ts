@@ -211,6 +211,24 @@ export const adminHandlers = [
     });
   }),
 
+  http.get(`${env.API_URL}/admin/students/count`, async ({ request }) => {
+    if (injectsErrors()) {
+      return HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      );
+    }
+    if (deniesPermission()) {
+      return unauthorised();
+    }
+    requireAdmin(request);
+    await networkDelay();
+    const total = db.user.findMany({
+      where: { role: { equals: 'student' } },
+    }).length;
+    return HttpResponse.json({ data: { total } });
+  }),
+
   http.post(`${env.API_URL}/admin/students`, async ({ request }) => {
     requireAdmin(request);
     await networkDelay();
