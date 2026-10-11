@@ -315,9 +315,6 @@
     "chooseSections": "Select the required lecture, tutorial, and lab sections in SIS. Each course counts once toward your credit total.",
     "checkSIS": "Check the registered courses, payment status, and timetable in SIS. Complete add, drop, or withdrawal actions there.",
     "openSIS": "Open university SIS",
-    "reportedEnrollments": "Courses reported by SIS",
-    "notVerified": "This record does not confirm registration for this plan or term. Check the current term in SIS.",
-    "unreported": "SIS enrollment data has not been reported.",
     "detailsUnavailable": "Section choices, timetable, payment status, and registration verification are not available here.",
     "accessDenied": "You do not have permission to access this plan. Contact the administration office if this is unexpected."
   }
