@@ -293,7 +293,8 @@
       "resetConfirmTitle": "Send a password reset?",
       "resetConfirmBody": "This emails a password reset link to {{email}}.",
       "resetConfirm": "Send reset link",
-      "resetSent": "Password reset link sent."
+      "resetSent": "Password reset link sent.",
+      "facultyPlaceholder": "Choose a faculty"
     },
     "editDialog": {
       "title": "Edit staff account",
@@ -308,7 +309,8 @@
         "nameRequired": "Enter the name.",
         "nameTooLong": "Names are limited to 255 characters.",
         "facultyRequired": "Deans need a faculty."
-      }
+      },
+      "facultyPlaceholder": "Choose a faculty"
     },
     "deleteDialog": {
       "title": "Delete {{name}}?",

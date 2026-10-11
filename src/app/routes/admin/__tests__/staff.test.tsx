@@ -151,7 +151,11 @@ test('creating a staff account on the page prepends the row and offers the reset
     }),
   ).toBeNull();
 
-  await userEvent.type(within(dialog).getByLabelText('Faculty'), 'Science');
+  const facultySelect = within(dialog).getByLabelText(
+    'Faculty',
+  ) as HTMLSelectElement;
+  await waitFor(() => expect(facultySelect).toBeEnabled());
+  await userEvent.selectOptions(facultySelect, 'Engineering');
   await userEvent.click(
     within(dialog).getByRole('button', { name: 'Create staff account' }),
   );
@@ -167,7 +171,7 @@ test('creating a staff account on the page prepends the row and offers the reset
     where: { email: { equals: 'nadia.sherif@ejust.edu.eg' } },
   });
   expect(created?.role).toBe('dean');
-  expect(created?.faculty).toBe('Science');
+  expect(created?.faculty).toBe('Engineering');
 
   await userEvent.click(
     within(dialog).getByRole('button', { name: 'Send reset link' }),
@@ -198,7 +202,7 @@ test('creating a staff account on the page prepends the row and offers the reset
   expect(nadiaRow).toBeInTheDocument();
   expect(rowOf('Mona Admin')).toBeInTheDocument();
   expect(within(nadiaRow).getByText('Dean')).toBeInTheDocument();
-  expect(within(nadiaRow).getByText('Science')).toBeInTheDocument();
+  expect(within(nadiaRow).getByText('Engineering')).toBeInTheDocument();
 });
 
 test('the edit dialog applies the dean-faculty rule and saves name, faculty, and role', async () => {
@@ -220,7 +224,11 @@ test('the edit dialog applies the dean-faculty rule and saves name, faculty, and
   expect(within(dialog).queryByLabelText('Faculty')).not.toBeInTheDocument();
 
   await userEvent.selectOptions(within(dialog).getByLabelText('Role'), 'dean');
-  await userEvent.clear(within(dialog).getByLabelText('Faculty'));
+  const facultySelect = within(dialog).getByLabelText(
+    'Faculty',
+  ) as HTMLSelectElement;
+  await waitFor(() => expect(facultySelect).toBeEnabled());
+  await userEvent.selectOptions(facultySelect, '');
   await userEvent.click(
     within(dialog).getByRole('button', { name: 'Save changes' }),
   );
@@ -231,7 +239,7 @@ test('the edit dialog applies the dean-faculty rule and saves name, faculty, and
     db.user.findFirst({ where: { name: { equals: 'Amr Advisor' } } })?.role,
   ).toBe('advisor');
 
-  await userEvent.type(within(dialog).getByLabelText('Faculty'), 'Science');
+  await userEvent.selectOptions(facultySelect, 'Pharmacy');
   await userEvent.clear(nameInput);
   await userEvent.type(nameInput, 'Amr El-Sayed');
   await userEvent.click(
@@ -241,12 +249,12 @@ test('the edit dialog applies the dean-faculty rule and saves name, faculty, and
   await waitFor(() =>
     expect(
       db.user.findFirst({ where: { name: { equals: 'Amr El-Sayed' } } }),
-    ).toMatchObject({ role: 'dean', faculty: 'Science' }),
+    ).toMatchObject({ role: 'dean', faculty: 'Pharmacy' }),
   );
   expect(await screen.findByText('Staff account updated.')).toBeInTheDocument();
   const row = rowOf('Amr El-Sayed');
   expect(within(row).getByText('Dean')).toBeInTheDocument();
-  expect(within(row).getByText('Science')).toBeInTheDocument();
+  expect(within(row).getByText('Pharmacy')).toBeInTheDocument();
   await waitFor(() =>
     expect(
       screen.queryByRole('dialog', { name: 'Edit staff account' }),
@@ -588,4 +596,125 @@ test('a failed password reset keeps the confirm open with the server error', asy
 
   const alert = await within(confirm).findByRole('alert');
   expect(alert).toHaveTextContent('The server encountered an error.');
+});
+
+test('the add dialog offers the governed faculties for deans', async () => {
+  const admin = await seedDirectory();
+
+  await renderStaffTab({
+    user: admin,
+  });
+  await screen.findByText('Mona Admin');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add staff' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add staff' });
+  await userEvent.type(within(dialog).getByLabelText('Name'), 'Nadia Sherif');
+  await userEvent.type(
+    within(dialog).getByLabelText('Email'),
+    'nadia.sherif@ejust.edu.eg',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Initial password'),
+    'initial-secret-9',
+  );
+  await userEvent.selectOptions(within(dialog).getByLabelText('Role'), 'dean');
+
+  const facultySelect = within(dialog).getByLabelText(
+    'Faculty',
+  ) as HTMLSelectElement;
+  await waitFor(() => expect(facultySelect).toBeEnabled());
+  expect(within(facultySelect).queryByText('Science')).not.toBeInTheDocument();
+  await userEvent.selectOptions(facultySelect, 'Pharmacy');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create staff account' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.user.findFirst({
+        where: { email: { equals: 'nadia.sherif@ejust.edu.eg' } },
+      }),
+    ).toMatchObject({ role: 'dean', faculty: 'Pharmacy' }),
+  );
+});
+
+test('a failed faculties load explains inline and recovers on retry', async () => {
+  const admin = await seedDirectory();
+
+  server.use(
+    http.get(`${env.API_URL}/admin/faculties`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderStaffTab({
+    user: admin,
+  });
+  await screen.findByText('Mona Admin');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add staff' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add staff' });
+  await userEvent.selectOptions(within(dialog).getByLabelText('Role'), 'dean');
+
+  expect(
+    await within(dialog).findByText('Could not load this content.'),
+  ).toBeInTheDocument();
+  const facultySelect = within(dialog).getByLabelText(
+    'Faculty',
+  ) as HTMLSelectElement;
+  expect(
+    within(facultySelect).queryByText('Engineering'),
+  ).not.toBeInTheDocument();
+
+  server.use(
+    http.get(`${env.API_URL}/admin/faculties`, () =>
+      HttpResponse.json({
+        data: [{ code: 'ENG', name: 'Engineering' }],
+      }),
+    ),
+  );
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Retry' }));
+
+  await waitFor(() =>
+    expect(within(facultySelect).getByText('Engineering')).toBeInTheDocument(),
+  );
+  await userEvent.selectOptions(facultySelect, 'Engineering');
+  expect(facultySelect).toHaveValue('Engineering');
+});
+
+test('the created-staff panel labels each value with its field name', async () => {
+  const admin = await seedDirectory();
+
+  await renderStaffTab({
+    user: admin,
+  });
+  await screen.findByText('Mona Admin');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add staff' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add staff' });
+  await userEvent.type(within(dialog).getByLabelText('Name'), 'Nadia Sherif');
+  await userEvent.type(
+    within(dialog).getByLabelText('Email'),
+    'nadia.sherif@ejust.edu.eg',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Initial password'),
+    'initial-secret-9',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create staff account' }),
+  );
+
+  await within(dialog).findByText(/Staff account created\./);
+  expect(within(dialog).getByText('Email')).toBeInTheDocument();
+  expect(
+    within(dialog).getByText('nadia.sherif@ejust.edu.eg'),
+  ).toBeInTheDocument();
+  expect(within(dialog).getByText('Name')).toBeInTheDocument();
+  expect(within(dialog).getByText('Nadia Sherif')).toBeInTheDocument();
+  expect(within(dialog).getByText('Role')).toBeInTheDocument();
+  expect(within(dialog).getByText('Advisor')).toBeInTheDocument();
 });

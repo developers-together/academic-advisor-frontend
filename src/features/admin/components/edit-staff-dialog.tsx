@@ -18,6 +18,7 @@ import { useNotifications } from '@/components/ui/notifications';
 import { ApiError } from '@/lib/api-error';
 import type { StaffMember } from '@/types/domain';
 
+import { useFaculties } from '../api/get-faculties';
 import { useUpdateStaff } from '../api/update-staff';
 
 export type EditStaffDialogProps = {
@@ -41,6 +42,7 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
   const { t } = useTranslation('admin');
   const addNotification = useNotifications((state) => state.addNotification);
   const updateStaff = useUpdateStaff();
+  const facultiesQuery = useFaculties();
 
   const schema = z
     .object({
@@ -120,6 +122,21 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
     (value) => ({ value, label: t(`staff.roles.${value}`) }),
   );
 
+  const facultyOptions = [
+    { value: '', label: t('staff.editDialog.facultyPlaceholder') },
+    ...(facultiesQuery.data ?? []).map((faculty) => ({
+      value: faculty.name,
+      label: faculty.name,
+    })),
+  ];
+
+  if (
+    staff.faculty &&
+    !facultyOptions.some((option) => option.value === staff.faculty)
+  ) {
+    facultyOptions.push({ value: staff.faculty, label: staff.faculty });
+  }
+
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="sm:max-w-lg">
@@ -144,11 +161,27 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
           />
           {role === 'dean' && (
             <div>
-              <Input
+              <Select
                 label={t('staff.editDialog.faculty')}
+                options={facultyOptions}
                 error={form.formState.errors.faculty}
                 registration={form.register('faculty')}
+                disabled={facultiesQuery.isPending}
               />
+              {facultiesQuery.isError && (
+                <p className="mt-1 flex items-center gap-2 text-xs text-destructive">
+                  {t('common:errors.loadFailed')}
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="h-auto p-0"
+                    onClick={() => void facultiesQuery.refetch()}
+                  >
+                    {t('common:actions.retry')}
+                  </Button>
+                </p>
+              )}
               <p className="mt-1 text-xs text-muted-foreground">
                 {t('staff.editDialog.facultyHelper')}
               </p>

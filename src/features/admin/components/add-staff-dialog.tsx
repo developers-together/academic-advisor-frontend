@@ -21,6 +21,7 @@ import { ApiError, readableApiError } from '@/lib/api-error';
 import type { User } from '@/types/domain';
 
 import { useCreateStaff } from '../api/create-staff';
+import { useFaculties } from '../api/get-faculties';
 import { useSendStaffPasswordReset } from '../api/send-staff-password-reset';
 
 export type AddStaffDialogProps = {
@@ -59,6 +60,7 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
   const addNotification = useNotifications((state) => state.addNotification);
   const createStaff = useCreateStaff();
   const sendReset = useSendStaffPasswordReset();
+  const facultiesQuery = useFaculties();
 
   const [created, setCreated] = useState<User | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -164,9 +166,17 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
               </div>
               <div className="space-y-0.5">
                 <dt className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
-                  {t(`staff.roles.${created.role}`)}
+                  {t('staff.create.name')}
                 </dt>
                 <dd className="text-sm font-medium">{created.name}</dd>
+              </div>
+              <div className="space-y-0.5">
+                <dt className="text-2xs font-medium tracking-wide text-muted-foreground uppercase">
+                  {t('staff.create.role')}
+                </dt>
+                <dd className="text-sm font-medium">
+                  {t(`staff.roles.${created.role}`)}
+                </dd>
               </div>
             </dl>
           </div>
@@ -204,11 +214,36 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
               />
               {role === 'dean' && (
                 <div>
-                  <Input
+                  <Select
                     label={t('staff.create.faculty')}
+                    options={[
+                      {
+                        value: '',
+                        label: t('staff.create.facultyPlaceholder'),
+                      },
+                      ...(facultiesQuery.data ?? []).map((faculty) => ({
+                        value: faculty.name,
+                        label: faculty.name,
+                      })),
+                    ]}
                     error={form.formState.errors.faculty}
                     registration={form.register('faculty')}
+                    disabled={facultiesQuery.isPending}
                   />
+                  {facultiesQuery.isError && (
+                    <p className="mt-1 flex items-center gap-2 text-xs text-destructive">
+                      {t('common:errors.loadFailed')}
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="sm"
+                        className="h-auto p-0"
+                        onClick={() => void facultiesQuery.refetch()}
+                      >
+                        {t('common:actions.retry')}
+                      </Button>
+                    </p>
+                  )}
                   <p className="mt-1 text-xs text-muted-foreground">
                     {t('staff.create.facultyHelper')}
                   </p>

@@ -293,7 +293,8 @@
       "resetConfirmTitle": "إرسال إعادة تعيين كلمة المرور؟",
       "resetConfirmBody": "يرسل هذا رابط إعادة تعيين إلى {{email}}.",
       "resetConfirm": "إرسال الرابط",
-      "resetSent": "أُرسل رابط إعادة تعيين كلمة المرور."
+      "resetSent": "أُرسل رابط إعادة تعيين كلمة المرور.",
+      "facultyPlaceholder": "اختر كلية"
     },
     "editDialog": {
       "title": "تعديل حساب عامل",
@@ -308,7 +309,8 @@
         "nameRequired": "أدخل الاسم.",
         "nameTooLong": "الحد الأقصى للأسماء 255 حرفًا.",
         "facultyRequired": "العمداء بحاجة إلى كلية."
-      }
+      },
+      "facultyPlaceholder": "اختر كلية"
     },
     "deleteDialog": {
       "title": "حذف {{name}}؟",
