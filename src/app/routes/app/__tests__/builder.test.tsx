@@ -2,6 +2,7 @@ import { HttpResponse, http } from 'msw';
 
 import { env } from '@/config/env';
 import { db } from '@/testing/mocks/db';
+import { mapEntry } from '@/testing/mocks/map-entry';
 import { CURRENT_TERM } from '@/testing/mocks/mock-auth';
 import { server } from '@/testing/mocks/server';
 import { networkDelay } from '@/testing/mocks/utils';
@@ -17,42 +18,71 @@ import {
 import BuilderRoute from '../builder';
 
 const prerequisiteMap = [
-  {
+  mapEntry({
     course_code: 'CS 101',
     title: 'Introduction to Programming',
+    level: 1,
     state: 'completed',
-    prerequisites: [],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'MATH 101',
     title: 'Calculus I',
+    level: 1,
     state: 'completed',
-    prerequisites: [],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'CS 201',
     title: 'Data Structures',
+    level: 3,
     state: 'eligible',
     prerequisites: ['CS 101'],
-  },
-  {
+  }),
+  mapEntry({
     course_code: 'MATH 201',
     title: 'Calculus II',
+    level: 3,
     state: 'eligible',
     prerequisites: ['MATH 101'],
-  },
-  {
+    warnings: ['Requires exception — talk to your academic advisor.'],
+  }),
+  mapEntry({
     course_code: 'CS 301',
     title: 'Algorithms',
+    level: 5,
     state: 'locked',
     prerequisites: ['CS 201'],
-  },
-  {
+    missing_prerequisites: ['CS 201'],
+  }),
+  mapEntry({
+    course_code: 'CS 302',
+    title: 'Operating Systems',
+    level: 3,
+    state: 'attempted',
+    prerequisites: ['CS 102'],
+    missing_prerequisites: ['CS 102'],
+    warnings: ['Prerequisite CS 102 was attempted without a passing grade.'],
+  }),
+  mapEntry({
     course_code: 'EE 210',
     title: 'Circuits',
+    level: 2,
+    state: 'eligible',
+  }),
+  mapEntry({
+    course_code: 'EE 220',
+    title: 'Digital Logic',
+    level: 2,
     state: 'planned',
-    prerequisites: [],
-  },
+  }),
+  mapEntry({
+    course_code: 'CS 401',
+    title: 'Machine Learning',
+    level: 5,
+    state: 'eligible',
+    prerequisites: ['CS 301'],
+    is_available: false,
+    availability_reasons: ['Not offered in the spring term.'],
+  }),
 ];
 
 const seedAcademicRecord = (userId: number) => {
@@ -145,6 +175,7 @@ test('the shelf lists mapped courses minus completed and plan members', async ()
   expect(await within(shelf).findByText('CS 301')).toBeInTheDocument();
   expect(within(shelf).getByText(/Requires CS 201/)).toBeInTheDocument();
   expect(within(shelf).getByText('EE 210')).toBeInTheDocument();
+  expect(within(shelf).queryByText('EE 220')).not.toBeInTheDocument();
   expect(within(shelf).queryByText('CS 101')).not.toBeInTheDocument();
   expect(within(shelf).queryByText('MATH 101')).not.toBeInTheDocument();
   expect(
@@ -156,6 +187,106 @@ test('the shelf lists mapped courses minus completed and plan members', async ()
   expect(
     within(shelf).queryByRole('button', { name: 'Add CS 301 to plan' }),
   ).not.toBeInTheDocument();
+});
+
+test('the picker never offers an unavailable course', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedDraftPlan(
+    user.id as number,
+    JSON.stringify([
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+    ]),
+  );
+  seedAcademicRecord(user.id as number);
+
+  await renderApp(<BuilderRoute />, {
+    user,
+    path: '/app/builder',
+    url: '/app/builder',
+  });
+
+  const shelf = await screen.findByRole('complementary', {
+    name: /courses for your plan/i,
+  });
+  expect(await within(shelf).findByText('CS 301')).toBeInTheDocument();
+  expect(within(shelf).queryByText('CS 401')).not.toBeInTheDocument();
+  expect(
+    within(shelf).queryByRole('button', { name: 'Add CS 401 to plan' }),
+  ).not.toBeInTheDocument();
+
+  const input = within(shelf).getByRole('textbox', {
+    name: /add a course/i,
+  });
+  await userEvent.type(input, 'Machine Learning');
+  expect(
+    await screen.findByText(
+      'No courses in your course map match "Machine Learning".',
+    ),
+  ).toBeInTheDocument();
+});
+
+test('the picker shows the exception and prerequisite warnings on offered courses', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedDraftPlan(
+    user.id as number,
+    JSON.stringify([
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+    ]),
+  );
+  seedAcademicRecord(user.id as number);
+
+  await renderApp(<BuilderRoute />, {
+    user,
+    path: '/app/builder',
+    url: '/app/builder',
+  });
+
+  const shelf = await screen.findByRole('complementary', {
+    name: /courses for your plan/i,
+  });
+  expect(
+    await within(shelf).findByText(
+      'Requires exception — talk to your academic advisor.',
+    ),
+  ).toBeInTheDocument();
+  expect(
+    within(shelf).getByText(
+      'Prerequisite CS 102 was attempted without a passing grade.',
+    ),
+  ).toBeInTheDocument();
+});
+
+test('the academic record refetches after a manual plan change', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedDraftPlan(
+    user.id as number,
+    JSON.stringify([
+      { course_code: 'CS 201', title: null, credits: 3, reason: null },
+    ]),
+  );
+  seedAcademicRecord(user.id as number);
+
+  let recordReads = 0;
+  server.events.on('request:start', ({ request }) => {
+    if (new URL(request.url).pathname.endsWith('/academic-record')) {
+      recordReads += 1;
+    }
+  });
+
+  await renderApp(<BuilderRoute />, {
+    user,
+    path: '/app/builder',
+    url: '/app/builder',
+  });
+  await screen.findByRole('button', { name: 'Add MATH 201 to plan' });
+  const readsBeforeAdd = recordReads;
+
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Add MATH 201 to plan' }),
+  );
+  await screen.findByRole('button', { name: 'Remove MATH 201' });
+
+  await waitFor(() => expect(recordReads).toBeGreaterThan(readsBeforeAdd));
 });
 
 test('an empty picker search names the query', async () => {

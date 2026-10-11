@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 
 import { useTurnStreamStore } from '@/features/ai-chat/stores/turn-stream-store';
+import { academicRecordKey } from '@/lib/api/academic-record';
 import { ApiError } from '@/lib/api-error';
 import { i18n } from '@/lib/i18n/i18n-instance';
 import type { PlanConversation, PlanConversationMessage } from '@/types/domain';
@@ -92,6 +93,9 @@ export const useSendTurn = (conversationId: number) => {
             case 'tool.applied':
               store.applyTool(conversationId, frame);
               void queryClient.invalidateQueries({ queryKey: ['plan'] });
+              void queryClient.invalidateQueries({
+                queryKey: academicRecordKey,
+              });
               break;
             case 'submit.suggested':
               store.markSubmitSuggested(conversationId);
@@ -99,6 +103,9 @@ export const useSendTurn = (conversationId: number) => {
             case 'submit.result':
               store.recordSubmitResult(conversationId, frame);
               void queryClient.invalidateQueries({ queryKey: ['plan'] });
+              void queryClient.invalidateQueries({
+                queryKey: academicRecordKey,
+              });
               void queryClient.invalidateQueries({
                 queryKey: planConversationsRootKey,
               });

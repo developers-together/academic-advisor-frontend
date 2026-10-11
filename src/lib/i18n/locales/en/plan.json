@@ -121,7 +121,7 @@
       "description": "Drag an eligible course into your plan or use +. This list follows your course map. Confirm semester availability with your advisor.",
       "requires": "Requires {{courses}}",
       "add": "Add {{course}} to plan",
-      "empty": "All mapped courses are completed or already in your plan.",
+      "empty": "All mapped courses are completed, already in your plan, or not offered this term.",
       "drop": "Drop a course here to add it to your plan.",
       "release": "Release to add this course.",
       "filterAll": "All choices",

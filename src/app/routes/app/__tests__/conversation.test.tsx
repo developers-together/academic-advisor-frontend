@@ -16,6 +16,7 @@ import ConversationRoute from '@/app/routes/app/conversation';
 import { env } from '@/config/env';
 import { useTurnStreamStore } from '@/features/ai-chat/stores/turn-stream-store';
 import { usePlan } from '@/features/plan/api/get-plan';
+import { useAcademicRecord } from '@/lib/api/academic-record';
 import { db } from '@/testing/mocks/db';
 import { sseResponse } from '@/testing/mocks/handlers/plan-conversations';
 import { server } from '@/testing/mocks/server';
@@ -28,6 +29,11 @@ const PlanProbe = () => {
       {plan.data?.courses.map((course) => course.course_code).join(',')}
     </p>
   );
+};
+
+const RecordProbe = () => {
+  const record = useAcademicRecord();
+  return <p data-testid="record-updated">{record.dataUpdatedAt}</p>;
 };
 
 const renderChat = async (url: string, user: MockUser, extra?: ReactNode) => {
@@ -303,11 +309,28 @@ test('an applied plan edit renders a localized system row with the isolated cour
     warnings: JSON.stringify([]),
     total_credit_hours: 0,
   });
+  db.academicRecord.create({
+    userId: user.id as number,
+    cgpa: 3.2,
+    curriculum_year_level: 1,
+    history: '[]',
+    prerequisite_map: '[]',
+    last_synced_at: '2026-10-01T12:00:00.000Z',
+  });
   await renderChat(
     `/app/chat/${conversation.id as number}`,
     user,
-    <PlanProbe />,
+    <>
+      <PlanProbe />
+      <RecordProbe />
+    </>,
   );
+
+  const recordProbe = await screen.findByTestId('record-updated');
+  await waitFor(() =>
+    expect(Number(recordProbe.textContent)).toBeGreaterThan(0),
+  );
+  const recordUpdatedAt = Number(recordProbe.textContent);
 
   await typeMessage('Add an algorithm course for me.');
 
@@ -321,6 +344,11 @@ test('an applied plan edit renders a localized system row with the isolated cour
     expect(screen.getByTestId('plan-courses')).toHaveTextContent(
       'CS 201,CS 301',
     );
+  });
+  await waitFor(() => {
+    expect(
+      Number(screen.getByTestId('record-updated').textContent),
+    ).toBeGreaterThan(recordUpdatedAt);
   });
 });
 

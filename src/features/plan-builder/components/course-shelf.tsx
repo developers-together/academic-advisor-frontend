@@ -5,6 +5,7 @@ import {
   LockKeyhole,
   Plus,
   Search,
+  TriangleAlert,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,8 @@ export const CourseShelf = ({
   const courses = (record.data?.prerequisite_map ?? []).filter(
     (course) =>
       course.state !== 'completed' &&
+      course.state !== 'planned' &&
+      course.is_available &&
       !planned.has(course.course_code) &&
       (filter === 'all' ||
         (filter === 'locked'
@@ -149,8 +152,20 @@ export const CourseShelf = ({
                         ? t('builder.shelf.requires', {
                             courses: course.prerequisites.join(', '),
                           })
-                        : t('builder.mapState.eligible')}
+                        : t(`builder.mapState.${course.state}`)}
                     </p>
+                    {course.warnings.map((warning) => (
+                      <p
+                        key={warning}
+                        className="mt-1 flex items-start gap-1 text-xs text-warning"
+                      >
+                        <TriangleAlert
+                          className="mt-0.5 size-3.5 shrink-0"
+                          aria-hidden
+                        />
+                        {warning}
+                      </p>
+                    ))}
                   </div>
                   {!locked && (
                     <Button

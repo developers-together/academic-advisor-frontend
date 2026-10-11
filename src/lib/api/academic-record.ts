@@ -4,12 +4,14 @@ import { api } from '@/lib/api-client';
 import { unwrap } from '@/lib/api-envelope';
 import type { AcademicRecord } from '@/types/domain';
 
+export const academicRecordKey = ['academic-record'] as const;
+
 export const getAcademicRecord = (): Promise<AcademicRecord> =>
   unwrap<AcademicRecord>(api.get('/academic-record'));
 
 export const getAcademicRecordQueryOptions = () =>
   queryOptions({
-    queryKey: ['academic-record'],
+    queryKey: academicRecordKey,
     queryFn: getAcademicRecord,
     staleTime: 5 * 60 * 1000,
   });

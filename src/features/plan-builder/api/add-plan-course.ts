@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { academicRecordKey } from '@/lib/api/academic-record';
 import { api } from '@/lib/api-client';
 import { unwrap } from '@/lib/api-envelope';
 import type { Plan } from '@/types/domain';
@@ -18,6 +19,7 @@ export const useAddPlanCourse = () => {
     mutationFn: addPlanCourse,
     onSuccess: (plan) => {
       queryClient.setQueryData(['plan'], plan);
+      void queryClient.invalidateQueries({ queryKey: academicRecordKey });
     },
   });
 };
