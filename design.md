@@ -77,7 +77,7 @@ These rules come from the foundation contract. They override any design preferen
 | PR-11 | No career-path recommender.                                                                                                                                                                                                   | Q64              |
 | PR-12 | Hard block: plans violating validation rules V1–V6 cannot be submitted.                                                                                                                                                       | Q65              |
 | PR-13 | Scoreboard metrics are locked: completion %, median decision time, aging (the UI reads the server's `is_aging` flag and never shows the threshold value).                                                                     | Q40              |
-| PR-14 | Student record is minimal: CGPA, credits (earned/remaining), prereq map, history. No transcript, no grade pages.                                                                                                              | Q31, Q58         |
+| PR-14 | Student record is minimal: CGPA, prereq map, history with per-course credits. No transcript, no grade pages.                                                                                                                  | Q31, Q58         |
 | PR-15 | VP surfaces never show dean identity beside faculty statistics, and never continue below Department.                                                                                                                          | v2 critical rule |
 | PR-16 | Data freshness is never faked: stale SIS data is labeled with its as-of time and a retry.                                                                                                                                     | v2               |
 | PR-17 | Destructive actions show impact, confirm, execute, show result, and offer undo where safe. Harmless actions never get confirmation dialogs.                                                                                   | v2               |
@@ -154,16 +154,16 @@ Primary navigation: **Home · My Plan · Academic Record · AI Advisor · My Adv
 Account**. Mobile bottom nav: **Home · Plan · AI · Advisor · More** (More sheet: Academic Record,
 Notifications, Account, language, theme, sign out).
 
-| Area            | Route                                    | Notes                                          |
-| --------------- | ---------------------------------------- | ---------------------------------------------- |
-| Home            | `/app`                                   | Landing                                        |
-| My Plan         | `/app/plan`                              | Plan detail; Builder is its working mode       |
-| Plan Builder    | `/app/builder`                           | Internal route under My Plan                   |
-| Academic Record | `/app/record`                            | CGPA, credits, enrollment, history, prereq map |
-| AI Advisor      | `/app/chat`, `/app/chat/:conversationId` |                                                |
-| My Advisor      | `/app/advisor`                           | Advisor profile, office hours, meetings        |
-| Notifications   | `/app/notifications`                     |                                                |
-| Account         | `/app/account`                           | Profile, sign out                              |
+| Area            | Route                                    | Notes                                      |
+| --------------- | ---------------------------------------- | ------------------------------------------ |
+| Home            | `/app`                                   | Landing                                    |
+| My Plan         | `/app/plan`                              | Plan detail; Builder is its working mode   |
+| Plan Builder    | `/app/builder`                           | Internal route under My Plan               |
+| Academic Record | `/app/record`                            | CGPA, curriculum year, course map, history |
+| AI Advisor      | `/app/chat`, `/app/chat/:conversationId` |                                            |
+| My Advisor      | `/app/advisor`                           | Advisor profile, office hours, meetings    |
+| Notifications   | `/app/notifications`                     |                                            |
+| Account         | `/app/account`                           | Profile, sign out                          |
 
 ### 4.2 Advisor
 
@@ -560,8 +560,9 @@ Mental model: "Where am I academically, what should I do next, and who can help 
 - **Plan Builder (S3)**: guided decision-making. Add/remove/move courses, inspect prerequisites and
   credit impact, understand why a course is or is not appropriate ("CS402 requires CS301 first"),
   validate, save, submit where the window allows. Validation copy is understandable (section 7.4).
-- **Academic Record (S4)**: CGPA, cumulative + earned credits, remaining credits, current enrollment,
-  course history, prerequisite map. Charts sparingly; information that supports decisions.
+- **Academic Record (S4)**: CGPA, curriculum year, course history, prerequisite map. Milestones and
+  the progress ring derive from the map; the SIS supplies no remaining-requirements or
+  current-enrollment data. Charts sparingly; information that supports decisions.
 - **AI Advisor (S5)**: section 14.
 - **My Advisor (S6)**: advisor card, office hours, availability, upcoming + past meetings, request
   meeting (reason, preferred time, optional note), respond to proposals. The advisor is a
@@ -673,8 +674,8 @@ Response → Confirmed → Completed, with Declined / Cancelled / Expired / Conf
 
 ## 16. Academic plan UX
 
-- The plan shows: program, degree progress, credits earned and remaining, completed, current, and
-  planned courses, prerequisites, eligibility, required/elective classification, conflicts, warnings,
+- The plan shows: the term, course count, planned credit total, completed, current, and planned
+  courses, prerequisites, eligibility, required/elective classification, conflicts, warnings,
   expected progression (foundation §7 + credits amendment).
 - Course states: completed, current, planned, available, prerequisite blocked, failed, repeated,
   recommended, required, elective, conflicting. The UI explains **why** a course is or is not
@@ -1118,6 +1119,9 @@ zero legacy raw values before implementation closes.
   mobile bottom navigation, command palette, breadcrumbs and page headers, unified meeting and
   availability UX, per-role UX sections, Admin operational scope, VP dean-identity rule (PR-15),
   categorized notifications, credits on plan surfaces, Advisor naming. Product name is Advisor.
+- 2026-10-11 (acad-aux): the SIS supplies no remaining-requirements or current-enrollment data, so
+  the record drops both surfaces. PR-14 and sections 4.1, 9, 16, 30, and 31.8 now describe the
+  implemented record: CGPA, curriculum year, course map, history, and map-derived milestones.
 
 ## 27. Frontend review refinement (2026-10-09)
 
@@ -1387,9 +1391,9 @@ This section records source behavior. It does not establish test results, browse
 
 Home prioritizes the current plan status and its next action. My Plan owns plan editing, feedback, and submission. AI Advisor owns guidance and conversation history. My Advisor owns the advisor profile and meeting actions. The sidebar notification center owns full notification management.
 
-Academic Record owns student ID, faculty, curriculum year, SIS freshness, CGPA, remaining requirements, current enrollments, course attempts, and prerequisites. Account owns contact details and the sign-out action. Academic Record does not request the current plan to calculate milestone rewards.
+Academic Record owns student ID, faculty, curriculum year, SIS freshness, CGPA, course attempts, and prerequisites. Account owns contact details and the sign-out action. Academic Record does not request the current plan to calculate milestone rewards.
 
-Course history uses a term timeline, course search, and a term filter. Repeated courses remain separate attempts. The interface displays missing credits and levels as not reported. It uses the backend term code when available. Legacy history can use year and semester. Enrollments display course code and title. Groups and sections are absent from the current backend response.
+Course history uses a term timeline, course search, and a term filter. Repeated courses remain separate attempts. The interface displays missing credits and levels as not reported. It uses the backend term code when available. Legacy history can use year and semester.
 
 The backend audit used origin/main at 0bcfa22. The pull fetched that revision but could not fast-forward the local branch. No local backend changes were removed. School, department, and enrollment status exist in the SIS identity model but lack student response fields. The student API lacks historical plan listing, earned-credit totals, and semester GPA. The frontend does not invent these values. Beads acad-zxc tracks the missing contracts.
 
@@ -1571,8 +1575,7 @@ My Plan displays unique course counts and the server credit total. Course titles
 The registration guide separates plan building, advisor approval, and manual SIS registration.
 Only an approved plan offers the SIS link. This platform never performs SIS enrollment writes.
 Lecture, tutorial, and lab sections count once per course. Students choose these sections in SIS.
-Reported enrollments remain separate from the plan. Matching course codes do not establish registration verification.
-Missing enrollment fields display as not reported. They do not imply an empty enrollment record.
+The record displays no SIS enrollment data; the SIS reports none. Matching course codes do not establish registration verification.
 The current API does not expose section choices, payment status, timetable, or verified registration status.
 The academic course map marks eligible courses in the current plan as planned. Completed and locked states retain priority.
 The course shelf supports eligibility filters, prerequisite details, search recovery, dragging, and accessible Add buttons.

@@ -1,8 +1,11 @@
 # Advisor → SIS — Data Requirements Specification
 
-> **To**: SIS engineering team · **From**: Advisor product/engineering · **Version**: 1.0 (2026-09-29)
+> **To**: SIS engineering team · **From**: Advisor product/engineering · **Version**: 1.1 (2026-10-11)
 > **Status**: awaiting SIS review and sign-off (§8)
 > **Basis**: `01-PRODUCT-FOUNDATION.md` §9 (integration contract), decisions Q56–Q68.
+> **Revision 1.1 (acad-aux)**: REQ-C2 (current enrollments) is withdrawn. The SIS exposes no
+> current-enrollment data and the product no longer consumes it. Former REQ-C3/C4 renumber to
+> REQ-C2/C3.
 
 ---
 
@@ -106,7 +109,7 @@ are validated against your data. This is per **term**, not per catalog eternity.
 **REQ-B4 — Program requirement totals** · P1 · `term-static`
 
 `program_code → total_credit_hours_required` (e.g. 134). We can derive a student's remaining credit
-hours as `total − earned` if you confirm that formula, else see REQ-C4.
+hours as `total − earned` if you confirm that formula, else see REQ-C3.
 
 ### C. Student academic records domain
 
@@ -126,16 +129,12 @@ so attempt counts must be reconstructable.
 | `credits_earned` | decimal | 0 for failed attempts |
 | `sat_final` | bool | Or an equivalent (grade is not "incomplete"/"withdrawn-late") — powers our prereq rule |
 
-**REQ-C2 — Current enrollments** · P0 · `nightly`
-
-`student_id → [{course_code, group, section, term_code}]` — courses in progress right now.
-
-**REQ-C3 — CGPA** · P0 · `nightly`
+**REQ-C2 — CGPA** · P0 · `nightly`
 
 `student_id → cgpa (decimal)` on your official scale (tell us the scale, §6 Q5). We display it and apply
 one rule threshold (below 2.00 limits a plan to 12 credits); we **never** compute or restate GPA math.
 
-**REQ-C4 — Remaining credit hours / degree audit** · P1 · `nightly`
+**REQ-C3 — Remaining credit hours / degree audit** · P1 · `nightly`
 
 Either `student_id → remaining_credit_hours` directly, or a full degree audit (remaining required
 courses per category) if you have one — that would also feed the AI's "can I graduate?" answers.
@@ -220,7 +219,7 @@ expose them, no problem** — Advisor's admin enters them manually as a fallback
 4. **Registration-status freshness (D2)**: how fresh can this realistically be during registration week — minutes? hourly? What polling interval can your infrastructure tolerate?
 5. **Grade & GPA scale**: the official letter scale and the CGPA scale (4.0?), so display matches transcripts exactly.
 6. **Course analytics (E1)**: can you aggregate avg grade + fail %? Over which period? Or should we derive from mirrored history (then: is our history pull complete for all students)?
-7. **Degree audit (C4)**: do you have remaining-credits or a full audit per student, or do we derive from program totals?
+7. **Degree audit (C3)**: do you have remaining-credits or a full audit per student, or do we derive from program totals?
 8. **Attempts**: does history include failed and withdrawn attempts, and can attempt counts be reconstructed reliably (we enforce a 3rd-attempt block)?
 9. **Student ID**: format, uniqueness, immutability — it is the sign-up binding key, so we need certainty.
 10. **History depth**: how many past terms are available (feeds AI context and analytics)?
@@ -235,12 +234,11 @@ expose them, no problem** — Advisor's admin enters them manually as a fallback
   "offerings": [{ "course_code": "CS201", "groups": [
       { "group_no": 1, "sections": [ { "section_no": 3, "seats_available": 12 } ] } ] }] }
 
-// GET /students/{student_id}/academic-record  (REQ-C1..C4, A1)
+// GET /students/{student_id}/academic-record  (REQ-C1..C3, A1)
 { "student_id": "EJ-2023-0451", "faculty": "CSIT", "department": "CSC",
   "level": 5, "cgpa": 2.86, "remaining_credit_hours": 42,
   "history": [{ "course_code": "CS101", "term": "2023-FAL", "attempt": 1,
-                "grade": "B+", "credits_earned": 3, "sat_final": true }],
-  "current_enrollments": [{ "course_code": "CS301", "group": 2, "section": 1 }] }
+                "grade": "B+", "credits_earned": 3, "sat_final": true }] }
 
 // GET /students/{student_id}/registration?term=2027-SPR  (REQ-D2)
 { "term": "2027-SPR",

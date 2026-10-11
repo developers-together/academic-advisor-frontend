@@ -57,8 +57,8 @@
 `sis_sync_log` + source badges · `academic_windows` (mirrored from SIS, Q67) · `rules_config` (SIS-first,
 manual fallback, Q56) · `audit_chain`.
 
-**Ported/reshaped**: `tracks→departments` framing, `courses`, `course_prerequisites`,
-`student_course_history`, `student_enrollments` — now **mirrors** of SIS data, marked with sync metadata.
+**Ported/reshaped**: `tracks→departments` framing, `courses`, `course_prerequisites`;
+`student_course_history` is now a **mirror** of SIS data, marked with sync metadata.
 Registration/appointments/audit leave sessionStorage permanently (extraction B5).
 
 ## 3. What Ports, What Dies, What's New

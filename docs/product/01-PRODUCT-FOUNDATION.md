@@ -5,6 +5,9 @@
 > meeting request model with confirmation, the role information architecture and navigation system,
 > the admin operational scope, the dean advisor view, the VP dean-identity rule, credits on plan
 > surfaces, categorized notifications, and the product name (Advisor, never "Advaisor").
+> **2026-10-11 amendment (acad-aux)**: the SIS exposes no remaining-requirements or
+> current-enrollment data. The academic record drops both surfaces; §3, §7.3, §9, §12, and §14 S4
+> carry the change.
 > This document is the **contract**. Nothing gets designed or built that contradicts it.
 > If reality contradicts it, the document is amended first — never silently.
 >
@@ -66,8 +69,8 @@ advising at a glance, at the right level of aggregation for their role.
 - Advisor review: Approve / Return with mandatory reason / Request meeting
 - **Unified meeting model (v2)**: availability windows, meeting requests in **both directions**, slot
   proposal and explicit confirmation, the full lifecycle in §10
-- Student academic record: CGPA, credits earned and remaining, prerequisite map, course history,
-  current enrollment (Q58, amended: credits are visible)
+- Student academic record: CGPA, prerequisite map, course history with per-course credits (Q58,
+  amended: credits are visible)
 - **My Advisor page**: the assigned advisor as a first-class surface — public profile, office hours,
   availability, meetings
 - AI advisor for students only: the six capabilities (§12), structured responses, plan proposals that
@@ -236,9 +239,10 @@ rule IDs and never computed client-side (never as labels, see No Labels): `REG-0
 forward: "CS402 cannot be added because CS301 is required first", never "Prerequisite validation
 failed".
 
-**Credits (v2 amendment):** the SIS catalog carries per-course credits (§9 table, row 2), and plan
-surfaces show them: credits earned, credits remaining, current plan total, and per-line credits. The
-v1 decision to hide credits is reversed. The plan builder shows the credit impact of each change.
+**Credits (v2 amendment):** the SIS catalog carries per-course credits (§9 table, row 2), and surfaces
+show them: per-line credits and the current plan total on plan surfaces, per-course credits in course
+history. The v1 decision to hide credits is reversed. The plan builder shows the credit impact of each
+change.
 
 ## 8. Permission Matrix
 
@@ -276,17 +280,16 @@ on-demand verification checks during the window.
 | 2 | Course catalog: code, title, **credits**, prerequisites, level, type | SIS | Plan builder, AI, prereq map, plan surfaces |
 | 3 | Groups/sections per course (valid options; no meeting times) | SIS | Plan line dropdowns (Q60) |
 | 4 | Course history: passed/failed/attempts | SIS | Validation V3/V4, record, AI |
-| 5 | Current enrollments | SIS | Record, AI context |
-| 6 | CGPA | SIS | Record, V2, AI |
-| 7 | Remaining credit hours / graduation requirements | SIS (or derived from 2+4) | Record, AI |
-| 8 | **Registration status** per student per course | SIS | Verification |
-| 9 | **Registration window dates** | **SIS — sole provider** (Q67) | Academic clock, Admin registration windows view (read-only mirror) |
-| 10 | Course analytics: avg grade + fail % | SIS | **AI tool-calls only** (Q59.11) |
-| 11 | Account ↔ student-record binding | **In-system** — student ID entered at sign-up; Admin re-links on mismatch | Auth, plan ownership, caseload routing |
-| 12 | Rules (credit caps, thresholds) | SIS-first; **Admin fallback config** (Q56) | Validation engine |
-| 13 | Advisor ↔ student assignments | **Admin creates** (Q59.9) | Routing, scoping |
-| 14 | Programs: structure, requirements | SIS | Plan context, Admin programs view, AI |
-| 15 | **SIS sync freshness** (last synced at, per dataset) | SIS sync | Stale-data surfaces (§15) |
+| 5 | CGPA | SIS | Record, V2, AI |
+| 6 | Remaining credit hours / graduation requirements | Derived from 2 + 4; no direct SIS feed | Record progress, AI |
+| 7 | **Registration status** per student per course | SIS | Verification |
+| 8 | **Registration window dates** | **SIS — sole provider** (Q67) | Academic clock, Admin registration windows view (read-only mirror) |
+| 9 | Course analytics: avg grade + fail % | SIS | **AI tool-calls only** (Q59.11) |
+| 10 | Account ↔ student-record binding | **In-system** — student ID entered at sign-up; Admin re-links on mismatch | Auth, plan ownership, caseload routing |
+| 11 | Rules (credit caps, thresholds) | SIS-first; **Admin fallback config** (Q56) | Validation engine |
+| 12 | Advisor ↔ student assignments | **Admin creates** (Q59.9) | Routing, scoping |
+| 13 | Programs: structure, requirements | SIS | Plan context, Admin programs view, AI |
+| 14 | **SIS sync freshness** (last synced at, per dataset) | SIS sync | Stale-data surfaces (§15) |
 
 Data freshness is a first-class UI concern: surfaces that consume SIS data state how fresh they are,
 and never silently present stale data as current (§15).
@@ -376,7 +379,7 @@ action where one exists, and read/unread state, and it deep-links into the corre
    the handoff — the student reviews, edits, and **only the student can submit** (Q46; nothing is
    submitted without explicit confirmation, PR-07)
 5. Explain why a plan line is invalid (reads validation results)
-6. Explain the student's own state: CGPA, remaining credits, plan status, advisor comments
+6. Explain the student's own state: CGPA, course history, plan status, advisor comments
 
 **Response types (v2):** the AI renders structured information where it helps decisions — course
 cards, prerequisite explanations, plan proposals (courses, credit count, reasoning, prerequisites,
@@ -388,7 +391,7 @@ result, failed, retrying, cancelled, unavailable, rate limited. Tool execution i
 without exposing internals.
 
 **Data access**: everything about *this* student via tool-calls — identity, catalog, history, CGPA,
-remaining requirements, plan + comments, course analytics (Q59.11). Zero access to other students.
+plan + comments, course analytics (Q59.11). Zero access to other students.
 
 **Constitution (ratified Q45 + round-2):** AI output is advisory; the Approved Plan is the system of
 record; the human decision always wins; the AI cannot send, submit, approve, or modify anything
@@ -432,7 +435,7 @@ at most one primary action.
 | S1 | **Home** (landing) | `/app` | Where am I, what needs my attention, next actions, plan health, advisor card, upcoming meeting, notifications digest, AI entry |
 | S2 | **My Plan** | `/app/plan` | Plan detail: lines, credits, state, advisor comment + Seen, meeting badge |
 | S3 | **Plan Builder** | `/app/builder` | Catalog picker, plan lines, live validation panel, credit impact, submit gate (internal route under My Plan mentally) |
-| S4 | **Academic Record** | `/app/record` | CGPA, credits earned/remaining, current enrollment, course history, prerequisite map |
+| S4 | **Academic Record** | `/app/record` | CGPA, curriculum year, course history, prerequisite map |
 | S5 | **AI Advisor** | `/app/chat`, `/app/chat/:conversationId` | The 6 capabilities; structured responses; submit handoff |
 | S6 | **My Advisor** | `/app/advisor` | Advisor public profile, office hours, availability, meetings, request meeting |
 | S7 | **Notifications** | `/app/notifications` | Categorized center |
