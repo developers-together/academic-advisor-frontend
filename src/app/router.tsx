@@ -26,6 +26,7 @@ const loaders: Record<string, () => Promise<{ default: unknown }>> = {
   'auth.signup': () => import('./routes/auth/signup'),
   'auth.forgot-password': () => import('./routes/auth/forgot-password'),
   'auth.verify-email': () => import('./routes/auth/verify-email'),
+  'auth.reset-password': () => import('./routes/auth/reset-password'),
   'app.home': () => import('./routes/app/dashboard'),
   'app.plan': () => import('./routes/app/plan'),
   'app.builder': () => import('./routes/app/builder'),

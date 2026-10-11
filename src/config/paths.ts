@@ -18,6 +18,10 @@ export const paths = {
       path: '/forgot-password',
       getHref: () => '/forgot-password',
     },
+    resetPassword: {
+      path: '/reset-password',
+      getHref: () => '/reset-password',
+    },
     verifyEmail: {
       path: '/verify-email/:id/:hash',
       getHref: (id: string, hash: string) => `/verify-email/${id}/${hash}`,

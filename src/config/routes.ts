@@ -540,6 +540,16 @@ const auth: RoleRouteDefinition[] = [
     command: false,
   },
   {
+    id: 'auth.reset-password',
+    path: paths.auth.resetPassword.path,
+    kind: 'page',
+    role: 'auth',
+    labelKey: 'nav.resetPassword',
+    icon: Settings2,
+    nav: 'none',
+    command: false,
+  },
+  {
     id: 'not-found',
     path: '*',
     kind: 'page',
