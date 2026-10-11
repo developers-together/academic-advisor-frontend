@@ -4,6 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import type { QueryKey } from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
 import { unwrap } from '@/lib/api-envelope';
@@ -22,8 +23,20 @@ export const importAcademicsDataset = (
   return api.post(`/admin/imports/${dataset}`, form);
 };
 
-export const useImportAcademicsDataset = () =>
-  useMutation({
+const adminQueriesByDataset: Record<
+  AcademicsImportDataset,
+  readonly QueryKey[]
+> = {
+  statistics: [],
+  'active-courses': [['admin', 'courses']],
+  'credit-allowances': [],
+  curricula: [['admin', 'courses']],
+};
+
+export const useImportAcademicsDataset = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: ({
       dataset,
       file,
@@ -31,7 +44,13 @@ export const useImportAcademicsDataset = () =>
       dataset: AcademicsImportDataset;
       file: File;
     }) => importAcademicsDataset(dataset, file),
+    onSuccess: (_report, { dataset }) => {
+      for (const queryKey of adminQueriesByDataset[dataset]) {
+        void queryClient.invalidateQueries({ queryKey });
+      }
+    },
   });
+};
 
 type ApiCurrentTerm = {
   term_code: string;

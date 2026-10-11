@@ -466,6 +466,7 @@
     "imports": {
       "title": "Registrar imports",
       "context": "Upload one file per dataset. Blank rows are skipped and one bad row never fails the file.",
+      "order": "Import in this order:",
       "statistics": "Statistics",
       "statisticsHint": "Grade history per course and academic year: mean and mode grades.",
       "active-courses": "Active courses",
@@ -480,7 +481,7 @@
       "confirmBody": "Rows already in the system are skipped. The report lists every rejected row.",
       "summary": "Imported {{imported}}. Skipped {{skipped}}. Rejected {{errors}}.",
       "reportTitle": "Rejected rows",
-      "reportRow": "Row {{n}}",
+      "reportLocation": "{{sheet}}, row {{row}}",
       "reportMore": "{{count}} more rows not shown.",
       "success": "{{dataset}} import finished.",
       "errors": {

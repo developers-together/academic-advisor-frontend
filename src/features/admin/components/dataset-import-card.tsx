@@ -116,20 +116,19 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
                 <div className="max-h-64 overflow-y-auto rounded-lg border">
                   <TableElement>
                     <TableBody>
-                      {report.errors
-                        .slice(0, MAX_REPORT_ROWS)
-                        .map((error, index) => (
-                          <TableRow key={`${error.sheet}-${error.row}`}>
-                            <TableCell className="w-24 px-3 py-2 text-2xs text-muted-foreground tabular-nums">
-                              {t('academics.imports.reportRow', {
-                                n: index + 1,
-                              })}
-                            </TableCell>
-                            <TableCell className="px-3 py-2 text-sm">
-                              {error.message}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                      {report.errors.slice(0, MAX_REPORT_ROWS).map((error) => (
+                        <TableRow key={`${error.sheet}-${error.row}`}>
+                          <TableCell className="w-24 px-3 py-2 text-2xs text-muted-foreground tabular-nums">
+                            {t('academics.imports.reportLocation', {
+                              sheet: error.sheet,
+                              row: error.row,
+                            })}
+                          </TableCell>
+                          <TableCell className="px-3 py-2 text-sm">
+                            {error.message}
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </TableElement>
                 </div>

@@ -8,9 +8,9 @@ import { SisRevokeCard } from './sis-revoke-card';
 
 const DATASETS: AcademicsImportDataset[] = [
   'statistics',
+  'curricula',
   'active-courses',
   'credit-allowances',
-  'curricula',
 ];
 
 export const AcademicsDocument = () => {
@@ -27,6 +27,20 @@ export const AcademicsDocument = () => {
         <p className="mt-1 text-sm text-muted-foreground">
           {t('academics.imports.context')}
         </p>
+        <p
+          id="academics-import-order-label"
+          className="mt-3 text-sm font-medium"
+        >
+          {t('academics.imports.order')}
+        </p>
+        <ol
+          aria-labelledby="academics-import-order-label"
+          className="mt-1 list-inside list-decimal text-sm text-muted-foreground"
+        >
+          {DATASETS.map((dataset) => (
+            <li key={dataset}>{t(`academics.imports.${dataset}`)}</li>
+          ))}
+        </ol>
         <div className="mt-3 grid gap-4 lg:grid-cols-2">
           {DATASETS.map((dataset) => (
             <DatasetImportCard key={dataset} dataset={dataset} />

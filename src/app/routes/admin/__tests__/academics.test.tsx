@@ -189,6 +189,93 @@ test('a clean import shows counts with no rejected-row table', async () => {
   expect(within(card).queryByText('Rejected rows')).not.toBeInTheDocument();
 });
 
+test('the rejected-rows report names the real sheet and spreadsheet row', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  server.use(
+    http.post(`${env.API_URL}/admin/imports/statistics`, async () =>
+      HttpResponse.json({
+        imported: 0,
+        skipped: 2,
+        errors: [
+          {
+            sheet: '2024-2025',
+            row: 12,
+            message: 'The value does not match the expected format.',
+          },
+          {
+            sheet: 'Courses',
+            row: 47,
+            message: 'The course code is missing.',
+          },
+        ],
+      }),
+    ),
+  );
+
+  await renderApp(<AdminAcademicsRoute />, {
+    user: admin,
+    path: '/admin/academics',
+    url: '/admin/academics',
+  });
+
+  const card = statisticsCard();
+  const file = new File(['course_code,mean_grade'], 'rejected.csv', {
+    type: 'text/csv',
+  });
+  await userEvent.upload(
+    within(card).getByLabelText('CSV or XLSX up to 2 MB.'),
+    file,
+  );
+  await userEvent.click(
+    within(card).getByRole('button', { name: 'Import file' }),
+  );
+  await userEvent.click(
+    within(screen.getByRole('dialog')).getByRole('button', {
+      name: 'Import file',
+    }),
+  );
+
+  expect(await screen.findByText('2024-2025, row 12')).toBeInTheDocument();
+  expect(screen.getByText('Courses, row 47')).toBeInTheDocument();
+  expect(screen.queryByText('Row 1')).not.toBeInTheDocument();
+});
+
+test('the imports section states the dependency order and orders the cards by it', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  await renderApp(<AdminAcademicsRoute />, {
+    user: admin,
+    path: '/admin/academics',
+    url: '/admin/academics',
+  });
+
+  const orderItems = within(
+    screen.getByRole('list', { name: 'Import in this order:' }),
+  ).getAllByRole('listitem');
+  expect(orderItems.map((item) => item.textContent)).toEqual([
+    'Statistics',
+    'Curricula',
+    'Active courses',
+    'Credit allowances',
+  ]);
+
+  const datasets = [
+    'statistics',
+    'curricula',
+    'active-courses',
+    'credit-allowances',
+  ];
+  const cards = datasets.map((dataset) =>
+    screen.getByTestId(`import-card-${dataset}`),
+  );
+  for (let i = 0; i < cards.length - 1; i += 1) {
+    expect(
+      cards[i].compareDocumentPosition(cards[i + 1]) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  }
+});
+
 test('the mirror reset confirms once and posts the revoke', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   const revoke = vi.fn();
