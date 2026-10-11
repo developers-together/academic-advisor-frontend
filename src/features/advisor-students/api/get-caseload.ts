@@ -12,8 +12,8 @@ export const getCaseload = (
   search?: string,
 ): Promise<AdvisorCaseloadStudent[]> =>
   unwrapList<AdvisorCaseloadStudent>(
-    api.get('/advisor/students', {
-      params: search ? { search } : undefined,
+    api.get('/advisor/caseload', {
+      params: { per_page: 'all', ...(search ? { search } : {}) },
     }),
   );
 

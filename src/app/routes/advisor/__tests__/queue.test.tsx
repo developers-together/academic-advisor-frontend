@@ -202,7 +202,7 @@ test('approve confirms, locks the plan, closes the drawer, invalidates both root
   server.events.on('request:start', ({ request }) => {
     const url = new URL(request.url);
     if (
-      url.pathname.endsWith('/advisor/students') &&
+      url.pathname.endsWith('/advisor/caseload') &&
       request.method === 'GET'
     ) {
       caseloadReads += 1;

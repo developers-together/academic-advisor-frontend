@@ -181,7 +181,7 @@ export const advisorHandlers = [
     return HttpResponse.json({ data: items });
   }),
 
-  http.get(`${env.API_URL}/advisor/students`, async ({ request }) => {
+  http.get(`${env.API_URL}/advisor/caseload`, async ({ request }) => {
     await networkDelay();
     if (injectsErrors()) {
       return HttpResponse.json(

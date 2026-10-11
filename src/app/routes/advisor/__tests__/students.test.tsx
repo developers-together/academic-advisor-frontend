@@ -100,7 +100,7 @@ const caseloadReads = () => {
   let searchedRead: string | null = null;
   server.events.on('request:start', ({ request }) => {
     const url = new URL(request.url);
-    if (url.pathname.endsWith('/advisor/students')) {
+    if (url.pathname.endsWith('/advisor/caseload')) {
       reads += 1;
       const search = url.searchParams.get('search');
       if (search !== null) {
@@ -387,7 +387,7 @@ test('a caseload error renders the shared error state with retry', async () => {
   const advisor = await createUser({ role: 'advisor' });
 
   server.use(
-    http.get(`${env.API_URL}/advisor/students`, () =>
+    http.get(`${env.API_URL}/advisor/caseload`, () =>
       HttpResponse.json(
         { message: 'The server encountered an error.' },
         { status: 500 },
