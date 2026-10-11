@@ -149,10 +149,6 @@ export const paths = {
       path: 'users',
       getHref: () => '/admin/users',
     },
-    students: {
-      path: 'students',
-      getHref: () => '/admin/users',
-    },
     operations: {
       path: 'operations',
       getHref: () => '/admin/operations',
@@ -180,14 +176,6 @@ export const paths = {
     aiConfiguration: {
       path: 'ai-configuration',
       getHref: () => '/admin/ai-configuration',
-    },
-    staff: {
-      path: 'staff',
-      getHref: () => '/admin/users',
-    },
-    settings: {
-      path: 'settings',
-      getHref: () => '/admin',
     },
     notifications: {
       path: 'notifications',
