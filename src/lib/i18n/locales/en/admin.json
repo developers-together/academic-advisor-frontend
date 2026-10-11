@@ -121,7 +121,8 @@
       "name": "Name",
       "studentId": "Student ID",
       "advisor": "Advisor",
-      "faculty": "Faculty"
+      "faculty": "Faculty",
+      "actions": "Actions"
     },
     "assignDialog": {
       "title": "Assign advisor",
@@ -194,6 +195,9 @@
       "body": "Clear it or try another name or ID.",
       "noRows": "No caseload assignments yet.",
       "noRowsBody": "Import a CSV to assign students to advisors."
+    },
+    "actions": {
+      "reassign": "Reassign {{name}}"
     }
   },
   "rules": {

@@ -53,7 +53,7 @@ export const StudentsDocument = ({ onAddStudent }: StudentsDocumentProps) => {
             description={t('accounts.empty.body')}
             action={{
               label: t('common:actions.clearSearch'),
-              onClick: () => setSearch(''),
+              onClick: () => changeSearch(''),
             }}
             className="max-w-xl"
           />

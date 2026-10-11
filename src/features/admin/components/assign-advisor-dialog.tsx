@@ -25,6 +25,7 @@ import { useAdminStaff } from '../api/get-admin-staff';
 export type AssignAdvisorDialogProps = {
   open: boolean;
   onClose: () => void;
+  student?: { student_id: string; advisor_email: string } | null;
 };
 
 const SIS_ID_PATTERN = /^\d{1,20}$/;
@@ -42,6 +43,7 @@ const FIELD_KEYS: Record<string, keyof AssignAdvisorValues> = {
 export const AssignAdvisorDialog = ({
   open,
   onClose,
+  student = null,
 }: AssignAdvisorDialogProps) => {
   const { t } = useTranslation('admin');
   const addNotification = useNotifications((state) => state.addNotification);
@@ -65,7 +67,10 @@ export const AssignAdvisorDialog = ({
   const form = useForm<AssignAdvisorValues>({
     resolver: zodResolver(schema),
     mode: 'onBlur',
-    defaultValues: { student_id: '', advisor_email: '' },
+    defaultValues: {
+      student_id: student?.student_id ?? '',
+      advisor_email: student?.advisor_email ?? '',
+    },
   });
 
   const advisorOptions = [
@@ -75,6 +80,16 @@ export const AssignAdvisorDialog = ({
       label: advisor.name,
     })),
   ];
+
+  if (
+    student?.advisor_email &&
+    !advisorOptions.some((option) => option.value === student.advisor_email)
+  ) {
+    advisorOptions.push({
+      value: student.advisor_email,
+      label: student.advisor_email,
+    });
+  }
 
   const submit = form.handleSubmit((values) => {
     assignAdvisor.mutate(

@@ -4,6 +4,17 @@ import { hash } from './utils';
 export const sanitizeUser = <O extends object>(user: O) => {
   const result = { ...user } as Record<string, unknown>;
   delete result.password;
+  const advisorId = result.advisor_id as number | null;
+  const advisor = advisorId
+    ? db.user.findFirst({ where: { id: { equals: advisorId } } })
+    : null;
+  result.advisor = advisor
+    ? {
+        id: advisor.id as number,
+        name: advisor.name as string,
+        email: advisor.email as string,
+      }
+    : null;
   return result as Omit<O, 'password'>;
 };
 

@@ -742,3 +742,90 @@ test('an assign failure beyond validation surfaces a toast and keeps the dialog 
     within(dialog).getByRole('button', { name: 'Assign advisor' }),
   ).toBeInTheDocument();
 });
+
+test('the advisor column shows the advisor identity with a reassign action', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  const advisor = await createUser({
+    name: 'Amr Advisor',
+    email: 'amr.advisor@ejust.edu.eg',
+    role: 'advisor',
+  });
+  await createUser({
+    name: 'Lina Majors',
+    role: 'student',
+    student_id: '3020771',
+    advisor_id: advisor.id as number,
+  });
+  await createUser({
+    name: 'Omar Fathi',
+    role: 'student',
+  });
+
+  await renderApp(<AdminAssignmentsRoute />, {
+    user: admin,
+    path: '/admin/assignments',
+    url: '/admin/assignments',
+  });
+
+  const lina = await screen.findByRole('row', { name: /Lina Majors/ });
+  expect(within(lina).getByText('Assigned')).toBeInTheDocument();
+  expect(within(lina).getByText('Amr Advisor')).toBeInTheDocument();
+  expect(
+    within(lina).getByText('amr.advisor@ejust.edu.eg'),
+  ).toBeInTheDocument();
+  expect(
+    within(lina).getByRole('button', { name: 'Reassign Lina Majors' }),
+  ).toBeInTheDocument();
+
+  const omar = screen.getByRole('row', { name: /Omar Fathi/ });
+  expect(
+    within(omar).getByRole('button', { name: 'Reassign Omar Fathi' }),
+  ).toBeInTheDocument();
+  expect(within(omar).getByText('Unassigned')).toBeInTheDocument();
+
+  await userEvent.click(
+    within(lina).getByRole('button', { name: 'Reassign Lina Majors' }),
+  );
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Assign advisor',
+  });
+  await waitFor(() =>
+    expect(within(dialog).getByLabelText('SIS student ID')).toHaveValue(
+      '3020771',
+    ),
+  );
+  await waitFor(() =>
+    expect(within(dialog).getByLabelText('Advisor')).toHaveValue(
+      'amr.advisor@ejust.edu.eg',
+    ),
+  );
+});
+
+test('clearing an empty search returns the first page of the full list', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  for (let index = 1; index <= 55; index += 1) {
+    await createUser({
+      name: `Bulk Student ${String(index).padStart(2, '0')}`,
+      role: 'student',
+    });
+  }
+
+  await renderApp(<AdminAssignmentsRoute />, {
+    user: admin,
+    path: '/admin/assignments',
+    url: '/admin/assignments',
+  });
+
+  await userEvent.type(
+    await screen.findByLabelText('Search students'),
+    'zzz-no-match',
+  );
+  expect(
+    await screen.findByText('No students match this search.'),
+  ).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Clear search' }));
+
+  expect(await screen.findByText('Bulk Student 01')).toBeInTheDocument();
+  expect(screen.queryByText('Bulk Student 51')).not.toBeInTheDocument();
+  expect(screen.getByText('Showing 1-50 of 55')).toBeInTheDocument();
+});

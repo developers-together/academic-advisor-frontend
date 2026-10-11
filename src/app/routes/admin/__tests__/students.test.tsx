@@ -1092,3 +1092,34 @@ test('a student create 422 without mappable fields surfaces a toast', async () =
     within(dialog).getByRole('button', { name: 'Create account' }),
   ).toBeInTheDocument();
 });
+
+test('clearing an empty search returns the first page of the full list', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  for (let index = 1; index <= 55; index += 1) {
+    await createUser({
+      name: `Bulk Student ${String(index).padStart(2, '0')}`,
+      role: 'student',
+    });
+  }
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+
+  await userEvent.type(
+    await screen.findByLabelText('Search students'),
+    'zzz-no-match',
+  );
+  expect(
+    await screen.findByText('No students match this search.'),
+  ).toBeInTheDocument();
+  await userEvent.click(
+    screen.getAllByRole('button', { name: 'Clear search' })[0],
+  );
+
+  expect(await screen.findByText('Bulk Student 01')).toBeInTheDocument();
+  expect(screen.queryByText('Bulk Student 51')).not.toBeInTheDocument();
+  expect(screen.getByText('Showing 1-50 of 55')).toBeInTheDocument();
+});

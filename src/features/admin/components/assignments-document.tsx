@@ -22,6 +22,7 @@ import type { User } from '@/types/domain';
 
 import { useAdminStudents } from '../api/get-admin-students';
 
+import { AssignAdvisorDialog } from './assign-advisor-dialog';
 import { ImportAssignmentsDialog } from './import-assignments-dialog';
 import { PendingAssignmentsCard } from './pending-assignments-card';
 
@@ -41,6 +42,7 @@ export const AssignmentsDocument = () => {
   });
 
   const [importOpen, setImportOpen] = useState(false);
+  const [reassignTarget, setReassignTarget] = useState<User | null>(null);
 
   const changeSearch = (value: string) => {
     setSearch(value);
@@ -90,7 +92,7 @@ export const AssignmentsDocument = () => {
             description={t('assignments.empty.body')}
             action={{
               label: t('common:actions.clearSearch'),
-              onClick: () => setSearch(''),
+              onClick: () => changeSearch(''),
             }}
             className="max-w-xl"
           />
@@ -138,16 +140,16 @@ export const AssignmentsDocument = () => {
         <TableElement>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              {(['name', 'studentId', 'advisor', 'faculty'] as const).map(
-                (key) => (
-                  <TableHead
-                    key={key}
-                    className="sticky top-0 z-10 bg-card px-3 py-2 text-2xs font-medium tracking-wide uppercase"
-                  >
-                    {t(`assignments.columns.${key}`)}
-                  </TableHead>
-                ),
-              )}
+              {(
+                ['name', 'studentId', 'advisor', 'faculty', 'actions'] as const
+              ).map((key) => (
+                <TableHead
+                  key={key}
+                  className="sticky top-0 z-10 bg-card px-3 py-2 text-2xs font-medium tracking-wide uppercase"
+                >
+                  {t(`assignments.columns.${key}`)}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -162,17 +164,40 @@ export const AssignmentsDocument = () => {
                   </span>
                 </TableCell>
                 <TableCell className="px-3 py-2">
-                  <Badge
-                    variant={student.advisor_id ? 'info' : 'neutral'}
-                    size="sm"
-                  >
-                    {t(
-                      `common:badges.${student.advisor_id ? 'assigned' : 'unassigned'}`,
-                    )}
-                  </Badge>
+                  {student.advisor ? (
+                    <div className="space-y-0.5">
+                      <span className="flex items-center gap-2">
+                        <Badge variant="info" size="sm">
+                          {t('common:badges.assigned')}
+                        </Badge>
+                        <span className="text-sm font-medium">
+                          {student.advisor.name}
+                        </span>
+                      </span>
+                      <span className="block text-2xs text-muted-foreground">
+                        {student.advisor.email}
+                      </span>
+                    </div>
+                  ) : (
+                    <Badge variant="neutral" size="sm">
+                      {t('common:badges.unassigned')}
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="px-3 py-2 text-sm text-muted-foreground">
                   {student.faculty ?? '-'}
+                </TableCell>
+                <TableCell className="px-3 py-2 text-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label={t('assignments.actions.reassign', {
+                      name: student.name,
+                    })}
+                    onClick={() => setReassignTarget(student)}
+                  >
+                    {t('accounts.actions.reassign')}
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -224,6 +249,17 @@ export const AssignmentsDocument = () => {
 
       {importOpen && (
         <ImportAssignmentsDialog open onClose={() => setImportOpen(false)} />
+      )}
+
+      {reassignTarget && (
+        <AssignAdvisorDialog
+          open
+          student={{
+            student_id: reassignTarget.student_id ?? '',
+            advisor_email: reassignTarget.advisor?.email ?? '',
+          }}
+          onClose={() => setReassignTarget(null)}
+        />
       )}
     </div>
   );

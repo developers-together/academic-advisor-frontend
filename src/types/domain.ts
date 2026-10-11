@@ -12,6 +12,7 @@ export type User = {
   language_preference: LanguagePreference | null;
   student_id: string | null;
   advisor_id: number | null;
+  advisor?: AdvisorSummary | null;
   email_verified_at: string | null;
   pending_admin_at: string | null;
   suspended_at: string | null;
@@ -19,6 +20,8 @@ export type User = {
 };
 
 export type UserSummary = { id: number; name: string };
+
+export type AdvisorSummary = { id: number; name: string; email: string };
 
 export type StudentSummary = {
   id: number;
