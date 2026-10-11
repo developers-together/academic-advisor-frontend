@@ -34,9 +34,7 @@ export const NotificationBell = ({ forRole }: NotificationBellProps) => {
             className="relative flex size-11 items-center justify-center rounded-md hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
           >
             <Bell
-              className={
-                unreadCount > 0 ? 'stroke-2.5 size-5 fill-current/15' : 'size-5'
-              }
+              className={unreadCount > 0 ? 'size-5 fill-current/15' : 'size-5'}
               aria-hidden
             />
             {unreadCount > 0 && (

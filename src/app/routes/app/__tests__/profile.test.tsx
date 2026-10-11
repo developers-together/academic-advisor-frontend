@@ -321,9 +321,7 @@ test('renders the level map chrome, states, and availability in Arabic', async (
       'مقررات أخرى',
     ]);
     expect(within(map).getByText('مستواك الحالي')).toBeInTheDocument();
-    expect(
-      within(map).getAllByText('محاولة سابقة').length,
-    ).toBeGreaterThan(0);
+    expect(within(map).getAllByText('محاولة سابقة').length).toBeGreaterThan(0);
     expect(
       within(map).getByText('Not offered in the spring term.'),
     ).toBeInTheDocument();

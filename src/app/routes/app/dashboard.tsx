@@ -33,7 +33,6 @@ export default function DashboardRoute() {
   return (
     <ContentLayout
       title={t('dashboard.title')}
-      className="student-home"
       context={t('redesign.welcome', { name: user.data?.name ?? '' })}
     >
       {!user.data?.advisor_id && (

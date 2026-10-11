@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormEvent, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
@@ -72,7 +72,7 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
     defaultValues: EMPTY_VALUES,
   });
 
-  const role = form.watch('role');
+  const role = useWatch({ control: form.control, name: 'role' });
 
   const close = () => {
     setCreated(null);

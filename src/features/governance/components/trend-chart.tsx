@@ -54,7 +54,7 @@ export const TrendChart = ({
         <p className="text-sm font-semibold">{title}</p>
         <p className="text-xs text-muted-foreground">{question}</p>
       </figcaption>
-      <div className="mt-3 h-64 min-w-0 w-full">
+      <div className="mt-3 h-64 w-full min-w-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={rows}

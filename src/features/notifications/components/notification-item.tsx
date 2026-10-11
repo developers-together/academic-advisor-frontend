@@ -69,7 +69,7 @@ export const NotificationItem = ({
           )}
         >
           <Icon
-            className={cn('size-5', isUnread && 'stroke-2.5 fill-current/15')}
+            className={cn('size-5', isUnread && 'fill-current/15')}
             aria-hidden
           />
         </span>

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CircleX, TriangleAlert } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
@@ -99,7 +99,7 @@ export const ReviewDrawer = ({
     mode: 'onBlur',
     defaultValues: { reason: '' },
   });
-  const reason = form.watch('reason');
+  const reason = useWatch({ control: form.control, name: 'reason' });
   const hasDraft = reason.trim().length > 0;
 
   const [approveConfirmOpen, setApproveConfirmOpen] = useState(false);

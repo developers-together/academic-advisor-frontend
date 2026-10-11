@@ -68,7 +68,10 @@ export const MeetingsDocument = () => {
   const [declineId, setDeclineId] = useState<number | null>(null);
   const [cancelId, setCancelId] = useState<number | null>(null);
 
-  const requests = requestsQuery.data ?? [];
+  const requests = useMemo(
+    () => requestsQuery.data ?? [],
+    [requestsQuery.data],
+  );
   const counts = useMemo(
     () => ({
       attention: requests.filter((meeting) =>

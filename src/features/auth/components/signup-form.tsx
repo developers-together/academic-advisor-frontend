@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { z } from 'zod';
@@ -75,7 +75,10 @@ export const SignupForm = ({ onRegistered }: SignupFormProps) => {
     });
   });
 
-  const languagePreference = form.watch('language_preference');
+  const languagePreference = useWatch({
+    control: form.control,
+    name: 'language_preference',
+  });
 
   return (
     <form
