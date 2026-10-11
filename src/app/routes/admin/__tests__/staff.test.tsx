@@ -542,3 +542,50 @@ test('a failed staff edit explains in a toast and keeps the dialog open', async 
   ).toBeInTheDocument();
   expect(screen.getByText('Edit staff account')).toBeInTheDocument();
 });
+
+test('a failed password reset keeps the confirm open with the server error', async () => {
+  const admin = await seedDirectory();
+
+  server.use(
+    http.post(`${env.API_URL}/admin/staff/:staffId/password-reset`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderStaffTab({
+    user: admin,
+  });
+  await screen.findByText('Mona Admin');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add staff' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add staff' });
+  await userEvent.type(within(dialog).getByLabelText('Name'), 'Nadia Sherif');
+  await userEvent.type(
+    within(dialog).getByLabelText('Email'),
+    'nadia.sherif@ejust.edu.eg',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Initial password'),
+    'initial-secret-9',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create staff account' }),
+  );
+
+  await within(dialog).findByText(/Staff account created\./);
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Send reset link' }),
+  );
+  const confirm = await screen.findByRole('dialog', {
+    name: 'Send a password reset?',
+  });
+  await userEvent.click(
+    within(confirm).getByRole('button', { name: 'Send reset link' }),
+  );
+
+  const alert = await within(confirm).findByRole('alert');
+  expect(alert).toHaveTextContent('The server encountered an error.');
+});

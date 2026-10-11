@@ -701,3 +701,44 @@ test('scheduling an assignment refreshes the students directory', async () => {
     expect(directoryReads).toBeGreaterThan(readsBeforeScheduling),
   );
 });
+
+test('an assign failure beyond validation surfaces a toast and keeps the dialog open', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  await createUser({
+    name: 'Amr Two',
+    email: 'amr.two@ejust.edu.eg',
+    role: 'advisor',
+  });
+
+  server.use(
+    http.post(`${env.API_URL}/admin/assignments`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminAssignmentsRoute />, {
+    user: admin,
+    path: '/admin/assignments',
+    url: '/admin/assignments',
+  });
+
+  const dialog = await openAssignDialog();
+  await fillAssignForm(dialog, '3021234', 'amr.two@ejust.edu.eg');
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  expect(
+    within(dialog).getByRole('button', { name: 'Assign advisor' }),
+  ).toBeInTheDocument();
+});

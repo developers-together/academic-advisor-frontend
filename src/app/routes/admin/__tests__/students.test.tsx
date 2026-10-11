@@ -992,3 +992,103 @@ test('a suspend failure without a message still explains in the confirm', async 
       ?.suspended_at,
   ).toBeNull();
 });
+
+test('an account edit failure beyond validation surfaces a toast and keeps the dialog open', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  await createUser({ name: 'Lina Majors', role: 'student' });
+
+  server.use(
+    http.patch(`${env.API_URL}/admin/students/:studentId`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+
+  const panel = await openPanel('Lina Majors');
+  await userEvent.click(
+    within(panel).getByRole('button', { name: 'Edit account' }),
+  );
+  const dialog = await screen.findByRole('dialog', { name: 'Edit account' });
+  await within(dialog).findByLabelText('Display name');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  expect(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  ).toBeInTheDocument();
+});
+
+test('a student create 422 without mappable fields surfaces a toast', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  await createUser({ name: 'Lina Majors', role: 'student' });
+
+  server.use(
+    http.post(`${env.API_URL}/admin/students`, () =>
+      HttpResponse.json(
+        {
+          message: 'The given data was invalid.',
+          errors: { unknown_field: ['No rule matches this key.'] },
+        },
+        { status: 422 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users',
+  });
+  await screen.findByText('Lina Majors');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Add student' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Add student' });
+  await userEvent.type(
+    within(dialog).getByLabelText('SIS student ID'),
+    '3020801',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Display name'),
+    'Laila Hassan',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Temporary password'),
+    'temp12345',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create account' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  expect(
+    within(dialog).getByRole('button', { name: 'Create account' }),
+  ).toBeInTheDocument();
+});

@@ -105,13 +105,21 @@ export const EditAccountDialog = ({
           onClose();
         },
         onError: (error) => {
+          let mapped = false;
           if (error instanceof ApiError && error.status === 422) {
             for (const [key, messages] of Object.entries(error.fields)) {
               const field = FIELD_KEYS[key];
               if (field && messages[0]) {
                 form.setError(field, { message: messages[0] });
+                mapped = true;
               }
             }
+          }
+          if (!mapped) {
+            addNotification({
+              type: 'error',
+              title: t('common:errors.saveFailed'),
+            });
           }
         },
       },

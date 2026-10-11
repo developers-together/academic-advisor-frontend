@@ -1,6 +1,7 @@
 import { HttpResponse, http } from 'msw';
 
 import AdminRulesRoute from '@/app/routes/admin/rules';
+import { useNotifications } from '@/components/ui/notifications';
 import { env } from '@/config/env';
 import { i18n } from '@/lib/i18n/i18n-instance';
 import { db } from '@/testing/mocks/db';
@@ -423,4 +424,66 @@ test('a failed rule deletion keeps the confirm open with the server error', asyn
     }),
   ).not.toBeNull();
   expect(screen.getByText('Edit rule')).toBeInTheDocument();
+});
+
+test('a failed rule create surfaces a toast and keeps the editor open', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+
+  server.use(
+    http.post(`${env.API_URL}/admin/rules`, () =>
+      HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      ),
+    ),
+  );
+
+  await renderApp(<AdminRulesRoute />, {
+    user: admin,
+    path: '/admin/rules',
+    url: '/admin/rules',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'New rule' }),
+  );
+  const dialog = await screen.findByRole('dialog', { name: 'New rule' });
+  await userEvent.type(
+    within(dialog).getByLabelText('Title (English)'),
+    'Prerequisite rule',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Title (Arabic)'),
+    'قاعدة المتطلبات',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Body (English)'),
+    'A course needs its prerequisites.',
+  );
+  await userEvent.type(
+    within(dialog).getByLabelText('Body (Arabic)'),
+    'تحتاج المادة إلى متطلباتها.',
+  );
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save rule' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      useNotifications
+        .getState()
+        .notifications.some(
+          (toast) =>
+            toast.type === 'error' && toast.title === 'We could not save that.',
+        ),
+    ).toBe(true),
+  );
+  expect(
+    within(dialog).getByRole('button', { name: 'Save rule' }),
+  ).toBeInTheDocument();
+  expect(
+    db.rule.findFirst({
+      where: { title_en: { equals: 'Prerequisite rule' } },
+    }),
+  ).toBeNull();
 });

@@ -112,6 +112,10 @@ export const AddStudentDialog = ({ open, onClose }: AddStudentDialogProps) => {
         },
         onError: (error) => {
           if (!(error instanceof ApiError)) {
+            addNotification({
+              type: 'error',
+              title: t('common:errors.saveFailed'),
+            });
             return;
           }
           if (error.status === 503) {
@@ -126,13 +130,26 @@ export const AddStudentDialog = ({ open, onClose }: AddStudentDialogProps) => {
             return;
           }
           if (error.status === 422) {
+            let mapped = false;
             for (const [key, messages] of Object.entries(error.fields)) {
               const field = FIELD_KEYS[key];
               if (field && messages[0]) {
                 form.setError(field, { message: messages[0] });
+                mapped = true;
               }
             }
+            if (!mapped) {
+              addNotification({
+                type: 'error',
+                title: t('common:errors.saveFailed'),
+              });
+            }
+            return;
           }
+          addNotification({
+            type: 'error',
+            title: t('common:errors.saveFailed'),
+          });
         },
       },
     );

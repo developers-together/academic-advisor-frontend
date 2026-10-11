@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input, Select } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
-import { ApiError } from '@/lib/api-error';
+import { ApiError, readableApiError } from '@/lib/api-error';
 import type { User } from '@/types/domain';
 
 import { useCreateStaff } from '../api/create-staff';
@@ -62,6 +62,7 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
 
   const [created, setCreated] = useState<User | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
 
   const form = useForm<StaffValues>({
     resolver: zodResolver(staffSchema),
@@ -142,7 +143,10 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setConfirmReset(true)}
+                  onClick={() => {
+                    setResetError(null);
+                    setConfirmReset(true);
+                  }}
                   isLoading={sendReset.isPending}
                 >
                   {t('staff.create.resetLink')}
@@ -244,6 +248,7 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
             })}
             confirmLabel={t('staff.create.resetConfirm')}
             pending={sendReset.isPending}
+            error={resetError}
             onCancel={() => setConfirmReset(false)}
             onConfirm={() => {
               sendReset.mutate(created.id, {
@@ -254,6 +259,10 @@ export const AddStaffDialog = ({ open, onClose }: AddStaffDialogProps) => {
                     title: t('staff.create.resetSent'),
                   });
                 },
+                onError: (error) =>
+                  setResetError(
+                    readableApiError(error, t('common:errors.saveFailed')),
+                  ),
               });
             }}
           />

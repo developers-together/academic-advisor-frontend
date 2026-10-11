@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input, Select, Textarea } from '@/components/ui/form';
+import { useNotifications } from '@/components/ui/notifications';
 import { ApiError, readableApiError } from '@/lib/api-error';
 import type { UniversityRule, UniversityRuleInput } from '@/types/domain';
 
@@ -48,6 +49,7 @@ export type RuleEditorDialogProps = {
 
 export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
   const { t } = useTranslation('admin');
+  const addNotification = useNotifications((state) => state.addNotification);
   const createRule = useCreateRule();
   const updateRule = useUpdateRule();
   const removeRule = useDeleteRule();
@@ -91,14 +93,18 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
   }, [rule, form]);
 
   const mergeServerErrors = (error: unknown) => {
-    if (error instanceof ApiError && error.status === 422) {
-      for (const [key, messages] of Object.entries(error.fields)) {
-        const field = FIELD_KEYS[key];
-        if (field && messages[0]) {
-          form.setError(field, { message: messages[0] });
-        }
+    if (!(error instanceof ApiError) || error.status !== 422) {
+      return false;
+    }
+    let mapped = false;
+    for (const [key, messages] of Object.entries(error.fields)) {
+      const field = FIELD_KEYS[key];
+      if (field && messages[0]) {
+        form.setError(field, { message: messages[0] });
+        mapped = true;
       }
     }
+    return mapped;
   };
 
   const submit = form.handleSubmit((values) => {
@@ -106,18 +112,26 @@ export const RuleEditorDialog = ({ rule, onClose }: RuleEditorDialogProps) => {
       ...values,
       faculty: values.faculty || null,
     };
+    const onError = (error: unknown) => {
+      if (!mergeServerErrors(error)) {
+        addNotification({
+          type: 'error',
+          title: t('common:errors.saveFailed'),
+        });
+      }
+    };
     if (rule) {
       updateRule.mutate(
         { ruleId: rule.id, input },
         {
           onSuccess: onClose,
-          onError: mergeServerErrors,
+          onError,
         },
       );
     } else {
       createRule.mutate(input, {
         onSuccess: onClose,
-        onError: mergeServerErrors,
+        onError,
       });
     }
   });
