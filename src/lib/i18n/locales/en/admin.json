@@ -479,7 +479,7 @@
       "credit-allowances": "Credit allowances",
       "credit-allowancesHint": "Per-faculty minimum and maximum credit hours by CGPA band (below 2.0, regular, above 3.7).",
       "curricula": "Curricula",
-      "curriculaHint": "The course map source: programs, levels, and required courses.",
+      "curriculaHint": "The course map source: faculties, schools, departments, and required courses.",
       "fileLabel": "CSV or XLSX up to 2 MB.",
       "upload": "Import file",
       "confirmTitle": "Import this file?",
