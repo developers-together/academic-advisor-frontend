@@ -24,9 +24,12 @@ export type TrendChartProps = {
   className?: string;
 };
 
+// The chart-N palettes live in :root/.dark; reference them directly because
+// the --color-chart-* theme aliases are tree-shaken when no chart utility
+// class is used, which left every line stroke resolving to `none`.
 const SERIES_COLORS = Array.from(
   { length: 6 },
-  (_, index) => `var(--color-chart-${index + 1})`,
+  (_, index) => `hsl(var(--chart-${index + 1}))`,
 );
 
 export const TrendChart = ({
@@ -88,6 +91,7 @@ export const TrendChart = ({
                 stroke={SERIES_COLORS[index % SERIES_COLORS.length]}
                 strokeWidth={2}
                 dot={false}
+                isAnimationActive={false}
               />
             ))}
           </LineChart>
