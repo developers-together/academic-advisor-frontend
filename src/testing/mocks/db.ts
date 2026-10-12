@@ -86,6 +86,7 @@ const models = {
     title_ar: nullableString,
     credits: Number,
     level: nullableNumber,
+    prerequisite_course_codes: () => [] as string[],
   },
   registrationWindow: {
     id: primaryKey(() => nextId()),

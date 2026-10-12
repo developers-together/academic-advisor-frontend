@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormEvent } from 'react';
-import { useForm } from 'react-hook-form';
+import { X } from 'lucide-react';
+import { FormEvent, useMemo } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +25,7 @@ import {
   useUpdateCourse,
   type CourseInput,
 } from '../api/course-mutations';
+import { useAdminCourses } from '../api/get-admin-courses';
 
 export type CourseEditorDialogProps = {
   course: AdminCourse | null;
@@ -35,16 +38,18 @@ type CourseValues = {
   title_ar: string;
   credits: string;
   level: string;
+  prerequisites: string[];
 };
 
 export const CourseEditorDialog = ({
   course,
   onClose,
 }: CourseEditorDialogProps) => {
-  const { t } = useTranslation('admin');
+  const { t, i18n } = useTranslation('admin');
   const addNotification = useNotifications((state) => state.addNotification);
   const createCourse = useCreateCourse();
   const updateCourse = useUpdateCourse();
+  const coursesQuery = useAdminCourses();
 
   const codeLocked = course !== null;
 
@@ -74,6 +79,7 @@ export const CourseEditorDialog = ({
             Number(value) <= 8),
         t('courses.editor.errors.levelRange'),
       ),
+    prerequisites: z.array(z.string()),
   });
 
   const form = useForm<CourseValues>({
@@ -88,8 +94,45 @@ export const CourseEditorDialog = ({
         course?.level === null || course?.level === undefined
           ? ''
           : String(course.level),
+      prerequisites: course?.prerequisite_course_codes ?? [],
     },
   });
+
+  const prerequisites = useWatch({
+    control: form.control,
+    name: 'prerequisites',
+  });
+
+  const courseOptions = useMemo(() => {
+    const localizeTitle = (option: AdminCourse) =>
+      i18n.language.startsWith('ar')
+        ? (option.title_ar ?? option.title_en)
+        : option.title_en;
+    return (coursesQuery.data ?? [])
+      .filter(
+        (option) =>
+          option.code !== course?.code && !prerequisites.includes(option.code),
+      )
+      .map((option) => ({
+        value: option.code,
+        label: `${option.code} ${localizeTitle(option)}`,
+      }));
+  }, [coursesQuery.data, course?.code, prerequisites, i18n.language]);
+
+  const addPrerequisite = (code: string) => {
+    if (prerequisites.includes(code)) return;
+    form.setValue('prerequisites', [...prerequisites, code], {
+      shouldDirty: true,
+    });
+  };
+
+  const removePrerequisite = (code: string) => {
+    form.setValue(
+      'prerequisites',
+      prerequisites.filter((value) => value !== code),
+      { shouldDirty: true },
+    );
+  };
 
   const pending = createCourse.isPending || updateCourse.isPending;
 
@@ -100,6 +143,7 @@ export const CourseEditorDialog = ({
       title_ar: values.title_ar.trim() || null,
       credits: Number(values.credits),
       level: values.level.trim() === '' ? null : Number(values.level),
+      prerequisite_course_codes: values.prerequisites,
     };
     const onError = (error: unknown) => {
       if (error instanceof ApiError && error.status === 409) {
@@ -120,6 +164,7 @@ export const CourseEditorDialog = ({
             title_ar: input.title_ar,
             credits: input.credits,
             level: input.level,
+            prerequisite_course_codes: input.prerequisite_course_codes,
           },
         },
         {
@@ -197,6 +242,48 @@ export const CourseEditorDialog = ({
               registration={form.register('level')}
               className="tabular-nums"
             />
+          </div>
+
+          <div>
+            <span className="text-sm leading-none font-medium">
+              {t('courses.editor.prerequisites')}
+            </span>
+            {prerequisites.length > 0 && (
+              <ul className="mt-2 flex flex-wrap gap-1.5">
+                {prerequisites.map((code) => (
+                  <li
+                    key={code}
+                    className="flex items-center gap-1 rounded-full border border-border bg-muted py-0.5 ps-2.5 pe-0.5 text-xs font-medium"
+                  >
+                    <span className="tabular-nums">{code}</span>
+                    <button
+                      type="button"
+                      onClick={() => removePrerequisite(code)}
+                      aria-label={t('courses.editor.removePrerequisite', {
+                        code,
+                      })}
+                      className="flex size-5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
+                    >
+                      <X className="size-3.5" aria-hidden />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="mt-1.5">
+              <Combobox
+                options={courseOptions}
+                placeholder={t('courses.editor.prerequisitePlaceholder')}
+                ariaLabel={t('courses.editor.addPrerequisite')}
+                emptyMessage={(query) =>
+                  query.trim() === ''
+                    ? t('courses.editor.prerequisiteAllSelected')
+                    : t('courses.editor.prerequisiteEmpty', { query })
+                }
+                keepOpenOnSelect
+                onSelect={addPrerequisite}
+              />
+            </div>
           </div>
 
           <DialogFooter>

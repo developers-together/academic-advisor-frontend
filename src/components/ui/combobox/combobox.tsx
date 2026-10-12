@@ -17,6 +17,7 @@ export type ComboboxProps = {
   emptyMessage: (query: string) => string;
   onSelect: (value: string) => void;
   disabled?: boolean;
+  keepOpenOnSelect?: boolean;
   className?: string;
 };
 
@@ -87,6 +88,7 @@ export const Combobox = ({
   emptyMessage,
   onSelect,
   disabled = false,
+  keepOpenOnSelect = false,
   className,
 }: ComboboxProps) => {
   const [open, setOpen] = React.useState(false);
@@ -107,7 +109,9 @@ export const Combobox = ({
   const clampedIndex = Math.min(activeIndex, Math.max(filtered.length - 1, 0));
 
   const selectOption = (option: ComboboxOption) => {
-    setOpen(false);
+    if (!keepOpenOnSelect) {
+      setOpen(false);
+    }
     setQuery('');
     setActiveIndex(0);
     onSelect(option.value);
@@ -179,7 +183,7 @@ export const Combobox = ({
             align="start"
             sideOffset={4}
             onOpenAutoFocus={(event) => event.preventDefault()}
-            className="z-30 max-h-72 w-(--radix-popover-trigger-width) min-w-64 overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-sm"
+            className="z-50 max-h-72 w-(--radix-popover-trigger-width) min-w-64 overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-sm"
             onMouseDown={(event) => event.preventDefault()}
           >
             <ComboboxListbox

@@ -42,6 +42,136 @@ test('creating a course adds it to the table with its credits', async () => {
   expect(await screen.findByText('Machine Learning')).toBeInTheDocument();
 });
 
+test('creating a course with prerequisites stores and shows them', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  db.course.create({
+    id: 1,
+    code: 'MATH 101',
+    title_en: 'Calculus I',
+    title_ar: null,
+    credits: 3,
+    level: 1,
+  });
+
+  await renderApp(<AdminCoursesRoute />, {
+    user: admin,
+    path: '/admin/courses',
+    url: '/admin/courses',
+  });
+
+  const addButtons = await screen.findAllByRole('button', {
+    name: 'Add course',
+  });
+  await userEvent.click(addButtons[0]);
+
+  const dialog = await screen.findByRole('dialog', { name: 'Add a course' });
+  await userEvent.type(within(dialog).getByLabelText('Course code'), 'CS 402');
+  await userEvent.type(
+    within(dialog).getByLabelText('Title'),
+    'Machine Learning',
+  );
+
+  await userEvent.type(
+    within(dialog).getByRole('combobox', { name: 'Add prerequisite' }),
+    'MATH',
+  );
+  await userEvent.click(
+    screen.getByRole('option', { name: 'MATH 101 Calculus I' }),
+  );
+  expect(
+    within(dialog).getByRole('button', { name: 'Remove MATH 101' }),
+  ).toBeInTheDocument();
+
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Create course' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.course.findFirst({ where: { code: { equals: 'CS 402' } } })
+        ?.prerequisite_course_codes,
+    ).toEqual(['MATH 101']),
+  );
+  const row = await screen
+    .findByText('Machine Learning')
+    .then((title) => title.closest('tr'));
+  expect(row).toHaveTextContent('MATH 101');
+});
+
+test('editing prerequisites adds and removes them', async () => {
+  const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+  db.course.create({
+    id: 1,
+    code: 'MATH 101',
+    title_en: 'Calculus I',
+    title_ar: null,
+    credits: 3,
+    level: 1,
+  });
+  db.course.create({
+    id: 2,
+    code: 'ACC 111',
+    title_en: 'Accounting Principles',
+    title_ar: null,
+    credits: 3,
+    level: 1,
+  });
+  db.course.create({
+    id: 3,
+    code: 'CS 201',
+    title_en: 'Data Structures',
+    title_ar: null,
+    credits: 3,
+    level: 2,
+    prerequisite_course_codes: ['MATH 101'],
+  });
+
+  await renderApp(<AdminCoursesRoute />, {
+    user: admin,
+    path: '/admin/courses',
+    url: '/admin/courses',
+  });
+
+  const row = await screen
+    .findByText('Data Structures')
+    .then((title) => title.closest('tr') as HTMLTableRowElement);
+  await userEvent.click(within(row).getByRole('button', { name: 'Edit' }));
+
+  const dialog = await screen.findByRole('dialog', { name: 'Edit CS 201' });
+  expect(
+    within(dialog).getByRole('button', { name: 'Remove MATH 101' }),
+  ).toBeInTheDocument();
+
+  await userEvent.type(
+    within(dialog).getByRole('combobox', { name: 'Add prerequisite' }),
+    'ACC',
+  );
+  await userEvent.click(
+    screen.getByRole('option', { name: 'ACC 111 Accounting Principles' }),
+  );
+  expect(
+    within(dialog).getByRole('button', { name: 'Remove ACC 111' }),
+  ).toBeInTheDocument();
+
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Remove MATH 101' }),
+  );
+  expect(
+    within(dialog).queryByRole('button', { name: 'Remove MATH 101' }),
+  ).not.toBeInTheDocument();
+
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.course.findFirst({ where: { code: { equals: 'CS 201' } } })
+        ?.prerequisite_course_codes,
+    ).toEqual(['ACC 111']),
+  );
+});
+
 test('editing credits updates the row', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
   db.course.create({

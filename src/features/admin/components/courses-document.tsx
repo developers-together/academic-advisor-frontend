@@ -95,6 +95,7 @@ export const CoursesDocument = () => {
               <TableHead className="text-end">
                 {t('courses.columns.level')}
               </TableHead>
+              <TableHead>{t('courses.columns.prerequisites')}</TableHead>
               <TableHead className="text-end">
                 {t('courses.columns.actions')}
               </TableHead>
@@ -116,6 +117,11 @@ export const CoursesDocument = () => {
                 </TableCell>
                 <TableCell className="px-3 py-2 text-end text-sm tabular-nums">
                   {course.level ?? '—'}
+                </TableCell>
+                <TableCell className="px-3 py-2 text-sm text-muted-foreground">
+                  {course.prerequisite_course_codes.length > 0
+                    ? course.prerequisite_course_codes.join(', ')
+                    : '—'}
                 </TableCell>
                 <TableCell className="px-3 py-2">
                   <div className="flex justify-end gap-1">

@@ -1064,6 +1064,11 @@ export const adminHandlers = [
         body.level === null || body.level === undefined
           ? null
           : Number(body.level),
+      prerequisite_course_codes: Array.isArray(body.prerequisite_course_codes)
+        ? body.prerequisite_course_codes.filter(
+            (value) => typeof value === 'string',
+          )
+        : [],
     });
     return HttpResponse.json({ data: created }, { status: 201 });
   }),
@@ -1103,6 +1108,14 @@ export const adminHandlers = [
             : {}),
           ...(body.level !== undefined
             ? { level: body.level === null ? null : Number(body.level) }
+            : {}),
+          ...(Array.isArray(body.prerequisite_course_codes)
+            ? {
+                prerequisite_course_codes:
+                  body.prerequisite_course_codes.filter(
+                    (value) => typeof value === 'string',
+                  ),
+              }
             : {}),
         },
       });

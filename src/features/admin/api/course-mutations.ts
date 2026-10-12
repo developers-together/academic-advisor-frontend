@@ -10,6 +10,7 @@ export type CourseInput = {
   title_ar: string | null;
   credits: number;
   level: number | null;
+  prerequisite_course_codes: string[];
 };
 
 export const useCreateCourse = () => {

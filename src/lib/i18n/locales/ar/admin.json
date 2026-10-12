@@ -373,6 +373,7 @@
       "title": "العنوان",
       "credits": "الساعات",
       "level": "المستوى",
+      "prerequisites": "المتطلبات السابقة",
       "actions": "إجراءات"
     },
     "empty": {
@@ -387,6 +388,12 @@
       "title": "العنوان",
       "credits": "الساعات",
       "level": "المستوى",
+      "prerequisites": "المتطلبات السابقة",
+      "addPrerequisite": "إضافة متطلب سابق",
+      "prerequisitePlaceholder": "ابحث عن مقرر لإضافته…",
+      "prerequisiteEmpty": "لا مقررات تطابق \"{{query}}\".",
+      "prerequisiteAllSelected": "جميع المقررات الأخرى متطلبات بالفعل.",
+      "removePrerequisite": "إزالة {{code}}",
       "saveCreate": "إنشاء المقرر",
       "saveEdit": "حفظ التغييرات",
       "errors": {

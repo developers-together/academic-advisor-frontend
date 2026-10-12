@@ -373,6 +373,7 @@
       "title": "Title",
       "credits": "Credits",
       "level": "Level",
+      "prerequisites": "Prerequisites",
       "actions": "Actions"
     },
     "empty": {
@@ -387,6 +388,12 @@
       "title": "Title",
       "credits": "Credits",
       "level": "Level",
+      "prerequisites": "Prerequisites",
+      "addPrerequisite": "Add prerequisite",
+      "prerequisitePlaceholder": "Search courses to add…",
+      "prerequisiteEmpty": "No courses match \"{{query}}\".",
+      "prerequisiteAllSelected": "Every other course is already a prerequisite.",
+      "removePrerequisite": "Remove {{code}}",
       "saveCreate": "Create course",
       "saveEdit": "Save changes",
       "errors": {
