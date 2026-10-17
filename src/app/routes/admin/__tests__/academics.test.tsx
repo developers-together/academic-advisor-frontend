@@ -149,7 +149,7 @@ test('an import reports the counts and lists the rejected rows with a cap', asyn
     type: 'text/csv',
   });
   await userEvent.upload(
-    within(card).getByLabelText('CSV or XLSX up to 2 MB.'),
+    within(card).getByLabelText('CSV, TXT, or XLSX up to 4 MB.'),
     file,
   );
   await userEvent.click(
@@ -188,7 +188,7 @@ test('a clean import shows counts with no rejected-row table', async () => {
     type: 'text/csv',
   });
   await userEvent.upload(
-    within(card).getByLabelText('CSV or XLSX up to 2 MB.'),
+    within(card).getByLabelText('CSV, TXT, or XLSX up to 4 MB.'),
     file,
   );
   await userEvent.click(
@@ -240,7 +240,7 @@ test('the rejected-rows report names the real sheet and spreadsheet row', async 
     type: 'text/csv',
   });
   await userEvent.upload(
-    within(card).getByLabelText('CSV or XLSX up to 2 MB.'),
+    within(card).getByLabelText('CSV, TXT, or XLSX up to 4 MB.'),
     file,
   );
   await userEvent.click(

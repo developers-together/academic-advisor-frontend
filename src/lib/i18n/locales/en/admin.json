@@ -477,7 +477,7 @@
     },
     "imports": {
       "title": "Registrar imports",
-      "context": "Upload one file per dataset. Blank rows are skipped and one bad row never fails the file.",
+      "context": "Upload one file per dataset. A valid file replaces that dataset. If validation finds any error, nothing changes.",
       "order": "Import in this order:",
       "statistics": "Statistics",
       "statisticsHint": "Grade history per course and academic year: mean and mode grades.",
@@ -487,18 +487,20 @@
       "credit-allowancesHint": "Per-faculty minimum and maximum credit hours by CGPA band (below 2.0, regular, above 3.7).",
       "curricula": "Curricula",
       "curriculaHint": "The course map source: faculties, schools, departments, and required courses.",
-      "fileLabel": "CSV or XLSX up to 2 MB.",
+      "fileLabel": "CSV, TXT, or XLSX up to 4 MB.",
       "upload": "Import file",
       "confirmTitle": "Import this file?",
-      "confirmBody": "Rows already in the system are skipped. The report lists every rejected row.",
+      "confirmBody": "A valid file replaces this dataset. If validation finds any error, the import is rejected and the current dataset stays unchanged.",
       "summary": "Imported {{imported}}. Skipped {{skipped}}. Rejected {{errors}}.",
       "reportTitle": "Rejected rows",
       "reportLocation": "{{sheet}}, row {{row}}",
       "reportMore": "{{count}} more rows not shown.",
+      "validationErrorTitle": "Import not applied",
+      "validationErrorContext": "Nothing changed. Fix every listed error and try again.",
       "success": "{{dataset}} import finished.",
       "errors": {
-        "fileType": "Choose a CSV or XLSX file.",
-        "fileSize": "Files are limited to 2048 KB.",
+        "fileType": "Choose a CSV, TXT, or XLSX file.",
+        "fileSize": "Files are limited to 4 MB.",
         "fileRequired": "Choose a file first."
       }
     },
