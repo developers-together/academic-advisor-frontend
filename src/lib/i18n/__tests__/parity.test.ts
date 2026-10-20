@@ -45,3 +45,63 @@ describe('i18n key parity', () => {
     expect(missingInEn, `keys missing in en/${ns}.json`).toEqual([]);
   });
 });
+
+describe('Microsoft sign-in strings', () => {
+  const failureReasons = [
+    'wrong_tenant',
+    'outside_staff_domains',
+    'student_account',
+    'identity_bound_elsewhere',
+    'suspended',
+    'cancelled',
+    'expired_code',
+    'exchange_failed',
+  ];
+
+  const keys = [
+    'microsoft.title',
+    'microsoft.signIn',
+    'microsoft.divider',
+    'microsoft.processing',
+    'microsoft.backToSignIn',
+    'microsoft.genericFailure',
+    'microsoft.awaitingRole.title',
+    'microsoft.awaitingRole.body',
+    'microsoft.awaitingRole.emailLabel',
+    'microsoft.awaitingRole.signOut',
+    ...failureReasons.map((reason) => `microsoft.failures.${reason}`),
+  ];
+
+  const read = (locale: 'en' | 'ar') =>
+    JSON.parse(
+      readFileSync(join(localesDir, locale, 'auth.json'), 'utf8'),
+    ) as Record<string, unknown>;
+
+  const readKey = (dictionary: Record<string, unknown>, key: string) =>
+    key
+      .split('.')
+      .reduce<unknown>(
+        (value, part) =>
+          value && typeof value === 'object'
+            ? (value as Record<string, unknown>)[part]
+            : undefined,
+        dictionary,
+      );
+
+  it.each(keys)('%s exists in English and in Arabic', (key) => {
+    const en = readKey(read('en'), key);
+    const ar = readKey(read('ar'), key);
+
+    expect(typeof en, `en ${key}`).toBe('string');
+    expect(typeof ar, `ar ${key}`).toBe('string');
+    expect(String(en).trim().length).toBeGreaterThan(0);
+    expect(String(ar).trim().length).toBeGreaterThan(0);
+  });
+
+  it('keeps the numerals in the Arabic strings Latin', () => {
+    const ar = read('ar');
+    const body = readKey(ar, 'microsoft.awaitingRole.body');
+
+    expect(String(body)).not.toMatch(/[٠-٩]/);
+  });
+});

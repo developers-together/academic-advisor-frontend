@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { Head } from '@/components/seo';
+import { paths } from '@/config/paths';
 import { useUser } from '@/lib/auth';
 import { roleHome } from '@/lib/authorization';
 import { useLanguageStore } from '@/lib/language';
@@ -14,9 +15,14 @@ import { cn } from '@/utils/cn';
 type LayoutProps = {
   children: React.ReactNode;
   title: string;
+  redirectOnSignedIn?: boolean;
 };
 
-export const AuthLayout = ({ children, title }: LayoutProps) => {
+export const AuthLayout = ({
+  children,
+  title,
+  redirectOnSignedIn = true,
+}: LayoutProps) => {
   const { t } = useTranslation();
   const user = useUser();
   const [searchParams] = useSearchParams();
@@ -24,14 +30,16 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user.data) {
+    if (user.data && redirectOnSignedIn) {
       const safeTarget =
         redirectTo?.startsWith('/') && !redirectTo.startsWith('//')
           ? redirectTo
-          : roleHome(user.data.role);
+          : user.data.role
+            ? roleHome(user.data.role)
+            : paths.auth.awaitingRole.getHref();
       navigate(safeTarget, { replace: true });
     }
-  }, [user.data, navigate, redirectTo]);
+  }, [user.data, navigate, redirectTo, redirectOnSignedIn]);
 
   return (
     <>

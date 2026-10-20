@@ -550,6 +550,22 @@ const auth: RoleRouteDefinition[] = [
     command: false,
   },
   {
+    id: 'auth.microsoft-callback',
+    path: paths.auth.microsoftCallback.path,
+    kind: 'page',
+    role: 'auth',
+    nav: 'none',
+    command: false,
+  },
+  {
+    id: 'auth.awaiting-role',
+    path: paths.auth.awaitingRole.path,
+    kind: 'page',
+    role: 'auth',
+    nav: 'none',
+    command: false,
+  },
+  {
     id: 'not-found',
     path: '*',
     kind: 'page',

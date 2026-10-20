@@ -1,6 +1,7 @@
 export class ApiError extends Error {
   status: number;
   key: string | null;
+  reason: string | null;
   fields: Record<string, string[]>;
   requestId: string | null;
 
@@ -8,12 +9,14 @@ export class ApiError extends Error {
     status,
     message,
     key,
+    reason,
     fields,
     requestId,
   }: {
     status: number;
     message?: string;
     key?: string | null;
+    reason?: string | null;
     fields?: Record<string, string[]>;
     requestId?: string | null;
   }) {
@@ -21,6 +24,7 @@ export class ApiError extends Error {
     this.name = 'ApiError';
     this.status = status;
     this.key = key ?? null;
+    this.reason = reason ?? null;
     this.fields = fields ?? {};
     this.requestId = requestId ?? null;
   }
@@ -68,6 +72,12 @@ export const toApiError = (error: unknown): ApiError => {
       status,
       message: typeof data.message === 'string' ? data.message : undefined,
       key: typeof data.key === 'string' ? data.key : null,
+      reason:
+        typeof data.error === 'string'
+          ? data.error
+          : typeof data.reason === 'string'
+            ? data.reason
+            : null,
       fields,
       requestId: typeof requestIdHeader === 'string' ? requestIdHeader : null,
     });

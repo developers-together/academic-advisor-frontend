@@ -8,9 +8,24 @@ import { cn } from '@/utils/cn';
 
 import { useUser } from './auth';
 
-export const useRole = (): UserRole | null => {
+export type AccountStatus =
+  | { kind: 'signed-out' }
+  | { kind: 'awaiting-role'; email: string }
+  | { kind: 'signed-in'; role: UserRole; email: string };
+
+export const useAccountStatus = (): AccountStatus => {
   const user = useUser();
-  return user.data?.role ?? null;
+  const account = user.data;
+
+  if (!account) {
+    return { kind: 'signed-out' };
+  }
+
+  if (account.role === null) {
+    return { kind: 'awaiting-role', email: account.email };
+  }
+
+  return { kind: 'signed-in', role: account.role, email: account.email };
 };
 
 export const roleHome = (role: UserRole): string => {
@@ -29,7 +44,7 @@ export const roleHome = (role: UserRole): string => {
 };
 
 export type PermissionDeniedProps = {
-  audience: UserRole;
+  audience?: UserRole;
   message?: string;
   backTo?: { label: string; href: string };
   className?: string;
@@ -52,7 +67,9 @@ export const PermissionDenied = ({
     >
       <p className="text-sm text-muted-foreground">
         {message ??
-          t('permissionDenied.title', { audience: t(`roles.${audience}`) })}
+          (audience
+            ? t('permissionDenied.title', { audience: t(`roles.${audience}`) })
+            : t('errors.forbidden'))}
       </p>
       {backTo && (
         <Link
@@ -77,19 +94,19 @@ export const RoleRoute = ({
   allow: UserRole;
   children: React.ReactNode;
 }) => {
-  const current = useRole();
+  const account = useAccountStatus();
 
-  if (current === null) {
+  if (account.kind !== 'signed-in') {
     return null;
   }
 
-  if (current !== allow) {
+  if (account.role !== allow) {
     return (
       <PermissionDenied
         audience={allow}
         backTo={{
           label: 'permissionDenied.back',
-          href: roleHome(current),
+          href: roleHome(account.role),
         }}
       />
     );
@@ -103,10 +120,10 @@ export const RoleRoute = ({
  * to their role landing (App skeleton, Decision 4).
  */
 export const RoleRedirect = () => {
-  const current = useRole();
+  const account = useAccountStatus();
   const location = useLocation();
 
-  if (current === null) {
+  if (account.kind === 'signed-out') {
     return (
       <Navigate
         to={paths.auth.login.getHref(`${location.pathname}${location.search}`)}
@@ -115,5 +132,9 @@ export const RoleRedirect = () => {
     );
   }
 
-  return <Navigate to={roleHome(current)} replace />;
+  if (account.kind === 'awaiting-role') {
+    return <Navigate to={paths.auth.awaitingRole.getHref()} replace />;
+  }
+
+  return <Navigate to={roleHome(account.role)} replace />;
 };

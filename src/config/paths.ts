@@ -26,6 +26,14 @@ export const paths = {
       path: '/verify-email/:id/:hash',
       getHref: (id: string, hash: string) => `/verify-email/${id}/${hash}`,
     },
+    microsoftCallback: {
+      path: '/auth/microsoft/callback',
+      getHref: () => '/auth/microsoft/callback',
+    },
+    awaitingRole: {
+      path: '/auth/awaiting-role',
+      getHref: () => '/auth/awaiting-role',
+    },
   },
 
   app: {

@@ -27,6 +27,8 @@ const loaders: Record<string, () => Promise<{ default: unknown }>> = {
   'auth.forgot-password': () => import('./routes/auth/forgot-password'),
   'auth.verify-email': () => import('./routes/auth/verify-email'),
   'auth.reset-password': () => import('./routes/auth/reset-password'),
+  'auth.microsoft-callback': () => import('./routes/auth/microsoft-callback'),
+  'auth.awaiting-role': () => import('./routes/auth/awaiting-role'),
   'app.home': () => import('./routes/app/dashboard'),
   'app.plan': () => import('./routes/app/plan'),
   'app.builder': () => import('./routes/app/builder'),

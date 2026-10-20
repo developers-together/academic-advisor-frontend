@@ -32,6 +32,8 @@ export const sanitizeRedirectTo = (
   return value;
 };
 
+export const authenticatedUserKey = ['authenticated-user'];
+
 const getUser = async (): Promise<User> => {
   if (!tokenStorage.get()) {
     return null as unknown as User;
@@ -116,6 +118,21 @@ const registerWithEmailAndPassword = async (
   return { kind: 'pending-verification', email: data.email };
 };
 
+export const signInWithMicrosoftCode = async (
+  code: string,
+): Promise<User | null> => {
+  const response = (await api.post('/auth/microsoft/exchange', {
+    code,
+  })) as { token: string };
+  tokenStorage.set(response.token);
+  try {
+    return await getUser();
+  } catch (error) {
+    tokenStorage.clear();
+    throw error;
+  }
+};
+
 export const useRegister = () =>
   useMutation({ mutationFn: registerWithEmailAndPassword });
 
@@ -128,6 +145,7 @@ const logout = async (): Promise<void> => {
 };
 
 const authConfig = {
+  userKey: authenticatedUserKey,
   userFn: getUser,
   loginFn: loginWithEmailAndPassword,
   logoutFn: logout,
@@ -150,6 +168,10 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         replace
       />
     );
+  }
+
+  if (user.data.role === null) {
+    return <Navigate to={paths.auth.awaitingRole.getHref()} replace />;
   }
 
   return children;

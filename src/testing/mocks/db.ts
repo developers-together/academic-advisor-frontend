@@ -15,7 +15,7 @@ const models = {
     name: String,
     email: String,
     password: String,
-    role: String,
+    role: nullableString,
     language_preference: nullableString,
     student_id: nullableString,
     national_id: nullableString,

@@ -44,7 +44,7 @@ const signIn = async (user: MockUser) => {
     user.email,
   );
   await userEvent.type(screen.getByLabelText(/^password/i), user.password);
-  await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+  await userEvent.click(screen.getByRole('button', { name: /^sign in$/i }));
   if (screen.queryAllByText(/loading/i).length > 0) {
     await waitForLoadingToFinish();
   }

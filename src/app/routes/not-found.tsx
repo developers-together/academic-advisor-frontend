@@ -4,12 +4,17 @@ import { Link } from 'react-router';
 import { ContentLayout } from '@/components/layouts';
 import { Head } from '@/components/seo';
 import { paths } from '@/config/paths';
-import { roleHome, useRole } from '@/lib/authorization';
+import { roleHome, useAccountStatus } from '@/lib/authorization';
 
 export default function NotFoundRoute() {
   const { t } = useTranslation();
-  const role = useRole();
-  const backHref = role ? roleHome(role) : paths.auth.login.getHref();
+  const account = useAccountStatus();
+  const backHref =
+    account.kind === 'signed-in'
+      ? roleHome(account.role)
+      : account.kind === 'awaiting-role'
+        ? paths.auth.awaitingRole.getHref()
+        : paths.auth.login.getHref();
 
   return (
     <>
@@ -23,9 +28,11 @@ export default function NotFoundRoute() {
             to={backHref}
             className="mt-4 inline-flex h-11 items-center rounded-md px-4 text-sm font-medium text-primary-text underline-offset-4 hover:underline"
           >
-            {role
+            {account.kind === 'signed-in'
               ? t('errors.notFoundAction')
-              : t('registered.backToSignIn', { ns: 'auth' })}
+              : account.kind === 'awaiting-role'
+                ? t('microsoft.awaitingRole.title', { ns: 'auth' })
+                : t('registered.backToSignIn', { ns: 'auth' })}
           </Link>
         </div>
       </ContentLayout>

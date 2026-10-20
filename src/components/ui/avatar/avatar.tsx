@@ -21,7 +21,7 @@ export type AvatarSize = keyof typeof sizeClasses;
 
 export type AvatarProps = {
   name: string;
-  forRole?: UserRole;
+  forRole?: UserRole | null;
   size?: AvatarSize;
   className?: string;
 };
@@ -38,7 +38,7 @@ export const Avatar = ({
       className={cn(
         'flex shrink-0 items-center justify-center rounded-full font-semibold select-none',
         sizeClasses[size],
-        roleClasses[forRole],
+        roleClasses[forRole ?? 'student'],
         className,
       )}
     >

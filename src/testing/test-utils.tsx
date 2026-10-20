@@ -13,7 +13,7 @@ export type MockUser = {
   name: string;
   email: string;
   password: string;
-  role: string;
+  role: string | null;
   student_id?: string | null;
   advisor_id?: number | null;
   email_verified_at?: string | null;
@@ -36,7 +36,7 @@ export const createUser = async (
     name: user.name,
     email: user.email.toLowerCase(),
     password: hash(user.password),
-    role: user.role,
+    role: user.role ?? undefined,
     language_preference: 'en',
     student_id: user.student_id ?? `302${Math.floor(Math.random() * 1000000)}`,
     advisor_id: user.advisor_id ?? undefined,

@@ -8,7 +8,7 @@ export type User = {
   id: number;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserRole | null;
   language_preference: LanguagePreference | null;
   student_id: string | null;
   advisor_id: number | null;

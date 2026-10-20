@@ -164,6 +164,27 @@ export const authHandlers = [
     return new HttpResponse(null, { status: 204 });
   }),
 
+  http.post(`${env.API_URL}/auth/microsoft/exchange`, async ({ request }) => {
+    await networkDelay();
+    const body = (await request.json()) as { code?: string };
+    const id = Number(body.code);
+    const user = Number.isInteger(id)
+      ? db.user.findFirst({ where: { id: { equals: id } } })
+      : null;
+
+    if (!user) {
+      return HttpResponse.json(
+        {
+          message: 'The sign-in code has expired.',
+          error: 'expired_code',
+        },
+        { status: 422 },
+      );
+    }
+
+    return HttpResponse.json({ token: tokenFor(user.id) });
+  }),
+
   http.post(`${env.API_URL}/forgot-password`, async () => {
     await networkDelay();
     // The response never reveals whether the email matches an account.

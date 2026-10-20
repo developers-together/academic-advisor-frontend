@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ErrorState } from '@/components/ui/banner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ApiError } from '@/lib/api-error';
-import { PermissionDenied, useRole } from '@/lib/authorization';
+import { PermissionDenied, useAccountStatus } from '@/lib/authorization';
 
 export type AsyncSurfaceQuery = {
   isPending: boolean;
@@ -35,7 +35,7 @@ export const AsyncSurface = ({
   children,
   className,
 }: AsyncSurfaceProps) => {
-  const role = useRole();
+  const account = useAccountStatus();
 
   if (query.isPending) {
     return (
@@ -47,7 +47,14 @@ export const AsyncSurface = ({
 
   if (query.isError) {
     if (query.error instanceof ApiError && query.error.status === 403) {
-      return <PermissionDenied audience={role ?? 'student'} />;
+      if (account.kind === 'awaiting-role') {
+        return <PermissionDenied />;
+      }
+      return (
+        <PermissionDenied
+          audience={account.kind === 'signed-in' ? account.role : 'student'}
+        />
+      );
     }
     return (
       <ErrorState
