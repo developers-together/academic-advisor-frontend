@@ -630,6 +630,12 @@ Overview: faculties compared, trends over time.
 |---|---|---|
 | VP | Governance faculty nodes carry their deans. Faculty stat cards name each faculty's deans beside the statistics. The v2 rule that forbids dean identity beside faculty statistics is superseded. The bans on individual students, advisors, and caseloads stand | v2 amendments, §5, §13 |
 
+### 2026-10-20 amendment (acad-v3c)
+
+| Topic | Decision | Amends |
+|---|---|---|
+| Auth | Staff sign in with Microsoft 365 through the backend. The backend hands over a single-use code. The platform keeps the roles. | v1 "Auth" row |
+
 ---
 
 *End of contract. Design work (`../design.md`) and build work (`02-PROJECT-PLAN.md`) reference this

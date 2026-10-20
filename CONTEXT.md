@@ -32,6 +32,8 @@ React 19 app in this repository; product truth lives in `docs/product/`, design 
 | Command palette | The permission-aware ⌘K/Ctrl+K search and command surface. |
 | Stale SIS | SIS-sourced data older than its freshness expectation; always labeled with its as-of time. |
 | Account registration (sign-up) | Creating a user account inside Advisor; `@ejust.edu.eg` only; students bind by student ID. |
+| Microsoft 365 identity | The identity the university issues to each member of the university workforce. It carries the person's name and university address, and the platform accepts it only from the university. |
+| Staff account | The account the platform holds for a member of the university workforce. It carries the person's name, university address, and faculty. |
 | Course registration | Enrolling in sections. Happens in the SIS only; out of product scope. |
 
 ## Invariants
@@ -45,6 +47,7 @@ React 19 app in this repository; product truth lives in `docs/product/`, design 
   messaging.
 - VP surfaces show aggregates only and never drill below Department; faculty stat cards name each faculty's deans.
 - Dean sees only their own area; advisors and aggregates, never student profiles.
+- A staff account holds no role until an administrator assigns one.
 - Every user-facing string exists in both EN and AR dictionaries; numerals stay Latin in both locales.
 - Status is never color alone: icon + label + color everywhere.
 
