@@ -23,7 +23,8 @@
     "meeting_cancelled": "تم إلغاء الاجتماع",
     "meeting_completed": "تم الاجتماع",
     "visit_requested": "طلب زيارة",
-    "visit_slots_provided": "أوقات زيارة مقترحة"
+    "visit_slots_provided": "أوقات زيارة مقترحة",
+    "staff_registered": "حساب موظف بانتظار دور"
   },
   "all": "الكل",
   "viewAll": "عرض جميع الإشعارات",

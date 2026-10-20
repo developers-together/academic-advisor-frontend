@@ -8,7 +8,7 @@ import { applyStaffToCache, invalidateStaff } from './staff-cache';
 
 export type UpdateStaffInput = {
   name: string;
-  role: StaffRole;
+  role?: StaffRole;
   faculty?: string;
 };
 

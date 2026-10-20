@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 
 import { AsyncSurface } from '@/components/ui/async-surface';
 import { ConfirmDialog } from '@/components/ui/dialog';
@@ -7,7 +8,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/components/ui/notifications';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { readableApiError } from '@/lib/api-error';
-import type { StaffMember, StaffRole } from '@/types/domain';
+import type { StaffAccountRole, StaffMember } from '@/types/domain';
 
 import { useDeleteStaff } from '../api/delete-staff';
 import { useAdminStaff } from '../api/get-admin-staff';
@@ -16,9 +17,16 @@ import { useSendStaffPasswordReset } from '../api/send-staff-password-reset';
 import { EditStaffDialog } from './edit-staff-dialog';
 import { StaffTable } from './staff-table';
 
-type StaffFilter = 'all' | StaffRole;
+type StaffFilter = 'all' | StaffAccountRole;
 
-const FILTERS: StaffFilter[] = ['all', 'advisor', 'dean', 'vp', 'admin'];
+const FILTERS: StaffFilter[] = [
+  'all',
+  'awaiting_role',
+  'advisor',
+  'dean',
+  'vp',
+  'admin',
+];
 
 type ConfirmTarget =
   | { kind: 'delete'; staff: StaffMember }
@@ -32,7 +40,20 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
   const { t } = useTranslation('admin');
   const addNotification = useNotifications((state) => state.addNotification);
 
-  const [filter, setFilter] = useState<StaffFilter>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedRole = searchParams.get('role');
+  const filter: StaffFilter =
+    FILTERS.find((value) => value === requestedRole) ?? 'all';
+  const selectFilter = (value: StaffFilter) => {
+    const next = new URLSearchParams(searchParams);
+    if (value === 'all') {
+      next.delete('role');
+    } else {
+      next.set('role', value);
+    }
+    setSearchParams(next, { replace: true });
+  };
+
   const staffQuery = useAdminStaff(filter === 'all' ? {} : { role: filter });
 
   const [editing, setEditing] = useState<StaffMember | null>(null);
@@ -103,7 +124,7 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
     <AsyncSurface query={staffQuery}>
       <Tabs
         value={filter}
-        onValueChange={(value) => setFilter(value as StaffFilter)}
+        onValueChange={(value) => selectFilter(value as StaffFilter)}
       >
         <TabsList aria-label={t('staff.filterLabel')}>
           {FILTERS.map((key) => (

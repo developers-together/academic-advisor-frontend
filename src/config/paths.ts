@@ -1,3 +1,10 @@
+import type { StaffAccountRole } from '@/types/domain';
+
+export type AdminUsersQuery = {
+  tab?: 'students' | 'staff';
+  role?: StaffAccountRole;
+};
+
 export const paths = {
   home: {
     path: '/',
@@ -159,7 +166,17 @@ export const paths = {
     },
     users: {
       path: 'users',
-      getHref: () => '/admin/users',
+      getHref: (query?: AdminUsersQuery) => {
+        const params = new URLSearchParams();
+        if (query?.tab) {
+          params.set('tab', query.tab);
+        }
+        if (query?.role) {
+          params.set('role', query.role);
+        }
+        const search = params.toString();
+        return `/admin/users${search ? `?${search}` : ''}`;
+      },
     },
     operations: {
       path: 'operations',

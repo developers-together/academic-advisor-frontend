@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 
 import { ContentLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
@@ -9,12 +10,27 @@ import { AddStudentDialog } from '@/features/admin/components/add-student-dialog
 import { StaffDocument } from '@/features/admin/components/staff-document';
 import { StudentsDocument } from '@/features/admin/components/students-document';
 
+type UsersTab = 'students' | 'staff';
+
 export default function AdminUsersRoute() {
   const { t } = useTranslation('admin');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const tab: UsersTab =
+    searchParams.get('tab') === 'staff' ? 'staff' : 'students';
+  const selectTab = (value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (value === 'staff') {
+      next.set('tab', 'staff');
+    } else {
+      next.delete('tab');
+    }
+    setSearchParams(next, { replace: true });
+  };
 
   return (
     <ContentLayout title={t('users.title')} context={t('users.context')}>
-      <Tabs defaultValue="students">
+      <Tabs value={tab} onValueChange={selectTab}>
         <TabsList>
           <TabsTrigger value="students">{t('users.tabs.students')}</TabsTrigger>
           <TabsTrigger value="staff">{t('users.tabs.staff')}</TabsTrigger>

@@ -16,7 +16,7 @@ import {
 import { Input, Select } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
 import { ApiError } from '@/lib/api-error';
-import type { StaffMember } from '@/types/domain';
+import type { StaffMember, StaffRole } from '@/types/domain';
 
 import { useFaculties } from '../api/get-faculties';
 import { useUpdateStaff } from '../api/update-staff';
@@ -28,9 +28,11 @@ export type EditStaffDialogProps = {
 
 type EditStaffValues = {
   name: string;
-  role: 'advisor' | 'dean' | 'vp' | 'admin';
+  role: StaffRole | '';
   faculty: string;
 };
+
+const STAFF_ROLES = ['advisor', 'dean', 'vp', 'admin'] as const;
 
 const FIELD_KEYS: Record<string, keyof EditStaffValues> = {
   name: 'name',
@@ -44,6 +46,9 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
   const updateStaff = useUpdateStaff();
   const facultiesQuery = useFaculties();
 
+  const initialRole: StaffRole | '' =
+    staff.role === 'awaiting_role' ? '' : staff.role;
+
   const schema = z
     .object({
       name: z
@@ -51,7 +56,7 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
         .trim()
         .min(1, t('staff.editDialog.errors.nameRequired'))
         .max(255, t('staff.editDialog.errors.nameTooLong')),
-      role: z.enum(['advisor', 'dean', 'vp', 'admin']),
+      role: z.union([z.literal(''), z.enum(STAFF_ROLES)]),
       faculty: z.string().trim(),
     })
     .superRefine((values, ctx) => {
@@ -69,7 +74,7 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
     mode: 'onBlur',
     defaultValues: {
       name: staff.name,
-      role: staff.role,
+      role: initialRole,
       faculty: staff.faculty ?? '',
     },
   });
@@ -82,7 +87,7 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
         staffId: staff.id,
         input: {
           name: values.name.trim(),
-          role: values.role,
+          ...(values.role ? { role: values.role } : {}),
           ...(values.role === 'dean' ? { faculty: values.faculty.trim() } : {}),
         },
       },
@@ -118,9 +123,15 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
     void submit();
   };
 
-  const roleOptions = (['advisor', 'dean', 'vp', 'admin'] as const).map(
-    (value) => ({ value, label: t(`staff.roles.${value}`) }),
-  );
+  const roleOptions = [
+    ...(initialRole === ''
+      ? [{ value: '', label: t('staff.roles.awaiting_role') }]
+      : []),
+    ...STAFF_ROLES.map((value) => ({
+      value,
+      label: t(`staff.roles.${value}`),
+    })),
+  ];
 
   const facultyOptions = [
     { value: '', label: t('staff.editDialog.facultyPlaceholder') },

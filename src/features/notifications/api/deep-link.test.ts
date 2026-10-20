@@ -38,6 +38,13 @@ describe('deepLinkHref', () => {
     expect(deepLinkHref(link, 'dean')).toBe('/dean');
   });
 
+  test('routes the staff screen for an admin to the accounts awaiting a role', () => {
+    const link: DeepLink = { screen: 'staff', role: 'awaiting_role' };
+    expect(deepLinkHref(link, 'admin')).toBe(
+      '/admin/users?tab=staff&role=awaiting_role',
+    );
+  });
+
   test('falls back to the role landing for unknown, legacy, and missing links', () => {
     expect(deepLinkHref({ screen: 'dashboard' as never }, 'student')).toBe(
       '/app',

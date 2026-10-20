@@ -76,7 +76,7 @@ const staffUpdateErrors = (
   body: Record<string, unknown>,
 ): Record<string, string[]> => {
   const name = typeof body.name === 'string' ? body.name.trim() : '';
-  const role = typeof body.role === 'string' ? body.role : '';
+  const role = typeof body.role === 'string' ? body.role : undefined;
   const faculty =
     typeof body.faculty === 'string' ? body.faculty.trim() : undefined;
   const errors: Record<string, string[]> = {};
@@ -85,7 +85,7 @@ const staffUpdateErrors = (
   } else if (name.length > 255) {
     errors.name = ['Names are limited to 255 characters.'];
   }
-  if (!STAFF_ROLES.includes(role)) {
+  if (role !== undefined && !STAFF_ROLES.includes(role)) {
     errors.role = ['Choose a staff role.'];
   }
   if (role === 'dean' && !faculty) {
@@ -622,11 +622,21 @@ export const adminHandlers = [
     const url = new URL(request.url);
     const role = url.searchParams.get('role');
     const staff = db.user
-      .findMany(role ? { where: { role: { equals: role } } } : {})
+      .findMany({})
       .filter((row) => row.role !== 'student')
+      .filter((row) => {
+        if (role === 'awaiting_role') {
+          return !row.role;
+        }
+        if (role) {
+          return row.role === role;
+        }
+        return true;
+      })
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((row) => ({
         ...sanitizeUser(row),
+        role: row.role ?? 'awaiting_role',
         students_count: db.user.findMany({
           where: { advisor_id: { equals: row.id as number } },
         }).length,
@@ -903,7 +913,7 @@ export const adminHandlers = [
         where: { id: { equals: row.id as number } },
         data: {
           name: String(body.name).trim(),
-          role: String(body.role),
+          role: typeof body.role === 'string' ? body.role : row.role,
           faculty: faculty || (null as unknown as string),
         },
       });

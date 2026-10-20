@@ -247,6 +247,7 @@
     "filterLabel": "Filter staff by role",
     "filter": {
       "all": "All",
+      "awaiting_role": "Awaiting a role",
       "advisor": "Advisors",
       "dean": "Deans",
       "vp": "Vice Presidents",
@@ -266,7 +267,8 @@
       "advisor": "Advisor",
       "dean": "Dean",
       "vp": "Vice President",
-      "admin": "Administrator"
+      "admin": "Administrator",
+      "awaiting_role": "Awaiting a role"
     },
     "actions": {
       "edit": "Edit",

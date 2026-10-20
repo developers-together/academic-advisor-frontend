@@ -28,6 +28,7 @@ const renderRealRouter = async (url: string) => {
 const seedNotification = (
   userId: number,
   deepLink: Record<string, unknown> | string,
+  overrides: Partial<{ slug: string; title: string; body: string }> = {},
 ) =>
   db.notification.create({
     id: `route-${Math.random().toString(36).slice(2)}`,
@@ -37,6 +38,7 @@ const seedNotification = (
     body: 'Nour Adel joined your caseload.',
     deep_link:
       typeof deepLink === 'string' ? deepLink : JSON.stringify(deepLink),
+    ...overrides,
   });
 
 const LocationProbe = () => {
@@ -91,6 +93,44 @@ describe('notification routing', () => {
       await waitFor(() => expect(window.location.pathname).toBe(expectedPath));
     },
   );
+
+  test('opening the staff registration notification routes an admin to the staff screen filtered to the accounts awaiting a role', async () => {
+    const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
+    await createUser({
+      name: 'Karim Newly Registered',
+      email: 'karim.newly@ejust.edu.eg',
+      role: null,
+    });
+    seedNotification(
+      admin.id as number,
+      { screen: 'staff', role: 'awaiting_role' },
+      {
+        slug: 'staff_registered',
+        title: 'A staff account is waiting for a role',
+        body: 'Karim Newly Registered (karim.newly@ejust.edu.eg) registered with a Microsoft 365 account and is waiting for a role.',
+      },
+    );
+    await loginAsUser(admin);
+
+    await renderRealRouter('/admin/notifications');
+
+    await userEvent.click(
+      await screen.findByRole('button', {
+        name: /A staff account is waiting for a role/,
+      }),
+    );
+
+    await waitFor(() => expect(window.location.pathname).toBe('/admin/users'));
+    expect(window.location.search).toBe('?tab=staff&role=awaiting_role');
+    await waitFor(() =>
+      expect(
+        screen.getByRole('tab', { name: 'Awaiting a role' }),
+      ).toHaveAttribute('aria-selected', 'true'),
+    );
+    expect(
+      await screen.findByText('Karim Newly Registered'),
+    ).toBeInTheDocument();
+  });
 
   test('opening an item with a legacy link falls back to the role landing', async () => {
     const student = await createUser({ role: 'student' });

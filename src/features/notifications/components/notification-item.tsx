@@ -10,6 +10,7 @@ import {
   FileX2,
   UserMinus,
   UserPlus,
+  UserRoundCheck,
   Users,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,7 @@ const slugIcons: Record<NotificationSlug, LucideIcon> = {
   meeting_completed: CircleCheck,
   visit_requested: CalendarPlus,
   visit_slots_provided: CalendarCheck,
+  staff_registered: UserRoundCheck,
 };
 
 export type NotificationItemProps = {

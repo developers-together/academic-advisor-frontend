@@ -2,6 +2,8 @@ export type UserRole = 'student' | 'advisor' | 'dean' | 'vp' | 'admin';
 
 export type StaffRole = Exclude<UserRole, 'student'>;
 
+export type StaffAccountRole = StaffRole | 'awaiting_role';
+
 export type LanguagePreference = 'en' | 'ar';
 
 export type User = {
@@ -344,9 +346,10 @@ export type NotificationSlug =
   | 'caseload_student_removed'
   | 'caseload_student_added'
   | 'window_opened'
-  | 'window_deadline_nearing';
+  | 'window_deadline_nearing'
+  | 'staff_registered';
 
-export type DeepLinkScreen = 'plan' | 'student' | 'advisor' | 'visit';
+export type DeepLinkScreen = 'plan' | 'student' | 'advisor' | 'visit' | 'staff';
 
 export type DeepLink = {
   screen: DeepLinkScreen;
@@ -355,6 +358,7 @@ export type DeepLink = {
   student_id?: number;
   advisor_id?: number;
   term_code?: string;
+  role?: StaffAccountRole;
 };
 
 export type AppNotification = {
@@ -436,7 +440,7 @@ export type CurrentTerm = {
 };
 
 export type StaffMember = Omit<User, 'role'> & {
-  role: StaffRole;
+  role: StaffAccountRole;
   students_count: number;
 };
 

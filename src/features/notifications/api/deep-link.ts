@@ -27,6 +27,12 @@ const screenHrefs: Record<
     advisor: paths.advisor.meetings.getHref(),
     student: paths.app.advisor.getHref(),
   },
+  staff: {
+    admin: paths.admin.users.getHref({
+      tab: 'staff',
+      role: 'awaiting_role',
+    }),
+  },
 };
 
 export const deepLinkHref = (

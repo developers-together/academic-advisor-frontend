@@ -2,9 +2,9 @@ import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
 import { unwrapList } from '@/lib/api-envelope';
-import type { StaffMember, StaffRole } from '@/types/domain';
+import type { StaffAccountRole, StaffMember } from '@/types/domain';
 
-export type AdminStaffParams = { role?: StaffRole };
+export type AdminStaffParams = { role?: StaffAccountRole };
 
 export const adminStaffQueryKey = ({ role }: AdminStaffParams) =>
   ['admin', 'staff', { role }] as const;

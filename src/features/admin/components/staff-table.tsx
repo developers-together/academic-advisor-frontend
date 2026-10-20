@@ -1,3 +1,4 @@
+import { Hourglass } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
@@ -11,13 +12,32 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import type { StaffMember } from '@/types/domain';
+import type { StaffAccountRole, StaffMember } from '@/types/domain';
 
 export type StaffTableProps = {
   staff: StaffMember[];
   onEdit: (staff: StaffMember) => void;
   onResetPassword: (staff: StaffMember) => void;
   onDelete: (staff: StaffMember) => void;
+};
+
+const StaffRoleBadge = ({ role }: { role: StaffAccountRole }) => {
+  const { t } = useTranslation('admin');
+
+  if (role === 'awaiting_role') {
+    return (
+      <Badge variant="warning" size="sm">
+        <Hourglass className="size-3 shrink-0" aria-hidden />
+        {t('staff.roles.awaiting_role')}
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge variant="neutral" size="sm">
+      {t(`staff.roles.${role}`)}
+    </Badge>
+  );
 };
 
 export const StaffTable = ({
@@ -52,9 +72,7 @@ export const StaffTable = ({
                 </span>
               </button>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <Badge variant="neutral" size="sm">
-                  {t(`staff.roles.${member.role}`)}
-                </Badge>
+                <StaffRoleBadge role={member.role} />
                 <span className="text-sm text-muted-foreground">
                   {member.faculty ?? '-'}
                 </span>
@@ -142,9 +160,7 @@ export const StaffTable = ({
                     {member.email}
                   </TableCell>
                   <TableCell className="px-3 py-2">
-                    <Badge variant="neutral" size="sm">
-                      {t(`staff.roles.${member.role}`)}
-                    </Badge>
+                    <StaffRoleBadge role={member.role} />
                   </TableCell>
                   <TableCell className="px-3 py-2 text-sm text-muted-foreground">
                     {member.faculty ?? '-'}

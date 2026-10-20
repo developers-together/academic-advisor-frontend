@@ -95,6 +95,86 @@ test('the directory renders role badges, faculty, and advisor caseload, and the 
   expect(await screen.findByText('Dina Dean')).toBeInTheDocument();
 });
 
+test('the directory lists an account that holds no role and marks it as awaiting a role', async () => {
+  const admin = await seedDirectory();
+  await createUser({
+    name: 'Karim Newly Registered',
+    email: 'karim.newly@ejust.edu.eg',
+    role: null,
+  });
+
+  await renderStaffTab({
+    user: admin,
+  });
+
+  const row = rowOf('Karim Newly Registered');
+  expect(within(row).getByText('Awaiting a role')).toBeInTheDocument();
+  expect(within(row).queryByText('Advisor')).not.toBeInTheDocument();
+});
+
+test('the role filter narrows to the accounts awaiting a role and still narrows to one staff role', async () => {
+  const admin = await seedDirectory();
+  await createUser({
+    name: 'Karim Newly Registered',
+    email: 'karim.newly@ejust.edu.eg',
+    role: null,
+  });
+
+  await renderStaffTab({
+    user: admin,
+  });
+
+  await userEvent.click(screen.getByRole('tab', { name: 'Awaiting a role' }));
+
+  expect(await screen.findByText('Karim Newly Registered')).toBeInTheDocument();
+  expect(screen.queryByText('Amr Advisor')).not.toBeInTheDocument();
+  expect(screen.queryByText('Dina Dean')).not.toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole('tab', { name: 'Advisors' }));
+
+  expect(await screen.findByText('Amr Advisor')).toBeInTheDocument();
+  expect(screen.queryByText('Karim Newly Registered')).not.toBeInTheDocument();
+});
+
+test('an administrator gives a waiting account a role and the account then holds it', async () => {
+  const admin = await seedDirectory();
+  const waiting = await createUser({
+    name: 'Karim Newly Registered',
+    email: 'karim.newly@ejust.edu.eg',
+    role: null,
+  });
+
+  await renderStaffTab({
+    user: admin,
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'Edit Karim Newly Registered' }),
+  );
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Edit staff account',
+  });
+
+  const roleSelect = within(dialog).getByLabelText('Role') as HTMLSelectElement;
+  expect(roleSelect).toHaveValue('');
+  expect(within(roleSelect).getByText('Awaiting a role')).toBeInTheDocument();
+
+  await userEvent.selectOptions(roleSelect, 'advisor');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  );
+
+  await waitFor(() =>
+    expect(
+      db.user.findFirst({ where: { id: { equals: waiting.id as number } } }),
+    ).toMatchObject({ role: 'advisor' }),
+  );
+  expect(await screen.findByText('Staff account updated.')).toBeInTheDocument();
+  const row = rowOf('Karim Newly Registered');
+  expect(within(row).getByText('Advisor')).toBeInTheDocument();
+  expect(within(row).queryByText('Awaiting a role')).not.toBeInTheDocument();
+});
+
 test('an empty role filter names the missing role and the directory lists the signed-in admin', async () => {
   const admin = await createUser({ role: 'admin', name: 'Mona Admin' });
 

@@ -1,6 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 
-import type { StaffMember, StaffRole, User } from '@/types/domain';
+import type { StaffAccountRole, StaffMember, User } from '@/types/domain';
 
 const STAFF_ROOT = ['admin', 'staff'] as const;
 
@@ -9,7 +9,7 @@ const toStaffList = (rows: StaffMember[] | undefined): StaffMember[] =>
 
 const asStaffMember = (user: User, studentsCount = 0): StaffMember => ({
   ...user,
-  role: user.role as StaffRole,
+  role: (user.role ?? 'awaiting_role') as StaffAccountRole,
   students_count: studentsCount,
 });
 

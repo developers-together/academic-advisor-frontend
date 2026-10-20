@@ -105,3 +105,37 @@ describe('Microsoft sign-in strings', () => {
     expect(String(body)).not.toMatch(/[٠-٩]/);
   });
 });
+
+describe('Staff registration strings', () => {
+  const keys = [
+    ['admin', 'staff.filter.awaiting_role'],
+    ['admin', 'staff.roles.awaiting_role'],
+    ['notifications', 'slugs.staff_registered'],
+  ] as const;
+
+  const readNamespace = (locale: 'en' | 'ar', namespace: string) =>
+    JSON.parse(
+      readFileSync(join(localesDir, locale, `${namespace}.json`), 'utf8'),
+    ) as Record<string, unknown>;
+
+  const readKey = (dictionary: Record<string, unknown>, key: string) =>
+    key
+      .split('.')
+      .reduce<unknown>(
+        (value, part) =>
+          value && typeof value === 'object'
+            ? (value as Record<string, unknown>)[part]
+            : undefined,
+        dictionary,
+      );
+
+  it.each(keys)('%s.%s exists in English and in Arabic', (namespace, key) => {
+    const en = readKey(readNamespace('en', namespace), key);
+    const ar = readKey(readNamespace('ar', namespace), key);
+
+    expect(typeof en, `en ${key}`).toBe('string');
+    expect(typeof ar, `ar ${key}`).toBe('string');
+    expect(String(en).trim().length).toBeGreaterThan(0);
+    expect(String(ar).trim().length).toBeGreaterThan(0);
+  });
+});
