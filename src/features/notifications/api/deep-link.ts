@@ -10,9 +10,11 @@ export const sectionNotificationsPath: Record<UserRole, string> = {
   admin: paths.admin.notifications.getHref(),
 };
 
+type ScreenHref = string | ((link: DeepLink) => string);
+
 const screenHrefs: Record<
   DeepLink['screen'],
-  Partial<Record<UserRole, string>>
+  Partial<Record<UserRole, ScreenHref>>
 > = {
   plan: {
     student: paths.app.plan.getHref(),
@@ -28,10 +30,11 @@ const screenHrefs: Record<
     student: paths.app.advisor.getHref(),
   },
   staff: {
-    admin: paths.admin.users.getHref({
-      tab: 'staff',
-      role: 'awaiting_role',
-    }),
+    admin: (link) =>
+      paths.admin.users.getHref({
+        tab: 'staff',
+        role: link.role ?? 'awaiting_role',
+      }),
   },
 };
 
@@ -42,5 +45,9 @@ export const deepLinkHref = (
   if (!link || typeof link === 'string') {
     return roleLanding[role];
   }
-  return screenHrefs[link.screen]?.[role] ?? roleLanding[role];
+  const href = screenHrefs[link.screen]?.[role];
+  if (!href) {
+    return roleLanding[role];
+  }
+  return typeof href === 'function' ? href(link) : href;
 };

@@ -100,9 +100,14 @@ describe('Microsoft sign-in strings', () => {
 
   it('keeps the numerals in the Arabic strings Latin', () => {
     const ar = read('ar');
-    const body = readKey(ar, 'microsoft.awaitingRole.body');
+    const withNumerals = keys.filter((key) =>
+      /[0-9٠-٩]/.test(String(readKey(ar, key))),
+    );
 
-    expect(String(body)).not.toMatch(/[٠-٩]/);
+    expect(withNumerals.length).toBeGreaterThan(0);
+    for (const key of withNumerals) {
+      expect(String(readKey(ar, key)), `ar ${key}`).not.toMatch(/[٠-٩]/);
+    }
   });
 });
 

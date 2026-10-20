@@ -135,10 +135,11 @@ export const EditStaffDialog = ({ staff, onClose }: EditStaffDialogProps) => {
 
   const facultyOptions = [
     { value: '', label: t('staff.editDialog.facultyPlaceholder') },
-    ...(facultiesQuery.data ?? []).map((faculty) => ({
-      value: faculty.name,
-      label: faculty.name,
-    })),
+    ...(facultiesQuery.data ?? []).flatMap((faculty) =>
+      faculty.code === null
+        ? []
+        : [{ value: faculty.code, label: faculty.name }],
+    ),
   ];
 
   if (

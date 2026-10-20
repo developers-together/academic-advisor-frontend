@@ -6,7 +6,6 @@ import { AppRouter } from '@/app/router';
 import { env } from '@/config/env';
 import { microsoftLandingKey } from '@/features/auth/api/microsoft-sign-in';
 import { i18n } from '@/lib/i18n/i18n-instance';
-import { tokenFor } from '@/testing/mocks/mock-auth';
 import { server } from '@/testing/mocks/server';
 import { createUser, screen, waitFor } from '@/testing/test-utils';
 
@@ -22,7 +21,7 @@ afterEach(() => {
   sessionStorage.removeItem(microsoftLandingKey);
 });
 
-test('the callback exchanges the code, stores the token and lands on the intended path', async () => {
+test('the callback exchanges the code, signs the person in, and lands on the intended path', async () => {
   const advisor = await createUser({ role: 'advisor' });
   sessionStorage.setItem(microsoftLandingKey, '/advisor/students');
   let profileReads = 0;
@@ -32,15 +31,20 @@ test('the callback exchanges the code, stores the token and lands on the intende
     }
   });
 
-  renderRealRouter(`/auth/microsoft/callback?code=${advisor.id}`);
+  const { unmount } = renderRealRouter(
+    `/auth/microsoft/callback?code=${advisor.id}`,
+  );
 
   await waitFor(() =>
     expect(window.location.pathname).toBe('/advisor/students'),
   );
-  expect(localStorage.getItem('advaisor.token')).toBe(
-    tokenFor(advisor.id as number),
-  );
   expect(profileReads).toBeGreaterThan(0);
+
+  unmount();
+  renderRealRouter('/advisor/students');
+  await waitFor(() =>
+    expect(window.location.pathname).toBe('/advisor/students'),
+  );
 });
 
 test('the callback lands on the landing for the role when no path was parked', async () => {

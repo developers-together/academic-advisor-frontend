@@ -45,6 +45,24 @@ describe('deepLinkHref', () => {
     );
   });
 
+  test('routes the staff screen with the role the link carries', () => {
+    expect(deepLinkHref({ screen: 'staff', role: 'advisor' }, 'admin')).toBe(
+      '/admin/users?tab=staff&role=advisor',
+    );
+  });
+
+  test('routes the staff screen to the accounts awaiting a role when the link carries none', () => {
+    expect(deepLinkHref({ screen: 'staff' }, 'admin')).toBe(
+      '/admin/users?tab=staff&role=awaiting_role',
+    );
+  });
+
+  test('falls back to the role landing for the staff screen when the recipient is not an administrator', () => {
+    expect(
+      deepLinkHref({ screen: 'staff', role: 'awaiting_role' }, 'dean'),
+    ).toBe('/dean');
+  });
+
   test('falls back to the role landing for unknown, legacy, and missing links', () => {
     expect(deepLinkHref({ screen: 'dashboard' as never }, 'student')).toBe(
       '/app',

@@ -3,7 +3,6 @@ import { render as rtlRender } from '@testing-library/react';
 import { AppProvider } from '@/app/provider';
 import { AppRouter } from '@/app/router';
 import { env } from '@/config/env';
-import { microsoftLandingKey } from '@/features/auth/api/microsoft-sign-in';
 import { i18n } from '@/lib/i18n/i18n-instance';
 import {
   createUser,
@@ -95,29 +94,42 @@ test('the Microsoft 365 button sends the browser to the start endpoint in the sa
   }
 });
 
-test('the Microsoft 365 button carries the path the person was trying to reach', async () => {
+test('the Microsoft 365 button hands the path the person was trying to reach to the callback', async () => {
+  const advisor = await createUser({ role: 'advisor' });
   const location = stubLocation();
   try {
-    await renderApp(<LoginRoute />, {
+    const { unmount } = await renderApp(<LoginRoute />, {
       user: null,
       path: '/login',
-      url: '/login?redirectTo=%2Fapp%2Fplan',
+      url: '/login?redirectTo=%2Fadvisor%2Fstudents',
     });
 
     await userEvent.click(
       screen.getByRole('button', { name: /sign in with microsoft 365/i }),
     );
 
-    expect(sessionStorage.getItem(microsoftLandingKey)).toBe('/app/plan');
+    expect(location.assign).toHaveBeenCalledTimes(1);
+    expect(location.assign).toHaveBeenCalledWith(
+      `${env.API_URL}/auth/microsoft/start`,
+    );
+    location.restore();
+    unmount();
   } finally {
     location.restore();
   }
+
+  renderRealRouter(`/auth/microsoft/callback?code=${advisor.id}`);
+
+  await waitFor(() =>
+    expect(window.location.pathname).toBe('/advisor/students'),
+  );
 });
 
 test('the Microsoft 365 button drops a path that leaves the platform', async () => {
+  const advisor = await createUser({ role: 'advisor' });
   const location = stubLocation();
   try {
-    await renderApp(<LoginRoute />, {
+    const { unmount } = await renderApp(<LoginRoute />, {
       user: null,
       path: '/login',
       url: '/login?redirectTo=%2F%2Fevil.example',
@@ -127,10 +139,19 @@ test('the Microsoft 365 button drops a path that leaves the platform', async () 
       screen.getByRole('button', { name: /sign in with microsoft 365/i }),
     );
 
-    expect(sessionStorage.getItem(microsoftLandingKey)).toBeNull();
+    expect(location.assign).toHaveBeenCalledTimes(1);
+    expect(location.assign).toHaveBeenCalledWith(
+      `${env.API_URL}/auth/microsoft/start`,
+    );
+    location.restore();
+    unmount();
   } finally {
     location.restore();
   }
+
+  renderRealRouter(`/auth/microsoft/callback?code=${advisor.id}`);
+
+  await waitFor(() => expect(window.location.pathname).toBe('/advisor'));
 });
 
 test('the password sign-in still signs the person in and lands on the role landing', async () => {

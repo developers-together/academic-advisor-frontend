@@ -1,5 +1,10 @@
 import type { StaffAccountRole } from '@/types/domain';
 
+export const adminUsersParams = {
+  tab: 'tab',
+  role: 'role',
+} as const;
+
 export type AdminUsersQuery = {
   tab?: 'students' | 'staff';
   role?: StaffAccountRole;
@@ -169,10 +174,10 @@ export const paths = {
       getHref: (query?: AdminUsersQuery) => {
         const params = new URLSearchParams();
         if (query?.tab) {
-          params.set('tab', query.tab);
+          params.set(adminUsersParams.tab, query.tab);
         }
         if (query?.role) {
-          params.set('role', query.role);
+          params.set(adminUsersParams.role, query.role);
         }
         const search = params.toString();
         return `/admin/users${search ? `?${search}` : ''}`;

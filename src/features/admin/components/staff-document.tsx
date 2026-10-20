@@ -7,6 +7,7 @@ import { ConfirmDialog } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useNotifications } from '@/components/ui/notifications';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { adminUsersParams } from '@/config/paths';
 import { readableApiError } from '@/lib/api-error';
 import type { StaffAccountRole, StaffMember } from '@/types/domain';
 
@@ -41,15 +42,15 @@ export const StaffDocument = ({ onAddStaff }: StaffDocumentProps) => {
   const addNotification = useNotifications((state) => state.addNotification);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const requestedRole = searchParams.get('role');
+  const requestedRole = searchParams.get(adminUsersParams.role);
   const filter: StaffFilter =
     FILTERS.find((value) => value === requestedRole) ?? 'all';
   const selectFilter = (value: StaffFilter) => {
     const next = new URLSearchParams(searchParams);
     if (value === 'all') {
-      next.delete('role');
+      next.delete(adminUsersParams.role);
     } else {
-      next.set('role', value);
+      next.set(adminUsersParams.role, value);
     }
     setSearchParams(next, { replace: true });
   };

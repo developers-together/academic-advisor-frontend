@@ -72,6 +72,16 @@ const staffById = (rawId: string | readonly string[]): UserRow | null => {
 
 const STAFF_ROLES = ['advisor', 'dean', 'vp', 'admin'];
 
+const FACULTIES = [
+  { code: 'BAS', name: 'Basic and Applied Sciences' },
+  { code: 'CSIT', name: 'Computer Science and Information Technology' },
+  { code: 'ENG', name: 'Engineering' },
+  { code: 'IBH', name: 'International Business and Humanities' },
+  { code: 'PHA', name: 'Pharmacy' },
+];
+
+const FACULTY_CODES = FACULTIES.map((faculty) => faculty.code);
+
 const staffUpdateErrors = (
   body: Record<string, unknown>,
 ): Record<string, string[]> => {
@@ -90,6 +100,8 @@ const staffUpdateErrors = (
   }
   if (role === 'dean' && !faculty) {
     errors.faculty = ['Deans need a faculty.'];
+  } else if (faculty && !FACULTY_CODES.includes(faculty)) {
+    errors.faculty = ['That faculty does not exist.'];
   }
   return errors;
 };
@@ -767,15 +779,7 @@ export const adminHandlers = [
     }
     requireAdmin(request);
     await networkDelay();
-    return HttpResponse.json({
-      data: [
-        { code: 'BAS', name: 'Basic and Applied Sciences' },
-        { code: 'CSIT', name: 'Computer Science and Information Technology' },
-        { code: 'ENG', name: 'Engineering' },
-        { code: 'IBH', name: 'International Business and Humanities' },
-        { code: 'PHA', name: 'Pharmacy' },
-      ],
-    });
+    return HttpResponse.json({ data: FACULTIES });
   }),
 
   http.post(`${env.API_URL}/admin/rules`, async ({ request }) => {

@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router';
 import { ContentLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { adminUsersParams } from '@/config/paths';
 import { AddStaffDialog } from '@/features/admin/components/add-staff-dialog';
 import { AddStudentDialog } from '@/features/admin/components/add-student-dialog';
 import { StaffDocument } from '@/features/admin/components/staff-document';
@@ -16,14 +17,18 @@ export default function AdminUsersRoute() {
   const { t } = useTranslation('admin');
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const requestedRole = searchParams.get(adminUsersParams.role);
   const tab: UsersTab =
-    searchParams.get('tab') === 'staff' ? 'staff' : 'students';
+    searchParams.get(adminUsersParams.tab) === 'staff' || requestedRole
+      ? 'staff'
+      : 'students';
   const selectTab = (value: string) => {
     const next = new URLSearchParams(searchParams);
     if (value === 'staff') {
-      next.set('tab', 'staff');
+      next.set(adminUsersParams.tab, 'staff');
     } else {
-      next.delete('tab');
+      next.delete(adminUsersParams.tab);
+      next.delete(adminUsersParams.role);
     }
     setSearchParams(next, { replace: true });
   };

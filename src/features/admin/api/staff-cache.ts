@@ -7,9 +7,12 @@ const STAFF_ROOT = ['admin', 'staff'] as const;
 const toStaffList = (rows: StaffMember[] | undefined): StaffMember[] =>
   Array.isArray(rows) ? rows : [];
 
+const staffAccountRole = (role: User['role']): StaffAccountRole =>
+  role === null || role === 'student' ? 'awaiting_role' : role;
+
 const asStaffMember = (user: User, studentsCount = 0): StaffMember => ({
   ...user,
-  role: (user.role ?? 'awaiting_role') as StaffAccountRole,
+  role: staffAccountRole(user.role),
   students_count: studentsCount,
 });
 

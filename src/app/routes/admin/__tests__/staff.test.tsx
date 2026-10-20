@@ -36,7 +36,7 @@ const seedDirectory = async () => {
     name: 'Amr Advisor',
     email: 'amr.advisor@ejust.edu.eg',
     role: 'advisor',
-    faculty: 'Engineering',
+    faculty: 'ENG',
   });
   await createUser({
     name: 'Lina Majors',
@@ -52,7 +52,7 @@ const seedDirectory = async () => {
     name: 'Dina Dean',
     email: 'dina.dean@ejust.edu.eg',
     role: 'dean',
-    faculty: 'Engineering',
+    faculty: 'ENG',
   });
   return admin;
 };
@@ -74,7 +74,7 @@ test('the directory renders role badges, faculty, and advisor caseload, and the 
   });
   const advisorRow = amr.closest('tr') as HTMLElement;
   expect(within(advisorRow).getByText('Advisor')).toBeInTheDocument();
-  expect(within(advisorRow).getByText('Engineering')).toBeInTheDocument();
+  expect(within(advisorRow).getByText('ENG')).toBeInTheDocument();
   expect(within(advisorRow).getByText('2 students')).toBeInTheDocument();
 
   const deanRow = rowOf('Dina Dean');
@@ -148,6 +148,9 @@ test('an administrator gives a waiting account a role and the account then holds
     user: admin,
   });
 
+  await userEvent.click(screen.getByRole('tab', { name: 'Awaiting a role' }));
+  expect(await screen.findByText('Karim Newly Registered')).toBeInTheDocument();
+
   await userEvent.click(
     await screen.findByRole('button', { name: 'Edit Karim Newly Registered' }),
   );
@@ -170,9 +173,96 @@ test('an administrator gives a waiting account a role and the account then holds
     ).toMatchObject({ role: 'advisor' }),
   );
   expect(await screen.findByText('Staff account updated.')).toBeInTheDocument();
-  const row = rowOf('Karim Newly Registered');
+  await waitFor(() =>
+    expect(
+      screen.queryByText('Karim Newly Registered'),
+    ).not.toBeInTheDocument(),
+  );
+
+  await userEvent.click(screen.getByRole('tab', { name: 'All' }));
+  const row = (
+    await screen.findByRole('button', { name: 'Edit Karim Newly Registered' })
+  ).closest('tr') as HTMLElement;
   expect(within(row).getByText('Advisor')).toBeInTheDocument();
   expect(within(row).queryByText('Awaiting a role')).not.toBeInTheDocument();
+});
+
+test('giving a waiting account the dean role sends the faculty code the registrar knows', async () => {
+  const admin = await seedDirectory();
+  const waiting = await createUser({
+    name: 'Karim Newly Registered',
+    email: 'karim.newly@ejust.edu.eg',
+    role: null,
+  });
+
+  const sent: Record<string, unknown>[] = [];
+  server.use(
+    http.patch(`${env.API_URL}/admin/staff/:staffId`, async ({ request }) => {
+      sent.push((await request.clone().json()) as Record<string, unknown>);
+      return undefined;
+    }),
+  );
+
+  await renderStaffTab({
+    user: admin,
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'Edit Karim Newly Registered' }),
+  );
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Edit staff account',
+  });
+
+  await userEvent.selectOptions(within(dialog).getByLabelText('Role'), 'dean');
+  const facultySelect = (await within(dialog).findByLabelText(
+    'Faculty',
+  )) as HTMLSelectElement;
+  await waitFor(() => expect(facultySelect).toBeEnabled());
+  expect(within(facultySelect).getByText('Engineering')).toBeInTheDocument();
+
+  await userEvent.selectOptions(facultySelect, 'ENG');
+  await userEvent.click(
+    within(dialog).getByRole('button', { name: 'Save changes' }),
+  );
+
+  await waitFor(() => expect(sent).toHaveLength(1));
+  expect(sent[0]).toMatchObject({
+    name: 'Karim Newly Registered',
+    role: 'dean',
+    faculty: 'ENG',
+  });
+  await waitFor(() =>
+    expect(
+      db.user.findFirst({ where: { id: { equals: waiting.id as number } } }),
+    ).toMatchObject({ role: 'dean', faculty: 'ENG' }),
+  );
+  expect(await screen.findByText('Staff account updated.')).toBeInTheDocument();
+});
+
+test('a role parameter in the address opens the staff tab with that filter', async () => {
+  const admin = await seedDirectory();
+  await createUser({
+    name: 'Karim Newly Registered',
+    email: 'karim.newly@ejust.edu.eg',
+    role: null,
+  });
+
+  await renderApp(<AdminUsersRoute />, {
+    user: admin,
+    path: '/admin/users',
+    url: '/admin/users?role=awaiting_role',
+  });
+
+  expect(await screen.findByRole('tab', { name: 'Staff' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  expect(screen.getByRole('tab', { name: 'Awaiting a role' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  expect(await screen.findByText('Karim Newly Registered')).toBeInTheDocument();
 });
 
 test('an empty role filter names the missing role and the directory lists the signed-in admin', async () => {
@@ -319,7 +409,7 @@ test('the edit dialog applies the dean-faculty rule and saves name, faculty, and
     db.user.findFirst({ where: { name: { equals: 'Amr Advisor' } } })?.role,
   ).toBe('advisor');
 
-  await userEvent.selectOptions(facultySelect, 'Pharmacy');
+  await userEvent.selectOptions(facultySelect, 'PHA');
   await userEvent.clear(nameInput);
   await userEvent.type(nameInput, 'Amr El-Sayed');
   await userEvent.click(
@@ -329,12 +419,12 @@ test('the edit dialog applies the dean-faculty rule and saves name, faculty, and
   await waitFor(() =>
     expect(
       db.user.findFirst({ where: { name: { equals: 'Amr El-Sayed' } } }),
-    ).toMatchObject({ role: 'dean', faculty: 'Pharmacy' }),
+    ).toMatchObject({ role: 'dean', faculty: 'PHA' }),
   );
   expect(await screen.findByText('Staff account updated.')).toBeInTheDocument();
   const row = rowOf('Amr El-Sayed');
   expect(within(row).getByText('Dean')).toBeInTheDocument();
-  expect(within(row).getByText('Pharmacy')).toBeInTheDocument();
+  expect(within(row).getByText('PHA')).toBeInTheDocument();
   await waitFor(() =>
     expect(
       screen.queryByRole('dialog', { name: 'Edit staff account' }),
