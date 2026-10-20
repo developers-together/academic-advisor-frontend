@@ -19,8 +19,8 @@ import type {
 
 import { useImportAcademicsDataset } from '../api/academics';
 
-const MAX_FILE_BYTES = 2048 * 1024;
-const ACCEPTED_EXTENSIONS = ['.csv', '.xlsx'];
+const MAX_FILE_BYTES = 4 * 1024 * 1024;
+const ACCEPTED_EXTENSIONS = ['.csv', '.txt', '.xlsx'];
 const MAX_REPORT_ROWS = 20;
 
 export type DatasetImportCardProps = {
@@ -35,14 +35,20 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
 
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [serverValidationMessages, setServerValidationMessages] = useState<
+    string[]
+  >([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [report, setReport] = useState<AcademicsImportReport | null>(null);
 
   const titleKey = `academics.imports.${dataset}`;
   const hintKey = `academics.imports.${dataset}Hint`;
+  const fileErrorId = `import-${dataset}-file-error`;
+  const serverErrorId = `import-${dataset}-server-errors`;
 
   const onFileChange = (next: File | null) => {
     setFileError(null);
+    setServerValidationMessages([]);
     setReport(null);
     setFile(next);
     if (!next) {
@@ -63,11 +69,16 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
       setFileError(t('academics.imports.errors.fileRequired'));
       return;
     }
+
+    setReport(null);
+    setServerValidationMessages([]);
+
     importMutation.mutate(
       { dataset, file },
       {
         onSuccess: (result) => {
           setConfirmOpen(false);
+          setServerValidationMessages([]);
           setReport(result);
           addNotification({
             type: 'success',
@@ -79,8 +90,12 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
         onError: (error) => {
           setConfirmOpen(false);
           if (error instanceof ApiError && error.status === 422) {
-            const fileMessage = error.fields.file?.[0];
-            setFileError(fileMessage ?? t('common:errors.saveFailed'));
+            const messages = Object.values(error.fields).flat();
+            setServerValidationMessages(
+              messages.length > 0
+                ? messages
+                : [error.message || t('common:errors.saveFailed')],
+            );
             return;
           }
           addNotification({
@@ -149,6 +164,14 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
             id={`import-${dataset}-file`}
             type="file"
             accept={ACCEPTED_EXTENSIONS.join(',')}
+            aria-invalid={Boolean(fileError || serverValidationMessages.length)}
+            aria-describedby={
+              fileError
+                ? fileErrorId
+                : serverValidationMessages.length > 0
+                  ? serverErrorId
+                  : undefined
+            }
             onChange={(event) => onFileChange(event.target.files?.[0] ?? null)}
             className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-sm file:font-medium hover:file:bg-accent"
           />
@@ -159,9 +182,26 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
             {t('academics.imports.fileLabel')}
           </label>
           {fileError && (
-            <p role="alert" className="text-sm text-destructive">
+            <p id={fileErrorId} role="alert" className="text-sm text-destructive">
               {fileError}
             </p>
+          )}
+          {serverValidationMessages.length > 0 && (
+            <div
+              id={serverErrorId}
+              role="alert"
+              className="space-y-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              <p className="font-medium">
+                {t('academics.imports.validationErrorTitle')}
+              </p>
+              <p>{t('academics.imports.validationErrorContext')}</p>
+              <ul className="max-h-48 list-disc space-y-1 overflow-y-auto ps-5">
+                {serverValidationMessages.map((message, index) => (
+                  <li key={`${index}-${message}`}>{message}</li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
         <Button
