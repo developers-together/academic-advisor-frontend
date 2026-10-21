@@ -53,6 +53,48 @@ test('the sign-in screen shows the password form and the Microsoft 365 button', 
   ).toBeInTheDocument();
 });
 
+test('the sign-in guidance sends staff to the Microsoft 365 path and keeps registration for students', async () => {
+  await renderApp(<LoginRoute />, {
+    user: null,
+    path: '/login',
+    url: '/login',
+  });
+
+  expect(screen.getByText(/students register here/i)).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      /first microsoft 365 sign-in registers your account, then an administrator assigns your role/i,
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByText(/come from the administrator/i),
+  ).not.toBeInTheDocument();
+});
+
+test('the sign-in guidance is in Arabic', async () => {
+  await i18n.changeLanguage('ar');
+  try {
+    await renderApp(<LoginRoute />, {
+      user: null,
+      path: '/login',
+      url: '/login',
+    });
+
+    expect(
+      screen.getByText(
+        'حسابات العاملين تسجّل الدخول من هنا. تسجيل الدخول الأول عبر Microsoft 365 ينشئ حسابك، ثم يعيّن مسؤول النظام دورك.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'الطلاب يسجّلون من هنا. حسابات العاملين تبدأ بتسجيل الدخول عبر Microsoft 365.',
+      ),
+    ).toBeInTheDocument();
+  } finally {
+    await i18n.changeLanguage('en');
+  }
+});
+
 test('the Microsoft 365 button label is in Arabic', async () => {
   await i18n.changeLanguage('ar');
   try {

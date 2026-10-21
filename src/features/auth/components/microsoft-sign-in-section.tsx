@@ -40,6 +40,9 @@ export const MicrosoftSignInSection = () => {
       >
         {t('microsoft.signIn')}
       </Button>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        {t('microsoft.signInHint')}
+      </p>
     </div>
   );
 };

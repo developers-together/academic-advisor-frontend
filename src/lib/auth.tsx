@@ -34,7 +34,7 @@ export const sanitizeRedirectTo = (
 
 export const authenticatedUserKey = ['authenticated-user'];
 
-const getUser = async (): Promise<User> => {
+export const getAuthenticatedUser = async (): Promise<User> => {
   if (!tokenStorage.get()) {
     return null as unknown as User;
   }
@@ -64,7 +64,7 @@ const loginWithEmailAndPassword = async (data: LoginInput): Promise<User> => {
   const response = (await api.post('/login', data)) as { token: string };
   tokenStorage.set(response.token);
   try {
-    return await getUser();
+    return await getAuthenticatedUser();
   } catch (error) {
     tokenStorage.clear();
     throw error;
@@ -126,7 +126,7 @@ export const signInWithMicrosoftCode = async (
   })) as { token: string };
   tokenStorage.set(response.token);
   try {
-    return await getUser();
+    return await getAuthenticatedUser();
   } catch (error) {
     tokenStorage.clear();
     throw error;
@@ -146,7 +146,7 @@ const logout = async (): Promise<void> => {
 
 const authConfig = {
   userKey: authenticatedUserKey,
-  userFn: getUser,
+  userFn: getAuthenticatedUser,
   loginFn: loginWithEmailAndPassword,
   logoutFn: logout,
   registerFn: registerWithEmailAndPassword as unknown as (
