@@ -32,7 +32,7 @@ export const authHandlers = [
     const email = body.email?.toLowerCase() ?? '';
     if (!email) {
       errors.email = ['The email field is required.'];
-    } else if (!email.endsWith('@ejust.edu.eg')) {
+    } else if (!/@(?:[a-z0-9-]+\.)*ejust\.edu\.eg$/i.test(email)) {
       errors.email = ['The email must belong to a university SIS domain.'];
     } else if (db.user.findFirst({ where: { email: { equals: email } } })) {
       errors.email = ['An account with this email already exists.'];

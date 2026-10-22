@@ -82,7 +82,7 @@ export const registerInputSchema = z
       .min(1, 'auth:errors.emailRequired')
       .email('auth:errors.emailInvalid')
       .refine(
-        (value) => value.toLowerCase().endsWith('@ejust.edu.eg'),
+        (value) => /@(?:[a-z0-9-]+\.)*ejust\.edu\.eg$/i.test(value),
         'auth:errors.universityEmail',
       ),
     studentId: z.string().min(1, 'auth:errors.studentIdRequired'),
