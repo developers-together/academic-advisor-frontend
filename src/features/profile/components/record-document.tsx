@@ -1,3 +1,4 @@
+import { CircleCheck, CircleDashed } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { RecordFreshness } from '@/components/domain/record-freshness';
@@ -37,13 +38,7 @@ export const RecordDocument = ({
       ? { ...entry, state: 'planned' as const }
       : entry,
   );
-  const completedCount = record.prerequisite_map.filter(
-    (entry) => entry.state === 'completed',
-  ).length;
-  const completedShare =
-    record.prerequisite_map.length > 0
-      ? completedCount / record.prerequisite_map.length
-      : 0;
+  const { share: completedShare, unresolved } = requirementProgress(record);
 
   return (
     <div className="space-y-6">
@@ -63,7 +58,13 @@ export const RecordDocument = ({
       <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
         <MilestonesCard milestones={milestones} />
         <Card className="flex flex-col items-center justify-center gap-2 px-8">
-          <ProgressRing value={completedShare} size={96} />
+          {unresolved ? (
+            <p className="text-sm text-muted-foreground">
+              {t('requirements.progressUnresolved')}
+            </p>
+          ) : (
+            <ProgressRing value={completedShare} size={96} />
+          )}
         </Card>
       </div>
 
@@ -80,6 +81,85 @@ export const RecordDocument = ({
         }
         context={t('profile.cgpa.context')}
       />
+
+      <section aria-label={t('requirements.title')}>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('requirements.title')}</CardTitle>
+          </CardHeader>
+          <CardBody>
+            <ul className="space-y-3">
+              {record.prerequisite_map
+                .filter((entry) => entry.type !== 'elective')
+                .map((entry) => {
+                  const outstanding =
+                    entry.requirement_outstanding ??
+                    entry.state !== 'completed';
+                  const Icon = outstanding ? CircleDashed : CircleCheck;
+                  return (
+                    <li
+                      key={entry.course_code}
+                      className="flex items-start gap-2"
+                    >
+                      <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
+                      <div className="min-w-0 text-sm">
+                        <bdi className="font-semibold">{entry.course_code}</bdi>
+                        {entry.title && <span> {entry.title}</span>}
+                        <p className="text-muted-foreground">
+                          {t(
+                            `requirements.${outstanding ? 'outstanding' : 'satisfied'}`,
+                          )}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
+              {(record.elective_groups ?? []).map((group) => {
+                const retakes = group.committed_course_codes.filter(
+                  (code) => !group.passed_course_codes.includes(code),
+                );
+                const Icon =
+                  group.status === 'satisfied' ? CircleCheck : CircleDashed;
+                return (
+                  <li key={group.key} className="flex items-start gap-2">
+                    <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
+                    <div className="min-w-0 text-sm">
+                      <p className="font-semibold">{group.name}</p>
+                      <p className="text-muted-foreground">
+                        {t(`requirements.${group.status}`)}
+                      </p>
+                      {group.required_passes !== null && (
+                        <p className="text-muted-foreground tabular-nums">
+                          {t('requirements.passes', {
+                            required: group.required_passes,
+                            remaining: group.remaining_passes,
+                          })}
+                        </p>
+                      )}
+                      <p className="mt-1 text-muted-foreground">
+                        {t('requirements.alternatives')}{' '}
+                        <bdi>{group.course_codes.join(', ')}</bdi>
+                      </p>
+                      {group.status === 'outstanding' && retakes.length > 0 && (
+                        <p className="mt-1 text-warning">
+                          {t('requirements.retake')}{' '}
+                          <bdi>{retakes.join(', ')}</bdi>
+                        </p>
+                      )}
+                      {group.planned_course_codes.length > 0 && (
+                        <p className="mt-1 text-muted-foreground">
+                          {t('requirements.reserved')}{' '}
+                          <bdi>{group.planned_course_codes.join(', ')}</bdi>
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </CardBody>
+        </Card>
+      </section>
 
       <Card>
         <CardHeader>
@@ -105,14 +185,15 @@ const milestonesOf = (
   planStatus: string | null,
 ): Milestone[] => {
   const map = record.prerequisite_map;
-  const completedCount = map.filter(
-    (entry) => entry.state === 'completed',
-  ).length;
-  const share = map.length > 0 ? completedCount / map.length : 0;
+  const { completedCount, share, unresolved } = requirementProgress(record);
   const foundations = map.filter((entry) => entry.prerequisites.length === 0);
   const foundationsCleared =
     foundations.length > 0 &&
-    foundations.every((entry) => entry.state === 'completed');
+    foundations.every((entry) =>
+      entry.type === 'elective'
+        ? entry.elective_group?.status === 'satisfied'
+        : entry.state === 'completed',
+    );
 
   return [
     { key: 'first_step', earned: completedCount > 0, hint: null },
@@ -128,11 +209,35 @@ const milestonesOf = (
       hint: null,
     },
     { key: 'level_cleared', earned: foundationsCleared, hint: null },
-    { key: 'halfway', earned: share >= 0.5, hint: null },
+    { key: 'halfway', earned: !unresolved && share >= 0.5, hint: null },
     {
       key: 'map_mastered',
-      earned: map.length > 0 && completedCount === map.length,
+      earned: !unresolved && share === 1,
       hint: null,
     },
   ];
+};
+
+const requirementProgress = (record: AcademicRecord) => {
+  const compulsory = record.prerequisite_map.filter(
+    (entry) => entry.type !== 'elective',
+  );
+  const groups = record.elective_groups ?? [];
+  const unresolved = groups.some((group) => group.required_passes === null);
+  const required =
+    compulsory.length +
+    groups.reduce((sum, group) => sum + (group.required_passes ?? 0), 0);
+  const completedCount =
+    compulsory.filter((entry) => entry.state === 'completed').length +
+    groups.reduce(
+      (sum, group) =>
+        sum +
+        Math.min(group.required_passes ?? 0, group.passed_course_codes.length),
+      0,
+    );
+  return {
+    completedCount,
+    share: required > 0 ? completedCount / required : 0,
+    unresolved,
+  };
 };

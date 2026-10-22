@@ -93,7 +93,20 @@ export type AcademicRecord = {
   curriculum_year_level: number | null;
   history: CourseAttempt[];
   prerequisite_map: PrerequisiteMapEntry[];
+  elective_groups?: ElectiveGroup[];
   last_synced_at: string | null;
+};
+
+export type ElectiveGroup = {
+  key: string;
+  name: string;
+  required_passes: number | null;
+  remaining_passes: number | null;
+  status: 'outstanding' | 'satisfied' | 'unresolved';
+  passed_course_codes: string[];
+  committed_course_codes: string[];
+  planned_course_codes: string[];
+  course_codes: string[];
 };
 
 export type CourseAttempt = {
@@ -112,6 +125,11 @@ export type PrerequisiteMapState =
   'completed' | 'planned' | 'attempted' | 'eligible' | 'locked';
 
 export type PrerequisiteMapEntry = {
+  type?: 'compulsory' | 'elective';
+  category?: string;
+  elective_group?: ElectiveGroup | null;
+  elective_blocked?: boolean;
+  requirement_outstanding?: boolean;
   description?: string | null;
   course_code: string;
   title: string | null;

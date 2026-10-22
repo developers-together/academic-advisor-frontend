@@ -22,6 +22,9 @@ import { useImportAcademicsDataset } from '../api/academics';
 const MAX_FILE_BYTES = 4 * 1024 * 1024;
 const ACCEPTED_EXTENSIONS = ['.csv', '.txt', '.xlsx'];
 const MAX_REPORT_ROWS = 20;
+const CURRICULUM_TEMPLATE =
+  'Faculty,School,Department,Course Code,Level,Prerequisite Course Code,Type,Category,Elective Group,Elective Slots\r\n';
+const CURRICULUM_COLUMNS = ['type', 'category', 'group', 'slots'] as const;
 
 export type DatasetImportCardProps = {
   dataset: AcademicsImportDataset;
@@ -114,6 +117,32 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
         <p className="mt-1 text-sm text-muted-foreground">{t(hintKey)}</p>
       </CardHeader>
       <CardBody className="space-y-3">
+        {dataset === 'curricula' && (
+          <div className="space-y-3 text-sm">
+            <a
+              href={`data:text/csv;charset=utf-8,${encodeURIComponent(CURRICULUM_TEMPLATE)}`}
+              download="curricula-template.csv"
+              className="inline-flex min-h-11 items-center text-link underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {t('academics.imports.curriculumTemplate')}
+            </a>
+            <dl className="space-y-2">
+              {CURRICULUM_COLUMNS.map((column) => (
+                <div key={column}>
+                  <dt className="font-medium">
+                    {t(`academics.imports.curriculumColumns.${column}.label`)}
+                  </dt>
+                  <dd className="text-muted-foreground">
+                    {t(`academics.imports.curriculumColumns.${column}.hint`)}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p className="text-muted-foreground">
+              {t('academics.imports.curriculumUnresolved')}
+            </p>
+          </div>
+        )}
         {report && (
           <div className="space-y-2">
             <p className="text-sm font-medium tabular-nums">
@@ -182,7 +211,11 @@ export const DatasetImportCard = ({ dataset }: DatasetImportCardProps) => {
             {t('academics.imports.fileLabel')}
           </label>
           {fileError && (
-            <p id={fileErrorId} role="alert" className="text-sm text-destructive">
+            <p
+              id={fileErrorId}
+              role="alert"
+              className="text-sm text-destructive"
+            >
               {fileError}
             </p>
           )}

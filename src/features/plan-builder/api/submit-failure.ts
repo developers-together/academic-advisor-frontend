@@ -13,6 +13,8 @@ const LINE_GROUPS = [
   'active_course',
   'map_membership',
   'prerequisite_chain',
+  'level',
+  'elective_group',
 ] as const;
 
 const isLineGroup = (group: string): group is (typeof LINE_GROUPS)[number] =>

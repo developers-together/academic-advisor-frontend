@@ -36,12 +36,11 @@ export const CourseShelf = ({
     (course) =>
       course.state !== 'completed' &&
       course.state !== 'planned' &&
-      course.available &&
       !planned.has(course.course_code) &&
       (filter === 'all' ||
         (filter === 'locked'
-          ? course.state === 'locked'
-          : course.state !== 'locked')) &&
+          ? !course.available || course.state === 'locked'
+          : course.available && course.state !== 'locked')) &&
       `${course.course_code} ${course.title ?? ''}`
         .toLowerCase()
         .includes(search.trim().toLowerCase()),
@@ -106,7 +105,7 @@ export const CourseShelf = ({
       ) : (
         <ul className="max-h-[55dvh] space-y-3 overflow-y-auto pe-1">
           {courses.map((course) => {
-            const locked = course.state === 'locked';
+            const locked = !course.available || course.state === 'locked';
             return (
               <li
                 key={course.course_code}
@@ -148,12 +147,20 @@ export const CourseShelf = ({
                       {course.title ?? course.course_code}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {locked
+                      {course.state === 'locked'
                         ? t('builder.shelf.requires', {
                             courses: course.prerequisites.join(', '),
                           })
                         : t(`builder.mapState.${course.state}`)}
                     </p>
+                    {course.reasons.map((reason) => (
+                      <p
+                        key={reason}
+                        className="mt-1 text-xs text-muted-foreground"
+                      >
+                        {reason}
+                      </p>
+                    ))}
                     {course.warnings.map((warning) => (
                       <p
                         key={warning}
@@ -167,23 +174,21 @@ export const CourseShelf = ({
                       </p>
                     ))}
                   </div>
-                  {!locked && (
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="size-11 shrink-0"
-                      disabled={disabled}
-                      aria-label={t('builder.shelf.add', {
-                        course: course.course_code,
-                      })}
-                      title={t('builder.shelf.add', {
-                        course: course.course_code,
-                      })}
-                      onClick={() => onAdd(course.course_code)}
-                    >
-                      <Plus className="size-4" aria-hidden />
-                    </Button>
-                  )}
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-11 shrink-0"
+                    disabled={disabled || locked}
+                    aria-label={t('builder.shelf.add', {
+                      course: course.course_code,
+                    })}
+                    title={t('builder.shelf.add', {
+                      course: course.course_code,
+                    })}
+                    onClick={() => onAdd(course.course_code)}
+                  >
+                    <Plus className="size-4" aria-hidden />
+                  </Button>
                 </div>
                 <details className="group mt-2 border-t pt-1 text-xs text-muted-foreground">
                   <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded focus-visible:outline-2 focus-visible:outline-ring">

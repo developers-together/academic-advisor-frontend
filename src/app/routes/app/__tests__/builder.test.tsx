@@ -8,6 +8,7 @@ import { server } from '@/testing/mocks/server';
 import { networkDelay } from '@/testing/mocks/utils';
 import {
   createUser,
+  fireEvent,
   renderApp,
   screen,
   userEvent,
@@ -81,7 +82,7 @@ const prerequisiteMap = [
     state: 'eligible',
     prerequisites: ['CS 301'],
     available: false,
-    reasons: ['Not offered in the spring term.'],
+    reasons: ['CS 401 is above your current level.'],
   }),
 ];
 
@@ -172,7 +173,9 @@ test('the shelf lists mapped courses minus completed and plan members', async ()
   const shelf = await screen.findByRole('complementary', {
     name: /courses for your plan/i,
   });
-  expect(await within(shelf).findByText('CS 301')).toBeInTheDocument();
+  expect(
+    await within(shelf).findByRole('button', { name: 'Add CS 301 to plan' }),
+  ).toBeDisabled();
   expect(within(shelf).getByText(/Requires CS 201/)).toBeInTheDocument();
   expect(within(shelf).getByText('EE 210')).toBeInTheDocument();
   expect(within(shelf).queryByText('EE 220')).not.toBeInTheDocument();
@@ -184,12 +187,9 @@ test('the shelf lists mapped courses minus completed and plan members', async ()
   expect(
     within(shelf).queryByRole('button', { name: 'Add MATH 201 to plan' }),
   ).not.toBeInTheDocument();
-  expect(
-    within(shelf).queryByRole('button', { name: 'Add CS 301 to plan' }),
-  ).not.toBeInTheDocument();
 });
 
-test('the picker never offers an unavailable course', async () => {
+test('the picker keeps above-level courses visible but disabled with backend reasons', async () => {
   const user = await createUser({ advisor_id: 2 });
   seedDraftPlan(
     user.id as number,
@@ -208,21 +208,30 @@ test('the picker never offers an unavailable course', async () => {
   const shelf = await screen.findByRole('complementary', {
     name: /courses for your plan/i,
   });
-  expect(await within(shelf).findByText('CS 301')).toBeInTheDocument();
-  expect(within(shelf).queryByText('CS 401')).not.toBeInTheDocument();
   expect(
-    within(shelf).queryByRole('button', { name: 'Add CS 401 to plan' }),
-  ).not.toBeInTheDocument();
+    await within(shelf).findByRole('button', { name: 'Add CS 301 to plan' }),
+  ).toBeDisabled();
+  expect(within(shelf).getByText('CS 401')).toBeInTheDocument();
+  expect(
+    within(shelf).getByText('CS 401 is above your current level.'),
+  ).toBeInTheDocument();
+  expect(
+    within(shelf).getByRole('button', { name: 'Add CS 401 to plan' }),
+  ).toBeDisabled();
 
   const input = within(shelf).getByRole('textbox', {
     name: /add a course/i,
   });
   await userEvent.type(input, 'Machine Learning');
   expect(
-    await screen.findByText(
-      'No courses in your course map match "Machine Learning".',
-    ),
+    await within(shelf).findByText('Machine Learning'),
   ).toBeInTheDocument();
+  await userEvent.click(
+    within(shelf).getByRole('button', { name: 'Add CS 401 to plan' }),
+  );
+  expect(
+    screen.queryByRole('button', { name: 'Remove CS 401' }),
+  ).not.toBeInTheDocument();
 });
 
 test('the picker shows the exception and prerequisite warnings on offered courses', async () => {
@@ -256,7 +265,159 @@ test('the picker shows the exception and prerequisite warnings on offered course
   ).toBeInTheDocument();
 });
 
-test('the academic record refetches after a manual plan change', async () => {
+test('dropping an unavailable course cannot add it to the plan', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedDraftPlan(user.id as number, JSON.stringify([]));
+  seedAcademicRecord(user.id as number);
+  let unavailableAdds = 0;
+  server.use(
+    http.post(`${env.API_URL}/plan/courses`, async ({ request }) => {
+      const body = await request.json();
+      if (
+        body &&
+        typeof body === 'object' &&
+        'course_code' in body &&
+        body.course_code === 'CS 401'
+      ) {
+        unavailableAdds += 1;
+      }
+      return HttpResponse.json(
+        { message: 'Course unavailable.' },
+        { status: 422 },
+      );
+    }),
+  );
+
+  await renderApp(<BuilderRoute />, {
+    user,
+    path: '/app/builder',
+    url: '/app/builder',
+  });
+
+  await screen.findByRole('button', { name: 'Add MATH 201 to plan' });
+  fireEvent.drop(
+    screen.getByText('Drop a course here to add it to your plan.'),
+    {
+      dataTransfer: { getData: () => 'CS 401' },
+    },
+  );
+  await userEvent.click(screen.getByRole('button', { name: 'Eligible' }));
+  expect(unavailableAdds).toBe(0);
+  expect(planCourses(user.id as number)).toEqual([]);
+});
+
+test('a lower-level outstanding course with no SIS attempt can be added to the plan', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedDraftPlan(user.id as number, JSON.stringify([]));
+  db.academicRecord.create({
+    userId: user.id as number,
+    curriculum_year_level: 3,
+    history: JSON.stringify([]),
+    prerequisite_map: JSON.stringify([
+      {
+        ...mapEntry({ course_code: 'CS 101', level: 1 }),
+        type: 'compulsory',
+        requirement_outstanding: true,
+      },
+    ]),
+  });
+
+  await renderApp(<BuilderRoute />, {
+    user,
+    path: '/app/builder',
+    url: '/app/builder',
+  });
+
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'Add CS 101 to plan' }),
+  );
+  expect(
+    await screen.findByRole('button', { name: 'Remove CS 101' }),
+  ).toBeInTheDocument();
+});
+
+test('a failed committed elective remains selectable while blocked alternatives explain the backend restriction', async () => {
+  const user = await createUser({ advisor_id: 2 });
+  seedDraftPlan(user.id as number, JSON.stringify([]));
+  const electiveGroup = {
+    key: 'technical',
+    name: 'Technical elective',
+    required_passes: 1,
+    remaining_passes: 1,
+    status: 'outstanding',
+    passed_course_codes: [],
+    committed_course_codes: ['CS 201'],
+    planned_course_codes: [],
+    course_codes: ['CS 201', 'CS 301'],
+  };
+  db.academicRecord.create({
+    userId: user.id as number,
+    curriculum_year_level: 3,
+    history: JSON.stringify([{ course_code: 'CS 201', grade: 'F' }]),
+    prerequisite_map: JSON.stringify([
+      {
+        ...mapEntry({ course_code: 'CS 201', level: 2, state: 'attempted' }),
+        type: 'elective',
+        elective_group: electiveGroup,
+        elective_blocked: false,
+        requirement_outstanding: true,
+      },
+      {
+        ...mapEntry({
+          course_code: 'CS 301',
+          level: 2,
+          available: false,
+          reasons: [
+            'Retake CS 201 before choosing another technical elective.',
+          ],
+        }),
+        type: 'elective',
+        elective_group: electiveGroup,
+        elective_blocked: true,
+        requirement_outstanding: true,
+      },
+    ]),
+  });
+
+  await renderApp(<BuilderRoute />, {
+    user,
+    path: '/app/builder',
+    url: '/app/builder',
+  });
+
+  const shelf = await screen.findByRole('complementary', {
+    name: /courses for your plan/i,
+  });
+  expect(
+    await within(shelf).findByRole('button', { name: 'Add CS 201 to plan' }),
+  ).toBeEnabled();
+  expect(
+    within(shelf).getByRole('button', { name: 'Add CS 301 to plan' }),
+  ).toBeDisabled();
+  expect(
+    within(shelf).getByText(
+      'Retake CS 201 before choosing another technical elective.',
+    ),
+  ).toBeInTheDocument();
+
+  await userEvent.click(within(shelf).getByRole('button', { name: 'Locked' }));
+  expect(
+    within(shelf).getByRole('button', { name: 'Add CS 301 to plan' }),
+  ).toBeDisabled();
+  expect(within(shelf).queryByText('CS 201')).not.toBeInTheDocument();
+  await userEvent.click(
+    within(shelf).getByRole('button', { name: 'Eligible' }),
+  );
+  expect(within(shelf).queryByText('CS 301')).not.toBeInTheDocument();
+  await userEvent.click(
+    within(shelf).getByRole('button', { name: 'Add CS 201 to plan' }),
+  );
+  expect(
+    await screen.findByRole('button', { name: 'Remove CS 201' }),
+  ).toBeInTheDocument();
+});
+
+test('adding and removing a course refreshes elective reservations in the shelf', async () => {
   const user = await createUser({ advisor_id: 2 });
   seedDraftPlan(
     user.id as number,
@@ -265,6 +426,34 @@ test('the academic record refetches after a manual plan change', async () => {
     ]),
   );
   seedAcademicRecord(user.id as number);
+
+  server.use(
+    http.get(`${env.API_URL}/academic-record`, () => {
+      const reserved = planCourses(user.id as number).some(
+        (course) => course.course_code === 'MATH 201',
+      );
+      return HttpResponse.json({
+        data: {
+          cgpa: 3.2,
+          curriculum_year_level: 3,
+          history: [],
+          last_synced_at: '2026-10-01T12:00:00.000Z',
+          prerequisite_map: prerequisiteMap.map((course) =>
+            course.course_code === 'EE 210'
+              ? {
+                  ...course,
+                  elective_blocked: reserved,
+                  available: !reserved,
+                  reasons: reserved
+                    ? ['MATH 201 reserves the remaining elective slot.']
+                    : [],
+                }
+              : course,
+          ),
+        },
+      });
+    }),
+  );
 
   let recordReads = 0;
   server.events.on('request:start', ({ request }) => {
@@ -287,6 +476,26 @@ test('the academic record refetches after a manual plan change', async () => {
   await screen.findByRole('button', { name: 'Remove MATH 201' });
 
   await waitFor(() => expect(recordReads).toBeGreaterThan(readsBeforeAdd));
+  expect(
+    await screen.findByText('MATH 201 reserves the remaining elective slot.'),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Add EE 210 to plan' }),
+  ).toBeDisabled();
+
+  const readsBeforeRemove = recordReads;
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Remove MATH 201' }),
+  );
+  await waitFor(() => expect(recordReads).toBeGreaterThan(readsBeforeRemove));
+  await waitFor(() =>
+    expect(
+      screen.getByRole('button', { name: 'Add EE 210 to plan' }),
+    ).toBeEnabled(),
+  );
+  expect(
+    screen.queryByText('MATH 201 reserves the remaining elective slot.'),
+  ).not.toBeInTheDocument();
 });
 
 test('an empty picker search names the query', async () => {

@@ -45,6 +45,25 @@ test('plan-level rule keys collect into plan messages', () => {
   expect(failure.total).toBe(2);
 });
 
+test('level and elective group failures attach to course lines while an unkeyed course code failure stays visible', () => {
+  const failure = failureFrom({
+    'level.CS 401': ['CS 401 is above your current level.'],
+    'elective_group.CS 401': ['Retake CS 201 before choosing CS 401.'],
+    course_code: ['The selected course code is invalid.'],
+  });
+
+  expect(failure.lineErrors).toEqual({
+    'CS 401': [
+      'CS 401 is above your current level.',
+      'Retake CS 201 before choosing CS 401.',
+    ],
+  });
+  expect(failure.planMessages).toEqual([
+    'The selected course code is invalid.',
+  ]);
+  expect(failure.total).toBe(3);
+});
+
 test('a window rule sets the closed-window flag instead of a message', () => {
   const failure = failureFrom({
     window: ['Registration is closed.'],

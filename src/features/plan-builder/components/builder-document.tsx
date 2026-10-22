@@ -176,6 +176,7 @@ export const BuilderDocument = ({
             );
             if (
               course &&
+              course.available &&
               course.state !== 'locked' &&
               course.state !== 'completed'
             )

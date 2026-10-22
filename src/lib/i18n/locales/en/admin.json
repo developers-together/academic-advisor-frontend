@@ -500,6 +500,26 @@
       "credit-allowancesHint": "Per-faculty minimum and maximum credit hours by CGPA band (below 2.0, regular, above 3.7).",
       "curricula": "Curricula",
       "curriculaHint": "The course map source: faculties, schools, departments, and required courses.",
+      "curriculumTemplate": "Download curriculum CSV template",
+      "curriculumUnresolved": "Blank Elective Slots leave the group unresolved and block its courses from planning until staff imports a count. The server validates rows and group counts.",
+      "curriculumColumns": {
+        "type": {
+          "label": "Type",
+          "hint": "Use compulsory or elective. Elective courses must name an Elective Group; compulsory courses must leave it blank."
+        },
+        "category": {
+          "label": "Category",
+          "hint": "Optional curriculum category. Keep the template column headers in English."
+        },
+        "group": {
+          "label": "Elective Group",
+          "hint": "Use the same group name for alternatives within the same faculty, school, and department."
+        },
+        "slots": {
+          "label": "Elective Slots",
+          "hint": "Required passes for the group. Use the same positive whole number on every group row, no greater than the number of distinct courses or 32767. Leave blank for compulsory courses."
+        }
+      },
       "fileLabel": "CSV, TXT, or XLSX up to 4 MB.",
       "upload": "Import file",
       "confirmTitle": "Import this file?",

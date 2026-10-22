@@ -1,0 +1,7 @@
+{"time":"2026-10-20T17:47:45.566Z","line":"v2-native-paused","sessionID":"ses_ea592da6cffelKi4luPKHoxQZh","reason":"session.execution.failed"}
+{"time":"2026-10-20T19:08:48.622Z","line":"v2-native-paused","sessionID":"ses_ea548aa75ffepmeceFqN2Uj3R2","reason":"session.execution.failed"}
+{"time":"2026-10-20T20:05:51.051Z","line":"v2-native-paused","sessionID":"ses_ea5147023ffe0Dql1rvyNvlZVK","reason":"session.execution.failed"}
+{"time":"2026-10-20T20:43:10.455Z","line":"v2-native-paused","sessionID":"ses_ea4f247abffert74MG4R6LVjfx","reason":"session.execution.failed"}
+{"time":"2026-10-20T22:40:36.700Z","line":"v2-native-ready","host":"2.0.26"}
+{"time":"2026-10-21T00:23:58.310Z","line":"v2-native-ready","host":"2.0.26"}
+{"time":"2026-10-22T09:07:55.721Z","line":"v2-native-ready","host":"2.0.26"}

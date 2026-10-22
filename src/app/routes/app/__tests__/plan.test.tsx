@@ -221,8 +221,15 @@ test('comments newer than the return carry the unread tint and New badge, and Se
 
 test('withdraw confirms with the consequence and the verb label before it locks the plan', async () => {
   const { user, plan } = await seedStudentWithPlan();
+  let recordReads = 0;
+  server.events.on('request:start', ({ request }) => {
+    if (new URL(request.url).pathname.endsWith('/academic-record')) {
+      recordReads += 1;
+    }
+  });
 
   await renderApp(<PlanRoute />, { user, path: '/app/plan', url: '/app/plan' });
+  const readsBeforeWithdraw = recordReads;
 
   const moreActions = await screen.findByRole('button', {
     name: /more actions/i,
@@ -250,12 +257,20 @@ test('withdraw confirms with the consequence and the verb label before it locks 
     db.plan.findFirst({ where: { id: { equals: plan.id as number } } })?.status,
   ).toBe('withdrawn');
   expect(screen.getByText('Plan status: Withdrawn')).toBeInTheDocument();
+  await waitFor(() => expect(recordReads).toBeGreaterThan(readsBeforeWithdraw));
 });
 
 test('discard confirms with the consequence and the verb label before it discards the plan', async () => {
   const { user, plan } = await seedStudentWithPlan();
+  let recordReads = 0;
+  server.events.on('request:start', ({ request }) => {
+    if (new URL(request.url).pathname.endsWith('/academic-record')) {
+      recordReads += 1;
+    }
+  });
 
   await renderApp(<PlanRoute />, { user, path: '/app/plan', url: '/app/plan' });
+  const readsBeforeDiscard = recordReads;
 
   const moreActions = await screen.findByRole('button', {
     name: /more actions/i,
@@ -279,6 +294,7 @@ test('discard confirms with the consequence and the verb label before it discard
   expect(
     db.plan.findFirst({ where: { id: { equals: plan.id as number } } })?.status,
   ).toBe('discarded');
+  await waitFor(() => expect(recordReads).toBeGreaterThan(readsBeforeDiscard));
 });
 
 test('submit posts without a dialog and the chip flips to Submitted', async () => {
