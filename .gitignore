@@ -48,3 +48,7 @@ mocked-db.json
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+
+# local tool caches
+.claude/cache/
+.vitest/
