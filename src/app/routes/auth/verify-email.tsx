@@ -7,7 +7,7 @@ export default function VerifyEmailRoute() {
   const { t } = useTranslation('auth');
 
   return (
-    <AuthLayout title={t('verify.processing')}>
+    <AuthLayout title={t('verify.processing')} redirectOnSignedIn={false}>
       <VerifyEmailPanel />
     </AuthLayout>
   );
