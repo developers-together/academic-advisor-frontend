@@ -121,9 +121,11 @@ const registerWithEmailAndPassword = async (
 export const signInWithMicrosoftCode = async (
   code: string,
 ): Promise<User | null> => {
-  const response = (await api.post('/auth/microsoft/exchange', {
-    code,
-  })) as { token: string };
+  const response = (await api.post(
+    '/auth/microsoft/exchange',
+    { code },
+    { withCredentials: true },
+  )) as { token: string };
   tokenStorage.set(response.token);
   try {
     return await getAuthenticatedUser();
