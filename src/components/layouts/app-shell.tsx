@@ -43,8 +43,8 @@ import {
   routeTable,
   type RoleRouteDefinition,
 } from '@/config/routes';
+import { useUpdateLanguagePreference } from '@/lib/api/language-preference';
 import { useLogout, useUser } from '@/lib/auth';
-import { useLanguageStore } from '@/lib/language';
 import { useThemeStore } from '@/lib/theme';
 import type { UserRole } from '@/types/domain';
 import { cn } from '@/utils/cn';
@@ -150,7 +150,7 @@ const useCommandGroups = (forRole: UserRole): CommandGroup[] => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const setTheme = useThemeStore((state) => state.setTheme);
-  const setLanguage = useLanguageStore((state) => state.setLanguage);
+  const { mutate: setLanguage } = useUpdateLanguagePreference();
 
   return React.useMemo(() => {
     const pageEntries = commandRoutes(forRole).map((route) => ({
@@ -554,7 +554,8 @@ const SidebarTools = ({
   const navigate = useNavigate();
   const theme = useThemeStore((state) => state.theme);
   const setTheme = useThemeStore((state) => state.setTheme);
-  const setLanguage = useLanguageStore((state) => state.setLanguage);
+  const { mutate: setLanguage, isPending: languagePending } =
+    useUpdateLanguagePreference();
   return (
     <div className={cn('sidebar-tools', expanded && 'is-expanded')}>
       {!expanded && <div className="sidebar-account-bell">{bell}</div>}
@@ -652,12 +653,14 @@ const SidebarTools = ({
                 >
                   <DropdownMenuRadioItem
                     value="en"
+                    disabled={languagePending}
                     className="account-menu-choice"
                   >
                     English
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem
                     value="ar"
+                    disabled={languagePending}
                     className="account-menu-choice"
                   >
                     العربية

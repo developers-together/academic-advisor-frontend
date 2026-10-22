@@ -31,14 +31,18 @@ export const useUpdateRegistrationWindow = () => {
       input,
     }: {
       id: number;
-      input: { is_active: boolean };
+      input: { opens_at: string; closes_at: string };
     }): Promise<RegistrationWindow> =>
       unwrap<RegistrationWindow>(
         api.put(`/admin/registration-windows/${id}`, input),
       ),
-    onSuccess: () =>
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ['admin', 'current-term'],
+      });
       void queryClient.invalidateQueries({
         queryKey: ['admin', 'registration-windows'],
-      }),
+      });
+    },
   });
 };

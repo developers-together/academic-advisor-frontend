@@ -9,6 +9,9 @@
     "body": "Plan and visit updates will appear here."
   },
   "slugs": {
+    "advisor_unassigned": "Advisor assignment removed",
+    "pending_assignment_discarded": "Pending assignment discarded",
+    "term_rolled_over": "Current term changed",
     "plan_returned": "Plan returned",
     "plan_approved": "Plan approved",
     "advisor_changed": "Advisor changed",

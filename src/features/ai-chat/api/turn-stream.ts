@@ -1,5 +1,6 @@
 import { env } from '@/config/env';
 import { ApiError } from '@/lib/api-error';
+import { i18n } from '@/lib/i18n/i18n-instance';
 import { tokenStorage } from '@/lib/token-storage';
 import type { SubmitArmedFrame, TurnFrame } from '@/types/domain';
 
@@ -131,6 +132,7 @@ const authHeaders = (): Record<string, string> => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'text/event-stream',
+    'Accept-Language': i18n.language.startsWith('ar') ? 'ar' : 'en',
   };
   const token = tokenStorage.get();
   if (token) {

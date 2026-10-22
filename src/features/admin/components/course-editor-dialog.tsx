@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/form';
+import { Input, Select, Textarea } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
 import { ApiError } from '@/lib/api-error';
 import type { AdminCourse } from '@/types/domain';
@@ -26,6 +26,7 @@ import {
   type CourseInput,
 } from '../api/course-mutations';
 import { useAdminCourses } from '../api/get-admin-courses';
+import { useDepartments } from '../api/get-departments';
 
 export type CourseEditorDialogProps = {
   course: AdminCourse | null;
@@ -36,6 +37,9 @@ type CourseValues = {
   code: string;
   title_en: string;
   title_ar: string;
+  description: string;
+  offering_department: string;
+  usable_across_departments: boolean;
   credits: string;
   level: string;
   prerequisites: string[];
@@ -50,22 +54,33 @@ export const CourseEditorDialog = ({
   const createCourse = useCreateCourse();
   const updateCourse = useUpdateCourse();
   const coursesQuery = useAdminCourses();
+  const departmentsQuery = useDepartments();
 
   const codeLocked = course !== null;
 
   const schema = z.object({
-    code: z.string().trim().min(1, t('courses.editor.errors.codeRequired')),
+    code: z
+      .string()
+      .trim()
+      .min(1, t('courses.editor.errors.codeRequired'))
+      .max(20),
     title_en: z
       .string()
       .trim()
-      .min(1, t('courses.editor.errors.titleRequired')),
-    title_ar: z.string().trim(),
+      .min(1, t('courses.editor.errors.titleRequired'))
+      .max(255),
+    title_ar: z.string().trim().max(255),
+    description: z.string().trim(),
+    offering_department: z
+      .string()
+      .min(1, t('courses.editor.errors.departmentRequired')),
+    usable_across_departments: z.boolean(),
     credits: z
       .string()
       .trim()
       .min(1, t('courses.editor.errors.creditsRange'))
       .refine(
-        (value) => Number(value) >= 1 && Number(value) <= 6,
+        (value) => Number.isInteger(Number(value)) && Number(value) >= 0,
         t('courses.editor.errors.creditsRange'),
       ),
     level: z
@@ -73,10 +88,7 @@ export const CourseEditorDialog = ({
       .trim()
       .refine(
         (value) =>
-          value === '' ||
-          (Number.isInteger(Number(value)) &&
-            Number(value) >= 1 &&
-            Number(value) <= 8),
+          value !== '' && Number.isInteger(Number(value)) && Number(value) >= 1,
         t('courses.editor.errors.levelRange'),
       ),
     prerequisites: z.array(z.string()),
@@ -89,6 +101,11 @@ export const CourseEditorDialog = ({
       code: course?.code ?? '',
       title_en: course?.title_en ?? '',
       title_ar: course?.title_ar ?? '',
+      description: course?.description ?? '',
+      offering_department: course?.department_id
+        ? String(course.department_id)
+        : '',
+      usable_across_departments: course?.usable_across_departments ?? false,
       credits: course ? String(course.credits) : '3',
       level:
         course?.level === null || course?.level === undefined
@@ -141,14 +158,38 @@ export const CourseEditorDialog = ({
       code: values.code.trim(),
       title_en: values.title_en.trim(),
       title_ar: values.title_ar.trim() || null,
+      description: values.description.trim() || null,
+      offering_department: Number(values.offering_department),
+      usable_across_departments: values.usable_across_departments,
       credits: Number(values.credits),
-      level: values.level.trim() === '' ? null : Number(values.level),
+      level: Number(values.level),
       prerequisite_course_codes: values.prerequisites,
     };
     const onError = (error: unknown) => {
       if (error instanceof ApiError && error.status === 409) {
         form.setError('code', { message: t('courses.errors.codeExists') });
         return;
+      }
+      if (error instanceof ApiError && error.status === 422) {
+        const fields = [
+          'code',
+          'title_en',
+          'title_ar',
+          'description',
+          'credits',
+          'level',
+          'offering_department',
+          'usable_across_departments',
+        ] as const;
+        for (const field of fields) {
+          const message = error.fields[field]?.[0];
+          if (message) form.setError(field, { message });
+        }
+        const prerequisiteError = Object.entries(error.fields).find(([field]) =>
+          field.startsWith('prerequisite_course_codes'),
+        );
+        if (prerequisiteError?.[1][0])
+          form.setError('prerequisites', { message: prerequisiteError[1][0] });
       }
       addNotification({
         type: 'error',
@@ -162,6 +203,9 @@ export const CourseEditorDialog = ({
           input: {
             title_en: input.title_en,
             title_ar: input.title_ar,
+            description: input.description,
+            offering_department: input.offering_department,
+            usable_across_departments: input.usable_across_departments,
             credits: input.credits,
             level: input.level,
             prerequisite_course_codes: input.prerequisite_course_codes,
@@ -221,12 +265,50 @@ export const CourseEditorDialog = ({
             error={form.formState.errors.title_en}
             registration={form.register('title_en')}
           />
+          <Input
+            label={t('courses.editor.titleAr')}
+            error={form.formState.errors.title_ar}
+            registration={form.register('title_ar')}
+          />
+          <Textarea
+            label={t('courses.editor.description')}
+            error={form.formState.errors.description}
+            registration={form.register('description')}
+          />
+          <Select
+            label={t('courses.editor.department')}
+            error={form.formState.errors.offering_department}
+            registration={form.register('offering_department')}
+            disabled={departmentsQuery.isPending || departmentsQuery.isError}
+            options={[
+              { value: '', label: t('courses.editor.departmentPlaceholder') },
+              ...(departmentsQuery.data ?? []).map((department) => ({
+                value: department.id,
+                label: `${i18n.language.startsWith('ar') ? (department.name_ar ?? department.name_en) : department.name_en} (${i18n.language.startsWith('ar') ? (department.faculty_name_ar ?? department.faculty_name_en) : department.faculty_name_en})`,
+              })),
+            ]}
+          />
+          {departmentsQuery.isError && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void departmentsQuery.refetch()}
+            >
+              {t('common:actions.retry')}
+            </Button>
+          )}
+          <label className="flex min-h-11 items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              {...form.register('usable_across_departments')}
+            />
+            {t('courses.editor.crossDepartment')}
+          </label>
           <div className="grid grid-cols-2 gap-3">
             <Input
               type="number"
-              min={1}
-              max={6}
-              step="any"
+              min={0}
+              step={1}
               label={t('courses.editor.credits')}
               error={form.formState.errors.credits}
               registration={form.register('credits')}
@@ -235,7 +317,6 @@ export const CourseEditorDialog = ({
             <Input
               type="number"
               min={1}
-              max={8}
               step={1}
               label={t('courses.editor.level')}
               error={form.formState.errors.level}
@@ -248,6 +329,11 @@ export const CourseEditorDialog = ({
             <span className="text-sm leading-none font-medium">
               {t('courses.editor.prerequisites')}
             </span>
+            {form.formState.errors.prerequisites?.message && (
+              <p role="alert" className="text-sm text-destructive">
+                {form.formState.errors.prerequisites.message}
+              </p>
+            )}
             {prerequisites.length > 0 && (
               <ul className="mt-2 flex flex-wrap gap-1.5">
                 {prerequisites.map((code) => (
@@ -293,7 +379,12 @@ export const CourseEditorDialog = ({
             <Button
               type="submit"
               isLoading={pending}
-              disabled={pending}
+              disabled={
+                pending ||
+                departmentsQuery.isPending ||
+                departmentsQuery.isError ||
+                !departmentsQuery.data?.length
+              }
               aria-busy={pending}
             >
               {course

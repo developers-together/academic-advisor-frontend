@@ -1,6 +1,7 @@
 import Axios, { InternalAxiosRequestConfig } from 'axios';
 
 import { env } from '@/config/env';
+import { i18n } from '@/lib/i18n/i18n-instance';
 
 import { toApiError } from './api-error';
 import { tokenStorage } from './token-storage';
@@ -8,6 +9,9 @@ import { tokenStorage } from './token-storage';
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = 'application/json';
+    config.headers['Accept-Language'] = i18n.language.startsWith('ar')
+      ? 'ar'
+      : 'en';
     const token = tokenStorage.get();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

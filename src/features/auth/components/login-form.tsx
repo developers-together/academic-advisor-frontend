@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { Eye, EyeOff } from 'lucide-react';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -9,6 +10,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/form';
 import { paths } from '@/config/paths';
+import { linkMicrosoftIdentity } from '@/features/auth/api/microsoft-sign-in';
 import { ApiError } from '@/lib/api-error';
 import { loginInputSchema, useLogin } from '@/lib/auth';
 import type { User } from '@/types/domain';
@@ -24,6 +26,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const login = useLogin();
   const [searchParams] = useSearchParams();
   const [showPassword, setShowPassword] = React.useState(false);
+  const linkIdentity = useMutation({ mutationFn: linkMicrosoftIdentity });
 
   const form = useForm<z.input<typeof loginInputSchema>>({
     resolver,
@@ -109,13 +112,33 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
         <Button
           type="submit"
           isLoading={login.isPending}
-          disabled={login.isPending}
+          disabled={login.isPending || linkIdentity.isPending}
           aria-busy={login.isPending}
           className="h-11 w-full"
         >
           {t('login.submit')}
         </Button>
       </form>
+      <Button
+        type="button"
+        variant="outline"
+        className="mt-3 h-11 w-full"
+        disabled={login.isPending || linkIdentity.isPending}
+        isLoading={linkIdentity.isPending}
+        onClick={() => {
+          void form.handleSubmit((values) => linkIdentity.mutate(values))();
+        }}
+      >
+        {t('microsoft.link')}
+      </Button>
+      <p className="mt-2 text-xs text-muted-foreground">
+        {t('microsoft.linkHint')}
+      </p>
+      {linkIdentity.isError && (
+        <p role="alert" className="mt-2 text-sm text-destructive">
+          {linkIdentity.error.message || t('microsoft.genericFailure')}
+        </p>
+      )}
       <div className="mt-4 flex flex-col gap-2 text-sm">
         <Link
           to={paths.auth.forgotPassword.getHref()}

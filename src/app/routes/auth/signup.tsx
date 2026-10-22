@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AuthLayout } from '@/components/layouts';
+import { ResendVerificationForm } from '@/features/auth/components/resend-verification-form';
 import { SignupForm } from '@/features/auth/components/signup-form';
 
 export default function SignupRoute() {
@@ -19,7 +20,7 @@ export default function SignupRoute() {
           <p className="text-muted-foreground">
             {t('registered.body', { email: registeredEmail })}
           </p>
-          <p className="text-muted-foreground">{t('registered.resendHint')}</p>
+          <ResendVerificationForm email={registeredEmail} />
         </div>
       ) : (
         <SignupForm onRegistered={setRegisteredEmail} />

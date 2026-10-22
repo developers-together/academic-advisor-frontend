@@ -49,7 +49,13 @@ export const ExplorerDocument = ({
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
   const caseloadQuery = useCaseload(debouncedSearch);
 
-  const [activeId, setActiveId] = useState<number | null>(null);
+  const activeId = Number(searchParams.get('student_id')) || null;
+  const setActiveId = (id: number | null) => {
+    const next = new URLSearchParams(searchParams);
+    if (id === null) next.delete('student_id');
+    else next.set('student_id', String(id));
+    setSearchParams(next, { replace: true });
+  };
   const [approveGate, setApproveGate] = useState<string[] | null>(null);
   const [approveUnavailable, setApproveUnavailable] = useState<{
     requestId: string | null;

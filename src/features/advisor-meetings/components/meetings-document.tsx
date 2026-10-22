@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 
 import { MeetingRequestCard } from '@/components/domain/meeting-request-card';
 import { ReasonDialog } from '@/components/domain/reason-dialog';
@@ -53,6 +54,8 @@ export const MeetingsDocument = () => {
   const queryClient = useQueryClient();
   const addNotification = useNotifications((state) => state.addNotification);
   const user = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const targetId = Number(searchParams.get('visit_request_id')) || null;
 
   const requestsQuery = useMeetingRequests();
   const caseloadQuery = useCaseload('');
@@ -85,7 +88,23 @@ export const MeetingsDocument = () => {
     }),
     [requests],
   );
-  const visible = requests.filter((meeting) => matchesFilter(meeting, filter));
+  const targetMeeting = requests.find((meeting) => meeting.id === targetId);
+  const activeFilter = targetMeeting
+    ? (MEETING_FILTERS.find((value) => matchesFilter(targetMeeting, value)) ??
+      filter)
+    : filter;
+  const visible = requests.filter((meeting) =>
+    matchesFilter(meeting, activeFilter),
+  );
+  useEffect(() => {
+    if (targetMeeting) {
+      const target = document.getElementById(
+        `meeting-request-${targetMeeting.id}`,
+      );
+      target?.focus();
+      target?.scrollIntoView?.({ block: 'nearest' });
+    }
+  }, [targetMeeting]);
 
   const actionsFor = (meeting: MeetingRequest) => {
     if (meeting.status === 'requested') {
@@ -203,8 +222,13 @@ export const MeetingsDocument = () => {
   return (
     <div>
       <Tabs
-        value={filter}
-        onValueChange={(value) => setFilter(value as MeetingsFilter)}
+        value={activeFilter}
+        onValueChange={(value) => {
+          setFilter(value as MeetingsFilter);
+          const next = new URLSearchParams(searchParams);
+          next.delete('visit_request_id');
+          setSearchParams(next, { replace: true });
+        }}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <TabsList aria-label={t('meetings.title')}>
@@ -225,20 +249,25 @@ export const MeetingsDocument = () => {
 
         {MEETING_FILTERS.map(
           (value) =>
-            value !== filter && <TabsContent key={value} value={value} />,
+            value !== activeFilter && <TabsContent key={value} value={value} />,
         )}
-        <TabsContent value={filter}>
+        <TabsContent value={activeFilter}>
           {visible.length === 0 ? (
             <EmptyState
               compact
               className="mt-4 max-w-xl"
-              title={t(`meetings.empty.${filter}.title`)}
-              description={t(`meetings.empty.${filter}.body`)}
+              title={t(`meetings.empty.${activeFilter}.title`)}
+              description={t(`meetings.empty.${activeFilter}.body`)}
             />
           ) : (
             <ul className="mt-4 space-y-3">
               {visible.map((meeting) => (
-                <li key={meeting.id} className="max-w-xl">
+                <li
+                  key={meeting.id}
+                  id={`meeting-request-${meeting.id}`}
+                  tabIndex={-1}
+                  className="max-w-xl rounded-lg focus:outline-2 focus:outline-ring"
+                >
                   <MeetingRequestCard
                     meeting={meeting}
                     otherParty={meeting.student.name}

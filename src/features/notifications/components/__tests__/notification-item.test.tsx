@@ -1,5 +1,6 @@
 import { i18n } from '@/lib/i18n/i18n-instance';
 import { rtlRender, screen } from '@/testing/test-utils';
+import type { NotificationSlug } from '@/types/domain';
 
 import { NotificationItem } from '../notification-item';
 
@@ -29,4 +30,32 @@ test('the staff registration notification renders the title and body the backend
 
   expect(screen.getByText(TITLE)).toBeInTheDocument();
   expect(screen.getByText(BODY)).toBeInTheDocument();
+});
+
+test.each([
+  'advisor_unassigned',
+  'pending_assignment_discarded',
+  'term_rolled_over',
+  'future_notification',
+])('renders the server notification %s without crashing', (slug) => {
+  rtlRender(
+    <ul>
+      <NotificationItem
+        notification={{
+          id: slug,
+          slug: slug as NotificationSlug,
+          title: 'Server notification',
+          body: 'Server message',
+          deep_link: null,
+          read_at: null,
+          created_at: '2026-10-20T09:00:00.000Z',
+        }}
+        onOpen={() => {}}
+      />
+    </ul>,
+  );
+
+  expect(
+    screen.getByRole('button', { name: /Server notification/ }),
+  ).toBeVisible();
 });

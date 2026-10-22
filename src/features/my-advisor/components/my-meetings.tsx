@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 
 import { MeetingRequestCard } from '@/components/domain/meeting-request-card';
 import { ReasonDialog } from '@/components/domain/reason-dialog';
@@ -36,6 +37,15 @@ export const MyMeetings = ({
   const { t } = useTranslation('advisor');
   const addNotification = useNotifications((state) => state.addNotification);
   const advisorQuery = useMyAdvisor();
+  const [searchParams] = useSearchParams();
+  const targetId = Number(searchParams.get('visit_request_id')) || null;
+  useEffect(() => {
+    if (!targetId || !meetings?.some((meeting) => meeting.id === targetId))
+      return;
+    const target = document.getElementById(`meeting-request-${targetId}`);
+    target?.focus();
+    target?.scrollIntoView?.({ block: 'nearest' });
+  }, [targetId, meetings]);
 
   const acceptProposal = useAcceptMeetingProposal();
   const declineProposal = useDeclineMeetingProposal();
@@ -177,7 +187,12 @@ export const MyMeetings = ({
       ) : (
         <ul className="space-y-3">
           {meetings?.map((meeting) => (
-            <li key={meeting.id}>
+            <li
+              key={meeting.id}
+              id={`meeting-request-${meeting.id}`}
+              tabIndex={-1}
+              className="rounded-lg focus:outline-2 focus:outline-ring"
+            >
               <MeetingRequestCard
                 meeting={meeting}
                 otherParty={

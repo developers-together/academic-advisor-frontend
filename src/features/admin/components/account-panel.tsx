@@ -26,6 +26,7 @@ import { useReactivateStudent } from '../api/reactivate-student';
 import { useReassignStudent } from '../api/reassign-student';
 import { useRetryStudentSis } from '../api/retry-student-sis';
 import { useSuspendStudent } from '../api/suspend-student';
+import { useUnassignStudent } from '../api/unassign-student';
 import {
   accountAssigned,
   accountBinding,
@@ -35,7 +36,7 @@ import {
 
 import { EditAccountDialog } from './edit-account-dialog';
 
-type ConfirmTarget = 'suspend' | 'correctId' | 'delete';
+type ConfirmTarget = 'suspend' | 'correctId' | 'delete' | 'unassign';
 
 const correctIdSchema = z.object({
   student_id: z
@@ -88,6 +89,7 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
   const correctId = useCorrectStudentId();
   const remove = useDeleteStudent();
   const reassign = useReassignStudent();
+  const unassign = useUnassignStudent();
 
   const correctForm = useForm<CorrectIdValues>({
     resolver: zodResolver(correctIdSchema),
@@ -132,7 +134,15 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
   });
 
   const handleConfirm = () => {
-    if (confirmTarget === 'suspend') {
+    if (confirmTarget === 'unassign') {
+      unassign.mutate(user.id, {
+        onSuccess: () => setConfirmTarget(null),
+        onError: (error) =>
+          setConfirmError(
+            readableApiError(error, t('common:errors.saveFailed')),
+          ),
+      });
+    } else if (confirmTarget === 'suspend') {
       suspend.mutate(user.id, {
         onSuccess: () => setConfirmTarget(null),
         onError: (error) =>
@@ -201,6 +211,11 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
     ConfirmTarget,
     { title: string; body: string; confirmLabel: string }
   > = {
+    unassign: {
+      title: t('accounts.confirms.unassignTitle', { name: user.name }),
+      body: t('accounts.confirms.unassignBody'),
+      confirmLabel: t('accounts.actions.unassign'),
+    },
     suspend: {
       title: t('accounts.confirms.suspendTitle', { name: user.name }),
       body: t('accounts.confirms.suspendBody'),
@@ -220,7 +235,10 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
 
   const activeConfirm = confirmTarget ? confirmCopy[confirmTarget] : null;
   const confirmPending =
-    suspend.isPending || correctId.isPending || remove.isPending;
+    suspend.isPending ||
+    correctId.isPending ||
+    remove.isPending ||
+    unassign.isPending;
 
   return (
     <Drawer open onOpenChange={(next) => !next && onClose()}>
@@ -369,6 +387,19 @@ export const AccountPanel = ({ user, onClose }: AccountPanelProps) => {
                 {t('accounts.actions.reassignSubmit')}
               </Button>
             </form>
+            {accountAssigned(user) && (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={unassign.isPending || reassign.isPending}
+                onClick={() => {
+                  setConfirmError(null);
+                  setConfirmTarget('unassign');
+                }}
+              >
+                {t('accounts.actions.unassign')}
+              </Button>
+            )}
             {reassignMessage && (
               <p aria-live="polite" className="text-sm text-muted-foreground">
                 {reassignMessage}

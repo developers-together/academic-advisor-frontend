@@ -164,18 +164,18 @@ export const AssignmentsDocument = () => {
                   </span>
                 </TableCell>
                 <TableCell className="px-3 py-2">
-                  {student.advisor ? (
+                  {student.advisor_id !== null ? (
                     <div className="space-y-0.5">
                       <span className="flex items-center gap-2">
                         <Badge variant="info" size="sm">
                           {t('common:badges.assigned')}
                         </Badge>
                         <span className="text-sm font-medium">
-                          {student.advisor.name}
+                          {student.advisor?.name ?? `#${student.advisor_id}`}
                         </span>
                       </span>
                       <span className="block text-2xs text-muted-foreground">
-                        {student.advisor.email}
+                        {student.advisor?.email}
                       </span>
                     </div>
                   ) : (

@@ -53,6 +53,7 @@ export type Plan = {
   id: number;
   status: PlanStatus;
   term_code: string;
+  term_kind?: 'fall' | 'spring' | 'summer';
   summary: string | null;
   courses: PlannedCourse[];
   total_credit_hours: number;
@@ -209,6 +210,7 @@ export type MeetingRequest = {
   direction: MeetingDirection;
   requester_id: number;
   recipient_id: number;
+  term_code?: string;
   student: StudentSummary;
   reason: MeetingReason;
   note: string | null;
@@ -332,6 +334,9 @@ export type UniversityRuleInput = {
 };
 
 export type NotificationSlug =
+  | 'advisor_unassigned'
+  | 'pending_assignment_discarded'
+  | 'term_rolled_over'
   | 'plan_returned'
   | 'plan_approved'
   | 'advisor_changed'
@@ -437,6 +442,7 @@ export type CurrentTerm = {
   opens: string;
   closes: string;
   starts: string;
+  offerings_count?: number;
 };
 
 export type StaffMember = Omit<User, 'role'> & {
@@ -466,6 +472,10 @@ export type AdminCourse = {
   code: string;
   title_en: string;
   title_ar: string | null;
+  description?: string | null;
+  department_id?: number | null;
+  offering_department?: string | null;
+  usable_across_departments?: boolean | null;
   credits: number;
   level: number | null;
   prerequisite_course_codes: string[];
@@ -474,9 +484,17 @@ export type AdminCourse = {
 export type RegistrationWindow = {
   id: number;
   term_code: string;
-  opens_at: string;
-  closes_at: string;
-  is_active: boolean;
+  opens_at: string | null;
+  closes_at: string | null;
+};
+
+export type DepartmentOption = {
+  id: number;
+  code: string | null;
+  name_en: string;
+  name_ar: string | null;
+  faculty_name_en: string;
+  faculty_name_ar: string | null;
 };
 
 export type AiConfiguration = {

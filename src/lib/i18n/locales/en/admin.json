@@ -83,9 +83,12 @@
       "reassign": "Reassign",
       "reassignPlaceholder": "advisor@ejust.edu.eg",
       "reassignLabel": "Advisor email",
+      "unassign": "Remove advisor assignment",
       "reassignSubmit": "Reassign"
     },
     "confirms": {
+      "unassignTitle": "Remove the advisor assignment for {{name}}?",
+      "unassignBody": "The student will have no advisor and cannot create a plan until an advisor is assigned again. Existing plans stay unchanged.",
       "suspendTitle": "Suspend {{name}}?",
       "suspendBody": "Suspension blocks login immediately and signs the student out. The account and its data stay.",
       "suspendConfirm": "Suspend",
@@ -384,6 +387,11 @@
     },
     "editor": {
       "createTitle": "Add a course",
+      "titleAr": "Arabic title",
+      "description": "Description",
+      "department": "Offering department",
+      "departmentPlaceholder": "Choose a department",
+      "crossDepartment": "Available across departments",
       "editTitle": "Edit {{code}}",
       "body": "Credits and prerequisites feed plan validation.",
       "code": "Course code",
@@ -401,8 +409,9 @@
       "errors": {
         "codeRequired": "Enter the course code.",
         "titleRequired": "Enter the title.",
-        "creditsRange": "Enter credit hours from 1 to 6.",
-        "levelRange": "Enter a level from 1 to 8."
+        "departmentRequired": "Choose the offering department.",
+        "creditsRange": "Enter a whole number of credit hours, zero or more.",
+        "levelRange": "Enter a whole-number level, one or more."
       }
     },
     "deleteDialog": {
@@ -413,7 +422,9 @@
   "windows": {
     "title": "Registration Windows",
     "context": "The academic clock plans submit inside. Dates mirror the SIS.",
-    "hint": "A window is created when the current term is set on Academics. Dates mirror the SIS; activation controls whether students can submit.",
+    "hint": "Set the opening and closing dates for plan submission. Times use your device's time zone.",
+    "dateOrder": "The closing date must be after the opening date.",
+    "saved": "Registration dates saved.",
     "columns": {
       "term": "Term",
       "opens": "Opens",
@@ -434,7 +445,7 @@
     },
     "empty": {
       "title": "No registration windows yet.",
-      "body": "Setting the current term on Academics creates a window. Dates mirror the SIS; activation controls whether students can submit.",
+      "body": "Set the current term on Academics to create its registration window.",
       "action": "Go to Academics"
     }
   },

@@ -1,5 +1,5 @@
 import { ArrowUpRight, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
@@ -62,6 +62,11 @@ const OVERVIEW_LINKS = [
 ] as const;
 
 export const AdminOverviewDocument = () => {
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    const interval = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(interval);
+  }, []);
   const { t } = useTranslation('admin');
   const { t: tNav } = useTranslation();
   const [search, setSearch] = useState('');
@@ -107,7 +112,13 @@ export const AdminOverviewDocument = () => {
     );
   }
 
-  const activeWindow = windowsQuery.data?.find((entry) => entry.is_active);
+  const activeWindow = windowsQuery.data?.find(
+    (entry) =>
+      entry.opens_at &&
+      entry.closes_at &&
+      Date.parse(entry.opens_at) <= now &&
+      now < Date.parse(entry.closes_at),
+  );
   const counts: Record<string, number | null> = {
     students: studentsCountQuery.data ?? null,
     courses: coursesQuery.data?.length ?? null,

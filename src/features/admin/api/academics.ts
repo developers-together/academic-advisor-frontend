@@ -58,6 +58,7 @@ type ApiCurrentTerm = {
   registration_opens_at: string | null;
   registration_closes_at: string | null;
   term_starts_at: string | null;
+  offerings_count?: number;
 };
 
 /** Date inputs need the calendar day, not the full ISO instant. */
@@ -72,6 +73,7 @@ const fromApi = (term: ApiCurrentTerm | null): CurrentTerm | null =>
         opens: dayOf(term.registration_opens_at),
         closes: dayOf(term.registration_closes_at),
         starts: dayOf(term.term_starts_at),
+        offerings_count: term.offerings_count,
       };
 
 export const getCurrentTerm = (): Promise<CurrentTerm | null> =>
@@ -104,6 +106,9 @@ export const useUpdateCurrentTerm = () => {
       ).then(fromApi),
     onSuccess: (term) => {
       queryClient.setQueryData(currentTermQueryKey, term);
+      void queryClient.invalidateQueries({
+        queryKey: ['admin', 'registration-windows'],
+      });
     },
   });
 };

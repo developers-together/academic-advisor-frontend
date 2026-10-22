@@ -20,14 +20,23 @@ const screenHrefs: Record<
     student: paths.app.plan.getHref(),
   },
   student: {
-    advisor: paths.advisor.students.getHref(),
+    advisor: (link) =>
+      link.student_id
+        ? `${paths.advisor.students.getHref()}?student_id=${link.student_id}`
+        : paths.advisor.students.getHref(),
   },
   advisor: {
     student: paths.app.advisor.getHref(),
   },
   visit: {
-    advisor: paths.advisor.meetings.getHref(),
-    student: paths.app.advisor.getHref(),
+    advisor: (link) =>
+      link.visit_request_id
+        ? `${paths.advisor.meetings.getHref()}?visit_request_id=${link.visit_request_id}`
+        : paths.advisor.meetings.getHref(),
+    student: (link) =>
+      link.visit_request_id
+        ? `${paths.app.advisor.getHref()}?visit_request_id=${link.visit_request_id}`
+        : paths.app.advisor.getHref(),
   },
   staff: {
     admin: (link) =>

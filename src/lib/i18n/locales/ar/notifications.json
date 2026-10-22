@@ -9,6 +9,9 @@
     "body": "ستظهر هنا تحديثات الخطة والزيارات."
   },
   "slugs": {
+    "advisor_unassigned": "تمت إزالة إسناد المرشد",
+    "pending_assignment_discarded": "تم إلغاء الإسناد المعلق",
+    "term_rolled_over": "تغير الفصل الحالي",
     "plan_returned": "أُرجعت الخطة",
     "plan_approved": "اعتُمدت الخطة",
     "advisor_changed": "تغيّر المرشد الأكاديمي",

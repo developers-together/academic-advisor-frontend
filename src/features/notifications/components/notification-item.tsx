@@ -36,6 +36,9 @@ const slugIcons: Record<NotificationSlug, LucideIcon> = {
   visit_requested: CalendarPlus,
   visit_slots_provided: CalendarCheck,
   staff_registered: UserRoundCheck,
+  advisor_unassigned: UserMinus,
+  pending_assignment_discarded: UserMinus,
+  term_rolled_over: CalendarCheck,
 };
 
 export type NotificationItemProps = {
@@ -48,7 +51,7 @@ export const NotificationItem = ({
   onOpen,
 }: NotificationItemProps) => {
   const { t } = useTranslation('notifications');
-  const Icon = notification.slug ? slugIcons[notification.slug] : Bell;
+  const Icon = (notification.slug && slugIcons[notification.slug]) || Bell;
   const isUnread = notification.read_at === null;
   const title =
     notification.title ??

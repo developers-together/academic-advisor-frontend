@@ -8,8 +8,11 @@ export type CourseInput = {
   code: string;
   title_en: string;
   title_ar: string | null;
+  description: string | null;
   credits: number;
-  level: number | null;
+  level: number;
+  offering_department: number;
+  usable_across_departments: boolean;
   prerequisite_course_codes: string[];
 };
 

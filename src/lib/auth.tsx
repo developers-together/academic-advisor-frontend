@@ -60,8 +60,12 @@ export const loginInputSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
 
-const loginWithEmailAndPassword = async (data: LoginInput): Promise<User> => {
-  const response = (await api.post('/login', data)) as { token: string };
+export const loginWithEmailAndPassword = async (
+  data: LoginInput,
+): Promise<User> => {
+  const response = (await api.post('/login', data, {
+    withCredentials: true,
+  })) as { token: string };
   tokenStorage.set(response.token);
   try {
     return await getAuthenticatedUser();
@@ -80,12 +84,15 @@ export const registerInputSchema = z
     email: z
       .string()
       .min(1, 'auth:errors.emailRequired')
-      .email('auth:errors.emailInvalid')
+      .email('auth:errors.emailInvalid'),
+    studentId: z
+      .string()
+      .trim()
       .refine(
-        (value) => /@(?:[a-z0-9-]+\.)*ejust\.edu\.eg$/i.test(value),
-        'auth:errors.universityEmail',
-      ),
-    studentId: z.string().min(1, 'auth:errors.studentIdRequired'),
+        (value) => value === '' || /^\d+$/.test(value),
+        'auth:errors.studentIdInvalid',
+      )
+      .max(255),
     nationalId: z
       .string()
       .min(1, 'auth:errors.nationalIdRequired')
@@ -111,7 +118,7 @@ const registerWithEmailAndPassword = async (
     email: data.email,
     password: data.password,
     password_confirmation: data.passwordConfirmation,
-    student_id: data.studentId,
+    student_id: data.studentId || null,
     national_id: data.nationalId,
     language_preference: data.language_preference satisfies LanguagePreference,
   });
@@ -143,6 +150,18 @@ const logout = async (): Promise<void> => {
     await api.post('/logout');
   } finally {
     tokenStorage.clear();
+  }
+};
+
+export const withPasswordAuthentication = async <T,>(
+  input: LoginInput,
+  operation: () => Promise<T>,
+): Promise<T> => {
+  await loginWithEmailAndPassword(input);
+  try {
+    return await operation();
+  } finally {
+    await logout();
   }
 };
 

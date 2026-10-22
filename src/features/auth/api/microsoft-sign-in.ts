@@ -1,4 +1,6 @@
 import { env } from '@/config/env';
+import { api } from '@/lib/api-client';
+import { withPasswordAuthentication, type LoginInput } from '@/lib/auth';
 
 export const microsoftSignInStartUrl = `${env.API_URL}/auth/microsoft/start`;
 
@@ -13,6 +15,8 @@ export const microsoftSignInFailures = [
   'cancelled',
   'expired_code',
   'exchange_failed',
+  'link_required',
+  'address_mismatch',
 ] as const;
 
 export type MicrosoftSignInFailure = (typeof microsoftSignInFailures)[number];
@@ -22,6 +26,21 @@ export const isMicrosoftSignInFailure = (
 ): value is MicrosoftSignInFailure =>
   typeof value === 'string' &&
   (microsoftSignInFailures as readonly string[]).includes(value);
+
+export const linkMicrosoftIdentity = async (
+  input: LoginInput,
+): Promise<void> => {
+  const response = await withPasswordAuthentication(
+    input,
+    async () =>
+      (await api.post(
+        '/auth/microsoft/link',
+        { password: input.password },
+        { withCredentials: true },
+      )) as { authorization_url: string },
+  );
+  window.location.assign(response.authorization_url);
+};
 
 const attempt = (operation: () => void): boolean => {
   try {
