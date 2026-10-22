@@ -1,4 +1,3 @@
-import { CircleCheck, CircleDashed } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { RecordFreshness } from '@/components/domain/record-freshness';
@@ -81,85 +80,6 @@ export const RecordDocument = ({
         }
         context={t('profile.cgpa.context')}
       />
-
-      <section aria-label={t('requirements.title')}>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('requirements.title')}</CardTitle>
-          </CardHeader>
-          <CardBody>
-            <ul className="space-y-3">
-              {record.prerequisite_map
-                .filter((entry) => entry.type !== 'elective')
-                .map((entry) => {
-                  const outstanding =
-                    entry.requirement_outstanding ??
-                    entry.state !== 'completed';
-                  const Icon = outstanding ? CircleDashed : CircleCheck;
-                  return (
-                    <li
-                      key={entry.course_code}
-                      className="flex items-start gap-2"
-                    >
-                      <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
-                      <div className="min-w-0 text-sm">
-                        <bdi className="font-semibold">{entry.course_code}</bdi>
-                        {entry.title && <span> {entry.title}</span>}
-                        <p className="text-muted-foreground">
-                          {t(
-                            `requirements.${outstanding ? 'outstanding' : 'satisfied'}`,
-                          )}
-                        </p>
-                      </div>
-                    </li>
-                  );
-                })}
-              {(record.elective_groups ?? []).map((group) => {
-                const retakes = group.committed_course_codes.filter(
-                  (code) => !group.passed_course_codes.includes(code),
-                );
-                const Icon =
-                  group.status === 'satisfied' ? CircleCheck : CircleDashed;
-                return (
-                  <li key={group.key} className="flex items-start gap-2">
-                    <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
-                    <div className="min-w-0 text-sm">
-                      <p className="font-semibold">{group.name}</p>
-                      <p className="text-muted-foreground">
-                        {t(`requirements.${group.status}`)}
-                      </p>
-                      {group.required_passes !== null && (
-                        <p className="text-muted-foreground tabular-nums">
-                          {t('requirements.passes', {
-                            required: group.required_passes,
-                            remaining: group.remaining_passes,
-                          })}
-                        </p>
-                      )}
-                      <p className="mt-1 text-muted-foreground">
-                        {t('requirements.alternatives')}{' '}
-                        <bdi>{group.course_codes.join(', ')}</bdi>
-                      </p>
-                      {group.status === 'outstanding' && retakes.length > 0 && (
-                        <p className="mt-1 text-warning">
-                          {t('requirements.retake')}{' '}
-                          <bdi>{retakes.join(', ')}</bdi>
-                        </p>
-                      )}
-                      {group.planned_course_codes.length > 0 && (
-                        <p className="mt-1 text-muted-foreground">
-                          {t('requirements.reserved')}{' '}
-                          <bdi>{group.planned_course_codes.join(', ')}</bdi>
-                        </p>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </CardBody>
-        </Card>
-      </section>
 
       <Card>
         <CardHeader>

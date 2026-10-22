@@ -294,14 +294,6 @@
     "aiHeading": "A clearer plan starts with a conversation."
   },
   "requirements": {
-    "title": "Curriculum requirements",
-    "outstanding": "Outstanding",
-    "satisfied": "Satisfied",
-    "unresolved": "Unresolved: staff must set the required pass count before you can plan this group.",
-    "passes": "{{required}} passes required; {{remaining}} remaining",
-    "alternatives": "Alternatives:",
-    "retake": "Retake required:",
-    "reserved": "Reserved in your plan, not SIS registration:",
     "progressUnresolved": "Curriculum progress is unavailable while elective counts are unresolved."
   },
   "recordDetails": {
