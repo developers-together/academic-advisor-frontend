@@ -143,7 +143,7 @@
       "studentId": "Student ID",
       "email": "Email",
       "faculty": "Faculty",
-      "year": "Year"
+      "year": "Level"
     },
     "cgpa": {
       "label": "CGPA",
