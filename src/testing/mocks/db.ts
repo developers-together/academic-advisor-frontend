@@ -84,8 +84,12 @@ const models = {
     code: String,
     title_en: String,
     title_ar: nullableString,
+    description: nullableString,
     credits: Number,
-    level: nullableNumber,
+    level: Number,
+    department_id: () => 1,
+    offering_department: () => 'Computer Science',
+    usable_across_departments: () => false,
     prerequisite_course_codes: () => [] as string[],
   },
   registrationWindow: {

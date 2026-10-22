@@ -462,8 +462,12 @@ export type AdminCourse = {
   code: string;
   title_en: string;
   title_ar: string | null;
+  description: string | null;
   credits: number;
-  level: number | null;
+  level: number;
+  department_id: number | null;
+  offering_department: string | null;
+  usable_across_departments: boolean | null;
   prerequisite_course_codes: string[];
 };
 

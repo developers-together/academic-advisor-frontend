@@ -365,6 +365,8 @@
     "saved": "تم تحديث {{code}}.",
     "created": "تم إنشاء {{code}}.",
     "deleted": "تم حذف {{code}}.",
+    "sharedYes": "نعم",
+    "sharedNo": "لا",
     "errors": {
       "codeExists": "رمز المقرر موجود بالفعل."
     },
@@ -373,6 +375,8 @@
       "title": "العنوان",
       "credits": "الساعات",
       "level": "المستوى",
+      "department": "القسم",
+      "shared": "متاح للأقسام الأخرى",
       "prerequisites": "المتطلبات السابقة",
       "actions": "إجراءات"
     },
@@ -383,11 +387,18 @@
     "editor": {
       "createTitle": "إضافة مقرر",
       "editTitle": "تعديل {{code}}",
-      "body": "الساعات والمتطلبات تغذي التحقق من الخطط.",
+      "body": "القسم والساعات والمستوى والمتطلبات السابقة تغذي التحقق من الخطط.",
       "code": "رمز المقرر",
-      "title": "العنوان",
-      "credits": "الساعات",
+      "title": "العنوان (بالإنجليزية)",
+      "titleAr": "العنوان (بالعربية، اختياري)",
+      "description": "الوصف (اختياري)",
+      "credits": "الساعات المعتمدة",
       "level": "المستوى",
+      "department": "القسم المقدم للمقرر",
+      "departmentPlaceholder": "اختر القسم",
+      "departmentLoading": "جار تحميل الأقسام.",
+      "departmentLoadError": "تعذر تحميل الأقسام. أغلق هذا النموذج وحاول مرة أخرى.",
+      "usableAcrossDepartments": "يمكن لطلاب الأقسام الأخرى استخدام هذا المقرر",
       "prerequisites": "المتطلبات السابقة",
       "addPrerequisite": "إضافة متطلب سابق",
       "prerequisitePlaceholder": "ابحث عن مقرر لإضافته…",
@@ -399,8 +410,9 @@
       "errors": {
         "codeRequired": "أدخل رمز المقرر.",
         "titleRequired": "أدخل العنوان.",
-        "creditsRange": "أدخل الساعات من 1 إلى 6.",
-        "levelRange": "أدخل المستوى من 1 إلى 8."
+        "creditsRange": "أدخل صفرًا أو أكثر من الساعات الصحيحة.",
+        "levelRange": "أدخل مستوى صحيحًا يبدأ من 1.",
+        "departmentRequired": "اختر القسم المقدم للمقرر."
       }
     },
     "deleteDialog": {

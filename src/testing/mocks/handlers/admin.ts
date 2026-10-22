@@ -23,6 +23,25 @@ const ACADEMICS_DATASETS = new Set([
 
 const TERM_KINDS = new Set(['fall', 'spring', 'summer']);
 
+const ADMIN_DEPARTMENTS = [
+  {
+    id: 1,
+    code: 'CSE',
+    name_en: 'Computer Science',
+    name_ar: 'علوم الحاسب',
+    faculty_name_en: 'Engineering',
+    faculty_name_ar: 'الهندسة',
+  },
+  {
+    id: 2,
+    code: 'MATH',
+    name_en: 'Mathematics',
+    name_ar: 'الرياضيات',
+    faculty_name_en: 'Basic and Applied Sciences',
+    faculty_name_ar: 'العلوم الأساسية والتطبيقية',
+  },
+] as const;
+
 let currentTermState = {
   term_code: CURRENT_TERM,
   term_kind: 'fall',
@@ -1011,6 +1030,23 @@ export const adminHandlers = [
       return HttpResponse.json({ data: { days } });
     },
   ),
+  http.get(`${env.API_URL}/admin/departments`, async ({ request }) => {
+    if (injectsErrors()) {
+      return HttpResponse.json(
+        { message: 'The server encountered an error.' },
+        { status: 500 },
+      );
+    }
+    if (deniesPermission()) {
+      return unauthorised();
+    }
+    requireAdmin(request);
+    await networkDelay();
+    return HttpResponse.json({
+      data: ADMIN_DEPARTMENTS,
+    });
+  }),
+
   http.get(`${env.API_URL}/admin/courses`, async ({ request }) => {
     await networkDelay();
     if (deniesPermission()) {
@@ -1055,15 +1091,20 @@ export const adminHandlers = [
         { status: 409 },
       );
     }
+    const department = ADMIN_DEPARTMENTS.find(
+      (option) => option.id === Number(body.offering_department),
+    );
     const created = db.course.create({
       code,
       title_en: typeof body.title_en === 'string' ? body.title_en : '',
       title_ar: typeof body.title_ar === 'string' ? body.title_ar : null,
+      description:
+        typeof body.description === 'string' ? body.description : null,
       credits: Number(body.credits) || 0,
-      level:
-        body.level === null || body.level === undefined
-          ? null
-          : Number(body.level),
+      level: Number(body.level) || 1,
+      department_id: department?.id ?? 1,
+      offering_department: department?.name_en ?? 'Computer Science',
+      usable_across_departments: body.usable_across_departments === true,
       prerequisite_course_codes: Array.isArray(body.prerequisite_course_codes)
         ? body.prerequisite_course_codes.filter(
             (value) => typeof value === 'string',
@@ -1094,6 +1135,9 @@ export const adminHandlers = [
         );
       }
       const body = (await request.json()) as Record<string, unknown>;
+      const department = ADMIN_DEPARTMENTS.find(
+        (option) => option.id === Number(body.offering_department),
+      );
       const updated = db.course.update({
         where: { id: { equals: row.id as number } },
         data: {
@@ -1103,11 +1147,23 @@ export const adminHandlers = [
           ...(body.title_ar === null || typeof body.title_ar === 'string'
             ? { title_ar: body.title_ar as string | null }
             : {}),
+          ...(body.description === null || typeof body.description === 'string'
+            ? { description: body.description as string | null }
+            : {}),
           ...(body.credits !== undefined
             ? { credits: Number(body.credits) || 0 }
             : {}),
-          ...(body.level !== undefined
-            ? { level: body.level === null ? null : Number(body.level) }
+          ...(body.level !== undefined ? { level: Number(body.level) } : {}),
+          ...(department
+            ? {
+                department_id: department.id,
+                offering_department: department.name_en,
+              }
+            : {}),
+          ...(typeof body.usable_across_departments === 'boolean'
+            ? {
+                usable_across_departments: body.usable_across_departments,
+              }
             : {}),
           ...(Array.isArray(body.prerequisite_course_codes)
             ? {

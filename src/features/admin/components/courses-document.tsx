@@ -84,8 +84,8 @@ export const CoursesDocument = () => {
           }}
         />
       ) : (
-        <TableElement>
-          <TableHeader>
+        <TableElement className="block md:table">
+          <TableHeader className="hidden md:table-header-group">
             <TableRow className="border-border">
               <TableHead>{t('courses.columns.code')}</TableHead>
               <TableHead>{t('courses.columns.title')}</TableHead>
@@ -95,36 +95,70 @@ export const CoursesDocument = () => {
               <TableHead className="text-end">
                 {t('courses.columns.level')}
               </TableHead>
+              <TableHead>{t('courses.columns.department')}</TableHead>
+              <TableHead>{t('courses.columns.shared')}</TableHead>
               <TableHead>{t('courses.columns.prerequisites')}</TableHead>
               <TableHead className="text-end">
                 {t('courses.columns.actions')}
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="block space-y-3 md:table-row-group md:space-y-0">
             {courses.map((course) => (
-              <TableRow key={course.id} className="border-border">
-                <TableCell className="px-3 py-2 text-sm font-medium">
+              <TableRow
+                key={course.id}
+                className="block rounded-lg border border-border bg-card p-3 shadow-sm md:table-row md:rounded-none md:border-x-0 md:border-t-0 md:bg-transparent md:p-0 md:shadow-none"
+              >
+                <TableCell
+                  data-label={t('courses.columns.code')}
+                  className="flex justify-between gap-4 px-3 py-2 text-sm font-medium before:text-muted-foreground before:content-[attr(data-label)] md:table-cell md:before:hidden"
+                >
                   {course.code}
                 </TableCell>
-                <TableCell className="px-3 py-2 text-sm">
+                <TableCell
+                  data-label={t('courses.columns.title')}
+                  className="flex justify-between gap-4 px-3 py-2 text-end text-sm before:text-start before:text-muted-foreground before:content-[attr(data-label)] md:table-cell md:text-start md:before:hidden"
+                >
                   {i18n.language.startsWith('ar')
                     ? (course.title_ar ?? course.title_en)
                     : course.title_en}
                 </TableCell>
-                <TableCell className="px-3 py-2 text-end text-sm tabular-nums">
+                <TableCell
+                  data-label={t('courses.columns.credits')}
+                  className="flex justify-between gap-4 px-3 py-2 text-end text-sm tabular-nums before:text-start before:text-muted-foreground before:content-[attr(data-label)] md:table-cell md:before:hidden"
+                >
                   {course.credits}
                 </TableCell>
-                <TableCell className="px-3 py-2 text-end text-sm tabular-nums">
-                  {course.level ?? '—'}
+                <TableCell
+                  data-label={t('courses.columns.level')}
+                  className="flex justify-between gap-4 px-3 py-2 text-end text-sm tabular-nums before:text-start before:text-muted-foreground before:content-[attr(data-label)] md:table-cell md:before:hidden"
+                >
+                  {course.level}
                 </TableCell>
-                <TableCell className="px-3 py-2 text-sm text-muted-foreground">
+                <TableCell
+                  data-label={t('courses.columns.department')}
+                  className="flex justify-between gap-4 px-3 py-2 text-end text-sm before:text-start before:text-muted-foreground before:content-[attr(data-label)] md:table-cell md:text-start md:before:hidden"
+                >
+                  {course.offering_department ?? '—'}
+                </TableCell>
+                <TableCell
+                  data-label={t('courses.columns.shared')}
+                  className="flex justify-between gap-4 px-3 py-2 text-end text-sm before:text-start before:text-muted-foreground before:content-[attr(data-label)] md:table-cell md:text-start md:before:hidden"
+                >
+                  {course.usable_across_departments
+                    ? t('courses.sharedYes')
+                    : t('courses.sharedNo')}
+                </TableCell>
+                <TableCell
+                  data-label={t('courses.columns.prerequisites')}
+                  className="flex justify-between gap-4 px-3 py-2 text-end text-sm text-muted-foreground before:text-start before:content-[attr(data-label)] md:table-cell md:text-start md:before:hidden"
+                >
                   {course.prerequisite_course_codes.length > 0
                     ? course.prerequisite_course_codes.join(', ')
                     : '—'}
                 </TableCell>
-                <TableCell className="px-3 py-2">
-                  <div className="flex justify-end gap-1">
+                <TableCell className="block px-3 py-2 md:table-cell">
+                  <div className="flex justify-end gap-1 border-t border-border pt-2 md:border-0 md:pt-0">
                     <Button
                       size="sm"
                       variant="ghost"

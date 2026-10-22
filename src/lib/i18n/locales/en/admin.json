@@ -365,6 +365,8 @@
     "saved": "{{code}} updated.",
     "created": "{{code}} created.",
     "deleted": "{{code}} deleted.",
+    "sharedYes": "Yes",
+    "sharedNo": "No",
     "errors": {
       "codeExists": "That course code already exists."
     },
@@ -373,6 +375,8 @@
       "title": "Title",
       "credits": "Credits",
       "level": "Level",
+      "department": "Department",
+      "shared": "Cross-department",
       "prerequisites": "Prerequisites",
       "actions": "Actions"
     },
@@ -383,11 +387,18 @@
     "editor": {
       "createTitle": "Add a course",
       "editTitle": "Edit {{code}}",
-      "body": "Credits and prerequisites feed plan validation.",
+      "body": "Department, credit hours, level, and prerequisites feed plan validation.",
       "code": "Course code",
-      "title": "Title",
-      "credits": "Credits",
+      "title": "Title (English)",
+      "titleAr": "Title (Arabic, optional)",
+      "description": "Description (optional)",
+      "credits": "Credit hours",
       "level": "Level",
+      "department": "Offering Department",
+      "departmentPlaceholder": "Choose a Department",
+      "departmentLoading": "Loading Departments.",
+      "departmentLoadError": "Departments could not be loaded. Close this form and try again.",
+      "usableAcrossDepartments": "Students in other Departments can use this course",
       "prerequisites": "Prerequisites",
       "addPrerequisite": "Add prerequisite",
       "prerequisitePlaceholder": "Search courses to add…",
@@ -399,8 +410,9 @@
       "errors": {
         "codeRequired": "Enter the course code.",
         "titleRequired": "Enter the title.",
-        "creditsRange": "Enter credit hours from 1 to 6.",
-        "levelRange": "Enter a level from 1 to 8."
+        "creditsRange": "Enter zero or more whole credit hours.",
+        "levelRange": "Enter a whole level of 1 or more.",
+        "departmentRequired": "Choose the offering Department."
       }
     },
     "deleteDialog": {
